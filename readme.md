@@ -45,5 +45,6 @@ A D3D11-based 3D game + engine originally developed as a group project by six st
 - [Dear Imgui](https://github.com/ocornut/imgui) for UI
 - [SDL3](https://github.com/libsdl-org/sdlwiki/tree/main/SDL3) for window handling
 - [Tracy](https://github.com/wolfpld/tracy) for frame capture
+- [DirectXTex](https://github.com/microsoft/DirectXTex) for texture loading, manipulation & block compression
 - [stb](https://github.com/nothings/stb) for texture loading
-- [ImGuizmo](https://github.com/CedricGuillemet/ImGuizmo) for transformation tools (optional replacement of our implementation)
+- [ImGuizmo](https://github.com/CedricGuillemet/ImGuizmo) for transformation tools
