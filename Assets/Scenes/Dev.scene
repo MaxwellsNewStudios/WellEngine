@@ -1,0 +1,2450 @@
+{
+    "Scene": {
+        "Transitional": false,
+        "Bounds": {
+            "Center": [
+                0.0,
+                0.0,
+                0.0
+            ],
+            "Extents": [
+                500.0,
+                500.0,
+                500.0
+            ]
+        },
+        "Graphics": {
+            "Spotlight Resolution": 256,
+            "Pointlight Resolution": 256,
+            "Cubemap": "BarrenFieldHDR",
+            "Skybox": "PS_SkyboxEnvironment",
+            "Ambient": [
+                0.3529411554336548,
+                0.3529411554336548,
+                0.3529411554336548
+            ],
+            "Fog": {
+                "Thickness": 0.02500000037252903,
+                "Step Size": 0.0,
+                "Min Steps": 0,
+                "Max Steps": 64
+            },
+            "Emission": {
+                "Strength": 1.149999976158142,
+                "Exponent": 0.6000000238418579,
+                "Threshold": 1.034999966621399
+            }
+        }
+    },
+    "Hierarchy": [
+        {
+            "Name": "Room Floor",
+            "ID": 3,
+            "Enabled": true,
+            "Pos": [
+                0.0,
+                0.0,
+                0.0
+            ],
+            "Rot": [
+                -0.0,
+                0.0,
+                0.0
+            ],
+            "Scale": [
+                75.0,
+                75.0,
+                75.0
+            ],
+            "Static": true,
+            "Select": true,
+            "InTree": true,
+            "Beh": [
+                {
+                    "Name": "MeshBehaviour",
+                    "Attributes": {
+                        "Mesh": "Plane",
+                        "Transparent": false,
+                        "Shadow Caster": true,
+                        "Shadows Only": false,
+                        "Alpha Cutoff": 0.0,
+                        "Specular Factor": 1.0,
+                        "Base Color": [
+                            1.0,
+                            1.0,
+                            1.0,
+                            1.0
+                        ],
+                        "Metallic": 0.0,
+                        "Reflectivity": 0.0,
+                        "PS Settings": {
+                            "Size": 16,
+                            "Data": [
+                                0,
+                                0,
+                                0,
+                                64,
+                                0,
+                                0,
+                                0,
+                                64,
+                                0,
+                                0,
+                                4294967168,
+                                63,
+                                1,
+                                0,
+                                0,
+                                0
+                            ]
+                        },
+                        "Tex": "Metal",
+                        "Normal": "Metal_Normal",
+                        "Specular": "Metal_Specular",
+                        "Sampler": "Wrap",
+                        "PS": "PS_TriPlanar"
+                    }
+                },
+                {
+                    "Name": "ColliderBehaviour",
+                    "Attributes": {
+                        "Type": 4,
+                        "Tag": 12,
+                        "Base": {
+                            "Center": [
+                                0.0,
+                                -0.5,
+                                0.0
+                            ],
+                            "Half-Length": [
+                                1.25,
+                                0.5009999871253967,
+                                1.25
+                            ],
+                            "Axes": [
+                                [
+                                    1.0,
+                                    0.0,
+                                    0.0
+                                ],
+                                [
+                                    0.0,
+                                    1.0,
+                                    0.0
+                                ],
+                                [
+                                    0.0,
+                                    0.0,
+                                    1.0
+                                ]
+                            ]
+                        },
+                        "Transformed": {
+                            "Center": [
+                                0.0,
+                                -37.5,
+                                0.0
+                            ],
+                            "Half-Length": [
+                                93.75,
+                                37.57500076293945,
+                                93.75
+                            ],
+                            "Axes": [
+                                [
+                                    1.0,
+                                    0.0,
+                                    0.0
+                                ],
+                                [
+                                    0.0,
+                                    1.0,
+                                    0.0
+                                ],
+                                [
+                                    0.0,
+                                    0.0,
+                                    1.0
+                                ]
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "Name": "Maxwell",
+            "ID": 4,
+            "Enabled": true,
+            "Pos": [
+                7.0,
+                0.75,
+                8.0
+            ],
+            "Rot": [
+                -0.0,
+                0.549135684967041,
+                0.0
+            ],
+            "Scale": [
+                1.0,
+                1.0,
+                1.0
+            ],
+            "Prefab": "Maxwell"
+        },
+        {
+            "Name": "Breadcrumb Pile",
+            "ID": 6,
+            "Enabled": true,
+            "Pos": [
+                -12.0,
+                0.019999999552965164,
+                14.0
+            ],
+            "Rot": [
+                -0.0,
+                0.0,
+                0.0
+            ],
+            "Scale": [
+                1.0,
+                1.0,
+                1.0
+            ],
+            "Static": false,
+            "Select": true,
+            "InTree": true,
+            "Beh": [
+                {
+                    "Name": "BreadcrumbPileBehaviour",
+                    "Attributes": {}
+                }
+            ]
+        },
+        {
+            "Name": "Camera",
+            "ID": 9,
+            "Enabled": true,
+            "Pos": [
+                7.0,
+                1.75,
+                0.0
+            ],
+            "Rot": [
+                -0.0,
+                0.0,
+                0.0
+            ],
+            "Scale": [
+                0.699999988079071,
+                0.699999988079071,
+                0.699999988079071
+            ],
+            "Prefab": "Camera"
+        },
+        {
+            "Name": "Maxwell the first",
+            "ID": 12,
+            "Enabled": true,
+            "Pos": [
+                -7.0,
+                0.3525739312171936,
+                6.0
+            ],
+            "Rot": [
+                -0.0,
+                0.0,
+                0.0
+            ],
+            "Scale": [
+                1.0,
+                1.0,
+                1.0
+            ],
+            "Static": false,
+            "Select": true,
+            "InTree": true,
+            "Beh": [
+                {
+                    "Name": "MeshBehaviour",
+                    "Attributes": {
+                        "Mesh": "Maxwell",
+                        "Transparent": false,
+                        "Shadow Caster": true,
+                        "Shadows Only": false,
+                        "Alpha Cutoff": 0.0,
+                        "Specular Factor": 1.0,
+                        "Base Color": [
+                            1.0,
+                            1.0,
+                            1.0,
+                            1.0
+                        ],
+                        "Metallic": 0.0,
+                        "Reflectivity": 0.0,
+                        "Tex": "Maxwell",
+                        "Ambient": "AmbientBright"
+                    }
+                },
+                {
+                    "Name": "ColliderBehaviour",
+                    "Attributes": {
+                        "Type": 2,
+                        "Tag": 0,
+                        "Base": {
+                            "Center": [
+                                -0.032421499490737915,
+                                0.33841049671173096,
+                                -0.09018698334693909
+                            ],
+                            "Up": [
+                                0.0,
+                                1.0,
+                                0.0
+                            ],
+                            "Radius": 0.30000001192092896,
+                            "Height": 0.949999988079071
+                        },
+                        "Transformed": {
+                            "Center": [
+                                -7.032421588897705,
+                                0.6909844279289246,
+                                5.909812927246094
+                            ],
+                            "Up": [
+                                0.0,
+                                1.0,
+                                0.0
+                            ],
+                            "Radius": 0.30000001192092896,
+                            "Height": 0.949999988079071
+                        }
+                    }
+                },
+                {
+                    "Name": "ExampleCollisionBehaviour",
+                    "Attributes": {}
+                }
+            ],
+            "Child": [
+                {
+                    "Name": "Whiskers",
+                    "ID": 13,
+                    "Enabled": true,
+                    "Pos": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "Rot": [
+                        -0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "Scale": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "Static": false,
+                    "Select": true,
+                    "InTree": true,
+                    "Beh": [
+                        {
+                            "Name": "MeshBehaviour",
+                            "Attributes": {
+                                "Mesh": "Whiskers",
+                                "Transparent": true,
+                                "Shadow Caster": true,
+                                "Shadows Only": false,
+                                "Alpha Cutoff": 0.0,
+                                "Specular Factor": 1.0,
+                                "Base Color": [
+                                    1.0,
+                                    1.0,
+                                    1.0,
+                                    1.0
+                                ],
+                                "Metallic": 0.0,
+                                "Reflectivity": 0.0,
+                                "Tex": "Whiskers",
+                                "Specular": "Black_Specular",
+                                "Ambient": "AmbientBright"
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "Name": "Maxwell the second",
+            "ID": 14,
+            "Enabled": true,
+            "Pos": [
+                -7.0,
+                -0.05252480506896973,
+                8.141888618469238
+            ],
+            "Rot": [
+                -0.0,
+                0.0,
+                0.0
+            ],
+            "Scale": [
+                1.0,
+                1.0,
+                1.0
+            ],
+            "Static": false,
+            "Select": true,
+            "InTree": true,
+            "Beh": [
+                {
+                    "Name": "MeshBehaviour",
+                    "Attributes": {
+                        "Mesh": "Maxwell",
+                        "Transparent": false,
+                        "Shadow Caster": true,
+                        "Shadows Only": false,
+                        "Alpha Cutoff": 0.0,
+                        "Specular Factor": 1.0,
+                        "Base Color": [
+                            1.0,
+                            1.0,
+                            1.0,
+                            1.0
+                        ],
+                        "Metallic": 0.0,
+                        "Reflectivity": 0.0,
+                        "Tex": "Maxwell",
+                        "Ambient": "AmbientBright"
+                    }
+                },
+                {
+                    "Name": "ColliderBehaviour",
+                    "Attributes": {
+                        "Type": 4,
+                        "Tag": 0,
+                        "Base": {
+                            "Center": [
+                                -0.032421499490737915,
+                                0.33841049671173096,
+                                -0.09018698334693909
+                            ],
+                            "Half-Length": [
+                                0.3089525103569031,
+                                0.36782848834991455,
+                                0.5810619592666626
+                            ],
+                            "Axes": [
+                                [
+                                    1.0,
+                                    0.0,
+                                    0.0
+                                ],
+                                [
+                                    0.0,
+                                    1.0,
+                                    0.0
+                                ],
+                                [
+                                    0.0,
+                                    0.0,
+                                    1.0
+                                ]
+                            ]
+                        },
+                        "Transformed": {
+                            "Center": [
+                                -7.032421588897705,
+                                0.28588569164276123,
+                                8.051701545715332
+                            ],
+                            "Half-Length": [
+                                0.3089525103569031,
+                                0.36782848834991455,
+                                0.5810619592666626
+                            ],
+                            "Axes": [
+                                [
+                                    1.0,
+                                    0.0,
+                                    0.0
+                                ],
+                                [
+                                    0.0,
+                                    1.0,
+                                    0.0
+                                ],
+                                [
+                                    0.0,
+                                    0.0,
+                                    1.0
+                                ]
+                            ]
+                        }
+                    }
+                },
+                {
+                    "Name": "ExampleCollisionBehaviour",
+                    "Attributes": {}
+                }
+            ],
+            "Child": [
+                {
+                    "Name": "Whiskers",
+                    "ID": 15,
+                    "Enabled": true,
+                    "Pos": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "Rot": [
+                        -0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "Scale": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "Static": false,
+                    "Select": true,
+                    "InTree": true,
+                    "Beh": [
+                        {
+                            "Name": "MeshBehaviour",
+                            "Attributes": {
+                                "Mesh": "Whiskers",
+                                "Transparent": true,
+                                "Shadow Caster": true,
+                                "Shadows Only": false,
+                                "Alpha Cutoff": 0.0,
+                                "Specular Factor": 1.0,
+                                "Base Color": [
+                                    1.0,
+                                    1.0,
+                                    1.0,
+                                    1.0
+                                ],
+                                "Metallic": 0.0,
+                                "Reflectivity": 0.0,
+                                "Tex": "Whiskers",
+                                "Specular": "Black_Specular",
+                                "Ambient": "AmbientBright"
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "Name": "Maxwell the third",
+            "ID": 16,
+            "Enabled": true,
+            "Pos": [
+                -8.5,
+                0.40337586402893066,
+                6.5
+            ],
+            "Rot": [
+                -0.0,
+                0.0,
+                0.0
+            ],
+            "Scale": [
+                1.0,
+                1.0,
+                1.0
+            ],
+            "Static": false,
+            "Select": true,
+            "InTree": true,
+            "Beh": [
+                {
+                    "Name": "MeshBehaviour",
+                    "Attributes": {
+                        "Mesh": "Maxwell",
+                        "Transparent": false,
+                        "Shadow Caster": true,
+                        "Shadows Only": false,
+                        "Alpha Cutoff": 0.0,
+                        "Specular Factor": 1.0,
+                        "Base Color": [
+                            1.0,
+                            1.0,
+                            1.0,
+                            1.0
+                        ],
+                        "Metallic": 0.0,
+                        "Reflectivity": 0.0,
+                        "Tex": "Maxwell",
+                        "Ambient": "AmbientBright"
+                    }
+                },
+                {
+                    "Name": "ColliderBehaviour",
+                    "Attributes": {
+                        "Type": 1,
+                        "Tag": 3,
+                        "Base": {
+                            "Center": [
+                                -0.032421499490737915,
+                                0.33841049671173096,
+                                -0.09018698334693909
+                            ],
+                            "Radius": 0.3089525103569031
+                        },
+                        "Transformed": {
+                            "Center": [
+                                -8.532421112060547,
+                                0.7417863607406616,
+                                6.409812927246094
+                            ],
+                            "Radius": 0.3089525103569031
+                        }
+                    }
+                },
+                {
+                    "Name": "ExampleCollisionBehaviour",
+                    "Attributes": {}
+                }
+            ],
+            "Child": [
+                {
+                    "Name": "Whiskers",
+                    "ID": 17,
+                    "Enabled": true,
+                    "Pos": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "Rot": [
+                        -0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "Scale": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "Static": false,
+                    "Select": true,
+                    "InTree": true,
+                    "Beh": [
+                        {
+                            "Name": "MeshBehaviour",
+                            "Attributes": {
+                                "Mesh": "Whiskers",
+                                "Transparent": true,
+                                "Shadow Caster": true,
+                                "Shadows Only": false,
+                                "Alpha Cutoff": 0.0,
+                                "Specular Factor": 1.0,
+                                "Base Color": [
+                                    1.0,
+                                    1.0,
+                                    1.0,
+                                    1.0
+                                ],
+                                "Metallic": 0.0,
+                                "Reflectivity": 0.0,
+                                "Tex": "Whiskers",
+                                "Specular": "Black_Specular",
+                                "Ambient": "AmbientBright"
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "Name": "Maxwell the fourth",
+            "ID": 18,
+            "Enabled": true,
+            "Pos": [
+                -5.0,
+                0.75,
+                6.5
+            ],
+            "Rot": [
+                -0.0,
+                0.0,
+                0.0
+            ],
+            "Scale": [
+                1.0,
+                1.0,
+                1.0
+            ],
+            "Static": false,
+            "Select": true,
+            "InTree": true,
+            "Beh": [
+                {
+                    "Name": "MeshBehaviour",
+                    "Attributes": {
+                        "Mesh": "Maxwell",
+                        "Transparent": false,
+                        "Shadow Caster": true,
+                        "Shadows Only": false,
+                        "Alpha Cutoff": 0.0,
+                        "Specular Factor": 1.0,
+                        "Base Color": [
+                            1.0,
+                            1.0,
+                            1.0,
+                            1.0
+                        ],
+                        "Metallic": 0.0,
+                        "Reflectivity": 0.0,
+                        "Tex": "White",
+                        "Ambient": "AmbientBright"
+                    }
+                },
+                {
+                    "Name": "ColliderBehaviour",
+                    "Attributes": {
+                        "Type": 0,
+                        "Tag": 0,
+                        "Base": {
+                            "Origin": [
+                                -0.032421499490737915,
+                                0.33841049671173096,
+                                -0.09018698334693909
+                            ],
+                            "Direction": [
+                                0.0,
+                                0.0,
+                                0.0
+                            ],
+                            "Length": 1.0
+                        },
+                        "Transformed": {
+                            "Origin": [
+                                -5.032421588897705,
+                                1.088410496711731,
+                                6.409812927246094
+                            ],
+                            "Direction": [
+                                0.0,
+                                0.0,
+                                0.0
+                            ],
+                            "Length": 1.0
+                        }
+                    }
+                },
+                {
+                    "Name": "ExampleCollisionBehaviour",
+                    "Attributes": {}
+                }
+            ],
+            "Child": [
+                {
+                    "Name": "Whiskers",
+                    "ID": 19,
+                    "Enabled": true,
+                    "Pos": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "Rot": [
+                        -0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "Scale": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "Static": false,
+                    "Select": true,
+                    "InTree": true,
+                    "Beh": [
+                        {
+                            "Name": "MeshBehaviour",
+                            "Attributes": {
+                                "Mesh": "Whiskers",
+                                "Transparent": true,
+                                "Shadow Caster": true,
+                                "Shadows Only": false,
+                                "Alpha Cutoff": 0.0,
+                                "Specular Factor": 1.0,
+                                "Base Color": [
+                                    1.0,
+                                    1.0,
+                                    1.0,
+                                    1.0
+                                ],
+                                "Metallic": 0.0,
+                                "Reflectivity": 0.0,
+                                "Tex": "Whiskers",
+                                "Specular": "Black_Specular",
+                                "Ambient": "AmbientBright"
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "Name": "Terrain",
+            "ID": 20,
+            "Enabled": true,
+            "Pos": [
+                -5.0,
+                0.4000000059604645,
+                2.5
+            ],
+            "Rot": [
+                -0.0,
+                0.0,
+                0.0
+            ],
+            "Scale": [
+                1.0,
+                1.0,
+                1.0
+            ],
+            "Static": false,
+            "Select": true,
+            "InTree": true,
+            "Beh": [
+                {
+                    "Name": "MeshBehaviour",
+                    "Attributes": {
+                        "Mesh": "HeightMapExample",
+                        "Transparent": false,
+                        "Shadow Caster": true,
+                        "Shadows Only": false,
+                        "Alpha Cutoff": 0.0,
+                        "Specular Factor": 1.0,
+                        "Base Color": [
+                            1.0,
+                            1.0,
+                            1.0,
+                            1.0
+                        ],
+                        "Metallic": 0.0,
+                        "Reflectivity": 0.0,
+                        "Tex": "Green",
+                        "Specular": "Default_Specular",
+                        "Gloss": "minesign2legs_DefaultMaterial_Glossiness"
+                    }
+                },
+                {
+                    "Name": "ColliderBehaviour",
+                    "Attributes": {
+                        "Type": 5,
+                        "Tag": 0,
+                        "Base": {
+                            "Center": [
+                                0.0,
+                                0.016617998480796814,
+                                0.0
+                            ],
+                            "Half-Length": [
+                                1.0,
+                                0.4603379964828491,
+                                1.0
+                            ],
+                            "Tile Size": [
+                                500,
+                                500
+                            ],
+                            "Map": "ExampleHeightMap"
+                        },
+                        "Transformed": {
+                            "Center": [
+                                -5.0,
+                                0.4166179895401001,
+                                2.5
+                            ],
+                            "Half-Length": [
+                                1.0,
+                                0.4603379964828491,
+                                1.0
+                            ],
+                            "Tile Size": [
+                                500,
+                                500
+                            ],
+                            "Map": "ExampleHeightMap"
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "Name": "Slope 10",
+            "ID": 21,
+            "Enabled": true,
+            "Pos": [
+                -12.75,
+                0.30000001192092896,
+                -3.0
+            ],
+            "Rot": [
+                0.0,
+                0.0,
+                -0.17453309893608093
+            ],
+            "Scale": [
+                5.0,
+                0.20000000298023224,
+                1.0
+            ],
+            "Static": false,
+            "Select": true,
+            "InTree": true,
+            "Beh": [
+                {
+                    "Name": "MeshBehaviour",
+                    "Attributes": {
+                        "Mesh": "Fallback",
+                        "Transparent": false,
+                        "Shadow Caster": true,
+                        "Shadows Only": false,
+                        "Alpha Cutoff": 0.0,
+                        "Specular Factor": 1.0,
+                        "Base Color": [
+                            1.0,
+                            1.0,
+                            1.0,
+                            1.0
+                        ],
+                        "Metallic": 0.0,
+                        "Reflectivity": 0.0,
+                        "Tex": "Fallback",
+                        "Ambient": "Fallback"
+                    }
+                },
+                {
+                    "Name": "ColliderBehaviour",
+                    "Attributes": {
+                        "Type": 4,
+                        "Tag": 12,
+                        "Base": {
+                            "Center": [
+                                0.0,
+                                0.0,
+                                0.0
+                            ],
+                            "Half-Length": [
+                                1.0,
+                                1.0,
+                                1.0
+                            ],
+                            "Axes": [
+                                [
+                                    1.0,
+                                    0.0,
+                                    0.0
+                                ],
+                                [
+                                    0.0,
+                                    1.0,
+                                    0.0
+                                ],
+                                [
+                                    0.0,
+                                    0.0,
+                                    1.0
+                                ]
+                            ]
+                        },
+                        "Transformed": {
+                            "Center": [
+                                -12.75,
+                                0.30000001192092896,
+                                -3.0
+                            ],
+                            "Half-Length": [
+                                5.0,
+                                0.20000001788139343,
+                                1.0000001192092896
+                            ],
+                            "Axes": [
+                                [
+                                    0.9848077893257141,
+                                    -0.17364835739135742,
+                                    0.0
+                                ],
+                                [
+                                    0.17364834249019623,
+                                    0.9848077297210693,
+                                    0.0
+                                ],
+                                [
+                                    0.0,
+                                    0.0,
+                                    1.0
+                                ]
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "Name": "Slope 20",
+            "ID": 22,
+            "Enabled": true,
+            "Pos": [
+                -12.75,
+                0.30000001192092896,
+                -5.0
+            ],
+            "Rot": [
+                0.0,
+                0.0,
+                -0.3490656912326813
+            ],
+            "Scale": [
+                5.0,
+                0.20000000298023224,
+                1.0
+            ],
+            "Static": false,
+            "Select": true,
+            "InTree": true,
+            "Beh": [
+                {
+                    "Name": "MeshBehaviour",
+                    "Attributes": {
+                        "Mesh": "Fallback",
+                        "Transparent": false,
+                        "Shadow Caster": true,
+                        "Shadows Only": false,
+                        "Alpha Cutoff": 0.0,
+                        "Specular Factor": 1.0,
+                        "Base Color": [
+                            1.0,
+                            1.0,
+                            1.0,
+                            1.0
+                        ],
+                        "Metallic": 0.0,
+                        "Reflectivity": 0.0,
+                        "Tex": "Fallback",
+                        "Ambient": "Fallback"
+                    }
+                },
+                {
+                    "Name": "ColliderBehaviour",
+                    "Attributes": {
+                        "Type": 4,
+                        "Tag": 12,
+                        "Base": {
+                            "Center": [
+                                0.0,
+                                0.0,
+                                0.0
+                            ],
+                            "Half-Length": [
+                                1.0,
+                                1.0,
+                                1.0
+                            ],
+                            "Axes": [
+                                [
+                                    1.0,
+                                    0.0,
+                                    0.0
+                                ],
+                                [
+                                    0.0,
+                                    1.0,
+                                    0.0
+                                ],
+                                [
+                                    0.0,
+                                    0.0,
+                                    1.0
+                                ]
+                            ]
+                        },
+                        "Transformed": {
+                            "Center": [
+                                -12.75,
+                                0.30000001192092896,
+                                -5.0
+                            ],
+                            "Half-Length": [
+                                5.0,
+                                0.20000000298023224,
+                                1.0
+                            ],
+                            "Axes": [
+                                [
+                                    0.9396926760673523,
+                                    -0.3420200049877167,
+                                    0.0
+                                ],
+                                [
+                                    0.3420200049877167,
+                                    0.9396926760673523,
+                                    0.0
+                                ],
+                                [
+                                    0.0,
+                                    0.0,
+                                    1.0
+                                ]
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "Name": "Slope 30",
+            "ID": 23,
+            "Enabled": true,
+            "Pos": [
+                -12.75,
+                0.30000001192092896,
+                -7.0
+            ],
+            "Rot": [
+                0.0,
+                0.0,
+                -0.523598849773407
+            ],
+            "Scale": [
+                5.0,
+                0.20000000298023224,
+                1.0
+            ],
+            "Static": false,
+            "Select": true,
+            "InTree": true,
+            "Beh": [
+                {
+                    "Name": "MeshBehaviour",
+                    "Attributes": {
+                        "Mesh": "Fallback",
+                        "Transparent": false,
+                        "Shadow Caster": true,
+                        "Shadows Only": false,
+                        "Alpha Cutoff": 0.0,
+                        "Specular Factor": 1.0,
+                        "Base Color": [
+                            1.0,
+                            1.0,
+                            1.0,
+                            1.0
+                        ],
+                        "Metallic": 0.0,
+                        "Reflectivity": 0.0,
+                        "Tex": "Fallback",
+                        "Ambient": "Fallback"
+                    }
+                },
+                {
+                    "Name": "ColliderBehaviour",
+                    "Attributes": {
+                        "Type": 4,
+                        "Tag": 12,
+                        "Base": {
+                            "Center": [
+                                0.0,
+                                0.0,
+                                0.0
+                            ],
+                            "Half-Length": [
+                                1.0,
+                                1.0,
+                                1.0
+                            ],
+                            "Axes": [
+                                [
+                                    1.0,
+                                    0.0,
+                                    0.0
+                                ],
+                                [
+                                    0.0,
+                                    1.0,
+                                    0.0
+                                ],
+                                [
+                                    0.0,
+                                    0.0,
+                                    1.0
+                                ]
+                            ]
+                        },
+                        "Transformed": {
+                            "Center": [
+                                -12.75,
+                                0.30000001192092896,
+                                -7.0
+                            ],
+                            "Half-Length": [
+                                5.0,
+                                0.20000000298023224,
+                                1.0
+                            ],
+                            "Axes": [
+                                [
+                                    0.8660253286361694,
+                                    -0.5000000596046448,
+                                    0.0
+                                ],
+                                [
+                                    0.5000000596046448,
+                                    0.8660253286361694,
+                                    0.0
+                                ],
+                                [
+                                    0.0,
+                                    0.0,
+                                    1.0
+                                ]
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "Name": "Slope 40",
+            "ID": 24,
+            "Enabled": true,
+            "Pos": [
+                -12.75,
+                0.30000001192092896,
+                -9.0
+            ],
+            "Rot": [
+                0.0,
+                0.0,
+                -0.6981317400932312
+            ],
+            "Scale": [
+                5.0,
+                0.20000000298023224,
+                1.0
+            ],
+            "Static": false,
+            "Select": true,
+            "InTree": true,
+            "Beh": [
+                {
+                    "Name": "MeshBehaviour",
+                    "Attributes": {
+                        "Mesh": "Fallback",
+                        "Transparent": false,
+                        "Shadow Caster": true,
+                        "Shadows Only": false,
+                        "Alpha Cutoff": 0.0,
+                        "Specular Factor": 1.0,
+                        "Base Color": [
+                            1.0,
+                            1.0,
+                            1.0,
+                            1.0
+                        ],
+                        "Metallic": 0.0,
+                        "Reflectivity": 0.0,
+                        "Tex": "Fallback",
+                        "Ambient": "Fallback"
+                    }
+                },
+                {
+                    "Name": "ColliderBehaviour",
+                    "Attributes": {
+                        "Type": 4,
+                        "Tag": 12,
+                        "Base": {
+                            "Center": [
+                                0.0,
+                                0.0,
+                                0.0
+                            ],
+                            "Half-Length": [
+                                1.0,
+                                1.0,
+                                1.0
+                            ],
+                            "Axes": [
+                                [
+                                    1.0,
+                                    0.0,
+                                    0.0
+                                ],
+                                [
+                                    0.0,
+                                    1.0,
+                                    0.0
+                                ],
+                                [
+                                    0.0,
+                                    0.0,
+                                    1.0
+                                ]
+                            ]
+                        },
+                        "Transformed": {
+                            "Center": [
+                                -12.75,
+                                0.30000001192092896,
+                                -9.0
+                            ],
+                            "Half-Length": [
+                                5.0,
+                                0.20000000298023224,
+                                1.0
+                            ],
+                            "Axes": [
+                                [
+                                    0.7660443782806396,
+                                    -0.6427876353263855,
+                                    0.0
+                                ],
+                                [
+                                    0.6427876353263855,
+                                    0.7660443782806396,
+                                    0.0
+                                ],
+                                [
+                                    0.0,
+                                    0.0,
+                                    1.0
+                                ]
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "Name": "Slope 50",
+            "ID": 25,
+            "Enabled": true,
+            "Pos": [
+                -12.75,
+                0.30000001192092896,
+                -11.0
+            ],
+            "Rot": [
+                0.0,
+                0.0,
+                -0.8726648688316345
+            ],
+            "Scale": [
+                5.0,
+                0.20000000298023224,
+                1.0
+            ],
+            "Static": false,
+            "Select": true,
+            "InTree": true,
+            "Beh": [
+                {
+                    "Name": "MeshBehaviour",
+                    "Attributes": {
+                        "Mesh": "Fallback",
+                        "Transparent": false,
+                        "Shadow Caster": true,
+                        "Shadows Only": false,
+                        "Alpha Cutoff": 0.0,
+                        "Specular Factor": 1.0,
+                        "Base Color": [
+                            1.0,
+                            1.0,
+                            1.0,
+                            1.0
+                        ],
+                        "Metallic": 0.0,
+                        "Reflectivity": 0.0,
+                        "Tex": "Fallback",
+                        "Ambient": "Fallback"
+                    }
+                },
+                {
+                    "Name": "ColliderBehaviour",
+                    "Attributes": {
+                        "Type": 4,
+                        "Tag": 12,
+                        "Base": {
+                            "Center": [
+                                0.0,
+                                0.0,
+                                0.0
+                            ],
+                            "Half-Length": [
+                                1.0,
+                                1.0,
+                                1.0
+                            ],
+                            "Axes": [
+                                [
+                                    1.0,
+                                    0.0,
+                                    0.0
+                                ],
+                                [
+                                    0.0,
+                                    1.0,
+                                    0.0
+                                ],
+                                [
+                                    0.0,
+                                    0.0,
+                                    1.0
+                                ]
+                            ]
+                        },
+                        "Transformed": {
+                            "Center": [
+                                -12.75,
+                                0.30000001192092896,
+                                -11.0
+                            ],
+                            "Half-Length": [
+                                5.0,
+                                0.20000000298023224,
+                                1.0
+                            ],
+                            "Axes": [
+                                [
+                                    0.6427874565124512,
+                                    -0.7660446166992188,
+                                    0.0
+                                ],
+                                [
+                                    0.7660446166992188,
+                                    0.6427874565124512,
+                                    0.0
+                                ],
+                                [
+                                    0.0,
+                                    0.0,
+                                    1.0
+                                ]
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "Name": "Slope 60",
+            "ID": 26,
+            "Enabled": true,
+            "Pos": [
+                -12.75,
+                0.30000001192092896,
+                -13.0
+            ],
+            "Rot": [
+                0.0,
+                0.0,
+                -1.0471975803375244
+            ],
+            "Scale": [
+                5.0,
+                0.20000000298023224,
+                1.0
+            ],
+            "Static": false,
+            "Select": true,
+            "InTree": true,
+            "Beh": [
+                {
+                    "Name": "MeshBehaviour",
+                    "Attributes": {
+                        "Mesh": "Fallback",
+                        "Transparent": false,
+                        "Shadow Caster": true,
+                        "Shadows Only": false,
+                        "Alpha Cutoff": 0.0,
+                        "Specular Factor": 1.0,
+                        "Base Color": [
+                            1.0,
+                            1.0,
+                            1.0,
+                            1.0
+                        ],
+                        "Metallic": 0.0,
+                        "Reflectivity": 0.0,
+                        "Tex": "Fallback",
+                        "Ambient": "Fallback"
+                    }
+                },
+                {
+                    "Name": "ColliderBehaviour",
+                    "Attributes": {
+                        "Type": 4,
+                        "Tag": 12,
+                        "Base": {
+                            "Center": [
+                                0.0,
+                                0.0,
+                                0.0
+                            ],
+                            "Half-Length": [
+                                1.0,
+                                1.0,
+                                1.0
+                            ],
+                            "Axes": [
+                                [
+                                    1.0,
+                                    0.0,
+                                    0.0
+                                ],
+                                [
+                                    0.0,
+                                    1.0,
+                                    0.0
+                                ],
+                                [
+                                    0.0,
+                                    0.0,
+                                    1.0
+                                ]
+                            ]
+                        },
+                        "Transformed": {
+                            "Center": [
+                                -12.75,
+                                0.30000001192092896,
+                                -13.0
+                            ],
+                            "Half-Length": [
+                                5.0,
+                                0.20000000298023224,
+                                1.0
+                            ],
+                            "Axes": [
+                                [
+                                    0.5,
+                                    -0.8660253286361694,
+                                    0.0
+                                ],
+                                [
+                                    0.8660253882408142,
+                                    0.5,
+                                    0.0
+                                ],
+                                [
+                                    0.0,
+                                    0.0,
+                                    1.0
+                                ]
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "Name": "Mesh Entity",
+            "ID": 27,
+            "Enabled": true,
+            "Pos": [
+                13.657855987548828,
+                0.07442474365234375,
+                13.123908042907715
+            ],
+            "Rot": [
+                -0.0,
+                2.654324531555176,
+                0.0
+            ],
+            "Scale": [
+                0.9999570250511169,
+                1.0,
+                0.9999570250511169
+            ],
+            "Static": false,
+            "Select": true,
+            "InTree": true,
+            "Beh": [
+                {
+                    "Name": "MeshBehaviour",
+                    "Attributes": {
+                        "Mesh": "Character1",
+                        "Transparent": false,
+                        "Shadow Caster": true,
+                        "Shadows Only": false,
+                        "Alpha Cutoff": 0.0,
+                        "Specular Factor": 0.5,
+                        "Base Color": [
+                            1.0,
+                            1.0,
+                            1.0,
+                            1.0
+                        ],
+                        "Metallic": 1.0,
+                        "Reflectivity": 1.0,
+                        "PS Settings": {
+                            "Size": 16,
+                            "Data": [
+                                0,
+                                0,
+                                64,
+                                65,
+                                0,
+                                0,
+                                64,
+                                65,
+                                0,
+                                0,
+                                0,
+                                66,
+                                1,
+                                0,
+                                0,
+                                0
+                            ]
+                        },
+                        "Tex": "Character_Texture",
+                        "PS": "PS_GeometryMetallic"
+                    }
+                }
+            ]
+        },
+        {
+            "Name": "Point",
+            "ID": 28,
+            "Enabled": true,
+            "Pos": [
+                -3.8684403896331787,
+                6.707672595977783,
+                3.3262672424316406
+            ],
+            "Rot": [
+                -0.0,
+                0.0,
+                0.0
+            ],
+            "Scale": [
+                1.0,
+                1.0,
+                1.0
+            ],
+            "Static": false,
+            "Select": true,
+            "InTree": false,
+            "Beh": [
+                {
+                    "Name": "PointLightBehaviour",
+                    "Attributes": {
+                        "Falloff": 0.699999988079071,
+                        "Fog Strength": 1.0,
+                        "Near": -0.10000000149011612,
+                        "Far": -45.15401840209961,
+                        "Color": [
+                            10.0,
+                            0.0,
+                            0.0
+                        ]
+                    }
+                }
+            ]
+        },
+        {
+            "Name": "Light Entity",
+            "ID": 30,
+            "Enabled": true,
+            "Pos": [
+                -1.3002991676330566,
+                5.282259941101074,
+                17.794628143310547
+            ],
+            "Rot": [
+                0.649499237537384,
+                -2.8953659534454346,
+                -0.26986199617385864
+            ],
+            "Scale": [
+                0.9999999403953552,
+                1.0,
+                1.0
+            ],
+            "Static": false,
+            "Select": true,
+            "InTree": false,
+            "Beh": [
+                {
+                    "Name": "SpotLightBehaviour",
+                    "Attributes": {
+                        "Falloff": 0.4000000059604645,
+                        "Fog Strength": 0.5550000071525574,
+                        "Color": [
+                            5.881486892700195,
+                            15.600000381469727,
+                            4.205883026123047
+                        ],
+                        "Projection": {
+                            "FOV": 1.6033120155334473,
+                            "Aspect": 1.0,
+                            "Near": -0.10000000149011612,
+                            "Far": -98.70829772949219
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "Name": "Node",
+            "ID": 32,
+            "Enabled": true,
+            "Pos": [
+                0.0,
+                0.0,
+                0.0
+            ],
+            "Rot": [
+                -0.0,
+                0.0,
+                0.0
+            ],
+            "Scale": [
+                1.0,
+                1.0,
+                1.0
+            ],
+            "Static": false,
+            "Select": true,
+            "InTree": false,
+            "Beh": [
+                {
+                    "Name": "GraphNodeBehaviour",
+                    "Attributes": {
+                        "Cost": 0.0
+                    }
+                }
+            ]
+        },
+        {
+            "Name": "Sun Light",
+            "ID": 33,
+            "Enabled": true,
+            "Pos": [
+                37.876991271972656,
+                80.20826721191406,
+                -14.841686248779297
+            ],
+            "Rot": [
+                -0.0,
+                0.0,
+                0.0
+            ],
+            "Scale": [
+                1.0,
+                1.0,
+                1.0
+            ],
+            "Static": false,
+            "Select": true,
+            "InTree": false,
+            "Beh": [
+                {
+                    "Name": "SimplePointLightBehaviour",
+                    "Attributes": {
+                        "Falloff": 0.10000000149011612,
+                        "Fog Strength": 0.25,
+                        "Color": [
+                            100.0,
+                            94.29065704345703,
+                            83.82352447509766
+                        ]
+                    }
+                }
+            ]
+        },
+        {
+            "Name": "Mesh Entity",
+            "ID": 35,
+            "Enabled": true,
+            "Pos": [
+                0.0,
+                15.997688293457031,
+                0.0
+            ],
+            "Rot": [
+                -0.0,
+                0.0,
+                0.0
+            ],
+            "Scale": [
+                2.0,
+                2.0,
+                2.0
+            ],
+            "Static": false,
+            "Select": true,
+            "InTree": true,
+            "Beh": [
+                {
+                    "Name": "MeshBehaviour",
+                    "Attributes": {
+                        "Mesh": "HighPolySphere",
+                        "Transparent": false,
+                        "Shadow Caster": true,
+                        "Shadows Only": false,
+                        "Alpha Cutoff": 0.0,
+                        "Specular Factor": 0.5,
+                        "Base Color": [
+                            0.14364641904830933,
+                            0.0,
+                            0.0,
+                            1.0
+                        ],
+                        "Metallic": 0.5,
+                        "Reflectivity": 1.5,
+                        "Tex": "White",
+                        "Sampler": "Fallback",
+                        "PS": "PS_GeometryMetallic"
+                    }
+                }
+            ]
+        },
+        {
+            "Name": "Sniper",
+            "ID": 36,
+            "Enabled": true,
+            "Pos": [
+                0.0,
+                10.0,
+                0.0
+            ],
+            "Rot": [
+                -0.0,
+                -2.6179938316345215,
+                0.0
+            ],
+            "Scale": [
+                10.000038146972656,
+                9.99999713897705,
+                10.000036239624023
+            ],
+            "Prefab": "Sniper"
+        },
+        {
+            "Name": "Sniper Raw Tex",
+            "ID": 41,
+            "Enabled": false,
+            "Pos": [
+                0.0,
+                10.0,
+                0.0
+            ],
+            "Rot": [
+                -0.0,
+                -2.6179938316345215,
+                0.0
+            ],
+            "Scale": [
+                10.000038146972656,
+                9.99999713897705,
+                10.000036239624023
+            ],
+            "Static": false,
+            "Select": true,
+            "InTree": true,
+            "Beh": [],
+            "Child": [
+                {
+                    "Name": "Body",
+                    "ID": 42,
+                    "Enabled": true,
+                    "Pos": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "Rot": [
+                        -0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "Scale": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "Static": false,
+                    "Select": true,
+                    "InTree": true,
+                    "Beh": [
+                        {
+                            "Name": "MeshBehaviour",
+                            "Attributes": {
+                                "Mesh": "SniperBody",
+                                "Transparent": false,
+                                "Shadow Caster": true,
+                                "Shadows Only": false,
+                                "Alpha Cutoff": 0.0,
+                                "Specular Factor": 0.5,
+                                "Base Color": [
+                                    0.7403315305709839,
+                                    0.7403315305709839,
+                                    0.7403315305709839,
+                                    1.0
+                                ],
+                                "Metallic": 0.6000000238418579,
+                                "Reflectivity": 0.6000000238418579,
+                                "PS Settings": {
+                                    "Size": 16,
+                                    "Data": [
+                                        0,
+                                        0,
+                                        64,
+                                        65,
+                                        0,
+                                        0,
+                                        64,
+                                        65,
+                                        0,
+                                        0,
+                                        0,
+                                        66,
+                                        1,
+                                        0,
+                                        0,
+                                        0
+                                    ]
+                                },
+                                "Tex": "Sniper Raw_Diffuse",
+                                "Normal": "Sniper Raw_Normal",
+                                "Specular": "Sniper Raw_Specular",
+                                "Gloss": "Sniper Raw_Glossiness",
+                                "Ambient": "Ambient",
+                                "AO": "Sniper Raw_Occlusion",
+                                "PS": "PS_GeometryMetallic"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "Name": "Bolt",
+                    "ID": 43,
+                    "Enabled": true,
+                    "Pos": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "Rot": [
+                        -0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "Scale": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "Static": false,
+                    "Select": true,
+                    "InTree": true,
+                    "Beh": [
+                        {
+                            "Name": "MeshBehaviour",
+                            "Attributes": {
+                                "Mesh": "SniperBolt",
+                                "Transparent": false,
+                                "Shadow Caster": true,
+                                "Shadows Only": false,
+                                "Alpha Cutoff": 0.0,
+                                "Specular Factor": 0.5,
+                                "Base Color": [
+                                    0.7403315305709839,
+                                    0.7403315305709839,
+                                    0.7403315305709839,
+                                    1.0
+                                ],
+                                "Metallic": 0.6000000238418579,
+                                "Reflectivity": 0.6000000238418579,
+                                "PS Settings": {
+                                    "Size": 16,
+                                    "Data": [
+                                        0,
+                                        0,
+                                        64,
+                                        65,
+                                        0,
+                                        0,
+                                        64,
+                                        65,
+                                        0,
+                                        0,
+                                        0,
+                                        66,
+                                        1,
+                                        0,
+                                        0,
+                                        0
+                                    ]
+                                },
+                                "Tex": "Sniper Raw_Diffuse",
+                                "Normal": "Sniper Raw_Normal",
+                                "Specular": "Sniper Raw_Specular",
+                                "Gloss": "Sniper Raw_Glossiness",
+                                "Ambient": "Ambient",
+                                "AO": "Sniper Raw_Occlusion",
+                                "PS": "PS_GeometryMetallic"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "Name": "Trigger",
+                    "ID": 44,
+                    "Enabled": true,
+                    "Pos": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "Rot": [
+                        -0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "Scale": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "Static": false,
+                    "Select": true,
+                    "InTree": true,
+                    "Beh": [
+                        {
+                            "Name": "MeshBehaviour",
+                            "Attributes": {
+                                "Mesh": "SniperTrigger",
+                                "Transparent": false,
+                                "Shadow Caster": true,
+                                "Shadows Only": false,
+                                "Alpha Cutoff": 0.0,
+                                "Specular Factor": 0.5,
+                                "Base Color": [
+                                    0.7403315305709839,
+                                    0.7403315305709839,
+                                    0.7403315305709839,
+                                    1.0
+                                ],
+                                "Metallic": 0.6000000238418579,
+                                "Reflectivity": 0.6000000238418579,
+                                "PS Settings": {
+                                    "Size": 16,
+                                    "Data": [
+                                        0,
+                                        0,
+                                        64,
+                                        65,
+                                        0,
+                                        0,
+                                        64,
+                                        65,
+                                        0,
+                                        0,
+                                        0,
+                                        66,
+                                        1,
+                                        0,
+                                        0,
+                                        0
+                                    ]
+                                },
+                                "Tex": "Sniper Raw_Diffuse",
+                                "Normal": "Sniper Raw_Normal",
+                                "Specular": "Sniper Raw_Specular",
+                                "Gloss": "Sniper Raw_Glossiness",
+                                "Ambient": "Ambient",
+                                "AO": "Sniper Raw_Occlusion",
+                                "PS": "PS_GeometryMetallic"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "Name": "Magazine",
+                    "ID": 45,
+                    "Enabled": true,
+                    "Pos": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "Rot": [
+                        -0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "Scale": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "Static": false,
+                    "Select": true,
+                    "InTree": true,
+                    "Beh": [
+                        {
+                            "Name": "MeshBehaviour",
+                            "Attributes": {
+                                "Mesh": "SniperMagazine",
+                                "Transparent": false,
+                                "Shadow Caster": true,
+                                "Shadows Only": false,
+                                "Alpha Cutoff": 0.0,
+                                "Specular Factor": 0.5,
+                                "Base Color": [
+                                    0.7403315305709839,
+                                    0.7403315305709839,
+                                    0.7403315305709839,
+                                    1.0
+                                ],
+                                "Metallic": 0.6000000238418579,
+                                "Reflectivity": 0.6000000238418579,
+                                "PS Settings": {
+                                    "Size": 16,
+                                    "Data": [
+                                        0,
+                                        0,
+                                        64,
+                                        65,
+                                        0,
+                                        0,
+                                        64,
+                                        65,
+                                        0,
+                                        0,
+                                        0,
+                                        66,
+                                        1,
+                                        0,
+                                        0,
+                                        0
+                                    ]
+                                },
+                                "Tex": "SniperMagazine Raw_Diffuse",
+                                "Normal": "SniperMagazine Raw_Normal",
+                                "Specular": "SniperMagazine Raw_Specular",
+                                "Gloss": "SniperMagazine Raw_Glossiness",
+                                "Ambient": "Ambient",
+                                "AO": "SniperMagazine Raw_Occlusion",
+                                "PS": "PS_GeometryMetallic"
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "Name": "Sniper Error",
+            "ID": 46,
+            "Enabled": false,
+            "Pos": [
+                0.0,
+                10.0,
+                0.0
+            ],
+            "Rot": [
+                -0.0,
+                -2.6179938316345215,
+                0.0
+            ],
+            "Scale": [
+                10.000038146972656,
+                9.99999713897705,
+                10.000036239624023
+            ],
+            "Static": false,
+            "Select": true,
+            "InTree": true,
+            "Beh": [],
+            "Child": [
+                {
+                    "Name": "Body",
+                    "ID": 47,
+                    "Enabled": true,
+                    "Pos": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "Rot": [
+                        -0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "Scale": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "Static": false,
+                    "Select": true,
+                    "InTree": true,
+                    "Beh": [
+                        {
+                            "Name": "MeshBehaviour",
+                            "Attributes": {
+                                "Mesh": "SniperBody",
+                                "Transparent": false,
+                                "Shadow Caster": true,
+                                "Shadows Only": false,
+                                "Alpha Cutoff": 0.0,
+                                "Specular Factor": 0.5,
+                                "Base Color": [
+                                    0.7403315305709839,
+                                    0.7403315305709839,
+                                    0.7403315305709839,
+                                    1.0
+                                ],
+                                "Metallic": 0.6000000238418579,
+                                "Reflectivity": 0.6000000238418579,
+                                "PS Settings": {
+                                    "Size": 16,
+                                    "Data": [
+                                        0,
+                                        0,
+                                        64,
+                                        65,
+                                        0,
+                                        0,
+                                        64,
+                                        65,
+                                        0,
+                                        0,
+                                        0,
+                                        66,
+                                        1,
+                                        0,
+                                        0,
+                                        0
+                                    ]
+                                },
+                                "Tex": "Fallback",
+                                "Sampler": "Point",
+                                "PS": "PS_GeometryMetallic"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "Name": "Bolt",
+                    "ID": 48,
+                    "Enabled": true,
+                    "Pos": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "Rot": [
+                        -0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "Scale": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "Static": false,
+                    "Select": true,
+                    "InTree": true,
+                    "Beh": [
+                        {
+                            "Name": "MeshBehaviour",
+                            "Attributes": {
+                                "Mesh": "SniperBolt",
+                                "Transparent": false,
+                                "Shadow Caster": true,
+                                "Shadows Only": false,
+                                "Alpha Cutoff": 0.0,
+                                "Specular Factor": 0.5,
+                                "Base Color": [
+                                    0.7403315305709839,
+                                    0.7403315305709839,
+                                    0.7403315305709839,
+                                    1.0
+                                ],
+                                "Metallic": 0.6000000238418579,
+                                "Reflectivity": 0.6000000238418579,
+                                "PS Settings": {
+                                    "Size": 16,
+                                    "Data": [
+                                        0,
+                                        0,
+                                        64,
+                                        65,
+                                        0,
+                                        0,
+                                        64,
+                                        65,
+                                        0,
+                                        0,
+                                        0,
+                                        66,
+                                        1,
+                                        0,
+                                        0,
+                                        0
+                                    ]
+                                },
+                                "Tex": "Fallback",
+                                "Sampler": "Point",
+                                "PS": "PS_GeometryMetallic"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "Name": "Trigger",
+                    "ID": 49,
+                    "Enabled": true,
+                    "Pos": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "Rot": [
+                        -0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "Scale": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "Static": false,
+                    "Select": true,
+                    "InTree": true,
+                    "Beh": [
+                        {
+                            "Name": "MeshBehaviour",
+                            "Attributes": {
+                                "Mesh": "SniperTrigger",
+                                "Transparent": false,
+                                "Shadow Caster": true,
+                                "Shadows Only": false,
+                                "Alpha Cutoff": 0.0,
+                                "Specular Factor": 0.5,
+                                "Base Color": [
+                                    0.7403315305709839,
+                                    0.7403315305709839,
+                                    0.7403315305709839,
+                                    1.0
+                                ],
+                                "Metallic": 0.6000000238418579,
+                                "Reflectivity": 0.6000000238418579,
+                                "PS Settings": {
+                                    "Size": 16,
+                                    "Data": [
+                                        0,
+                                        0,
+                                        64,
+                                        65,
+                                        0,
+                                        0,
+                                        64,
+                                        65,
+                                        0,
+                                        0,
+                                        0,
+                                        66,
+                                        1,
+                                        0,
+                                        0,
+                                        0
+                                    ]
+                                },
+                                "Tex": "Fallback",
+                                "Sampler": "Point",
+                                "PS": "PS_GeometryMetallic"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "Name": "Magazine",
+                    "ID": 50,
+                    "Enabled": true,
+                    "Pos": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "Rot": [
+                        -0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "Scale": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "Static": false,
+                    "Select": true,
+                    "InTree": true,
+                    "Beh": [
+                        {
+                            "Name": "MeshBehaviour",
+                            "Attributes": {
+                                "Mesh": "SniperMagazine",
+                                "Transparent": false,
+                                "Shadow Caster": true,
+                                "Shadows Only": false,
+                                "Alpha Cutoff": 0.0,
+                                "Specular Factor": 0.5,
+                                "Base Color": [
+                                    0.7403315305709839,
+                                    0.7403315305709839,
+                                    0.7403315305709839,
+                                    1.0
+                                ],
+                                "Metallic": 0.6000000238418579,
+                                "Reflectivity": 0.6000000238418579,
+                                "PS Settings": {
+                                    "Size": 16,
+                                    "Data": [
+                                        0,
+                                        0,
+                                        64,
+                                        65,
+                                        0,
+                                        0,
+                                        64,
+                                        65,
+                                        0,
+                                        0,
+                                        0,
+                                        66,
+                                        1,
+                                        0,
+                                        0,
+                                        0
+                                    ]
+                                },
+                                "Tex": "Fallback",
+                                "Sampler": "Point",
+                                "PS": "PS_GeometryMetallic"
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

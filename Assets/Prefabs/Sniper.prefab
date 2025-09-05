@@ -1,0 +1,327 @@
+{
+    "Prefab": {
+        "Name": "Sniper",
+        "Entity": {
+            "Name": "Sniper",
+            "ID": 36,
+            "Enabled": true,
+            "Pos": [
+                0.0,
+                10.0,
+                0.0
+            ],
+            "Rot": [
+                -0.0,
+                -2.6179938316345215,
+                0.0
+            ],
+            "Scale": [
+                10.000038146972656,
+                9.99999713897705,
+                10.000036239624023
+            ],
+            "Static": false,
+            "Select": true,
+            "InTree": true,
+            "Beh": [],
+            "Child": [
+                {
+                    "Name": "Body",
+                    "ID": 37,
+                    "Enabled": true,
+                    "Pos": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "Rot": [
+                        -0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "Scale": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "Static": false,
+                    "Select": true,
+                    "InTree": true,
+                    "Beh": [
+                        {
+                            "Name": "MeshBehaviour",
+                            "Attributes": {
+                                "Mesh": "SniperBody",
+                                "Transparent": false,
+                                "Shadow Caster": true,
+                                "Shadows Only": false,
+                                "Alpha Cutoff": 0.0,
+                                "Specular Factor": 0.4000000059604645,
+                                "Base Color": [
+                                    0.7403315305709839,
+                                    0.7403315305709839,
+                                    0.7403315305709839,
+                                    1.0
+                                ],
+                                "Metallic": 0.6000000238418579,
+                                "Reflectivity": 1.5,
+                                "PS Settings": {
+                                    "Size": 16,
+                                    "Data": [
+                                        0,
+                                        0,
+                                        64,
+                                        65,
+                                        0,
+                                        0,
+                                        64,
+                                        65,
+                                        0,
+                                        0,
+                                        0,
+                                        66,
+                                        1,
+                                        0,
+                                        0,
+                                        0
+                                    ]
+                                },
+                                "Tex": "Sniper_Diffuse",
+                                "Normal": "Sniper_Normal",
+                                "Specular": "Sniper_Specular",
+                                "Gloss": "Sniper_Glossiness",
+                                "Ambient": "Ambient",
+                                "Reflection": "Sniper_Glossiness",
+                                "AO": "Sniper_Occlusion",
+                                "Sampler": "HQ",
+                                "PS": "PS_GeometryMetallic"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "Name": "Bolt",
+                    "ID": 38,
+                    "Enabled": true,
+                    "Pos": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "Rot": [
+                        -0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "Scale": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "Static": false,
+                    "Select": true,
+                    "InTree": true,
+                    "Beh": [
+                        {
+                            "Name": "MeshBehaviour",
+                            "Attributes": {
+                                "Mesh": "SniperBolt",
+                                "Transparent": false,
+                                "Shadow Caster": true,
+                                "Shadows Only": false,
+                                "Alpha Cutoff": 0.0,
+                                "Specular Factor": 0.4000000059604645,
+                                "Base Color": [
+                                    0.7403315305709839,
+                                    0.7403315305709839,
+                                    0.7403315305709839,
+                                    1.0
+                                ],
+                                "Metallic": 0.6000000238418579,
+                                "Reflectivity": 1.5,
+                                "PS Settings": {
+                                    "Size": 16,
+                                    "Data": [
+                                        0,
+                                        0,
+                                        64,
+                                        65,
+                                        0,
+                                        0,
+                                        64,
+                                        65,
+                                        0,
+                                        0,
+                                        0,
+                                        66,
+                                        1,
+                                        0,
+                                        0,
+                                        0
+                                    ]
+                                },
+                                "Tex": "Sniper_Diffuse",
+                                "Normal": "Sniper_Normal",
+                                "Specular": "Sniper_Specular",
+                                "Gloss": "Sniper_Glossiness",
+                                "Ambient": "Ambient",
+                                "Reflection": "Sniper_Glossiness",
+                                "AO": "Sniper_Occlusion",
+                                "Sampler": "HQ",
+                                "PS": "PS_GeometryMetallic"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "Name": "Trigger",
+                    "ID": 39,
+                    "Enabled": true,
+                    "Pos": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "Rot": [
+                        -0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "Scale": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "Static": false,
+                    "Select": true,
+                    "InTree": true,
+                    "Beh": [
+                        {
+                            "Name": "MeshBehaviour",
+                            "Attributes": {
+                                "Mesh": "SniperTrigger",
+                                "Transparent": false,
+                                "Shadow Caster": true,
+                                "Shadows Only": false,
+                                "Alpha Cutoff": 0.0,
+                                "Specular Factor": 0.4000000059604645,
+                                "Base Color": [
+                                    0.7403315305709839,
+                                    0.7403315305709839,
+                                    0.7403315305709839,
+                                    1.0
+                                ],
+                                "Metallic": 0.6000000238418579,
+                                "Reflectivity": 1.5,
+                                "PS Settings": {
+                                    "Size": 16,
+                                    "Data": [
+                                        0,
+                                        0,
+                                        64,
+                                        65,
+                                        0,
+                                        0,
+                                        64,
+                                        65,
+                                        0,
+                                        0,
+                                        0,
+                                        66,
+                                        1,
+                                        0,
+                                        0,
+                                        0
+                                    ]
+                                },
+                                "Tex": "Sniper_Diffuse",
+                                "Normal": "Sniper_Normal",
+                                "Specular": "Sniper_Specular",
+                                "Gloss": "Sniper_Glossiness",
+                                "Ambient": "Ambient",
+                                "Reflection": "Sniper_Glossiness",
+                                "AO": "Sniper_Occlusion",
+                                "Sampler": "HQ",
+                                "PS": "PS_GeometryMetallic"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "Name": "Magazine",
+                    "ID": 40,
+                    "Enabled": true,
+                    "Pos": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "Rot": [
+                        -0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "Scale": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "Static": false,
+                    "Select": true,
+                    "InTree": true,
+                    "Beh": [
+                        {
+                            "Name": "MeshBehaviour",
+                            "Attributes": {
+                                "Mesh": "SniperMagazine",
+                                "Transparent": false,
+                                "Shadow Caster": true,
+                                "Shadows Only": false,
+                                "Alpha Cutoff": 0.0,
+                                "Specular Factor": 0.4000000059604645,
+                                "Base Color": [
+                                    0.7403315305709839,
+                                    0.7403315305709839,
+                                    0.7403315305709839,
+                                    1.0
+                                ],
+                                "Metallic": 0.6000000238418579,
+                                "Reflectivity": 1.5,
+                                "PS Settings": {
+                                    "Size": 16,
+                                    "Data": [
+                                        0,
+                                        0,
+                                        64,
+                                        65,
+                                        0,
+                                        0,
+                                        64,
+                                        65,
+                                        0,
+                                        0,
+                                        0,
+                                        66,
+                                        1,
+                                        0,
+                                        0,
+                                        0
+                                    ]
+                                },
+                                "Tex": "SniperMagazine_Diffuse",
+                                "Normal": "SniperMagazine_Normal",
+                                "Specular": "SniperMagazine_Specular",
+                                "Gloss": "SniperMagazine_Glossiness",
+                                "Ambient": "Ambient",
+                                "Reflection": "SniperMagazine_Glossiness",
+                                "AO": "SniperMagazine_Occlusion",
+                                "Sampler": "HQ",
+                                "PS": "PS_GeometryMetallic"
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    }
+}

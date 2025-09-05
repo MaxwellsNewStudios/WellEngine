@@ -1,0 +1,144 @@
+{
+    "Prefab": {
+        "Name": "Lantern",
+        "Entity": {
+            "Name": "Lantern",
+            "ID": 2275,
+            "Pos": [
+                -10.029474258422852,
+                4.794968128204346,
+                13.721014022827148
+            ],
+            "Rot": [
+                -0.06893225014209747,
+                2.9599406719207764,
+                0.15845376253128052
+            ],
+            "Scale": [
+                0.20000000298023224,
+                0.20000000298023224,
+                0.20000000298023224
+            ],
+            "Static": false,
+            "Select": true,
+            "InTree": true,
+            "Beh": [
+                {
+                    "Name": "MeshBehaviour",
+                    "Attributes": {
+                        "Mesh": "OldLamp_Metal",
+                        "Transparent": false,
+                        "Shadow Caster": true,
+                        "Shadows Only": false,
+                        "Alpha Cutoff": 0.0,
+                        "Specular Factor": 1.0,
+                        "Base Color": [
+                            1.0,
+                            1.0,
+                            1.0,
+                            1.0
+                        ],
+                        "Metallic": 0.75,
+                        "Reflectivity": 0.5,
+                        "Tex": "OldLamp_Metal",
+                        "Normal": "OldLamp_Metal_Normal",
+                        "Specular": "OldLamp_Metal_Specular",
+                        "Gloss": "OldLamp_Metal_Glossiness",
+                        "Ambient": "AmbientBright",
+                        "AO": "OldLamp_Metal_Occlusion",
+                        "PS": "PS_GeometryMetallic"
+                    }
+                }
+            ],
+            "Child": [
+                {
+                    "Name": "Lantern Glass",
+                    "ID": 2276,
+                    "Pos": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "Rot": [
+                        -0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "Scale": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "Static": false,
+                    "Select": true,
+                    "InTree": true,
+                    "Beh": [
+                        {
+                            "Name": "MeshBehaviour",
+                            "Attributes": {
+                                "Mesh": "OldLamp_Glass",
+                                "Transparent": true,
+                                "Shadow Caster": false,
+                                "Shadows Only": false,
+                                "Alpha Cutoff": 0.0,
+                                "Specular Factor": 1.0,
+                                "Base Color": [
+                                    1.0,
+                                    1.0,
+                                    1.0,
+                                    1.0
+                                ],
+                                "Metallic": 0.0,
+                                "Reflectivity": 0.0,
+                                "Tex": "OldLamp_Glass",
+                                "Normal": "OldLamp_Glass_Normal",
+                                "Specular": "OldLamp_Glass_Specular",
+                                "Gloss": "OldLamp_Glass_Glossiness",
+                                "Ambient": "AmbientBright",
+                                "AO": "OldLamp_Glass_Occlusion"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "Name": "Lantern Light",
+                    "ID": 2277,
+                    "Pos": [
+                        0.0,
+                        1.25,
+                        0.0
+                    ],
+                    "Rot": [
+                        -0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "Scale": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "Static": false,
+                    "Select": true,
+                    "InTree": false,
+                    "Beh": [
+                        {
+                            "Name": "PointLightBehaviour",
+                            "Attributes": {
+                                "Falloff": 1.649999976158142,
+                                "Fog Strength": 1.5,
+                                "Near": -0.10000000149011612,
+                                "Far": -17.131322860717773,
+                                "Color": [
+                                    8.0,
+                                    6.5,
+                                    4.0
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    }
+}

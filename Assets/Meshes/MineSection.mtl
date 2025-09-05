@@ -1,0 +1,11 @@
+# Blender 4.3.2 MTL File: 'Cave System.blend'
+# www.blender.org
+
+newmtl Cave_Material
+Ns 4.893467
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2

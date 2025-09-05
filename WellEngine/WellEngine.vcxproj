@@ -1,0 +1,1270 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Deploy|x64">
+      <Configuration>Deploy</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>17.0</VCProjectVersion>
+    <Keyword>Win32Proj</Keyword>
+    <ProjectGuid>{7f156b4b-4453-4b20-8765-7898d274bf6e}</ProjectGuid>
+    <RootNamespace>WellEngine</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+    <EnableASAN>false</EnableASAN>
+    <EnableUnitySupport>false</EnableUnitySupport>
+    <PreferredToolArchitecture>x64</PreferredToolArchitecture>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+    <EnableUnitySupport>false</EnableUnitySupport>
+    <EnableASAN>false</EnableASAN>
+    <PreferredToolArchitecture>x64</PreferredToolArchitecture>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+    <EnableUnitySupport>false</EnableUnitySupport>
+    <EnableASAN>false</EnableASAN>
+    <PreferredToolArchitecture>x64</PreferredToolArchitecture>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <IncludePath>$(ProjectDir)Dependencies\SDL3\include;$(VCInstallDir)Auxiliary\VS\UnitTest\include;$(IncludePath)</IncludePath>
+    <LinkIncremental>false</LinkIncremental>
+    <MultiProcFXC>true</MultiProcFXC>
+    <LibraryPath>$(VC_LibraryPath_x64);$(VCInstallDir)Auxiliary\VS\UnitTest\lib;$(WindowsSDK_LibraryPath_x64)</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <IncludePath>$(ProjectDir)Dependencies\SDL3\include;$(VCInstallDir)Auxiliary\VS\UnitTest\include;$(IncludePath)</IncludePath>
+    <LinkIncremental>false</LinkIncremental>
+    <MultiProcFXC>true</MultiProcFXC>
+    <LibraryPath>$(VC_LibraryPath_x64);$(VCInstallDir)Auxiliary\VS\UnitTest\lib;$(WindowsSDK_LibraryPath_x64)</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">
+    <IncludePath>$(ProjectDir)Dependencies\SDL3\include;$(VCInstallDir)Auxiliary\VS\UnitTest\include;$(IncludePath)</IncludePath>
+    <LinkIncremental>false</LinkIncremental>
+    <MultiProcFXC>true</MultiProcFXC>
+    <CopyLocalDeploymentContent>false</CopyLocalDeploymentContent>
+    <LibraryPath>$(VC_LibraryPath_x64);$(VCInstallDir)Auxiliary\VS\UnitTest\lib;$(WindowsSDK_LibraryPath_x64)</LibraryPath>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>false</SDLCheck>
+      <PreprocessorDefinitions>_DEBUG;TRACY_ENABLE;TRACY_ON_DEMAND;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <BrowseInformation>false</BrowseInformation>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <OpenMPSupport>true</OpenMPSupport>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
+      <UseStandardPreprocessor>true</UseStandardPreprocessor>
+      <Optimization>Disabled</Optimization>
+      <AdditionalOptions>/Zo %(AdditionalOptions)</AdditionalOptions>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <WholeProgramOptimization>false</WholeProgramOptimization>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(ProjectDir);$(ProjectDir)Dependencies;$(ProjectDir)Dependencies/SDL3/include;$(ProjectDir)Dependencies/rapidjson/include;$(ProjectDir)Source;$(ProjectDir)Source/Engine;$(ProjectDir)Source/Game</AdditionalIncludeDirectories>
+      <DisableSpecificWarnings>4244;6993;4018;4267;4006;26813;5030;5222;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      <MinimalRebuild>false</MinimalRebuild>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <UseDynamicDebugging>false</UseDynamicDebugging>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>d3d11.lib;dxguid.lib;D3DCompiler.lib;$(VCInstallDir)Auxiliary\VS\UnitTest\lib\x64\Microsoft.VisualStudio.TestTools.CppUnitTestFramework.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <LinkTimeCodeGeneration>
+      </LinkTimeCodeGeneration>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <UseDynamicDebugging>true</UseDynamicDebugging>
+    </Link>
+    <Bscmake>
+      <PreserveSbr>true</PreserveSbr>
+    </Bscmake>
+    <FxCompile>
+      <ShaderModel>5.0</ShaderModel>
+      <ObjectFileOutput>$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
+      <AdditionalIncludeDirectories>$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>__HLSL</PreprocessorDefinitions>
+    </FxCompile>
+    <ResourceCompile>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+    </ResourceCompile>
+    <CustomBuildStep>
+      <Command>
+      </Command>
+    </CustomBuildStep>
+    <PreBuildEvent>
+      <Command>$(SolutionDir)BuildTools\BehaviourRegistration\x64\Debug\BehaviourRegistration</Command>
+      <Message>Registering Behaviours</Message>
+    </PreBuildEvent>
+    <PostBuildEvent>
+      <Message>
+      </Message>
+      <Command>
+      </Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>NDEBUG;TRACY_ENABLE;TRACY_ON_DEMAND;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <OpenMPSupport>true</OpenMPSupport>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
+      <UseStandardPreprocessor>true</UseStandardPreprocessor>
+      <Optimization>MaxSpeed</Optimization>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(ProjectDir);$(ProjectDir)Dependencies;$(ProjectDir)Dependencies/SDL3/include;$(ProjectDir)Dependencies/rapidjson/include;$(ProjectDir)Source;$(ProjectDir)Source/Engine;$(ProjectDir)Source/Game</AdditionalIncludeDirectories>
+      <DisableSpecificWarnings>4244;6993;4018;4267;4006;26813;5030;5222;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      <MinimalRebuild>false</MinimalRebuild>
+      <StringPooling>true</StringPooling>
+      <EnableParallelCodeGeneration>true</EnableParallelCodeGeneration>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <SupportJustMyCode>true</SupportJustMyCode>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>DebugFastLink</GenerateDebugInformation>
+      <AdditionalDependencies>d3d11.lib;dxguid.lib;D3DCompiler.lib;$(VCInstallDir)Auxiliary\VS\UnitTest\lib\x64\Microsoft.VisualStudio.TestTools.CppUnitTestFramework.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <UseDynamicDebugging>true</UseDynamicDebugging>
+    </Link>
+    <FxCompile>
+      <ShaderModel>5.0</ShaderModel>
+      <ObjectFileOutput>$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
+      <AdditionalIncludeDirectories>$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>__HLSL</PreprocessorDefinitions>
+      <DisableOptimizations>false</DisableOptimizations>
+      <EnableDebuggingInformation>true</EnableDebuggingInformation>
+    </FxCompile>
+    <CustomBuildStep>
+      <Command>
+      </Command>
+    </CustomBuildStep>
+    <PreBuildEvent>
+      <Command>$(SolutionDir)BuildTools\BehaviourRegistration\x64\Release\BehaviourRegistration</Command>
+      <Message>Registering Behaviours</Message>
+    </PreBuildEvent>
+    <PostBuildEvent>
+      <Command>
+      </Command>
+      <Message>
+      </Message>
+    </PostBuildEvent>
+    <ProjectReference>
+      <LinkLibraryDependencies>true</LinkLibraryDependencies>
+    </ProjectReference>
+    <Lib>
+      <LinkTimeCodeGeneration>true</LinkTimeCodeGeneration>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <FunctionLevelLinking>false</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>false</SDLCheck>
+      <PreprocessorDefinitions>_DEPLOY;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <OpenMPSupport>true</OpenMPSupport>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
+      <UseStandardPreprocessor>true</UseStandardPreprocessor>
+      <Optimization>MaxSpeed</Optimization>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(ProjectDir);$(ProjectDir)Dependencies;$(ProjectDir)Dependencies/SDL3/include;$(ProjectDir)Dependencies/rapidjson/include;$(ProjectDir)Source;$(ProjectDir)Source/Engine;$(ProjectDir)Source/Game</AdditionalIncludeDirectories>
+      <DisableSpecificWarnings>4244;6993;4018;4267;4006;26813;5030;5222;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      <StringPooling>true</StringPooling>
+      <FloatingPointExceptions>false</FloatingPointExceptions>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <EnableParallelCodeGeneration>true</EnableParallelCodeGeneration>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <AdditionalDependencies>d3d11.lib;dxguid.lib;D3DCompiler.lib;$(VCInstallDir)Auxiliary\VS\UnitTest\lib\x64\Microsoft.VisualStudio.TestTools.CppUnitTestFramework.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Link>
+    <FxCompile>
+      <ShaderModel>5.0</ShaderModel>
+      <ObjectFileOutput>$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
+      <AdditionalIncludeDirectories>$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>__HLSL</PreprocessorDefinitions>
+    </FxCompile>
+    <CustomBuildStep>
+      <Command>
+      </Command>
+    </CustomBuildStep>
+    <PreBuildEvent>
+      <Command>$(SolutionDir)BuildTools\BehaviourRegistration\x64\Release\BehaviourRegistration</Command>
+      <Message>Registering Behaviours</Message>
+    </PreBuildEvent>
+    <PostBuildEvent>
+      <Command>
+      </Command>
+      <Message>
+      </Message>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Dependencies\SDL3\VisualC\SDL\SDL.vcxproj">
+      <Project>{81ce8daf-ebb2-4761-8e45-b71abcca8c68}</Project>
+    </ProjectReference>
+    <ProjectReference Include="Dependencies\SDL3\VisualC\SDL\SDL.vcxproj">
+      <Project>{81ce8daf-ebb2-4761-8e45-b71abcca8c68}</Project>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\Tests\TestUtils.h" />
+    <ClInclude Include="Dependencies\ImGui\GraphEditor.h" />
+    <ClInclude Include="Dependencies\ImGui\imconfig.h" />
+    <ClInclude Include="Dependencies\ImGui\ImCurveEdit.h" />
+    <ClInclude Include="Dependencies\ImGui\ImGradient.h" />
+    <ClInclude Include="Dependencies\ImGui\imgui.h" />
+    <ClInclude Include="Dependencies\ImGui\ImGuizmo.h" />
+    <ClInclude Include="Dependencies\ImGui\imgui_impl_dx11.h" />
+    <ClInclude Include="Dependencies\ImGui\imgui_impl_sdl3.h" />
+    <ClInclude Include="Dependencies\ImGui\imgui_internal.h" />
+    <ClInclude Include="Dependencies\ImGui\imgui_stdlib.h" />
+    <ClInclude Include="Dependencies\ImGui\ImSequencer.h" />
+    <ClInclude Include="Dependencies\ImGui\imstb_rectpack.h" />
+    <ClInclude Include="Dependencies\ImGui\imstb_textedit.h" />
+    <ClInclude Include="Dependencies\ImGui\imstb_truetype.h" />
+    <ClInclude Include="Dependencies\ImGui\ImZoomSlider.h" />
+    <ClInclude Include="Dependencies\ImPlot\implot.h" />
+    <ClInclude Include="Dependencies\ImPlot\implot_internal.h" />
+    <ClInclude Include="Dependencies\rapidjson\include\rapidjson\allocators.h" />
+    <ClInclude Include="Dependencies\rapidjson\include\rapidjson\cursorstreamwrapper.h" />
+    <ClInclude Include="Dependencies\rapidjson\include\rapidjson\document.h" />
+    <ClInclude Include="Dependencies\rapidjson\include\rapidjson\encodedstream.h" />
+    <ClInclude Include="Dependencies\rapidjson\include\rapidjson\encodings.h" />
+    <ClInclude Include="Dependencies\rapidjson\include\rapidjson\error\en.h" />
+    <ClInclude Include="Dependencies\rapidjson\include\rapidjson\error\error.h" />
+    <ClInclude Include="Dependencies\rapidjson\include\rapidjson\filereadstream.h" />
+    <ClInclude Include="Dependencies\rapidjson\include\rapidjson\filewritestream.h" />
+    <ClInclude Include="Dependencies\rapidjson\include\rapidjson\fwd.h" />
+    <ClInclude Include="Dependencies\rapidjson\include\rapidjson\internal\biginteger.h" />
+    <ClInclude Include="Dependencies\rapidjson\include\rapidjson\internal\clzll.h" />
+    <ClInclude Include="Dependencies\rapidjson\include\rapidjson\internal\diyfp.h" />
+    <ClInclude Include="Dependencies\rapidjson\include\rapidjson\internal\dtoa.h" />
+    <ClInclude Include="Dependencies\rapidjson\include\rapidjson\internal\ieee754.h" />
+    <ClInclude Include="Dependencies\rapidjson\include\rapidjson\internal\itoa.h" />
+    <ClInclude Include="Dependencies\rapidjson\include\rapidjson\internal\meta.h" />
+    <ClInclude Include="Dependencies\rapidjson\include\rapidjson\internal\pow10.h" />
+    <ClInclude Include="Dependencies\rapidjson\include\rapidjson\internal\regex.h" />
+    <ClInclude Include="Dependencies\rapidjson\include\rapidjson\internal\stack.h" />
+    <ClInclude Include="Dependencies\rapidjson\include\rapidjson\internal\strfunc.h" />
+    <ClInclude Include="Dependencies\rapidjson\include\rapidjson\internal\strtod.h" />
+    <ClInclude Include="Dependencies\rapidjson\include\rapidjson\internal\swap.h" />
+    <ClInclude Include="Dependencies\rapidjson\include\rapidjson\istreamwrapper.h" />
+    <ClInclude Include="Dependencies\rapidjson\include\rapidjson\memorybuffer.h" />
+    <ClInclude Include="Dependencies\rapidjson\include\rapidjson\memorystream.h" />
+    <ClInclude Include="Dependencies\rapidjson\include\rapidjson\msinttypes\inttypes.h" />
+    <ClInclude Include="Dependencies\rapidjson\include\rapidjson\msinttypes\stdint.h" />
+    <ClInclude Include="Dependencies\rapidjson\include\rapidjson\pointer.h" />
+    <ClInclude Include="Dependencies\rapidjson\include\rapidjson\prettywriter.h" />
+    <ClInclude Include="Dependencies\rapidjson\include\rapidjson\rapidjson.h" />
+    <ClInclude Include="Dependencies\rapidjson\include\rapidjson\reader.h" />
+    <ClInclude Include="Dependencies\rapidjson\include\rapidjson\schema.h" />
+    <ClInclude Include="Dependencies\rapidjson\include\rapidjson\stream.h" />
+    <ClInclude Include="Dependencies\rapidjson\include\rapidjson\stringbuffer.h" />
+    <ClInclude Include="Dependencies\rapidjson\include\rapidjson\uri.h" />
+    <ClInclude Include="Dependencies\rapidjson\include\rapidjson\writer.h" />
+    <ClInclude Include="Dependencies\stb\stb_image.h" />
+    <ClInclude Include="Dependencies\stb\stb_image_resize2.h" />
+    <ClInclude Include="Dependencies\stb\stb_image_write.h" />
+    <ClInclude Include="Dependencies\stb\stb_rect_pack.h" />
+    <ClInclude Include="Dependencies\stb\stb_vorbis.h" />
+    <ClInclude Include="Dependencies\tinyfiledialogs\tinyfiledialogs.h" />
+    <ClInclude Include="Dependencies\tracy-0.11.1\public\tracy\Tracy.hpp" />
+    <ClInclude Include="Dependencies\tracy-0.11.1\public\tracy\TracyD3D11.hpp" />
+    <ClInclude Include="Source\Engine\Audio\SoundEngine.h" />
+    <ClInclude Include="Source\Engine\Audio\SoundSource.h" />
+    <ClInclude Include="Source\Engine\Collision\Colliders.h" />
+    <ClInclude Include="Source\Engine\Collision\ColliderShapes.h" />
+    <ClInclude Include="Source\Engine\Collision\CollisionHandler.h" />
+    <ClInclude Include="Source\Engine\Collision\Intersections.h" />
+    <ClInclude Include="Source\Engine\Collision\MeshCollider.h" />
+    <ClInclude Include="Source\Engine\Collision\Raycast.h" />
+    <ClInclude Include="Source\Engine\Content\Content.h" />
+    <ClInclude Include="Source\Engine\Content\ContentLoader.h" />
+    <ClInclude Include="Source\Engine\Content\HeightMap.h" />
+    <ClInclude Include="Source\Engine\Content\Material.h" />
+    <ClInclude Include="Source\Engine\Content\Shaders\ShaderDefinition.h" />
+    <ClInclude Include="Source\Engine\D3D\ConstantBufferD3D11.h" />
+    <ClInclude Include="Source\Engine\D3D\D3D11FormatData.h" />
+    <ClInclude Include="Source\Engine\D3D\D3D11Helper.h" />
+    <ClInclude Include="Source\Engine\D3D\DepthBufferD3D11.h" />
+    <ClInclude Include="Source\Engine\D3D\IndexBufferD3D11.h" />
+    <ClInclude Include="Source\Engine\D3D\InputLayoutD3D11.h" />
+    <ClInclude Include="Source\Engine\D3D\MeshD3D11.h" />
+    <ClInclude Include="Source\Engine\D3D\RenderTargetD3D11.h" />
+    <ClInclude Include="Source\Engine\D3D\SamplerD3D11.h" />
+    <ClInclude Include="Source\Engine\D3D\ShaderD3D11.h" />
+    <ClInclude Include="Source\Engine\D3D\ShaderResourceTextureD3D11.h" />
+    <ClInclude Include="Source\Engine\D3D\SimpleMeshD3D11.h" />
+    <ClInclude Include="Source\Engine\D3D\StructuredBufferD3D11.h" />
+    <ClInclude Include="Source\Engine\D3D\SubMeshD3D11.h" />
+    <ClInclude Include="Source\Engine\D3D\VertexBufferD3D11.h" />
+    <ClInclude Include="Source\Engine\Debug\DebugData.h" />
+    <ClInclude Include="Source\Engine\Debug\DebugDrawer.h" />
+    <ClInclude Include="Source\Engine\Debug\DebugNew.h" />
+    <ClInclude Include="Source\Engine\Debug\ErrMsg.h" />
+    <ClInclude Include="Source\Engine\UI\ImGuiUtils.h" />
+    <ClInclude Include="Source\Engine\Debug\TrackedAlloc.h" />
+    <ClInclude Include="Source\Engine\EngineCore.h" />
+    <ClInclude Include="Source\Engine\EngineSettings.h" />
+    <ClInclude Include="Source\Engine\Input\Input.h" />
+    <ClInclude Include="Source\Engine\Input\InputBindings.h" />
+    <ClInclude Include="Source\Engine\Rendering\Culling\NodePath.h" />
+    <ClInclude Include="Source\Engine\Rendering\Culling\Octree.h" />
+    <ClInclude Include="Source\Engine\Rendering\Culling\Quadtree.h" />
+    <ClInclude Include="Source\Engine\Rendering\Graphics.h" />
+    <ClInclude Include="Source\Engine\Rendering\Lighting\PointLightCollection.h" />
+    <ClInclude Include="Source\Engine\Rendering\Lighting\SpotLightCollection.h" />
+    <ClInclude Include="Source\Engine\Rendering\RenderBatch.h" />
+    <ClInclude Include="Source\Engine\Rendering\RendererInfo.h" />
+    <ClInclude Include="Source\Engine\Rendering\RenderQueuer.h" />
+    <ClInclude Include="Source\Engine\Timing\TimelineManager.h" />
+    <ClInclude Include="Source\Engine\Timing\TimelineSequence.h" />
+    <ClInclude Include="Source\Engine\Timing\TimelineWaypoint.h" />
+    <ClInclude Include="Source\Engine\Timing\TimeUtils.h" />
+    <ClInclude Include="Source\Engine\UI\UIDragDropHelpers.h" />
+    <ClInclude Include="Source\Engine\UI\UILayout.h" />
+    <ClInclude Include="Source\Engine\Utils\UIDHelper.h" />
+    <ClInclude Include="Source\Engine\Utils\ReferenceHelper.h" />
+    <ClInclude Include="Source\Engine\Utils\SerializerUtils.h" />
+    <ClInclude Include="Source\Engine\Utils\StringUtils.h" />
+    <ClInclude Include="Source\Engine\Window\Window.h" />
+    <ClInclude Include="Source\Game\Behaviour.h" />
+    <ClInclude Include="Source\Game\BehaviourFactory.h" />
+    <ClInclude Include="Source\Game\BehaviourRegistry.h" />
+    <ClInclude Include="Source\Game\Behaviours\AmbientSoundBehaviour.h" />
+    <ClInclude Include="Source\Game\Behaviours\BillboardMeshBehaviour.h" />
+    <ClInclude Include="Source\Game\Behaviours\BreadcrumbBehaviour.h" />
+    <ClInclude Include="Source\Game\Behaviours\BreadcrumbPileBehaviour.h" />
+    <ClInclude Include="Source\Game\Behaviours\ButtonBehaviours.h" />
+    <ClInclude Include="Source\Game\Behaviours\CameraBehaviour.h" />
+    <ClInclude Include="Source\Game\Behaviours\CameraCubeBehaviour.h" />
+    <ClInclude Include="Source\Game\Behaviours\CameraItemBehaviour.h" />
+    <ClInclude Include="Source\Game\Behaviours\ColliderBehaviour.h" />
+    <ClInclude Include="Source\Game\Behaviours\CompassBehaviour.h" />
+    <ClInclude Include="Source\Game\Behaviours\CreditsBehaviour.h" />
+    <ClInclude Include="Source\Game\Behaviours\DebugPlayerBehaviour.h" />
+    <ClInclude Include="Source\Game\Behaviours\EndCutSceneBehaviour.h" />
+    <ClInclude Include="Source\Game\Behaviours\ExampleBehaviour.h" />
+    <ClInclude Include="Source\Game\Behaviours\ExampleCollisionBehaviour.h" />
+    <ClInclude Include="Source\Game\Behaviours\FlashlightBehaviour.h" />
+    <ClInclude Include="Source\Game\Behaviours\FlashlightPropBehaviour.h" />
+    <ClInclude Include="Source\Game\Behaviours\GraphNodeBehaviour.h" />
+    <ClInclude Include="Source\Game\Behaviours\HideBehaviour.h" />
+    <ClInclude Include="Source\Game\Behaviours\InteractableBehaviour.h" />
+    <ClInclude Include="Source\Game\Behaviours\InteractorBehaviour.h" />
+    <ClInclude Include="Source\Game\Behaviours\InventoryBehaviour.h" />
+    <ClInclude Include="Source\Game\Behaviours\MenuCameraBehaviour.h" />
+    <ClInclude Include="Source\Game\Behaviours\MeshBehaviour.h" />
+    <ClInclude Include="Source\Game\Behaviours\MonsterBehaviour.h" />
+    <ClInclude Include="Source\Game\Behaviours\MonsterHintBehaviour.h" />
+    <ClInclude Include="Source\Game\Behaviours\MonsterStates\MonsterCapture.h" />
+    <ClInclude Include="Source\Game\Behaviours\MonsterStates\MonsterExtendedHunt.h" />
+    <ClInclude Include="Source\Game\Behaviours\MonsterStates\MonsterHunt.h" />
+    <ClInclude Include="Source\Game\Behaviours\MonsterStates\MonsterHuntDone.h" />
+    <ClInclude Include="Source\Game\Behaviours\MonsterStates\MonsterIdle.h" />
+    <ClInclude Include="Source\Game\Behaviours\MonsterStates\MonsterState.h" />
+    <ClInclude Include="Source\Game\Behaviours\PickupBehaviour.h" />
+    <ClInclude Include="Source\Game\Behaviours\PictureBehaviour.h" />
+    <ClInclude Include="Source\Game\Behaviours\PlayerCutsceneBehaviour.h" />
+    <ClInclude Include="Source\Game\Behaviours\PlayerMovementBehaviour.h" />
+    <ClInclude Include="Source\Game\Behaviours\PlayerViewBehaviour.h" />
+    <ClInclude Include="Source\Game\Behaviours\PointLightBehaviour.h" />
+    <ClInclude Include="Source\Game\Behaviours\RestrictedViewBehaviour.h" />
+    <ClInclude Include="Source\Game\Behaviours\SimplePointLightBehaviour.h" />
+    <ClInclude Include="Source\Game\Behaviours\SimpleSpotLightBehaviour.h" />
+    <ClInclude Include="Source\Game\Behaviours\SolidObjectBehaviour.h" />
+    <ClInclude Include="Source\Game\Behaviours\SoundBehaviour.h" />
+    <ClInclude Include="Source\Game\Behaviours\SpotLightBehaviour.h" />
+    <ClInclude Include="Source\Game\Behaviours\TrackerBehaviour.h" />
+    <ClInclude Include="Source\Game\Behaviours\UIButtonBehaviour.h" />
+    <ClInclude Include="Source\Game\Behaviours\UIButtonExampleBehaviour.h" />
+    <ClInclude Include="Source\Game\Entity.h" />
+    <ClInclude Include="Source\Game\Game.h" />
+    <ClInclude Include="Source\Game\GraphManager.h" />
+    <ClInclude Include="Source\Game\Scenes\Scene.h" />
+    <ClInclude Include="Source\Game\Scenes\SceneHolder.h" />
+    <ClInclude Include="Source\Game\Transform.h" />
+    <ClInclude Include="Source\Math\Bezier.h" />
+    <ClInclude Include="Source\Math\ConstRand.h" />
+    <ClInclude Include="Source\Math\EasingFunctions.h" />
+    <ClInclude Include="Source\Math\GameMath.h" />
+    <ClInclude Include="stdafx.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="AppMain.cpp" />
+    <ClCompile Include="Dependencies\ImGui\GraphEditor.cpp" />
+    <ClCompile Include="Dependencies\ImGui\ImCurveEdit.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Dependencies\ImGui\ImGradient.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Dependencies\ImGui\imgui.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Dependencies\ImGui\ImGuizmo.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Dependencies\ImGui\imgui_demo.cpp" />
+    <ClCompile Include="Dependencies\ImGui\imgui_draw.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Dependencies\ImGui\imgui_impl_dx11.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Dependencies\ImGui\imgui_impl_sdl3.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Dependencies\ImGui\imgui_stdlib.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Dependencies\ImGui\imgui_tables.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Dependencies\ImGui\imgui_widgets.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Dependencies\ImGui\ImSequencer.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Dependencies\ImPlot\implot.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Dependencies\ImPlot\implot_items.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Dependencies\tinyfiledialogs\tinyfiledialogs.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Dependencies\tracy-0.11.1\public\TracyClient.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Source\Engine\Audio\SoundEngine.cpp" />
+    <ClCompile Include="Source\Engine\Audio\SoundSource.cpp" />
+    <ClCompile Include="Source\Engine\Collision\Colliders.cpp" />
+    <ClCompile Include="Source\Engine\Collision\CollisionHandler.cpp" />
+    <ClCompile Include="Source\Engine\Collision\Intersections.cpp" />
+    <ClCompile Include="Source\Engine\Collision\MeshCollider.cpp" />
+    <ClCompile Include="Source\Engine\Content\Content.cpp" />
+    <ClCompile Include="Source\Engine\Content\ContentLoader.cpp" />
+    <ClCompile Include="Source\Engine\Content\HeightMap.cpp" />
+    <ClCompile Include="Source\Engine\D3D\ConstantBufferD3D11.cpp" />
+    <ClCompile Include="Source\Engine\D3D\D3D11Helper.cpp" />
+    <ClCompile Include="Source\Engine\D3D\DepthBufferD3D11.cpp" />
+    <ClCompile Include="Source\Engine\D3D\IndexBufferD3D11.cpp" />
+    <ClCompile Include="Source\Engine\D3D\InputLayoutD3D11.cpp" />
+    <ClCompile Include="Source\Engine\D3D\MeshD3D11.cpp" />
+    <ClCompile Include="Source\Engine\D3D\RenderTargetD3D11.cpp" />
+    <ClCompile Include="Source\Engine\D3D\SamplerD3D11.cpp" />
+    <ClCompile Include="Source\Engine\D3D\ShaderD3D11.cpp" />
+    <ClCompile Include="Source\Engine\D3D\ShaderResourceTextureD3D11.cpp" />
+    <ClCompile Include="Source\Engine\D3D\SimpleMeshD3D11.cpp" />
+    <ClCompile Include="Source\Engine\D3D\StructuredBufferD3D11.cpp" />
+    <ClCompile Include="Source\Engine\D3D\SubMeshD3D11.cpp" />
+    <ClCompile Include="Source\Engine\D3D\VertexBufferD3D11.cpp" />
+    <ClCompile Include="Source\Engine\Debug\DebugData.cpp" />
+    <ClCompile Include="Source\Engine\Debug\DebugDrawer.cpp" />
+    <ClCompile Include="Source\Engine\Debug\ErrMsg.cpp" />
+    <ClCompile Include="Source\Engine\UI\ImGuiUtils.cpp" />
+    <ClCompile Include="Source\Engine\Debug\TrackedAlloc.cpp" />
+    <ClCompile Include="Source\Engine\EngineCore.cpp" />
+    <ClCompile Include="Source\Engine\Input\Input.cpp" />
+    <ClCompile Include="Source\Engine\Input\InputBindings.cpp" />
+    <ClCompile Include="Source\Engine\Rendering\Culling\Quadtree.cpp" />
+    <ClCompile Include="Source\Engine\Rendering\Graphics.cpp" />
+    <ClCompile Include="Source\Engine\Rendering\Lighting\PointLightCollection.cpp" />
+    <ClCompile Include="Source\Engine\Rendering\Lighting\SpotLightCollection.cpp" />
+    <ClCompile Include="Source\Engine\Rendering\RenderBatch.cpp" />
+    <ClCompile Include="Source\Engine\Timing\TimelineManager.cpp" />
+    <ClCompile Include="Source\Engine\Timing\TimelineSequence.cpp" />
+    <ClCompile Include="Source\Engine\Timing\TimelineWaypoint.cpp" />
+    <ClCompile Include="Source\Engine\Timing\TimeUtils.cpp" />
+    <ClCompile Include="Source\Engine\UI\UIDragDropHelpers.cpp" />
+    <ClCompile Include="Source\Engine\UI\UILayout.cpp" />
+    <ClCompile Include="Source\Engine\Utils\SerializerUtils.cpp" />
+    <ClCompile Include="Source\Engine\Utils\StringUtils.cpp" />
+    <ClCompile Include="Source\Engine\Window\Window.cpp" />
+    <ClCompile Include="Source\Game\Behaviour.cpp" />
+    <ClCompile Include="Source\Game\BehaviourFactory.cpp" />
+    <ClCompile Include="Source\Game\BehaviourRegistry.cpp" />
+    <ClCompile Include="Source\Game\Behaviours\AmbientSoundBehaviour.cpp" />
+    <ClCompile Include="Source\Game\Behaviours\BillboardMeshBehaviour.cpp" />
+    <ClCompile Include="Source\Game\Behaviours\BreadcrumbBehaviour.cpp" />
+    <ClCompile Include="Source\Game\Behaviours\BreadcrumbPileBehaviour.cpp" />
+    <ClCompile Include="Source\Game\Behaviours\ButtonBehaviours.cpp" />
+    <ClCompile Include="Source\Game\Behaviours\CameraBehaviour.cpp" />
+    <ClCompile Include="Source\Game\Behaviours\CameraCubeBehaviour.cpp" />
+    <ClCompile Include="Source\Game\Behaviours\CameraItemBehaviour.cpp" />
+    <ClCompile Include="Source\Game\Behaviours\ColliderBehaviour.cpp" />
+    <ClCompile Include="Source\Game\Behaviours\CompassBehaviour.cpp" />
+    <ClCompile Include="Source\Game\Behaviours\CreditsBehaviour.cpp" />
+    <ClCompile Include="Source\Game\Behaviours\DebugPlayerBehaviour.cpp" />
+    <ClCompile Include="Source\Game\Behaviours\EndCutSceneBehaviour.cpp" />
+    <ClCompile Include="Source\Game\Behaviours\ExampleBehaviour.cpp" />
+    <ClCompile Include="Source\Game\Behaviours\ExampleCollisionBehaviour.cpp" />
+    <ClCompile Include="Source\Game\Behaviours\FlashlightBehaviour.cpp" />
+    <ClCompile Include="Source\Game\Behaviours\FlashlightPropBehaviour.cpp" />
+    <ClCompile Include="Source\Game\Behaviours\GraphNodeBehaviour.cpp" />
+    <ClCompile Include="Source\Game\Behaviours\HideBehaviour.cpp" />
+    <ClCompile Include="Source\Game\Behaviours\InteractableBehaviour.cpp" />
+    <ClCompile Include="Source\Game\Behaviours\InteractorBehaviour.cpp" />
+    <ClCompile Include="Source\Game\Behaviours\InventoryBehaviour.cpp" />
+    <ClCompile Include="Source\Game\Behaviours\MenuCameraBehaviour.cpp" />
+    <ClCompile Include="Source\Game\Behaviours\MeshBehaviour.cpp" />
+    <ClCompile Include="Source\Game\Behaviours\MonsterBehaviour.cpp" />
+    <ClCompile Include="Source\Game\Behaviours\MonsterHintBehaviour.cpp" />
+    <ClCompile Include="Source\Game\Behaviours\MonsterStates\MonsterCapture.cpp" />
+    <ClCompile Include="Source\Game\Behaviours\MonsterStates\MonsterExtendedHunt.cpp" />
+    <ClCompile Include="Source\Game\Behaviours\MonsterStates\MonsterHunt.cpp" />
+    <ClCompile Include="Source\Game\Behaviours\MonsterStates\MonsterHuntDone.cpp" />
+    <ClCompile Include="Source\Game\Behaviours\MonsterStates\MonsterIdle.cpp" />
+    <ClCompile Include="Source\Game\Behaviours\MonsterStates\MonsterState.cpp" />
+    <ClCompile Include="Source\Game\Behaviours\PickupBehaviour.cpp" />
+    <ClCompile Include="Source\Game\Behaviours\PictureBehaviour.cpp" />
+    <ClCompile Include="Source\Game\Behaviours\PlayerCutsceneBehaviour.cpp" />
+    <ClCompile Include="Source\Game\Behaviours\PlayerMovementBehaviour.cpp" />
+    <ClCompile Include="Source\Game\Behaviours\PlayerViewBehaviour.cpp" />
+    <ClCompile Include="Source\Game\Behaviours\PointLightBehaviour.cpp" />
+    <ClCompile Include="Source\Game\Behaviours\RestrictedViewBehaviour.cpp" />
+    <ClCompile Include="Source\Game\Behaviours\SimplePointLightBehaviour.cpp" />
+    <ClCompile Include="Source\Game\Behaviours\SimpleSpotLightBehaviour.cpp" />
+    <ClCompile Include="Source\Game\Behaviours\SolidObjectBehaviour.cpp" />
+    <ClCompile Include="Source\Game\Behaviours\SoundBehaviour.cpp" />
+    <ClCompile Include="Source\Game\Behaviours\SpotLightBehaviour.cpp" />
+    <ClCompile Include="Source\Game\Behaviours\TrackerBehaviour.cpp" />
+    <ClCompile Include="Source\Game\Behaviours\UIButtonExampleBehaviour.cpp" />
+    <ClCompile Include="Source\Game\Entity.cpp" />
+    <ClCompile Include="Source\Game\Game.cpp" />
+    <ClCompile Include="Source\Game\GraphManager.cpp" />
+    <ClCompile Include="Source\Game\Scenes\Scene.cpp" />
+    <ClCompile Include="Source\Game\Scenes\SceneHolder.cpp" />
+    <ClCompile Include="Source\Game\Scenes\SceneSerialization.cpp" />
+    <ClCompile Include="Source\Game\Scenes\SceneUI.cpp" />
+    <ClCompile Include="Source\Game\Transform.cpp" />
+    <ClCompile Include="Source\Math\EasingFunctions.cpp" />
+    <ClCompile Include="Source\Math\GameMath.cpp" />
+    <ClCompile Include="stdafx.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="cpp.hint" />
+    <None Include="packages.config" />
+    <None Include="Source\Shaders\Headers\BlurParams.hlsli" />
+    <None Include="Source\Shaders\Headers\Common.hlsli" />
+    <None Include="Source\Shaders\Headers\DefaultMaterial.hlsli" />
+    <None Include="Source\Shaders\Headers\LightData.hlsli" />
+    <None Include="Source\Shaders\Headers\LightSampling.hlsli" />
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="Source\Shaders\CS_BlurHorizontalEmission.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Compute</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">Compute</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Compute</ShaderType>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
+    </FxCompile>
+    <FxCompile Include="Source\Shaders\CS_BlurHorizontalFX.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Compute</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">Compute</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Compute</ShaderType>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;$(ProjectDir)Source\Shaders\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;$(ProjectDir)Source\Shaders\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;$(ProjectDir)Source\Shaders\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
+    </FxCompile>
+    <FxCompile Include="Source\Shaders\CS_BlurHorizontalOutline.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Compute</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">Compute</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Compute</ShaderType>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;$(ProjectDir)Source\Shaders\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;$(ProjectDir)Source\Shaders\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;$(ProjectDir)Source\Shaders\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
+    </FxCompile>
+    <FxCompile Include="Source\Shaders\CS_BlurVerticalEmission.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Compute</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">Compute</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Compute</ShaderType>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;$(ProjectDir)Source\Shaders\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;$(ProjectDir)Source\Shaders\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;$(ProjectDir)Source\Shaders\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
+    </FxCompile>
+    <FxCompile Include="Source\Shaders\CS_BlurVerticalFX.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Compute</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">Compute</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Compute</ShaderType>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;$(ProjectDir)Source\Shaders\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;$(ProjectDir)Source\Shaders\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;$(ProjectDir)Source\Shaders\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
+    </FxCompile>
+    <FxCompile Include="Source\Shaders\CS_BlurVerticalOutline.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Compute</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">Compute</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Compute</ShaderType>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;$(ProjectDir)Source\Shaders\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;$(ProjectDir)Source\Shaders\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;$(ProjectDir)Source\Shaders\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
+    </FxCompile>
+    <FxCompile Include="Source\Shaders\CS_CombineFX.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Compute</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">Compute</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Compute</ShaderType>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;$(ProjectDir)Source\Shaders\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;$(ProjectDir)Source\Shaders\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;$(ProjectDir)Source\Shaders\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
+    </FxCompile>
+    <FxCompile Include="Source\Shaders\CS_CombineOutlineFX.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Compute</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">Compute</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Compute</ShaderType>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;$(ProjectDir)Source\Shaders\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;$(ProjectDir)Source\Shaders\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;$(ProjectDir)Source\Shaders\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
+    </FxCompile>
+    <FxCompile Include="Source\Shaders\CS_Downsample.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Compute</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">Compute</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Compute</ShaderType>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;$(ProjectDir)Source\Shaders\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;$(ProjectDir)Source\Shaders\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;$(ProjectDir)Source\Shaders\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
+    </FxCompile>
+    <FxCompile Include="Source\Shaders\CS_DownsampleCheap.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Compute</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">Compute</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Compute</ShaderType>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;$(ProjectDir)Source\Shaders\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;$(ProjectDir)Source\Shaders\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;$(ProjectDir)Source\Shaders\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
+    </FxCompile>
+    <FxCompile Include="Source\Shaders\CS_FogFX.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Compute</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">Compute</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Compute</ShaderType>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;$(ProjectDir)Source\Shaders\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;$(ProjectDir)Source\Shaders\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;$(ProjectDir)Source\Shaders\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
+    </FxCompile>
+    <FxCompile Include="Source\Shaders\CS_LightTileCulling.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Compute</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">Compute</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Compute</ShaderType>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;$(ProjectDir)Source\Shaders\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;$(ProjectDir)Source\Shaders\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;$(ProjectDir)Source\Shaders\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
+    </FxCompile>
+    <FxCompile Include="Source\Shaders\GS_Billboard.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Geometry</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">Geometry</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Geometry</ShaderType>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;$(ProjectDir)Source\Shaders\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;$(ProjectDir)Source\Shaders\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;$(ProjectDir)Source\Shaders\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
+    </FxCompile>
+    <FxCompile Include="Source\Shaders\GS_DebugDrawSprite.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Geometry</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">Geometry</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Geometry</ShaderType>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;$(ProjectDir)Source\Shaders\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;$(ProjectDir)Source\Shaders\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;$(ProjectDir)Source\Shaders\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
+    </FxCompile>
+    <FxCompile Include="Source\Shaders\GS_DebugLine.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Geometry</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">Geometry</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Geometry</ShaderType>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;$(ProjectDir)Source\Shaders\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;$(ProjectDir)Source\Shaders\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;$(ProjectDir)Source\Shaders\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
+    </FxCompile>
+    <FxCompile Include="Source\Shaders\GS_DepthCubemap.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Geometry</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">Geometry</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Geometry</ShaderType>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;$(ProjectDir)Source\Shaders\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;$(ProjectDir)Source\Shaders\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;$(ProjectDir)Source\Shaders\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
+    </FxCompile>
+    <FxCompile Include="Source\Shaders\PS_DebugDraw.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;$(ProjectDir)Source\Shaders\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;$(ProjectDir)Source\Shaders\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;$(ProjectDir)Source\Shaders\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
+    </FxCompile>
+    <FxCompile Include="Source\Shaders\PS_DebugDrawSprite.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;$(ProjectDir)Source\Shaders\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;$(ProjectDir)Source\Shaders\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;$(ProjectDir)Source\Shaders\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
+    </FxCompile>
+    <FxCompile Include="Source\Shaders\PS_DebugViewAmbient.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;$(ProjectDir)Source\Shaders\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;$(ProjectDir)Source\Shaders\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;$(ProjectDir)Source\Shaders\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
+    </FxCompile>
+    <FxCompile Include="Source\Shaders\PS_DebugViewDepth.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;$(ProjectDir)Source\Shaders\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;$(ProjectDir)Source\Shaders\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;$(ProjectDir)Source\Shaders\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
+    </FxCompile>
+    <FxCompile Include="Source\Shaders\PS_DebugViewDiffuse.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;$(ProjectDir)Source\Shaders\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;$(ProjectDir)Source\Shaders\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;$(ProjectDir)Source\Shaders\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
+    </FxCompile>
+    <FxCompile Include="Source\Shaders\PS_DebugViewLighting.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;$(ProjectDir)Source\Shaders\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;$(ProjectDir)Source\Shaders\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;$(ProjectDir)Source\Shaders\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
+    </FxCompile>
+    <FxCompile Include="Source\Shaders\PS_DebugViewLightTiles.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;$(ProjectDir)Source\Shaders\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;$(ProjectDir)Source\Shaders\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;$(ProjectDir)Source\Shaders\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
+    </FxCompile>
+    <FxCompile Include="Source\Shaders\PS_DebugViewNormal.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;$(ProjectDir)Source\Shaders\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;$(ProjectDir)Source\Shaders\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;$(ProjectDir)Source\Shaders\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
+    </FxCompile>
+    <FxCompile Include="Source\Shaders\PS_DebugViewOcclusion.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;$(ProjectDir)Source\Shaders\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;$(ProjectDir)Source\Shaders\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;$(ProjectDir)Source\Shaders\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
+    </FxCompile>
+    <FxCompile Include="Source\Shaders\PS_DebugViewPosition.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;$(ProjectDir)Source\Shaders\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;$(ProjectDir)Source\Shaders\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;$(ProjectDir)Source\Shaders\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
+    </FxCompile>
+    <FxCompile Include="Source\Shaders\PS_DebugViewReflection.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;$(ProjectDir)Source\Shaders\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;$(ProjectDir)Source\Shaders\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;$(ProjectDir)Source\Shaders\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
+    </FxCompile>
+    <FxCompile Include="Source\Shaders\PS_DebugViewReflectivity.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;$(ProjectDir)Source\Shaders\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;$(ProjectDir)Source\Shaders\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;$(ProjectDir)Source\Shaders\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
+    </FxCompile>
+    <FxCompile Include="Source\Shaders\PS_DebugViewShadow.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;$(ProjectDir)Source\Shaders\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;$(ProjectDir)Source\Shaders\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;$(ProjectDir)Source\Shaders\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
+    </FxCompile>
+    <FxCompile Include="Source\Shaders\PS_DebugViewSpecStr.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;$(ProjectDir)Source\Shaders\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;$(ProjectDir)Source\Shaders\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;$(ProjectDir)Source\Shaders\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
+    </FxCompile>
+    <FxCompile Include="Source\Shaders\PS_DebugViewSpecular.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;$(ProjectDir)Source\Shaders\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;$(ProjectDir)Source\Shaders\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;$(ProjectDir)Source\Shaders\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
+    </FxCompile>
+    <FxCompile Include="Source\Shaders\PS_DebugViewUVCoords.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;$(ProjectDir)Source\Shaders\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;$(ProjectDir)Source\Shaders\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;$(ProjectDir)Source\Shaders\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
+    </FxCompile>
+    <FxCompile Include="Source\Shaders\PS_DepthCubemap.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;$(ProjectDir)Source\Shaders\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;$(ProjectDir)Source\Shaders\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;$(ProjectDir)Source\Shaders\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
+    </FxCompile>
+    <FxCompile Include="Source\Shaders\PS_Geometry.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;$(ProjectDir)Source\Shaders\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;$(ProjectDir)Source\Shaders\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;$(ProjectDir)Source\Shaders\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
+    </FxCompile>
+    <FxCompile Include="Source\Shaders\PS_GeometryMetallic.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;$(ProjectDir)Source\Shaders\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;$(ProjectDir)Source\Shaders\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;$(ProjectDir)Source\Shaders\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
+    </FxCompile>
+    <FxCompile Include="Source\Shaders\PS_ReflectionProbe.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;$(ProjectDir)Source\Shaders\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;$(ProjectDir)Source\Shaders\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;$(ProjectDir)Source\Shaders\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
+    </FxCompile>
+    <FxCompile Include="Source\Shaders\PS_ScreenEffectFog.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;$(ProjectDir)Source\Shaders\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;$(ProjectDir)Source\Shaders\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;$(ProjectDir)Source\Shaders\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
+    </FxCompile>
+    <FxCompile Include="Source\Shaders\PS_SelectionOutline.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;$(ProjectDir)Source\Shaders\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;$(ProjectDir)Source\Shaders\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;$(ProjectDir)Source\Shaders\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
+    </FxCompile>
+    <FxCompile Include="Source\Shaders\PS_SkyboxDefault.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;$(ProjectDir)Source\Shaders\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;$(ProjectDir)Source\Shaders\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;$(ProjectDir)Source\Shaders\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
+    </FxCompile>
+    <FxCompile Include="Source\Shaders\PS_SkyboxEnvironment.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;$(ProjectDir)Source\Shaders\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;$(ProjectDir)Source\Shaders\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;$(ProjectDir)Source\Shaders\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
+    </FxCompile>
+    <FxCompile Include="Source\Shaders\PS_SkyboxNormal.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;$(ProjectDir)Source\Shaders\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;$(ProjectDir)Source\Shaders\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;$(ProjectDir)Source\Shaders\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
+    </FxCompile>
+    <FxCompile Include="Source\Shaders\PS_Static.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;$(ProjectDir)Source\Shaders\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;$(ProjectDir)Source\Shaders\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;$(ProjectDir)Source\Shaders\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
+    </FxCompile>
+    <FxCompile Include="Source\Shaders\PS_Transparent.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;$(ProjectDir)Source\Shaders\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;$(ProjectDir)Source\Shaders\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;$(ProjectDir)Source\Shaders\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
+    </FxCompile>
+    <FxCompile Include="Source\Shaders\PS_TriPlanar.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;$(ProjectDir)Source\Shaders\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;$(ProjectDir)Source\Shaders\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;$(ProjectDir)Source\Shaders\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
+    </FxCompile>
+    <FxCompile Include="Source\Shaders\VS_DebugDraw.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;$(ProjectDir)Source\Shaders\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;$(ProjectDir)Source\Shaders\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;$(ProjectDir)Source\Shaders\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
+    </FxCompile>
+    <FxCompile Include="Source\Shaders\VS_DebugDrawSprite.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;$(ProjectDir)Source\Shaders\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;$(ProjectDir)Source\Shaders\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;$(ProjectDir)Source\Shaders\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
+    </FxCompile>
+    <FxCompile Include="Source\Shaders\VS_DebugDrawTri.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;$(ProjectDir)Source\Shaders\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;$(ProjectDir)Source\Shaders\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;$(ProjectDir)Source\Shaders\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
+    </FxCompile>
+    <FxCompile Include="Source\Shaders\VS_Depth.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;$(ProjectDir)Source\Shaders\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;$(ProjectDir)Source\Shaders\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;$(ProjectDir)Source\Shaders\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
+    </FxCompile>
+    <FxCompile Include="Source\Shaders\VS_DepthCubemap.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;$(ProjectDir)Source\Shaders\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;$(ProjectDir)Source\Shaders\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;$(ProjectDir)Source\Shaders\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
+    </FxCompile>
+    <FxCompile Include="Source\Shaders\VS_DepthDistortion.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;$(ProjectDir)Source\Shaders\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;$(ProjectDir)Source\Shaders\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;$(ProjectDir)Source\Shaders\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
+    </FxCompile>
+    <FxCompile Include="Source\Shaders\VS_DepthDistortionCubemap.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;$(ProjectDir)Source\Shaders\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;$(ProjectDir)Source\Shaders\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;$(ProjectDir)Source\Shaders\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
+    </FxCompile>
+    <FxCompile Include="Source\Shaders\VS_Geometry.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;$(ProjectDir)Source\Shaders\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;$(ProjectDir)Source\Shaders\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;$(ProjectDir)Source\Shaders\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
+    </FxCompile>
+    <FxCompile Include="Source\Shaders\VS_GeometryDistortion.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;$(ProjectDir)Source\Shaders\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;$(ProjectDir)Source\Shaders\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;$(ProjectDir)Source\Shaders\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
+    </FxCompile>
+    <FxCompile Include="Source\Shaders\VS_ScreenEffect.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;$(ProjectDir)Source\Shaders\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;$(ProjectDir)Source\Shaders\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;$(ProjectDir)Source\Shaders\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
+    </FxCompile>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+    <Import Project="..\packages\directxtk_desktop_win10.2025.7.10.1\build\native\directxtk_desktop_win10.targets" Condition="Exists('..\packages\directxtk_desktop_win10.2025.7.10.1\build\native\directxtk_desktop_win10.targets')" />
+    <Import Project="..\packages\directxtex_desktop_win10.2025.7.10.1\build\native\directxtex_desktop_win10.targets" Condition="Exists('..\packages\directxtex_desktop_win10.2025.7.10.1\build\native\directxtex_desktop_win10.targets')" />
+    <Import Project="..\packages\Microsoft.XAudio2.Redist.1.2.13\build\native\Microsoft.XAudio2.Redist.targets" Condition="Exists('..\packages\Microsoft.XAudio2.Redist.1.2.13\build\native\Microsoft.XAudio2.Redist.targets')" />
+  </ImportGroup>
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\directxtk_desktop_win10.2025.7.10.1\build\native\directxtk_desktop_win10.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\directxtk_desktop_win10.2025.7.10.1\build\native\directxtk_desktop_win10.targets'))" />
+    <Error Condition="!Exists('..\packages\directxtex_desktop_win10.2025.7.10.1\build\native\directxtex_desktop_win10.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\directxtex_desktop_win10.2025.7.10.1\build\native\directxtex_desktop_win10.targets'))" />
+    <Error Condition="!Exists('..\packages\Microsoft.XAudio2.Redist.1.2.13\build\native\Microsoft.XAudio2.Redist.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.XAudio2.Redist.1.2.13\build\native\Microsoft.XAudio2.Redist.targets'))" />
+  </Target>
+</Project>

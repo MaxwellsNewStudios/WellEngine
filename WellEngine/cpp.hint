@@ -1,0 +1,78 @@
+// Hint files help the Visual Studio IDE interpret Visual C++ identifiers
+// such as names of functions and macros.
+// For more information see https://go.microsoft.com/fwlink/?linkid=865984
+#define SHADER_DATA_PS_LIT_H
+#define OPEN_SHADER_NAMESPACE
+#define OPEN_SHADER_NAMESPACE namespace ShaderData {
+#define _VEC4
+#define _MAT4X4
+#define CALL(macro, __VA_ARGS__) macro( __VA_ARGS__ )
+#define OPEN_SHADER_CLASS(x, y)
+#define OPEN_SHADER_CLASS(PREFIX, NAME) class PREFIX##_##NAME##_ShaderDef final : public ShaderDef { public: PREFIX##_##NAME##_ShaderDef() = default; const std::string &GetName() override { return #PREFIX "_" #NAME ; } const std::vector<BindingData> &GetBindings() override { static std::vector<BindingData> bindings = {
+#define __cplusplus
+#define _DEBUG
+#define _DEPLOY
+#define DEBUG_BUILD
+#define EDIT_MODE
+#define USE_IMGUIZMO
+#define USE_IMGUI_VIEWPORTS
+#define USE_IMGUI
+#define DEBUG_DRAW
+#define PARALLEL_UPDATE
+#define COMPILE_CONTENT
+#define LEAK_DETECTION
+#define TRACY_ENABLE
+#define SHADER_PREFIX
+#define SHADER_NAME
+#define BIND_TEXTURE2D(CTX, VAR_NAME, SLOT_INDEX) BindingData( #VAR_NAME, BindingType::Texture2D, SLOT_INDEX ),
+#define BIND_TEXTURE2D(CTX, VAR_NAME, SLOT_INDEX) Texture2D VAR_NAME##Texture : register(t##SLOT_INDEX##);
+#define CLOSE_SHADER_CLASS
+#define CLOSE_SHADER_CLASS }; return bindings; } };
+#define CLOSE_SHADER_NAMESPACE
+#define CLOSE_SHADER_NAMESPACE };
+#define RandomUniqueColor() (const uint32_t)ConstRand(sizeof(__FILE__) * (const size_t)__LINE__, (const size_t)0x000000, (const size_t)0xFFFFFF)
+#define FLT_MIN
+#define FLT_MAX
+#define ErrMsg(msg) { ErrorMessage(msg, __FILE__, __LINE__); std::abort(); }
+#define ErrMsgF(msg, ...) { ErrorMessage(std::format(msg, __VA_ARGS__), __FILE__, __LINE__); std::abort(); }
+#define DbgMsg(msg) DebugMessage(msg)
+#define DbgMsgF(msg, ...) DebugMessage(std::format(msg, __VA_ARGS__))
+#define Warn(msg) { WarningMessage(msg, __FILE__, __LINE__); CUSTOM_ASSERT(false, __FILE__, __LINE__); }
+#define WarnF(msg, ...) { WarningMessage(std::format(msg, __VA_ARGS__), __FILE__, __LINE__); CUSTOM_ASSERT(false, __FILE__, __LINE__); }
+#define Assert(expr, msg) { CUSTOM_ASSERT(expr, __FILE__, __LINE__); }
+#define ErrMsg(msg) 
+#define ErrMsgF(msg, ...) 
+#define DbgMsg(msg) 
+#define DbgMsgF(msg, ...) 
+#define Warn(msg) 
+#define WarnF(msg, ...) 
+#define Assert(expr, msg) 
+#define ZoneScopedX	
+#define ZoneScopedXN( name )
+#define ZoneScopedXC( color )	
+#define ZoneScopedXNC( name, color )	
+#define ZoneTextX( txt, size )		
+#define ZoneTextXV( varname, txt, size )	
+#define ZoneTextXF( fmt, ... )				
+#define ZoneTextXVF( varname, fmt, ... )	
+#define ZoneNameX( txt, size )				
+#define ZoneNameXV( varname, txt, size )	
+#define ZoneNameXF( fmt, ... )				
+#define ZoneNameXVF( varname, fmt, ... )	
+#define ZoneColorX( color ) 				
+#define ZoneColorXV( varname, color )		
+#define ZoneValueX( value ) 				
+#define ZoneValueXV( varname, value ) 		
+#define ZoneIsActiveX						
+#define ZoneIsActiveXV( varname )			
+#define ZoneScopedXNCD( name, color )			
+#define ZoneNamedXNCD( varname, name, color )	
+#define ZoneNamedX( varname, active ) 					
+#define ZoneNamedXN( varname, name, active ) 			
+#define ZoneNamedXC( varname, color, active ) 			
+#define ZoneNamedXNC( varname, name, color, active )	
+#define ZoneTransientX( varname, active ) 				
+#define ZoneTransientXN( varname, name, active ) 		
+#define ZoneTransientXNC( varname, name, color, active )
+#define max(a, b)
+#define TESTABLE() friend class TestUtility;

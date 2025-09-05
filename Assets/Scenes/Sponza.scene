@@ -1,0 +1,1587 @@
+{
+    "Scene": {
+        "Transitional": false,
+        "Bounds": {
+            "Center": [
+                0.0,
+                0.0,
+                0.0
+            ],
+            "Extents": [
+                24.0,
+                24.0,
+                24.0
+            ]
+        },
+        "Graphics": {
+            "Spotlight Resolution": 256,
+            "Pointlight Resolution": 1024,
+            "Cubemap": "SandstoneCove",
+            "Skybox": "PS_SkyboxEnvironment",
+            "Ambient": [
+                0.03748558461666107,
+                0.05974796041846275,
+                0.07352942228317261
+            ],
+            "Fog": {
+                "Thickness": 0.75,
+                "Step Size": 0.0,
+                "Min Steps": 0,
+                "Max Steps": 128
+            },
+            "Emission": {
+                "Strength": 1.0,
+                "Exponent": 0.5,
+                "Threshold": 1.0
+            }
+        }
+    },
+    "Hierarchy": [
+        {
+            "Name": "Sponza",
+            "ID": 3,
+            "Enabled": true,
+            "Pos": [
+                0.0,
+                0.0,
+                0.0
+            ],
+            "Rot": [
+                -0.0,
+                0.0,
+                0.0
+            ],
+            "Scale": [
+                1.0,
+                1.0,
+                1.0
+            ],
+            "Static": false,
+            "Select": true,
+            "InTree": true,
+            "Beh": [],
+            "Child": [
+                {
+                    "Name": "sponza_CurtainPoles",
+                    "ID": 4,
+                    "Enabled": true,
+                    "Pos": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "Rot": [
+                        -0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "Scale": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "Static": false,
+                    "Select": true,
+                    "InTree": true,
+                    "Beh": [
+                        {
+                            "Name": "MeshBehaviour",
+                            "Attributes": {
+                                "Mesh": "sponza_CurtainPoles",
+                                "Transparent": false,
+                                "Shadow Caster": true,
+                                "Shadows Only": false,
+                                "Alpha Cutoff": 0.5,
+                                "Specular Factor": 1.4390000104904175,
+                                "Base Color": [
+                                    1.0,
+                                    1.0,
+                                    1.0,
+                                    1.0
+                                ],
+                                "Metallic": 0.09700000286102295,
+                                "Reflectivity": 0.09200000017881393,
+                                "Tex": "sponza_flagpole_diff",
+                                "Normal": "sponza_flagpole_ddn",
+                                "Specular": "sponza_flagpole_spec",
+                                "Sampler": "Wrap",
+                                "PS": "PS_GeometryMetallic"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "Name": "sponza_CurtainsBlue",
+                    "ID": 5,
+                    "Enabled": true,
+                    "Pos": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "Rot": [
+                        -0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "Scale": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "Static": false,
+                    "Select": true,
+                    "InTree": true,
+                    "Beh": [
+                        {
+                            "Name": "MeshBehaviour",
+                            "Attributes": {
+                                "Mesh": "sponza_CurtainsBlue",
+                                "Transparent": false,
+                                "Shadow Caster": true,
+                                "Shadows Only": false,
+                                "Alpha Cutoff": 0.5,
+                                "Specular Factor": 0.699999988079071,
+                                "Base Color": [
+                                    1.0,
+                                    1.0,
+                                    1.0,
+                                    1.0
+                                ],
+                                "Metallic": 0.30000001192092896,
+                                "Reflectivity": 0.25,
+                                "Tex": "sponza_curtain_blue_diff",
+                                "Normal": "sponza_curtain_ddn",
+                                "Specular": "sponza_curtain_spec",
+                                "Sampler": "Wrap",
+                                "PS": "PS_GeometryMetallic"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "Name": "sponza_CurtainsGreen",
+                    "ID": 6,
+                    "Enabled": true,
+                    "Pos": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "Rot": [
+                        -0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "Scale": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "Static": false,
+                    "Select": true,
+                    "InTree": true,
+                    "Beh": [
+                        {
+                            "Name": "MeshBehaviour",
+                            "Attributes": {
+                                "Mesh": "sponza_CurtainsGreen",
+                                "Transparent": false,
+                                "Shadow Caster": true,
+                                "Shadows Only": false,
+                                "Alpha Cutoff": 0.5,
+                                "Specular Factor": 0.699999988079071,
+                                "Base Color": [
+                                    1.0,
+                                    1.0,
+                                    1.0,
+                                    1.0
+                                ],
+                                "Metallic": 0.30000001192092896,
+                                "Reflectivity": 0.25,
+                                "Tex": "sponza_curtain_green_diff",
+                                "Normal": "sponza_curtain_ddn",
+                                "Specular": "sponza_curtain_spec",
+                                "Sampler": "Wrap",
+                                "PS": "PS_GeometryMetallic"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "Name": "sponza_CurtainsRed",
+                    "ID": 7,
+                    "Enabled": true,
+                    "Pos": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "Rot": [
+                        -0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "Scale": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "Static": false,
+                    "Select": true,
+                    "InTree": true,
+                    "Beh": [
+                        {
+                            "Name": "MeshBehaviour",
+                            "Attributes": {
+                                "Mesh": "sponza_CurtainsRed",
+                                "Transparent": false,
+                                "Shadow Caster": true,
+                                "Shadows Only": false,
+                                "Alpha Cutoff": 0.5,
+                                "Specular Factor": 0.699999988079071,
+                                "Base Color": [
+                                    1.0,
+                                    1.0,
+                                    1.0,
+                                    1.0
+                                ],
+                                "Metallic": 0.30000001192092896,
+                                "Reflectivity": 0.25,
+                                "Tex": "sponza_curtain_diff",
+                                "Normal": "sponza_curtain_ddn",
+                                "Specular": "sponza_curtain_spec",
+                                "Sampler": "Wrap",
+                                "PS": "PS_GeometryMetallic"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "Name": "sponza_EmptyFrame",
+                    "ID": 8,
+                    "Enabled": true,
+                    "Pos": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "Rot": [
+                        -0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "Scale": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "Static": false,
+                    "Select": true,
+                    "InTree": true,
+                    "Beh": [
+                        {
+                            "Name": "MeshBehaviour",
+                            "Attributes": {
+                                "Mesh": "sponza_EmptyFrame",
+                                "Transparent": false,
+                                "Shadow Caster": true,
+                                "Shadows Only": false,
+                                "Alpha Cutoff": 0.5,
+                                "Specular Factor": 1.0,
+                                "Base Color": [
+                                    1.0,
+                                    1.0,
+                                    1.0,
+                                    1.0
+                                ],
+                                "Metallic": 0.0,
+                                "Reflectivity": 0.0,
+                                "Tex": "sponza_dummy",
+                                "Normal": "sponza_dummy_ddn",
+                                "Specular": "sponza_dummy_specular",
+                                "Sampler": "Wrap",
+                                "PS": "PS_GeometryMetallic"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "Name": "sponza_Floor",
+                    "ID": 9,
+                    "Enabled": true,
+                    "Pos": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "Rot": [
+                        -0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "Scale": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "Static": false,
+                    "Select": true,
+                    "InTree": true,
+                    "Beh": [
+                        {
+                            "Name": "MeshBehaviour",
+                            "Attributes": {
+                                "Mesh": "sponza_Floor",
+                                "Transparent": false,
+                                "Shadow Caster": true,
+                                "Shadows Only": false,
+                                "Alpha Cutoff": 0.5,
+                                "Specular Factor": 0.8450000286102295,
+                                "Base Color": [
+                                    1.0,
+                                    1.0,
+                                    1.0,
+                                    1.0
+                                ],
+                                "Metallic": 0.20999999344348907,
+                                "Reflectivity": 0.020999999716877937,
+                                "Tex": "sponza_floor_a_diff",
+                                "Normal": "sponza_floor_a_ddn",
+                                "Specular": "sponza_floor_a_spec",
+                                "Sampler": "Wrap",
+                                "PS": "PS_GeometryMetallic"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "Name": "sponza_FountainChains",
+                    "ID": 10,
+                    "Enabled": true,
+                    "Pos": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "Rot": [
+                        -0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "Scale": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "Static": false,
+                    "Select": true,
+                    "InTree": true,
+                    "Beh": [
+                        {
+                            "Name": "MeshBehaviour",
+                            "Attributes": {
+                                "Mesh": "sponza_FountainChains",
+                                "Transparent": false,
+                                "Shadow Caster": true,
+                                "Shadows Only": false,
+                                "Alpha Cutoff": 0.5,
+                                "Specular Factor": -0.024000000208616257,
+                                "Base Color": [
+                                    1.0,
+                                    1.0,
+                                    1.0,
+                                    1.0
+                                ],
+                                "Metallic": 0.5590000152587891,
+                                "Reflectivity": 0.22699999809265137,
+                                "Tex": "sponza_chain_texture",
+                                "Normal": "sponza_chain_texture_ddn",
+                                "Sampler": "Wrap",
+                                "PS": "PS_GeometryMetallic"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "Name": "sponza_FountainsLarge",
+                    "ID": 11,
+                    "Enabled": true,
+                    "Pos": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "Rot": [
+                        -0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "Scale": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "Static": false,
+                    "Select": true,
+                    "InTree": true,
+                    "Beh": [
+                        {
+                            "Name": "MeshBehaviour",
+                            "Attributes": {
+                                "Mesh": "sponza_FountainsLarge",
+                                "Transparent": false,
+                                "Shadow Caster": true,
+                                "Shadows Only": false,
+                                "Alpha Cutoff": 0.5,
+                                "Specular Factor": 0.7749999761581421,
+                                "Base Color": [
+                                    1.0,
+                                    1.0,
+                                    1.0,
+                                    1.0
+                                ],
+                                "Metallic": 0.07100000232458115,
+                                "Reflectivity": 0.041999999433755875,
+                                "Tex": "sponza_vase_diff",
+                                "Normal": "sponza_vase_ddn",
+                                "Specular": "sponza_vase_spec",
+                                "Sampler": "Wrap",
+                                "PS": "PS_GeometryMetallic"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "Name": "sponza_HangingClothBlue",
+                    "ID": 12,
+                    "Enabled": true,
+                    "Pos": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "Rot": [
+                        -0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "Scale": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "Static": false,
+                    "Select": true,
+                    "InTree": true,
+                    "Beh": [
+                        {
+                            "Name": "MeshBehaviour",
+                            "Attributes": {
+                                "Mesh": "sponza_HangingClothBlue",
+                                "Transparent": false,
+                                "Shadow Caster": true,
+                                "Shadows Only": false,
+                                "Alpha Cutoff": 0.5,
+                                "Specular Factor": 0.699999988079071,
+                                "Base Color": [
+                                    1.0,
+                                    1.0,
+                                    1.0,
+                                    1.0
+                                ],
+                                "Metallic": 0.30000001192092896,
+                                "Reflectivity": 0.25,
+                                "Tex": "sponza_fabric_blue_diff",
+                                "Normal": "sponza_fabric_ddn",
+                                "Specular": "sponza_fabric_spec",
+                                "Sampler": "Wrap",
+                                "PS": "PS_GeometryMetallic"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "Name": "sponza_HangingClothGreen",
+                    "ID": 13,
+                    "Enabled": true,
+                    "Pos": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "Rot": [
+                        -0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "Scale": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "Static": false,
+                    "Select": true,
+                    "InTree": true,
+                    "Beh": [
+                        {
+                            "Name": "MeshBehaviour",
+                            "Attributes": {
+                                "Mesh": "sponza_HangingClothGreen",
+                                "Transparent": false,
+                                "Shadow Caster": true,
+                                "Shadows Only": false,
+                                "Alpha Cutoff": 0.5,
+                                "Specular Factor": 0.699999988079071,
+                                "Base Color": [
+                                    1.0,
+                                    1.0,
+                                    1.0,
+                                    1.0
+                                ],
+                                "Metallic": 0.30000001192092896,
+                                "Reflectivity": 0.25,
+                                "Tex": "sponza_fabric_green_diff",
+                                "Normal": "sponza_fabric_ddn",
+                                "Specular": "sponza_fabric_spec",
+                                "Sampler": "Wrap",
+                                "PS": "PS_GeometryMetallic"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "Name": "sponza_HangingClothRed",
+                    "ID": 14,
+                    "Enabled": true,
+                    "Pos": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "Rot": [
+                        -0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "Scale": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "Static": false,
+                    "Select": true,
+                    "InTree": true,
+                    "Beh": [
+                        {
+                            "Name": "MeshBehaviour",
+                            "Attributes": {
+                                "Mesh": "sponza_HangingClothRed",
+                                "Transparent": false,
+                                "Shadow Caster": true,
+                                "Shadows Only": false,
+                                "Alpha Cutoff": 0.5,
+                                "Specular Factor": 0.699999988079071,
+                                "Base Color": [
+                                    1.0,
+                                    1.0,
+                                    1.0,
+                                    1.0
+                                ],
+                                "Metallic": 0.30000001192092896,
+                                "Reflectivity": 0.25,
+                                "Tex": "sponza_fabric_diff",
+                                "Normal": "sponza_fabric_ddn",
+                                "Specular": "sponza_fabric_spec",
+                                "Sampler": "Wrap",
+                                "PS": "PS_GeometryMetallic"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "Name": "sponza_HangingFountains",
+                    "ID": 15,
+                    "Enabled": true,
+                    "Pos": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "Rot": [
+                        -0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "Scale": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "Static": false,
+                    "Select": true,
+                    "InTree": true,
+                    "Beh": [
+                        {
+                            "Name": "MeshBehaviour",
+                            "Attributes": {
+                                "Mesh": "sponza_HangingFountains",
+                                "Transparent": false,
+                                "Shadow Caster": true,
+                                "Shadows Only": false,
+                                "Alpha Cutoff": 0.5,
+                                "Specular Factor": 1.0,
+                                "Base Color": [
+                                    1.0,
+                                    1.0,
+                                    1.0,
+                                    1.0
+                                ],
+                                "Metallic": 0.0,
+                                "Reflectivity": 0.0,
+                                "Tex": "sponza_vase_hanging_diff",
+                                "Sampler": "Wrap",
+                                "PS": "PS_GeometryMetallic"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "Name": "sponza_InnerArches",
+                    "ID": 16,
+                    "Enabled": true,
+                    "Pos": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "Rot": [
+                        -0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "Scale": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "Static": false,
+                    "Select": true,
+                    "InTree": true,
+                    "Beh": [
+                        {
+                            "Name": "MeshBehaviour",
+                            "Attributes": {
+                                "Mesh": "sponza_InnerArches",
+                                "Transparent": false,
+                                "Shadow Caster": true,
+                                "Shadows Only": false,
+                                "Alpha Cutoff": 0.5,
+                                "Specular Factor": 1.0,
+                                "Base Color": [
+                                    1.0,
+                                    1.0,
+                                    1.0,
+                                    1.0
+                                ],
+                                "Metallic": 0.0,
+                                "Reflectivity": 0.0,
+                                "Tex": "sponza_arch_diff",
+                                "Normal": "sponza_arch_ddn",
+                                "Specular": "sponza_arch_spec",
+                                "Sampler": "Wrap",
+                                "PS": "PS_GeometryMetallic"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "Name": "sponza_LionFrames",
+                    "ID": 17,
+                    "Enabled": true,
+                    "Pos": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "Rot": [
+                        -0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "Scale": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "Static": false,
+                    "Select": true,
+                    "InTree": true,
+                    "Beh": [
+                        {
+                            "Name": "MeshBehaviour",
+                            "Attributes": {
+                                "Mesh": "sponza_LionFrames",
+                                "Transparent": false,
+                                "Shadow Caster": true,
+                                "Shadows Only": false,
+                                "Alpha Cutoff": 0.5,
+                                "Specular Factor": 0.9580000042915344,
+                                "Base Color": [
+                                    1.0,
+                                    1.0,
+                                    1.0,
+                                    1.0
+                                ],
+                                "Metallic": 0.47600001096725464,
+                                "Reflectivity": 0.0689999982714653,
+                                "Tex": "sponza_background",
+                                "Normal": "sponza_background_ddn",
+                                "Specular": "sponza_background_spec",
+                                "Sampler": "Wrap",
+                                "PS": "PS_GeometryMetallic"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "Name": "sponza_LionHeads",
+                    "ID": 18,
+                    "Enabled": true,
+                    "Pos": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "Rot": [
+                        -0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "Scale": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "Static": false,
+                    "Select": true,
+                    "InTree": true,
+                    "Beh": [
+                        {
+                            "Name": "MeshBehaviour",
+                            "Attributes": {
+                                "Mesh": "sponza_LionHeads",
+                                "Transparent": false,
+                                "Shadow Caster": true,
+                                "Shadows Only": false,
+                                "Alpha Cutoff": 0.5,
+                                "Specular Factor": 0.9580000042915344,
+                                "Base Color": [
+                                    1.0,
+                                    1.0,
+                                    1.0,
+                                    1.0
+                                ],
+                                "Metallic": 0.47600001096725464,
+                                "Reflectivity": 0.0689999982714653,
+                                "Tex": "sponza_lion",
+                                "Normal": "sponza_lion_ddn",
+                                "Specular": "sponza_lion_spec",
+                                "Sampler": "Wrap",
+                                "PS": "PS_GeometryMetallic"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "Name": "sponza_OuterArches",
+                    "ID": 19,
+                    "Enabled": true,
+                    "Pos": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "Rot": [
+                        -0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "Scale": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "Static": false,
+                    "Select": true,
+                    "InTree": true,
+                    "Beh": [
+                        {
+                            "Name": "MeshBehaviour",
+                            "Attributes": {
+                                "Mesh": "sponza_OuterArches",
+                                "Transparent": false,
+                                "Shadow Caster": true,
+                                "Shadows Only": false,
+                                "Alpha Cutoff": 0.5,
+                                "Specular Factor": 1.0,
+                                "Base Color": [
+                                    1.0,
+                                    1.0,
+                                    1.0,
+                                    1.0
+                                ],
+                                "Metallic": 0.0,
+                                "Reflectivity": 0.0,
+                                "Tex": "sponza_ceiling_a_diff",
+                                "Normal": "sponza_ceiling_a_ddn",
+                                "Specular": "sponza_ceiling_a_spec",
+                                "Sampler": "Wrap",
+                                "PS": "PS_GeometryMetallic"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "Name": "sponza_OuterWall",
+                    "ID": 20,
+                    "Enabled": true,
+                    "Pos": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "Rot": [
+                        -0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "Scale": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "Static": false,
+                    "Select": true,
+                    "InTree": true,
+                    "Beh": [
+                        {
+                            "Name": "MeshBehaviour",
+                            "Attributes": {
+                                "Mesh": "sponza_OuterWall",
+                                "Transparent": false,
+                                "Shadow Caster": true,
+                                "Shadows Only": false,
+                                "Alpha Cutoff": 0.5,
+                                "Specular Factor": 1.0,
+                                "Base Color": [
+                                    1.0,
+                                    1.0,
+                                    1.0,
+                                    1.0
+                                ],
+                                "Metallic": 0.0,
+                                "Reflectivity": 0.0,
+                                "Tex": "sponza_bricks_a_diff",
+                                "Normal": "sponza_bricks_a_ddn",
+                                "Specular": "sponza_bricks_a_spec",
+                                "Sampler": "Wrap",
+                                "PS": "PS_GeometryMetallic"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "Name": "sponza_PillarFoliage",
+                    "ID": 21,
+                    "Enabled": true,
+                    "Pos": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "Rot": [
+                        -0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "Scale": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "Static": false,
+                    "Select": true,
+                    "InTree": true,
+                    "Beh": [
+                        {
+                            "Name": "MeshBehaviour",
+                            "Attributes": {
+                                "Mesh": "sponza_PillarFoliage",
+                                "Transparent": false,
+                                "Shadow Caster": true,
+                                "Shadows Only": false,
+                                "Alpha Cutoff": 0.5,
+                                "Specular Factor": 0.5669999718666077,
+                                "Base Color": [
+                                    1.0,
+                                    1.0,
+                                    1.0,
+                                    1.0
+                                ],
+                                "Metallic": 0.6549999713897705,
+                                "Reflectivity": 0.1889999955892563,
+                                "Tex": "sponza_thorn_diff",
+                                "Normal": "sponza_thorn_ddn",
+                                "Specular": "sponza_thorn_spec",
+                                "Sampler": "Wrap",
+                                "PS": "PS_GeometryMetallic"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "Name": "sponza_PillarsLower",
+                    "ID": 22,
+                    "Enabled": true,
+                    "Pos": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "Rot": [
+                        -0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "Scale": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "Static": false,
+                    "Select": true,
+                    "InTree": true,
+                    "Beh": [
+                        {
+                            "Name": "MeshBehaviour",
+                            "Attributes": {
+                                "Mesh": "sponza_PillarsLower",
+                                "Transparent": false,
+                                "Shadow Caster": true,
+                                "Shadows Only": false,
+                                "Alpha Cutoff": 0.5,
+                                "Specular Factor": 1.0,
+                                "Base Color": [
+                                    1.0,
+                                    1.0,
+                                    1.0,
+                                    1.0
+                                ],
+                                "Metallic": 0.0,
+                                "Reflectivity": 0.0,
+                                "Tex": "sponza_column_a_diff",
+                                "Normal": "sponza_column_a_ddn",
+                                "Specular": "sponza_column_a_spec",
+                                "Sampler": "Wrap",
+                                "PS": "PS_GeometryMetallic"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "Name": "sponza_PillarsUpper",
+                    "ID": 23,
+                    "Enabled": true,
+                    "Pos": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "Rot": [
+                        -0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "Scale": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "Static": false,
+                    "Select": true,
+                    "InTree": true,
+                    "Beh": [
+                        {
+                            "Name": "MeshBehaviour",
+                            "Attributes": {
+                                "Mesh": "sponza_PillarsUpper",
+                                "Transparent": false,
+                                "Shadow Caster": true,
+                                "Shadows Only": false,
+                                "Alpha Cutoff": 0.5,
+                                "Specular Factor": 1.0,
+                                "Base Color": [
+                                    1.0,
+                                    1.0,
+                                    1.0,
+                                    1.0
+                                ],
+                                "Metallic": 0.0,
+                                "Reflectivity": 0.0,
+                                "Tex": "sponza_column_b_diff",
+                                "Normal": "sponza_column_b_ddn",
+                                "Specular": "sponza_column_b_spec",
+                                "Sampler": "Wrap",
+                                "PS": "PS_GeometryMetallic"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "Name": "sponza_PillarsUpperSquare",
+                    "ID": 24,
+                    "Enabled": true,
+                    "Pos": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "Rot": [
+                        -0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "Scale": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "Static": false,
+                    "Select": true,
+                    "InTree": true,
+                    "Beh": [
+                        {
+                            "Name": "MeshBehaviour",
+                            "Attributes": {
+                                "Mesh": "sponza_PillarsUpperSquare",
+                                "Transparent": false,
+                                "Shadow Caster": true,
+                                "Shadows Only": false,
+                                "Alpha Cutoff": 0.5,
+                                "Specular Factor": 1.0,
+                                "Base Color": [
+                                    1.0,
+                                    1.0,
+                                    1.0,
+                                    1.0
+                                ],
+                                "Metallic": 0.0,
+                                "Reflectivity": 0.0,
+                                "Tex": "sponza_column_c_diff",
+                                "Normal": "sponza_column_c_ddn",
+                                "Specular": "sponza_column_c_spec",
+                                "Sampler": "Wrap",
+                                "PS": "PS_GeometryMetallic"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "Name": "sponza_Roof",
+                    "ID": 25,
+                    "Enabled": true,
+                    "Pos": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "Rot": [
+                        -0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "Scale": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "Static": false,
+                    "Select": true,
+                    "InTree": true,
+                    "Beh": [
+                        {
+                            "Name": "MeshBehaviour",
+                            "Attributes": {
+                                "Mesh": "sponza_Roof",
+                                "Transparent": false,
+                                "Shadow Caster": true,
+                                "Shadows Only": false,
+                                "Alpha Cutoff": 0.5,
+                                "Specular Factor": 1.0,
+                                "Base Color": [
+                                    1.0,
+                                    1.0,
+                                    1.0,
+                                    1.0
+                                ],
+                                "Metallic": 0.0,
+                                "Reflectivity": 0.0,
+                                "Tex": "sponza_roof_diff",
+                                "Normal": "sponza_roof_ddn",
+                                "Sampler": "Wrap",
+                                "PS": "PS_GeometryMetallic"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "Name": "sponza_SmallPots",
+                    "ID": 26,
+                    "Enabled": true,
+                    "Pos": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "Rot": [
+                        -0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "Scale": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "Static": false,
+                    "Select": true,
+                    "InTree": true,
+                    "Beh": [
+                        {
+                            "Name": "MeshBehaviour",
+                            "Attributes": {
+                                "Mesh": "sponza_SmallPots",
+                                "Transparent": false,
+                                "Shadow Caster": true,
+                                "Shadows Only": false,
+                                "Alpha Cutoff": 0.5,
+                                "Specular Factor": 1.0,
+                                "Base Color": [
+                                    1.0,
+                                    1.0,
+                                    1.0,
+                                    1.0
+                                ],
+                                "Metallic": 0.0,
+                                "Reflectivity": 0.0,
+                                "Tex": "sponza_vase_round",
+                                "Normal": "sponza_vase_round_ddn",
+                                "Specular": "sponza_vase_round_spec",
+                                "Sampler": "Wrap",
+                                "PS": "PS_GeometryMetallic"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "Name": "sponza_SmallPotsFoliage",
+                    "ID": 27,
+                    "Enabled": true,
+                    "Pos": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "Rot": [
+                        -0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "Scale": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "Static": false,
+                    "Select": true,
+                    "InTree": true,
+                    "Beh": [
+                        {
+                            "Name": "MeshBehaviour",
+                            "Attributes": {
+                                "Mesh": "sponza_SmallPotsFoliage",
+                                "Transparent": false,
+                                "Shadow Caster": true,
+                                "Shadows Only": false,
+                                "Alpha Cutoff": 0.5,
+                                "Specular Factor": 1.0,
+                                "Base Color": [
+                                    1.0,
+                                    1.0,
+                                    1.0,
+                                    1.0
+                                ],
+                                "Metallic": 0.0,
+                                "Reflectivity": 0.0,
+                                "Tex": "sponza_vase_plant",
+                                "Specular": "sponza_vase_plant_spec",
+                                "Sampler": "Wrap",
+                                "PS": "PS_GeometryMetallic"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "Name": "sponza_WindowsDoors",
+                    "ID": 28,
+                    "Enabled": true,
+                    "Pos": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "Rot": [
+                        -0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "Scale": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "Static": false,
+                    "Select": true,
+                    "InTree": true,
+                    "Beh": [
+                        {
+                            "Name": "MeshBehaviour",
+                            "Attributes": {
+                                "Mesh": "sponza_WindowsDoors",
+                                "Transparent": false,
+                                "Shadow Caster": true,
+                                "Shadows Only": false,
+                                "Alpha Cutoff": 0.5,
+                                "Specular Factor": 1.0,
+                                "Base Color": [
+                                    1.0,
+                                    1.0,
+                                    1.0,
+                                    1.0
+                                ],
+                                "Metallic": 0.0,
+                                "Reflectivity": 0.0,
+                                "Tex": "sponza_details_diff",
+                                "Normal": "sponza_details_ddn",
+                                "Specular": "sponza_details_spec",
+                                "Sampler": "Wrap",
+                                "PS": "PS_GeometryMetallic"
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "Name": "Main Light",
+            "ID": 29,
+            "Enabled": true,
+            "Pos": [
+                0.8352147340774536,
+                9.031537055969238,
+                0.8428280353546143
+            ],
+            "Rot": [
+                -0.0,
+                0.0,
+                0.0
+            ],
+            "Scale": [
+                1.0,
+                1.0,
+                1.0
+            ],
+            "Static": false,
+            "Select": true,
+            "InTree": true,
+            "Beh": [
+                {
+                    "Name": "PointLightBehaviour",
+                    "Attributes": {
+                        "Falloff": 0.5,
+                        "Fog Strength": 1.0,
+                        "Near": -0.10000000149011612,
+                        "Far": -28.21289825439453,
+                        "Color": [
+                            2.0,
+                            1.7900806665420532,
+                            1.490195870399475
+                        ]
+                    }
+                }
+            ]
+        },
+        {
+            "Name": "Bounce Light",
+            "ID": 31,
+            "Enabled": true,
+            "Pos": [
+                -3.173872232437134,
+                2.2777037620544434,
+                0.23989759385585785
+            ],
+            "Rot": [
+                -0.0,
+                0.0,
+                0.0
+            ],
+            "Scale": [
+                1.0,
+                1.0,
+                1.0
+            ],
+            "Static": false,
+            "Select": true,
+            "InTree": true,
+            "Beh": [
+                {
+                    "Name": "SimplePointLightBehaviour",
+                    "Attributes": {
+                        "Falloff": 0.30000001192092896,
+                        "Fog Strength": 1.0,
+                        "Color": [
+                            0.15000000596046448,
+                            0.14273357391357422,
+                            0.114705890417099
+                        ]
+                    }
+                }
+            ]
+        },
+        {
+            "Name": "Bounce Light",
+            "ID": 33,
+            "Enabled": true,
+            "Pos": [
+                3.8849740028381348,
+                2.2777037620544434,
+                0.23989759385585785
+            ],
+            "Rot": [
+                -0.0,
+                0.0,
+                0.0
+            ],
+            "Scale": [
+                1.0,
+                1.0,
+                1.0
+            ],
+            "Static": false,
+            "Select": true,
+            "InTree": true,
+            "Beh": [
+                {
+                    "Name": "SimplePointLightBehaviour",
+                    "Attributes": {
+                        "Falloff": 0.30000001192092896,
+                        "Fog Strength": 1.0,
+                        "Color": [
+                            0.15000000596046448,
+                            0.14273357391357422,
+                            0.114705890417099
+                        ]
+                    }
+                }
+            ]
+        },
+        {
+            "Name": "Main Light",
+            "ID": 35,
+            "Enabled": true,
+            "Pos": [
+                3.074345827102661,
+                14.433408737182617,
+                2.7785305976867676
+            ],
+            "Rot": [
+                -0.0,
+                0.0,
+                0.0
+            ],
+            "Scale": [
+                1.0,
+                1.0,
+                1.0
+            ],
+            "Static": false,
+            "Select": true,
+            "InTree": true,
+            "Beh": [
+                {
+                    "Name": "PointLightBehaviour",
+                    "Attributes": {
+                        "Falloff": 0.25,
+                        "Fog Strength": 0.20000000298023224,
+                        "Near": -0.10000000149011612,
+                        "Far": -56.42962646484375,
+                        "Color": [
+                            2.0,
+                            1.6407151222229004,
+                            1.127450942993164
+                        ]
+                    }
+                }
+            ]
+        },
+        {
+            "Name": "Bounce Light",
+            "ID": 37,
+            "Enabled": true,
+            "Pos": [
+                -5.575446605682373,
+                1.9010424613952637,
+                -2.060887336730957
+            ],
+            "Rot": [
+                -0.0,
+                0.0,
+                0.0
+            ],
+            "Scale": [
+                1.0,
+                1.0,
+                1.0
+            ],
+            "Static": false,
+            "Select": true,
+            "InTree": true,
+            "Beh": [
+                {
+                    "Name": "SimplePointLightBehaviour",
+                    "Attributes": {
+                        "Falloff": 1.0,
+                        "Fog Strength": 1.0,
+                        "Color": [
+                            0.36132359504699707,
+                            0.9100000262260437,
+                            0.4742867648601532
+                        ]
+                    }
+                }
+            ]
+        },
+        {
+            "Name": "Bounce Light",
+            "ID": 39,
+            "Enabled": true,
+            "Pos": [
+                -5.493840217590332,
+                1.7134662866592407,
+                2.404245615005493
+            ],
+            "Rot": [
+                -0.0,
+                0.0,
+                0.0
+            ],
+            "Scale": [
+                1.0,
+                1.0,
+                1.0
+            ],
+            "Static": false,
+            "Select": true,
+            "InTree": true,
+            "Beh": [
+                {
+                    "Name": "SimplePointLightBehaviour",
+                    "Attributes": {
+                        "Falloff": 22.889999389648438,
+                        "Fog Strength": 1.0,
+                        "Color": [
+                            243.27999877929688,
+                            96.59647369384766,
+                            96.59647369384766
+                        ]
+                    }
+                }
+            ]
+        },
+        {
+            "Name": "Bounce Light",
+            "ID": 41,
+            "Enabled": true,
+            "Pos": [
+                6.500007629394531,
+                1.579605221748352,
+                2.404245615005493
+            ],
+            "Rot": [
+                -0.0,
+                0.0,
+                0.0
+            ],
+            "Scale": [
+                1.0,
+                1.0,
+                1.0
+            ],
+            "Static": false,
+            "Select": true,
+            "InTree": true,
+            "Beh": [
+                {
+                    "Name": "SimplePointLightBehaviour",
+                    "Attributes": {
+                        "Falloff": 19.06999969482422,
+                        "Fog Strength": 7.300000190734863,
+                        "Color": [
+                            4.594409465789795,
+                            11.578316688537598,
+                            22.860000610351563
+                        ]
+                    }
+                }
+            ]
+        },
+        {
+            "Name": "Bounce Light",
+            "ID": 43,
+            "Enabled": true,
+            "Pos": [
+                6.503631591796875,
+                1.6499229669570923,
+                -2.0493950843811035
+            ],
+            "Rot": [
+                -0.0,
+                0.0,
+                0.0
+            ],
+            "Scale": [
+                1.0,
+                1.0,
+                1.0
+            ],
+            "Static": false,
+            "Select": true,
+            "InTree": true,
+            "Beh": [
+                {
+                    "Name": "SimplePointLightBehaviour",
+                    "Attributes": {
+                        "Falloff": 7.489999771118164,
+                        "Fog Strength": 0.4650000035762787,
+                        "Color": [
+                            32.060001373291016,
+                            31.237224578857422,
+                            4.086079120635986
+                        ]
+                    }
+                }
+            ]
+        }
+    ]
+}

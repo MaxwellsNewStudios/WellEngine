@@ -1,0 +1,326 @@
+{
+    "Bindings": [
+        {
+            "Action": "Exit",
+            "Type": "Combo",
+            "Steps": [
+				{
+					"Type": "Simple",
+					"Key": "LeftShift",
+					"Deactivation Time": -1.0,
+					"Ignore Absorb": true,
+					"State": "Held"
+				},
+				{
+					"Type": "Simple",
+					"Key": "Escape",
+					"Deactivation Time": -1.0,
+					"Ignore Absorb": true,
+					"State": "Pressed"
+				}
+			],
+			"Reset On Trigger": false
+        },
+        {
+            "Action": "Lock Cursor",
+            "Type": "Combo",
+            "Steps": [
+				{
+					"Type": "Simple",
+					"Key": "LeftControl",
+					"Deactivation Time": -1.0,
+					"Ignore Absorb": true,
+					"State": "Held"
+				},
+				{
+					"Type": "Simple",
+					"Key": "Tab",
+					"Deactivation Time": -1.0,
+					"Ignore Absorb": true,
+					"State": "Pressed"
+				}
+			],
+			"Reset On Trigger": false
+        },
+        {
+            "Action": "Copy Selected",
+            "Type": "Combo",
+            "Steps": [
+				{
+					"Type": "Simple",
+					"Key": "LeftShift",
+					"Deactivation Time": -1.0,
+					"Ignore Absorb": true,
+					"State": "None"
+				},
+				{
+					"Type": "Simple",
+					"Key": "LeftControl",
+					"Deactivation Time": -1.0,
+					"Ignore Absorb": true,
+					"State": "Held"
+				},
+				{
+					"Type": "Simple",
+					"Key": "D",
+					"Deactivation Time": -1.0,
+					"Ignore Absorb": true,
+					"State": "Pressed"
+				}
+			],
+			"Reset On Trigger": false
+        },
+        {
+            "Action": "Additive Select",
+            "Type": "Single",
+            "Steps": [
+				{
+					"Type": "Simple",
+					"Key": "LeftShift",
+					"Deactivation Time": -1.0,
+					"Ignore Absorb": true,
+					"State": "Pressed"
+				},
+				{
+					"Type": "Simple",
+					"Key": "LeftShift",
+					"Deactivation Time": -1.0,
+					"Ignore Absorb": true,
+					"State": "Held"
+				},
+				{
+					"Type": "Simple",
+					"Key": "RightShift",
+					"Deactivation Time": -1.0,
+					"Ignore Absorb": true,
+					"State": "Pressed"
+				},
+				{
+					"Type": "Simple",
+					"Key": "RightShift",
+					"Deactivation Time": -1.0,
+					"Ignore Absorb": true,
+					"State": "Held"
+				}
+			],
+			"Reset On Trigger": false
+        },
+        {
+            "Action": "Save",
+            "Type": "Single",
+            "Steps": [
+				{
+					"Type": "Simple",
+					"Key": "F5",
+					"Deactivation Time": -1.0,
+					"Ignore Absorb": true,
+					"State": "Pressed"
+				}
+			],
+			"Reset On Trigger": false
+        },
+        {
+            "Action": "Load",
+            "Type": "Single",
+            "Steps": [
+				{
+					"Type": "Simple",
+					"Key": "F9",
+					"Deactivation Time": -1.0,
+					"Ignore Absorb": true,
+					"State": "Pressed"
+				}
+			],
+			"Reset On Trigger": false
+        },
+        {
+            "Action": "Pause",
+            "Type": "Single",
+            "Steps": [
+				{
+					"Type": "Simple",
+					"Key": "Escape",
+					"Deactivation Time": -1.0,
+					"Ignore Absorb": true,
+					"State": "Pressed"
+				}
+			],
+			"Reset On Trigger": false
+        },
+        {
+            "Action": "Fullscreen",
+            "Type": "Combo",
+            "Steps": [
+				{
+					"Type": "Simple",
+					"Key": "LeftControl",
+					"Deactivation Time": -1.0,
+					"Ignore Absorb": true,
+					"State": "Held"
+				},
+				{
+					"Type": "Simple",
+					"Key": "Enter",
+					"Deactivation Time": -1.0,
+					"Ignore Absorb": true,
+					"State": "Pressed"
+				}
+			],
+			"Reset On Trigger": false
+        },
+        {
+            "Action": "Move Forward",
+            "Type": "Single",
+            "Steps": [
+				{
+					"Type": "Simple",
+					"Key": "W",
+					"Deactivation Time": -1.0,
+					"Ignore Absorb": false,
+					"State": "Held"
+				},
+				{
+					"Type": "Simple",
+					"Key": "W",
+					"Deactivation Time": -1.0,
+					"Ignore Absorb": false,
+					"State": "Pressed"
+				}
+			],
+			"Reset On Trigger": false
+        },
+        {
+            "Action": "Move Backward",
+            "Type": "Single",
+            "Steps": [
+				{
+					"Type": "Simple",
+					"Key": "S",
+					"Deactivation Time": -1.0,
+					"Ignore Absorb": false,
+					"State": "Held"
+				},
+				{
+					"Type": "Simple",
+					"Key": "S",
+					"Deactivation Time": -1.0,
+					"Ignore Absorb": false,
+					"State": "Pressed"
+				}
+			],
+			"Reset On Trigger": false
+        },
+        {
+            "Action": "Move Left",
+            "Type": "Single",
+            "Steps": [
+				{
+					"Type": "Simple",
+					"Key": "A",
+					"Deactivation Time": -1.0,
+					"Ignore Absorb": false,
+					"State": "Held"
+				},
+				{
+					"Type": "Simple",
+					"Key": "A",
+					"Deactivation Time": -1.0,
+					"Ignore Absorb": false,
+					"State": "Pressed"
+				}
+			],
+			"Reset On Trigger": false
+        },
+        {
+            "Action": "Move Right",
+            "Type": "Single",
+            "Steps": [
+				{
+					"Type": "Simple",
+					"Key": "D",
+					"Deactivation Time": -1.0,
+					"Ignore Absorb": false,
+					"State": "Held"
+				},
+				{
+					"Type": "Simple",
+					"Key": "D",
+					"Deactivation Time": -1.0,
+					"Ignore Absorb": false,
+					"State": "Pressed"
+				}
+			],
+			"Reset On Trigger": false
+        },
+        {
+            "Action": "Sneak",
+            "Type": "Single",
+            "Steps": [
+				{
+					"Type": "Simple",
+					"Key": "LeftControl",
+					"Deactivation Time": -1.0,
+					"Ignore Absorb": false,
+					"State": "Held"
+				},
+				{
+					"Type": "Simple",
+					"Key": "LeftControl",
+					"Deactivation Time": -1.0,
+					"Ignore Absorb": false,
+					"State": "Pressed"
+				}
+			],
+			"Reset On Trigger": false
+        },
+        {
+            "Action": "Sprint",
+            "Type": "Single",
+            "Steps": [
+				{
+					"Type": "Simple",
+					"Key": "LeftShift",
+					"Deactivation Time": -1.0,
+					"Ignore Absorb": false,
+					"State": "Held"
+				},
+				{
+					"Type": "Simple",
+					"Key": "LeftShift",
+					"Deactivation Time": -1.0,
+					"Ignore Absorb": false,
+					"State": "Pressed"
+				}
+			],
+			"Reset On Trigger": false
+        },
+        {
+            "Action": "Show Picture",
+            "Type": "Single",
+            "Steps": [
+				{
+					"Type": "Simple",
+					"Key": "P",
+					"Deactivation Time": -1.0,
+					"Ignore Absorb": false,
+					"State": "Pressed"
+				}
+			],
+			"Reset On Trigger": false
+        },
+        {
+            "Action": "Place Breadcrumb",
+            "Type": "Single",
+            "Steps": [
+				{
+					"Type": "Simple",
+					"Key": "B",
+					"Deactivation Time": -1.0,
+					"Ignore Absorb": false,
+					"State": "Pressed"
+				}
+			],
+			"Reset On Trigger": false
+        }
+    ]
+}

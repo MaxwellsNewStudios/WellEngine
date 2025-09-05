@@ -1,0 +1,11 @@
+# Push parameter values on a new line inside of <>
+# Parameters: 
+#	[m]ipmapped 	(default: true)
+#	[d]ownsample 	(default: 0)
+#	[e]ditoronly 	(default: false)
+# 
+# Ex:
+#  <push mipmapped=false downsample=1>
+#  ...
+#  <pop m d>
+

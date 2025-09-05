@@ -1,0 +1,86 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.36414.22
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Build", "Build", "{02EA681E-C7D8-13C7-8484-4AC65E1B71E8}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SDL3", "WellEngine\Dependencies\SDL3\VisualC\SDL\SDL.vcxproj", "{81CE8DAF-EBB2-4761-8E45-B71ABCCA8C68}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Dependencies", "Dependencies", "{BBB3A8AD-E57C-4420-B0F2-32F08493298B}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Application", "Application\Application.vcxproj", "{8B6CE8D3-6657-482B-B083-247362383978}"
+	ProjectSection(ProjectDependencies) = postProject
+		{EE03BB25-FFFC-4238-A41F-849E4179D81C} = {EE03BB25-FFFC-4238-A41F-849E4179D81C}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "BehaviourRegistration", "BuildTools\BehaviourRegistration\BehaviourRegistration.vcxproj", "{6619979A-F867-46BF-BE5C-A0F13B2BEFCB}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "BuildMerger", "BuildTools\BuildMerger\BuildMerger.vcxproj", "{EE03BB25-FFFC-4238-A41F-849E4179D81C}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Tests", "Tests\Tests.vcxproj", "{13437FDC-DC2A-4049-8B37-880871315962}"
+	ProjectSection(ProjectDependencies) = postProject
+		{7F156B4B-4453-4B20-8765-7898D274BF6E} = {7F156B4B-4453-4B20-8765-7898D274BF6E}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "WellEngine", "WellEngine\WellEngine.vcxproj", "{7F156B4B-4453-4B20-8765-7898D274BF6E}"
+	ProjectSection(ProjectDependencies) = postProject
+		{6619979A-F867-46BF-BE5C-A0F13B2BEFCB} = {6619979A-F867-46BF-BE5C-A0F13B2BEFCB}
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x64 = Debug|x64
+		Deploy|x64 = Deploy|x64
+		Release|x64 = Release|x64
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{81CE8DAF-EBB2-4761-8E45-B71ABCCA8C68}.Debug|x64.ActiveCfg = Debug|x64
+		{81CE8DAF-EBB2-4761-8E45-B71ABCCA8C68}.Debug|x64.Build.0 = Debug|x64
+		{81CE8DAF-EBB2-4761-8E45-B71ABCCA8C68}.Deploy|x64.ActiveCfg = Deploy|x64
+		{81CE8DAF-EBB2-4761-8E45-B71ABCCA8C68}.Deploy|x64.Build.0 = Deploy|x64
+		{81CE8DAF-EBB2-4761-8E45-B71ABCCA8C68}.Release|x64.ActiveCfg = Release|x64
+		{81CE8DAF-EBB2-4761-8E45-B71ABCCA8C68}.Release|x64.Build.0 = Release|x64
+		{8B6CE8D3-6657-482B-B083-247362383978}.Debug|x64.ActiveCfg = Debug|x64
+		{8B6CE8D3-6657-482B-B083-247362383978}.Debug|x64.Build.0 = Debug|x64
+		{8B6CE8D3-6657-482B-B083-247362383978}.Deploy|x64.ActiveCfg = Deploy|x64
+		{8B6CE8D3-6657-482B-B083-247362383978}.Deploy|x64.Build.0 = Deploy|x64
+		{8B6CE8D3-6657-482B-B083-247362383978}.Release|x64.ActiveCfg = Release|x64
+		{8B6CE8D3-6657-482B-B083-247362383978}.Release|x64.Build.0 = Release|x64
+		{6619979A-F867-46BF-BE5C-A0F13B2BEFCB}.Debug|x64.ActiveCfg = Debug|x64
+		{6619979A-F867-46BF-BE5C-A0F13B2BEFCB}.Debug|x64.Build.0 = Debug|x64
+		{6619979A-F867-46BF-BE5C-A0F13B2BEFCB}.Deploy|x64.ActiveCfg = Release|x64
+		{6619979A-F867-46BF-BE5C-A0F13B2BEFCB}.Deploy|x64.Build.0 = Release|x64
+		{6619979A-F867-46BF-BE5C-A0F13B2BEFCB}.Release|x64.ActiveCfg = Release|x64
+		{6619979A-F867-46BF-BE5C-A0F13B2BEFCB}.Release|x64.Build.0 = Release|x64
+		{EE03BB25-FFFC-4238-A41F-849E4179D81C}.Debug|x64.ActiveCfg = Debug|x64
+		{EE03BB25-FFFC-4238-A41F-849E4179D81C}.Debug|x64.Build.0 = Debug|x64
+		{EE03BB25-FFFC-4238-A41F-849E4179D81C}.Deploy|x64.ActiveCfg = Release|x64
+		{EE03BB25-FFFC-4238-A41F-849E4179D81C}.Deploy|x64.Build.0 = Release|x64
+		{EE03BB25-FFFC-4238-A41F-849E4179D81C}.Release|x64.ActiveCfg = Release|x64
+		{EE03BB25-FFFC-4238-A41F-849E4179D81C}.Release|x64.Build.0 = Release|x64
+		{13437FDC-DC2A-4049-8B37-880871315962}.Debug|x64.ActiveCfg = Debug|x64
+		{13437FDC-DC2A-4049-8B37-880871315962}.Debug|x64.Build.0 = Debug|x64
+		{13437FDC-DC2A-4049-8B37-880871315962}.Deploy|x64.ActiveCfg = Deploy|x64
+		{13437FDC-DC2A-4049-8B37-880871315962}.Deploy|x64.Build.0 = Deploy|x64
+		{13437FDC-DC2A-4049-8B37-880871315962}.Release|x64.ActiveCfg = Release|x64
+		{13437FDC-DC2A-4049-8B37-880871315962}.Release|x64.Build.0 = Release|x64
+		{7F156B4B-4453-4B20-8765-7898D274BF6E}.Debug|x64.ActiveCfg = Debug|x64
+		{7F156B4B-4453-4B20-8765-7898D274BF6E}.Debug|x64.Build.0 = Debug|x64
+		{7F156B4B-4453-4B20-8765-7898D274BF6E}.Deploy|x64.ActiveCfg = Deploy|x64
+		{7F156B4B-4453-4B20-8765-7898D274BF6E}.Deploy|x64.Build.0 = Deploy|x64
+		{7F156B4B-4453-4B20-8765-7898D274BF6E}.Release|x64.ActiveCfg = Release|x64
+		{7F156B4B-4453-4B20-8765-7898D274BF6E}.Release|x64.Build.0 = Release|x64
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{81CE8DAF-EBB2-4761-8E45-B71ABCCA8C68} = {BBB3A8AD-E57C-4420-B0F2-32F08493298B}
+		{6619979A-F867-46BF-BE5C-A0F13B2BEFCB} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+		{EE03BB25-FFFC-4238-A41F-849E4179D81C} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {7FE63A67-8E9B-48FD-A12F-93D54B499E91}
+	EndGlobalSection
+EndGlobal

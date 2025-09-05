@@ -1,0 +1,10 @@
+Name	BPP	Channels	Notes
+BC1		4 	RGBA 		Albedo maps, bad with normals, 1 alpha bit
+BC2		8	RGBA		Unused
+BC3	 	8	RGBA 		Transparent albedo
+BC4	 	4	R 			Height, Gloss
+BC5	 	8	RG 			Tangent-space normal
+BC6H	8	RGB			HDR, half-precision float
+BC7		8	RGB(A)		More accurate colors
+
+(BPP: bits per pixel)

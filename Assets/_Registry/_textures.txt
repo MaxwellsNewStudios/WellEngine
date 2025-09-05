@@ -1,0 +1,462 @@
+# Push parameter values on a new line inside of <>
+# Parameters: 
+#	[f]ormat 		(default: UNKNOWN, see "DXGI_FORMAT")
+#	[m]ipmapped 	(default: true)
+#	[d]ownsample 	(default: 0)
+#	[e]ditoronly 	(default: false)
+# 
+# Ex:
+#  <push mipmapped=false downsample=1>
+#      ...
+#  <pop mipmapped downsample>
+
+
+CaveSystem.dds
+CaveSystem_Large.dds
+
+MineSection.dds
+Cave_Wall_Texture.png
+<push downsample=2>
+	plastered_stone.dds
+<pop downsample>
+
+Stalagmites_Large_1.dds
+Stalagmites_Large_2.dds
+Stalagmites_Medium_1.dds
+Stalagmites_Medium_2.dds
+<push downsample=1>
+	Stalagmites_Small_1.dds
+	Stalagmites_Small_2.dds
+	mushroom_DefaultMaterial_Diffuse.dds
+	mushroom_DefaultMaterial_Ambient.dds
+<pop downsample>
+
+<push downsample=1>
+	Rails_Straight_0.dds
+	Rails_Straight_1.dds
+	Rails_Turn_0.dds
+	Rails_End_0.dds
+	Rails_End_1.dds
+	Minecart_Material.dds
+<pop downsample>
+
+SupportBeams_Material_Diffuse.dds
+SupportBeams_Material_BaseColor.dds
+SupportBeams_MaterialNoHeight_Diffuse.dds
+brokenfenceotherUV_Material_Diffuse.dds
+fence_Material_Diffuse.dds
+fence2_Material_Diffuse.dds
+fence3_Material_Diffuse.dds
+brokenfenceotherUV_Material_Diffuse.dds
+minesign2legs_Exposive_storage_Diffuse.dds
+minesign2legs_Minecart_station_Diffuse.dds
+minesign2legs_Old_Mine_Entrace_Diffuse.dds
+minesign2legs_Storage_Room_Diffuse.dds
+minesign2legs_The_Pit_Diffuse.dds
+minesign2legs_ControllsSign_Diffuse.dds
+statueOfMaxwell_DefaultMaterial_Diffuse.dds
+ropewheel2_DefaultMaterial_Diffuse.dds
+ropewheelstand3_DefaultMaterial_Diffuse.dds
+rope_DefaultMaterial_Diffuse.dds
+<push downsample=1>
+	Support_Beam.dds
+<pop downsample>
+
+locker_Material_Diffuse.dds
+<push downsample=1>
+	lockerDoor_Material_Diffuse.dds
+<pop downsample>
+Chair_DefaultMaterial_Diffuse.dds
+Barrel2_DefaultMaterial_Diffuse.dds
+BrokenTable_Material_BaseColor.dds
+
+<push downsample=1>
+	BrokenTable2_Material.001_BaseColor.dds
+<pop downsample>
+
+OldLamp_Metal.dds
+<push downsample=2>
+	OldLamp_Glass.dds
+<pop downsample>
+pickaxe_Material_Diffuse.dds
+pickaxe2_Material_Diffuse.dds
+shovel_DefaultMaterial_Diffuse.dds
+dynamitebox_DefaultMaterial_Diffuse.dds
+dynamitebundle_DefaultMaterial_Diffuse.dds
+multipledynamite_DefaultMaterial_Diffuse.dds
+singledynamite2_DefaultMaterial_Diffuse.dds
+
+Breadcrumb_Collection.dds
+Breadcrumb_Collection_Light.dds
+Breadcrumb_Red.dds
+Breadcrumb_Red_Light.dds
+Breadcrumb_Green.dds
+Breadcrumb_Green_Light.dds
+Breadcrumb_Blue.dds
+Breadcrumb_Blue_Light.dds
+Compass_SpecularMaterial_Diffuse.dds
+GenericPic_Texture.png
+<push downsample=1>
+	upprivenbilddelad.png
+	FlashlightBody.dds
+	<push downsample=2>
+		FlashlightLever.dds
+		Camera.dds
+<pop downsample downsample>
+
+<push m=false>
+HighlightColor.png
+<pop m>
+<push downsample=1>
+	transperancy.png
+<pop downsample>
+Particle.dds
+<push downsample=1>
+	Flare.dds
+	Flare_Red.dds
+	Flare_Green.dds
+	Flare_Blue.dds
+	<push downsample=2>
+		Flare_Golden.dds
+<pop downsample downsample>
+<push downsample=1>
+	Metal.dds
+<pop downsample>
+Button_Start_Texture.png
+Button_Continue_Texture.png
+Button_Load_Texture.png
+Button_Save_Texture.png
+Button_NewSave_Texture.png
+Button_Credits_Texture.png
+Button_Exit_Texture.png
+Credit_Logo_Texture.dds
+Credit_Devs_Texture.dds
+Credit_Testing_Texture.dds
+Credit_Assets_Texture.dds
+Credit_BTH_Texture.dds
+Credit_Story1_Texture.dds
+Credit_Special_Texture.dds
+
+
+Rails_Straight_0_Normal.dds
+Rails_Straight_1_Normal.dds
+Rails_Turn_0_Normal.dds
+Rails_End_0_Normal.dds
+Rails_End_1_Normal.dds
+Minecart_Material_Normal.dds
+
+<push downsample=1>
+Rails_Straight_0_Specular.dds
+Rails_Straight_1_Specular.dds
+Rails_Turn_0_Specular.dds
+Rails_End_0_Specular.dds
+Rails_End_1_Specular.dds
+Minecart_Material_Specular.dds
+
+<push downsample=2>
+Rails_Straight_0_Glossiness.dds
+Rails_Straight_1_Glossiness.dds
+Rails_Turn_0_Glossiness.dds
+Rails_End_0_Glossiness.dds
+Rails_End_1_Glossiness.dds
+Minecart_Material_Glossiness.dds
+
+Rails_Straight_0_Occlusion.dds
+Rails_Straight_1_Occlusion.dds
+Rails_Straight_2_Occlusion.dds
+Rails_Straight_3_Occlusion.dds
+Rails_Straight_4_Occlusion.dds
+Rails_Straight_5_Occlusion.dds
+Rails_Straight_6_Occlusion.dds
+Rails_Straight_7_Occlusion.dds
+Rails_Straight_8_Occlusion.dds
+Rails_Turn_0_Occlusion.dds
+Rails_Turn_1_Occlusion.dds
+Rails_Turn_2_Occlusion.dds
+Rails_Turn_3_Occlusion.dds
+Rails_Turn_4_Occlusion.dds
+Rails_Turn_5_Occlusion.dds
+Rails_End_0_Occlusion.dds
+Rails_End_1_Occlusion.dds
+Minecart_Material_Occlusion.dds
+<pop downsample downsample>
+
+<push downsample=1>
+MineSection_Normal.dds
+MineSection_Specular.dds
+MineSection_Glossiness.dds
+MineSection_Occlusion.dds
+<pop downsample>
+
+CaveSystem_Normal.dds
+CaveSystem_Specular.dds
+CaveSystem_Glossiness.dds
+CaveSystem_Occlusion.dds
+CaveSystem_Large_Normal.dds
+CaveSystem_Large_Specular.dds
+CaveSystem_Large_Glossiness.dds
+CaveSystem_Large_Occlusion.dds
+
+brokenfenceotherUV_Material_Normal.dds
+brokenfenceotherUV_Material_Specular.dds
+brokenfenceotherUV_Material_Glossiness.dds
+
+SupportBeams_MaterialNoHeight_Normal.dds
+SupportBeams_MaterialNoHeight_Specular.dds
+SupportBeams_MaterialNoHeight_Glossiness.dds
+
+SupportBeams_Material_Specular.dds
+SupportBeams_Material_Glossiness.dds
+
+Breadcrumb_Collection_Normal.dds
+Breadcrumb_Collection_Specular.dds
+Breadcrumb_Collection_Glossiness.dds
+Breadcrumb_Collection_Occlusion.dds
+Breadcrumb_Normal.dds
+<push downsample=1>
+Breadcrumb_Red_Specular.dds
+Breadcrumb_Green_Specular.dds
+Breadcrumb_Blue_Specular.dds
+Breadcrumb_Glossiness.dds
+Breadcrumb_Occlusion.dds
+<pop downsample>
+
+minesign2legs_DefaultMaterial_Specular.dds
+minesign2legs_DefaultMaterial_Glossiness.dds
+minesign2legs_The_Pit_Diffuse.dds
+minesign2legs_Minecart_station_Normal.dds
+minesign2legs_The_Pit_Normal.dds
+
+minesign2legs_ControllsSign_Normal.dds
+minesign2legs_ControllsSign_Glossiness.dds
+minesign2legs_ControllsSign_Specular.dds
+
+locker_Material_Normal.dds
+locker_Material_Specular.dds
+locker_Material_Glossiness.dds
+<push downsample=2>
+lockerDoor_Material_Normal.dds
+lockerDoor_Material_Specular.dds
+lockerDoor_Material_Glossiness.dds
+<pop downsample>
+
+<push downsample=2>
+mushroom_DefaultMaterial_Normal.dds
+mushroom_DefaultMaterial_Specular.dds
+mushroom_DefaultMaterial_Glossiness.dds
+<pop downsample>
+
+<push downsample=1>
+Barrel2_DefaultMaterial_Normal.dds
+Barrel2_DefaultMaterial_Specular.dds
+Barrel2_DefaultMaterial_Glossiness.dds
+<pop downsample>
+
+dynamitebox_DefaultMaterial_Normal.dds
+dynamitebox_DefaultMaterial_Specular.dds
+dynamitebox_DefaultMaterial_Glossiness.dds
+
+dynamitebundle_DefaultMaterial_Normal.dds
+dynamitebundle_DefaultMaterial_Specular.dds
+dynamitebundle_DefaultMaterial_Glossiness.dds
+
+multipledynamite_DefaultMaterial_Normal.dds
+multipledynamite_DefaultMaterial_Specular.dds
+multipledynamite_DefaultMaterial_Glossiness.dds
+
+singledynamite2_DefaultMaterial_Normal.dds
+singledynamite2_DefaultMaterial_Specular.dds
+singledynamite2_DefaultMaterial_Glossiness.dds
+
+BrokenTable_Material_Normal.dds
+BrokenTable2_Material001_Specular.dds
+BrokenTable2_Material001_Glossiness.dds
+
+fence_Material_Normal.dds
+fence2_Material_Normal.dds
+fence3_Material_Normal.dds
+brokenfenceotherUV_Material_Normal.dds
+
+fence_Material_Specular.dds
+fence2_Material_Specular.dds
+fence3_Material_Specular.dds
+brokenfenceotherUV_Material_Specular.dds
+
+fence_Material_Glossiness.dds
+fence2_Material_Glossiness.dds
+fence3_Material_Glossiness.dds
+brokenfenceotherUV_Material_Glossiness.dds
+
+ropewheel2_DefaultMaterial_Normal.dds
+ropewheel2_DefaultMaterial_Specular.dds
+ropewheel2_DefaultMaterial_Glossiness.dds
+
+rope_DefaultMaterial_Glossiness.dds
+rope_DefaultMaterial_Normal.dds
+rope_DefaultMaterial_Specular.dds
+ropewheelstand3_DefaultMaterial_Glossiness.dds
+ropewheelstand3_DefaultMaterial_Normal.dds
+ropewheelstand3_DefaultMaterial_Specular.dds
+
+pickaxe_Material_Normal.dds
+pickaxe_Material_Specular.dds
+pickaxe_Material_Glossiness.dds
+
+<push downsample=1>
+Chair_DefaultMaterial_Glossiness.dds
+Chair_DefaultMaterial_Normal.dds
+Chair_DefaultMaterial_Specular.dds
+<pop downsample>
+
+pickaxe2_Material_Glossiness.dds
+pickaxe2_Material_Normal.dds
+pickaxe2_Material_Specular.dds
+
+shovel_DefaultMaterial_Glossiness.dds
+shovel_DefaultMaterial_Normal.dds
+shovel_DefaultMaterial_Specular.dds
+
+statueOfMaxwell_DefaultMaterial_Normal.dds
+<push downsample=1>
+statueOfMaxwell_DefaultMaterial_Specular.dds
+statueOfMaxwell_DefaultMaterial_Glossiness.dds
+<pop downsample>
+
+<push downsample=2>
+LockerDoor_Highligt_Specular.dds
+<pop downsample>
+
+Stalagmites_Large_1_Normal.dds
+Stalagmites_Large_2_Normal.dds
+Stalagmites_Medium_1_Normal.dds
+Stalagmites_Medium_2_Normal.dds
+<push downsample=1>
+Stalagmites_Small_1_Normal.dds
+Stalagmites_Small_2_Normal.dds
+<pop downsample>
+
+Stalagmites_Large_1_Specular.dds
+Stalagmites_Large_2_Specular.dds
+Stalagmites_Medium_1_Specular.dds
+Stalagmites_Medium_2_Specular.dds
+<push downsample=1>
+Stalagmites_Small_1_Specular.dds
+Stalagmites_Small_2_Specular.dds
+<pop downsample>
+
+<push downsample=1>
+Stalagmites_Large_1_Glossiness.dds
+Stalagmites_Large_2_Glossiness.dds
+Stalagmites_Medium_1_Glossiness.dds
+Stalagmites_Medium_2_Glossiness.dds
+Stalagmites_Small_1_Glossiness.dds
+Stalagmites_Small_2_Glossiness.dds
+
+Stalagmites_Large_1_Occlusion.dds
+Stalagmites_Large_2_Occlusion.dds
+Stalagmites_Medium_1_Occlusion.dds
+Stalagmites_Medium_2_Occlusion.dds
+Stalagmites_Small_1_Occlusion.dds
+Stalagmites_Small_2_Occlusion.dds
+<pop downsample>
+
+OldLamp_Metal_Normal.dds
+OldLamp_Glass_Normal.dds
+OldLamp_Metal_Specular.dds
+OldLamp_Glass_Specular.dds
+OldLamp_Metal_Glossiness.dds
+OldLamp_Glass_Glossiness.dds
+OldLamp_Metal_Occlusion.dds
+OldLamp_Glass_Occlusion.dds
+
+Compass_SpecularMaterial_Normal.dds
+Compass_SpecularMaterial_Specular.dds
+Compass_SpecularMaterial_Glossiness.dds
+
+Sniper_Diffuse.dds
+Sniper_Normal.dds
+Sniper_Specular.dds
+Sniper_Glossiness.dds
+Sniper_Occlusion.dds
+
+SniperMagazine_Diffuse.dds
+SniperMagazine_Normal.dds
+SniperMagazine_Specular.dds
+SniperMagazine_Glossiness.dds
+SniperMagazine_Occlusion.dds
+
+Sniper Raw_Diffuse.png
+Sniper Raw_Normal.png
+Sniper Raw_Specular.png
+Sniper Raw_Glossiness.png
+Sniper Raw_Occlusion.png
+
+SniperMagazine Raw_Diffuse.png
+SniperMagazine Raw_Normal.png
+SniperMagazine Raw_Specular.png
+SniperMagazine Raw_Glossiness.png
+SniperMagazine Raw_Occlusion.png
+
+sponza\sponza_arch_ddn.dds
+sponza\sponza_arch_diff.dds
+sponza\sponza_arch_spec.dds
+sponza\sponza_background.dds
+sponza\sponza_background_ddn.dds
+sponza\sponza_background_spec.dds
+sponza\sponza_bricks_a_ddn.dds
+sponza\sponza_bricks_a_diff.dds
+sponza\sponza_bricks_a_spec.dds
+sponza\sponza_ceiling_a_ddn.dds
+sponza\sponza_ceiling_a_diff.dds
+sponza\sponza_ceiling_a_spec.dds
+sponza\sponza_chain_texture.dds
+sponza\sponza_chain_texture_ddn.dds
+sponza\sponza_column_a_ddn.dds
+sponza\sponza_column_a_diff.dds
+sponza\sponza_column_a_spec.dds
+sponza\sponza_column_b_ddn.dds
+sponza\sponza_column_b_diff.dds
+sponza\sponza_column_b_spec.dds
+sponza\sponza_column_c_ddn.dds
+sponza\sponza_column_c_diff.dds
+sponza\sponza_column_c_spec.dds
+sponza\sponza_curtain_blue_diff.dds
+sponza\sponza_curtain_ddn.dds
+sponza\sponza_curtain_diff.dds
+sponza\sponza_curtain_green_diff.dds
+sponza\sponza_curtain_spec.dds
+sponza\sponza_details_ddn.dds
+sponza\sponza_details_diff.dds
+sponza\sponza_details_spec.dds
+sponza\sponza_dummy.dds
+sponza\sponza_dummy_ddn.dds
+sponza\sponza_dummy_specular.dds
+sponza\sponza_fabric_blue_diff.dds
+sponza\sponza_fabric_ddn.dds
+sponza\sponza_fabric_diff.dds
+sponza\sponza_fabric_green_diff.dds
+sponza\sponza_fabric_spec.dds
+sponza\sponza_flagpole_ddn.dds
+sponza\sponza_flagpole_diff.dds
+sponza\sponza_flagpole_spec.dds
+sponza\sponza_floor_a_ddn.dds
+sponza\sponza_floor_a_diff.dds
+sponza\sponza_floor_a_spec.dds
+sponza\sponza_lion.dds
+sponza\sponza_lion_ddn.dds
+sponza\sponza_lion_spec.dds
+sponza\sponza_roof_ddn.dds
+sponza\sponza_roof_diff.dds
+sponza\sponza_thorn_ddn.dds
+sponza\sponza_thorn_diff.dds
+sponza\sponza_thorn_spec.dds
+sponza\sponza_vase_diff.dds
+sponza\sponza_vase_ddn.dds
+sponza\sponza_vase_hanging_diff.dds
+sponza\sponza_vase_plant.dds
+sponza\sponza_vase_plant_spec.dds
+sponza\sponza_vase_round.dds
+sponza\sponza_vase_round_ddn.dds
+sponza\sponza_vase_round_ddn.dds
+sponza\sponza_vase_round_spec.dds
+sponza\sponza_vase_spec.dds

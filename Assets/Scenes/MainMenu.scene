@@ -1,0 +1,523 @@
+{
+    "Scene": {
+        "Transitional": true,
+        "Bounds": {
+            "Center": [
+                0.0,
+                0.0,
+                0.0
+            ],
+            "Extents": [
+                50.0,
+                50.0,
+                50.0
+            ]
+        },
+        "Graphics": {
+            "Spotlight Resolution": 128,
+            "Pointlight Resolution": 1,
+            "Cubemap": "Uninitialized",
+            "Skybox": "Uninitialized",
+            "Ambient": [
+                0.05000000074505806,
+                0.05900000035762787,
+                0.06800000369548798
+            ],
+            "Fog": {
+                "Thickness": 0.03999999910593033,
+                "Step Size": 0.0,
+                "Min Steps": 0,
+                "Max Steps": 64
+            },
+            "Emission": {
+                "Strength": 1.0,
+                "Exponent": 0.5,
+                "Threshold": 1.0
+            }
+        }
+    },
+    "Hierarchy": [
+        {
+            "Name": "Cave Wall",
+            "ID": 3,
+            "Pos": [
+                0.0,
+                0.0,
+                10.0
+            ],
+            "Rot": [
+                -0.0,
+                0.0,
+                -0.0
+            ],
+            "Scale": [
+                5.0,
+                5.0,
+                5.0
+            ],
+            "Static": false,
+            "Select": true,
+            "InTree": true,
+            "Beh": [
+                {
+                    "Name": "MeshBehaviour",
+                    "Attributes": {
+                        "Mesh": "Cave_Wall",
+                        "Transparent": false,
+                        "Alpha Cutoff": 0.5,
+                        "Specular Factor": 1.0,
+                        "Base Color": [
+                            1.0,
+                            1.0,
+                            1.0,
+                            1.0
+                        ],
+                        "Metallic": 0.0,
+                        "Reflectivity": 0.0,
+                        "Tex": "MineSection",
+                        "Normal": "MineSection_Normal"
+                    }
+                }
+            ]
+        },
+        {
+            "Name": "StartButton",
+            "ID": 4,
+            "Pos": [
+                -3.5,
+                1.5,
+                5.0
+            ],
+            "Rot": [
+                -0.0,
+                0.0,
+                -0.0
+            ],
+            "Scale": [
+                0.699999988079071,
+                0.20000000298023224,
+                0.20000000298023224
+            ],
+            "Static": false,
+            "Select": true,
+            "InTree": true,
+            "Beh": [
+                {
+                    "Name": "MeshBehaviour",
+                    "Attributes": {
+                        "Mesh": "GraniteRock",
+                        "Transparent": false,
+                        "Alpha Cutoff": 0.5,
+                        "Specular Factor": 1.0,
+                        "Base Color": [
+                            1.0,
+                            1.0,
+                            1.0,
+                            1.0
+                        ],
+                        "Metallic": 0.0,
+                        "Reflectivity": 0.0,
+                        "Tex": "Button_Start_Texture"
+                    }
+                },
+                {
+                    "Name": "PlayButtonBehaviour",
+                    "Attributes": {}
+                },
+                {
+                    "Name": "SoundBehaviour",
+                    "Attributes": {
+                        "File Name": "footstep_concrete_000",
+                        "Sound Effect Flag": 0,
+                        "Volume": 0.30000001192092896,
+                        "Loop": false,
+                        "Play": false,
+                        "Distance Scaler": 75.0,
+                        "Reverb Scaler": 1.0
+                    }
+                }
+            ]
+        },
+        {
+            "Name": "SaveButton",
+            "ID": 5,
+            "Pos": [
+                -3.5,
+                0.75,
+                5.0
+            ],
+            "Rot": [
+                -0.0,
+                0.0,
+                -0.0
+            ],
+            "Scale": [
+                0.699999988079071,
+                0.20000000298023224,
+                0.20000000298023224
+            ],
+            "Static": false,
+            "Select": true,
+            "InTree": true,
+            "Beh": [
+                {
+                    "Name": "MeshBehaviour",
+                    "Attributes": {
+                        "Mesh": "GraniteRock",
+                        "Transparent": false,
+                        "Alpha Cutoff": 0.5,
+                        "Specular Factor": 1.0,
+                        "Base Color": [
+                            1.0,
+                            1.0,
+                            1.0,
+                            1.0
+                        ],
+                        "Metallic": 0.0,
+                        "Reflectivity": 0.0,
+                        "Tex": "Button_Save_Texture"
+                    }
+                },
+                {
+                    "Name": "SaveButtonBehaviour",
+                    "Attributes": {}
+                }
+            ]
+        },
+        {
+            "Name": "NewSaveButton",
+            "ID": 6,
+            "Pos": [
+                -3.5,
+                0.0,
+                5.0
+            ],
+            "Rot": [
+                -0.0,
+                0.0,
+                -0.0
+            ],
+            "Scale": [
+                0.699999988079071,
+                0.20000000298023224,
+                0.20000000298023224
+            ],
+            "Static": false,
+            "Select": true,
+            "InTree": true,
+            "Beh": [
+                {
+                    "Name": "MeshBehaviour",
+                    "Attributes": {
+                        "Mesh": "GraniteRock",
+                        "Transparent": false,
+                        "Alpha Cutoff": 0.5,
+                        "Specular Factor": 1.0,
+                        "Base Color": [
+                            1.0,
+                            1.0,
+                            1.0,
+                            1.0
+                        ],
+                        "Metallic": 0.0,
+                        "Reflectivity": 0.0,
+                        "Tex": "Button_NewSave_Texture"
+                    }
+                },
+                {
+                    "Name": "NewSaveButtonBehaviour",
+                    "Attributes": {}
+                }
+            ]
+        },
+        {
+            "Name": "CreditsButton",
+            "ID": 7,
+            "Pos": [
+                -3.5,
+                -0.75,
+                5.0
+            ],
+            "Rot": [
+                -0.0,
+                0.0,
+                -0.0
+            ],
+            "Scale": [
+                0.699999988079071,
+                0.20000000298023224,
+                0.20000000298023224
+            ],
+            "Static": false,
+            "Select": true,
+            "InTree": true,
+            "Beh": [
+                {
+                    "Name": "MeshBehaviour",
+                    "Attributes": {
+                        "Mesh": "GraniteRock",
+                        "Transparent": false,
+                        "Alpha Cutoff": 0.5,
+                        "Specular Factor": 1.0,
+                        "Base Color": [
+                            1.0,
+                            1.0,
+                            1.0,
+                            1.0
+                        ],
+                        "Metallic": 0.0,
+                        "Reflectivity": 0.0,
+                        "Tex": "Button_Credits_Texture"
+                    }
+                },
+                {
+                    "Name": "CreditsButtonBehaviour",
+                    "Attributes": {}
+                }
+            ]
+        },
+        {
+            "Name": "ExitButton",
+            "ID": 8,
+            "Pos": [
+                -3.5,
+                -1.5,
+                5.0
+            ],
+            "Rot": [
+                -0.0,
+                0.0,
+                -0.0
+            ],
+            "Scale": [
+                0.699999988079071,
+                0.20000000298023224,
+                0.20000000298023224
+            ],
+            "Static": false,
+            "Select": true,
+            "InTree": true,
+            "Beh": [
+                {
+                    "Name": "MeshBehaviour",
+                    "Attributes": {
+                        "Mesh": "GraniteRock",
+                        "Transparent": false,
+                        "Alpha Cutoff": 0.5,
+                        "Specular Factor": 1.0,
+                        "Base Color": [
+                            1.0,
+                            1.0,
+                            1.0,
+                            1.0
+                        ],
+                        "Metallic": 0.0,
+                        "Reflectivity": 0.0,
+                        "Tex": "Button_Exit_Texture"
+                    }
+                },
+                {
+                    "Name": "ExitButtonBehaviour",
+                    "Attributes": {}
+                }
+            ]
+        },
+        {
+            "Name": "MenuCamera",
+            "ID": 9,
+            "Pos": [
+                0.0,
+                0.0,
+                0.0
+            ],
+            "Rot": [
+                -0.0,
+                0.0,
+                -0.0
+            ],
+            "Scale": [
+                1.0,
+                1.0,
+                1.0
+            ],
+            "Static": false,
+            "Select": true,
+            "InTree": false,
+            "Beh": [
+                {
+                    "Name": "MenuCameraBehaviour",
+                    "Attributes": {}
+                }
+            ]
+        },
+        {
+            "Name": "FlashlightProp",
+            "ID": 12,
+            "Pos": [
+                -10.739999771118164,
+                -9.510000228881836,
+                18.360000610351563
+            ],
+            "Rot": [
+                -0.2214822620153427,
+                1.047197699546814,
+                -0.40578943490982056
+            ],
+            "Scale": [
+                0.5,
+                0.5,
+                0.5
+            ],
+            "Static": false,
+            "Select": true,
+            "InTree": true,
+            "Beh": [
+                {
+                    "Name": "MeshBehaviour",
+                    "Attributes": {
+                        "Mesh": "FlashlightBody",
+                        "Transparent": false,
+                        "Alpha Cutoff": 0.5,
+                        "Specular Factor": 1.0,
+                        "Base Color": [
+                            1.0,
+                            1.0,
+                            1.0,
+                            1.0
+                        ],
+                        "Metallic": 0.0,
+                        "Reflectivity": 0.0,
+                        "Tex": "FlashlightBody",
+                        "Normal": "FlashlightBody_Normal",
+                        "Specular": "FlashlightBody_Specular",
+                        "Gloss": "FlashlightBody_Glossiness"
+                    }
+                },
+                {
+                    "Name": "FlashlightPropBehaviour",
+                    "Attributes": {}
+                }
+            ],
+            "Child": [
+                {
+                    "Name": "FlashlightLever",
+                    "ID": 13,
+                    "Pos": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "Rot": [
+                        -0.0,
+                        0.0,
+                        -0.0
+                    ],
+                    "Scale": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "Static": false,
+                    "Select": true,
+                    "InTree": true,
+                    "Beh": [
+                        {
+                            "Name": "MeshBehaviour",
+                            "Attributes": {
+                                "Mesh": "FlashlightLever",
+                                "Transparent": false,
+                                "Alpha Cutoff": 0.5,
+                                "Specular Factor": 1.0,
+                                "Base Color": [
+                                    1.0,
+                                    1.0,
+                                    1.0,
+                                    1.0
+                                ],
+                                "Metallic": 0.0,
+                                "Reflectivity": 0.0,
+                                "Tex": "FlashlightLever",
+                                "Normal": "FlashlightLever_Normal",
+                                "Specular": "FlashlightLever_Specular",
+                                "Gloss": "FlashlightLever_Glossiness"
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "Name": "Breadcrumb Pile",
+            "ID": 16,
+            "Pos": [
+                10.739999771118164,
+                -11.5,
+                21.360000610351563
+            ],
+            "Rot": [
+                -0.0,
+                0.0,
+                -0.0
+            ],
+            "Scale": [
+                5.0,
+                5.0,
+                5.0
+            ],
+            "Static": false,
+            "Select": true,
+            "InTree": true,
+            "Beh": [
+                {
+                    "Name": "BreadcrumbPileBehaviour",
+                    "Attributes": {}
+                }
+            ]
+        },
+        {
+            "Name": "Controls sign",
+            "ID": 19,
+            "Pos": [
+                9.739999771118164,
+                -12.199999809265137,
+                24.360000610351563
+            ],
+            "Rot": [
+                -0.0,
+                2.0561811923980713,
+                0.0
+            ],
+            "Scale": [
+                5.0,
+                5.0,
+                5.0
+            ],
+            "Static": false,
+            "Select": true,
+            "InTree": true,
+            "Beh": [
+                {
+                    "Name": "MeshBehaviour",
+                    "Attributes": {
+                        "Mesh": "minesign2legsflipped",
+                        "Transparent": false,
+                        "Alpha Cutoff": 0.5,
+                        "Specular Factor": 1.0,
+                        "Base Color": [
+                            1.0,
+                            1.0,
+                            1.0,
+                            1.0
+                        ],
+                        "Metallic": 0.0,
+                        "Reflectivity": 0.0,
+                        "Tex": "minesign2legs_ControllsSign_Diffuse",
+                        "Normal": "minesign2legs_ControllsSign_Normal",
+                        "Specular": "minesign2legs_ControllsSign_Specular",
+                        "Gloss": "minesign2legs_ControllsSign_Glossiness"
+                    }
+                }
+            ]
+        }
+    ]
+}

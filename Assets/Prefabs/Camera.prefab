@@ -1,0 +1,52 @@
+{
+    "Prefab": {
+        "Name": "Camera",
+        "Entity": {
+            "Name": "Camera",
+            "ID": 14,
+            "Pos": [
+                7.0,
+                1.75,
+                0.0
+            ],
+            "Rot": [
+                -0.0,
+                0.0,
+                0.0
+            ],
+            "Scale": [
+                0.699999988079071,
+                0.699999988079071,
+                0.699999988079071
+            ],
+            "Static": false,
+            "Select": true,
+            "InTree": true,
+            "Beh": [
+                {
+                    "Name": "MeshBehaviour",
+                    "Attributes": {
+                        "Mesh": "Camera",
+                        "Transparent": false,
+                        "Alpha Cutoff": 0.0,
+                        "Specular Factor": 1.0,
+                        "Base Color": [
+                            1.0,
+                            1.0,
+                            1.0,
+                            1.0
+                        ],
+                        "Tex": "Camera",
+                        "Normal": "Camera_Normal",
+                        "Specular": "Camera_Specular",
+                        "AO": "Camera_Occlusion"
+                    }
+                },
+                {
+                    "Name": "CameraItemBehaviour",
+                    "Attributes": {}
+                }
+            ]
+        }
+    }
+}

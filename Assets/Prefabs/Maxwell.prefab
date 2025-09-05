@@ -1,0 +1,124 @@
+{
+    "Prefab": {
+        "Name": "Maxwell",
+        "Entity": {
+            "Name": "Maxwell",
+            "ID": 4,
+            "Enabled": true,
+            "Pos": [
+                7.0,
+                0.75,
+                8.0
+            ],
+            "Rot": [
+                0.0,
+                -2.836139440536499,
+                0.0
+            ],
+            "Scale": [
+                0.9999995231628418,
+                1.0,
+                0.9999995231628418
+            ],
+            "Static": false,
+            "Select": true,
+            "InTree": true,
+            "Beh": [
+                {
+                    "Name": "MeshBehaviour",
+                    "Attributes": {
+                        "Mesh": "Maxwell",
+                        "Transparent": false,
+                        "Shadow Caster": true,
+                        "Shadows Only": false,
+                        "Alpha Cutoff": 0.0,
+                        "Specular Factor": 1.0,
+                        "Base Color": [
+                            1.0,
+                            1.0,
+                            1.0,
+                            1.0
+                        ],
+                        "Metallic": 0.0,
+                        "Reflectivity": 0.0,
+                        "Tex": "Maxwell",
+                        "Specular": "Default_Specular",
+                        "Ambient": "AmbientBright"
+                    }
+                },
+                {
+                    "Name": "ExampleBehaviour",
+                    "Attributes": {
+                        "Created Child": false,
+                        "Spin Speed": 1.0
+                    }
+                },
+                {
+                    "Name": "PickupBehaviour",
+                    "Attributes": {}
+                },
+                {
+                    "Name": "SoundBehaviour",
+                    "Attributes": {
+                        "File Name": "Maxwell Cat Loop",
+                        "Sound Effect Flag": 3,
+                        "Volume": 0.5,
+                        "Loop": true,
+                        "Play": true,
+                        "Distance Scaler": 75.0,
+                        "Reverb Scaler": 1.0
+                    }
+                }
+            ],
+            "Child": [
+                {
+                    "Name": "Whiskers",
+                    "ID": 5,
+                    "Enabled": true,
+                    "Pos": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "Rot": [
+                        -0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "Scale": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "Static": false,
+                    "Select": true,
+                    "InTree": true,
+                    "Beh": [
+                        {
+                            "Name": "MeshBehaviour",
+                            "Attributes": {
+                                "Mesh": "Whiskers",
+                                "Transparent": true,
+                                "Shadow Caster": true,
+                                "Shadows Only": false,
+                                "Alpha Cutoff": 0.0,
+                                "Specular Factor": 1.0,
+                                "Base Color": [
+                                    1.0,
+                                    1.0,
+                                    1.0,
+                                    1.0
+                                ],
+                                "Metallic": 0.0,
+                                "Reflectivity": 0.0,
+                                "Tex": "Whiskers",
+                                "Specular": "Black_Specular",
+                                "Ambient": "AmbientBright"
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    }
+}

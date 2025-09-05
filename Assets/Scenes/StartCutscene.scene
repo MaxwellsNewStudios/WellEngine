@@ -1,0 +1,362 @@
+{
+    "Hierarchy": [
+        {
+            "Name": "Outside Light",
+            "ID": 18,
+            "Pos": [
+                270.194580078125,
+                28.999467849731445,
+                93.33846282958984
+            ],
+            "Rot": [
+                0.1805548518896103,
+                -1.5222258567810059,
+                1.5147394094583433e-7
+            ],
+            "Scale": [
+                1.0,
+                1.0,
+                1.0
+            ],
+            "Static": false,
+            "Select": true,
+            "InTree": false,
+            "Beh": [
+                {
+                    "Name": "SpotLightBehaviour",
+                    "Attributes": {
+                        "Falloff": 0.36000001430511475,
+                        "Fog Strength": 1.0,
+                        "Color": [
+                            300.0,
+                            284.99932861328125,
+                            255.0004119873047
+                        ],
+                        "Projection": {
+                            "FOV": 1.9546639919281006,
+                            "Aspect": 1.0,
+                            "Near": -0.10000000149011612,
+                            "Far": -680.4412841796875
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "Name": "Empty Entity",
+            "ID": 22,
+            "Pos": [
+                254.46148681640625,
+                25.800622940063477,
+                93.75738525390625
+            ],
+            "Rot": [
+                0.0,
+                -0.02094487100839615,
+                0.0
+            ],
+            "Scale": [
+                4.963175296783447,
+                8.876440048217773,
+                17.498432159423828
+            ],
+            "Static": false,
+            "Select": true,
+            "InTree": true,
+            "Beh": [
+                {
+                    "Name": "ColliderBehaviour",
+                    "Attributes": {
+                        "Type": 4,
+                        "Tag": 0,
+                        "Base": {
+                            "Center": [
+                                0.0,
+                                0.0,
+                                0.0
+                            ],
+                            "Half-Length": [
+                                0.25,
+                                0.25,
+                                0.25
+                            ],
+                            "Axes": [
+                                [
+                                    1.0,
+                                    0.0,
+                                    0.0
+                                ],
+                                [
+                                    0.0,
+                                    1.0,
+                                    0.0
+                                ],
+                                [
+                                    0.0,
+                                    0.0,
+                                    1.0
+                                ]
+                            ]
+                        },
+                        "Transformed": {
+                            "Center": [
+                                254.46148681640625,
+                                25.800622940063477,
+                                93.75738525390625
+                            ],
+                            "Half-Length": [
+                                1.2407938241958618,
+                                2.2191100120544434,
+                                4.374608039855957
+                            ],
+                            "Axes": [
+                                [
+                                    0.9997806549072266,
+                                    0.0,
+                                    0.02094333991408348
+                                ],
+                                [
+                                    0.0,
+                                    1.0,
+                                    0.0
+                                ],
+                                [
+                                    -0.02094333991408348,
+                                    0.0,
+                                    0.9997807145118713
+                                ]
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "Name": "Pickaxe1",
+            "ID": 23,
+            "Pos": [
+                234.86917114257813,
+                20.687461853027344,
+                94.52305603027344
+            ],
+            "Rot": [
+                0.06957075744867325,
+                0.6998022794723511,
+                -2.6435866355895996
+            ],
+            "Scale": [
+                0.30000001192092896,
+                0.30000001192092896,
+                0.30000001192092896
+            ],
+            "Static": false,
+            "Select": true,
+            "InTree": true,
+            "Beh": [
+                {
+                    "Name": "MeshBehaviour",
+                    "Attributes": {
+                        "Mesh": "pickaxe",
+                        "Transparent": false,
+                        "Alpha Cutoff": 0.0,
+                        "Specular Factor": 1.0,
+                        "Tex": "pickaxe_Material_Diffuse",
+                        "Normal": "pickaxe_Material_Normal",
+                        "Specular": "pickaxe_Material_Specular",
+                        "Gloss": "pickaxe_Material_Glossiness"
+                    }
+                }
+            ]
+        },
+        {
+            "Name": "Pickaxe2",
+            "ID": 25,
+            "Pos": [
+                234.5626220703125,
+                20.608566284179688,
+                94.20188903808594
+            ],
+            "Rot": [
+                0.2334170937538147,
+                1.3248571157455444,
+                -2.754786729812622
+            ],
+            "Scale": [
+                0.30000001192092896,
+                0.30000001192092896,
+                0.30000001192092896
+            ],
+            "Static": false,
+            "Select": true,
+            "InTree": true,
+            "Beh": [
+                {
+                    "Name": "MeshBehaviour",
+                    "Attributes": {
+                        "Mesh": "pickaxe",
+                        "Transparent": false,
+                        "Alpha Cutoff": 0.0,
+                        "Specular Factor": 1.0,
+                        "Tex": "pickaxe_Material_Diffuse",
+                        "Normal": "pickaxe_Material_Normal",
+                        "Specular": "pickaxe_Material_Specular",
+                        "Gloss": "pickaxe_Material_Glossiness"
+                    }
+                }
+            ]
+        },
+        {
+            "Name": "Helmet",
+            "ID": 26,
+            "Pos": [
+                235.85911560058594,
+                19.930843353271484,
+                94.62813568115234
+            ],
+            "Rot": [
+                -0.6598526835441589,
+                -0.9855830073356628,
+                0.26955053210258484
+            ],
+            "Scale": [
+                0.07000000029802322,
+                0.07000000029802322,
+                0.07000000029802322
+            ],
+            "Static": false,
+            "Select": true,
+            "InTree": true,
+            "Beh": [
+                {
+                    "Name": "MeshBehaviour",
+                    "Attributes": {
+                        "Mesh": "helmetTri2",
+                        "Transparent": true,
+                        "Alpha Cutoff": 0.0,
+                        "Specular Factor": 1.0,
+                        "Tex": "helmetTri2_DefaultMaterial_Diffuse",
+                        "Normal": "helmetTri2_DefaultMaterial_Normal",
+                        "Specular": "helmetTri2_DefaultMaterial_Specular"
+                    }
+                }
+            ]
+        },
+        {
+            "Name": "cave_map_large_008",
+            "ID": 77,
+            "Pos": [
+                0.0,
+                0.0,
+                0.0
+            ],
+            "Rot": [
+                -0.0,
+                0.0,
+                0.0
+            ],
+            "Scale": [
+                1.0,
+                1.0,
+                1.0
+            ],
+            "Static": true,
+            "Select": false,
+            "InTree": true,
+            "Beh": [
+                {
+                    "Name": "MeshBehaviour",
+                    "Attributes": {
+                        "Mesh": "cave_map_large_008",
+                        "Transparent": false,
+                        "Alpha Cutoff": 0.0,
+                        "Specular Factor": 1.0,
+                        "Tex": "CaveSystem_Large",
+                        "Normal": "CaveSystem_Large_Normal",
+                        "Specular": "CaveSystem_Large_Specular",
+                        "Gloss": "CaveSystem_Large_Glossiness",
+                        "Ambient": "Ambient",
+                        "AO": "CaveSystem_Large_Occlusion"
+                    }
+                }
+            ]
+        },
+        {
+            "Name": "cave_map_small_014",
+            "ID": 98,
+            "Pos": [
+                0.0,
+                0.0,
+                0.0
+            ],
+            "Rot": [
+                -0.0,
+                0.0,
+                0.0
+            ],
+            "Scale": [
+                1.0,
+                1.0,
+                1.0
+            ],
+            "Static": true,
+            "Select": false,
+            "InTree": true,
+            "Beh": [
+                {
+                    "Name": "MeshBehaviour",
+                    "Attributes": {
+                        "Mesh": "cave_map_small_014",
+                        "Transparent": false,
+                        "Alpha Cutoff": 0.0,
+                        "Specular Factor": 1.0,
+                        "Tex": "CaveSystem",
+                        "Normal": "CaveSystem_Normal",
+                        "Specular": "CaveSystem_Specular",
+                        "Gloss": "CaveSystem_Glossiness",
+                        "Ambient": "Ambient",
+                        "AO": "CaveSystem_Occlusion"
+                    }
+                }
+            ]
+        },
+        {
+            "Name": "cave_map_small_018",
+            "ID": 102,
+            "Pos": [
+                0.0,
+                0.0,
+                0.0
+            ],
+            "Rot": [
+                -0.0,
+                0.0,
+                0.0
+            ],
+            "Scale": [
+                1.0,
+                1.0,
+                1.0
+            ],
+            "Static": true,
+            "Select": false,
+            "InTree": true,
+            "Beh": [
+                {
+                    "Name": "MeshBehaviour",
+                    "Attributes": {
+                        "Mesh": "cave_map_small_018",
+                        "Transparent": false,
+                        "Alpha Cutoff": 0.0,
+                        "Specular Factor": 1.0,
+                        "Tex": "CaveSystem",
+                        "Normal": "CaveSystem_Normal",
+                        "Specular": "CaveSystem_Specular",
+                        "Gloss": "CaveSystem_Glossiness",
+                        "Ambient": "Ambient",
+                        "AO": "CaveSystem_Occlusion"
+                    }
+                }
+            ]
+        }
+    ]
+}

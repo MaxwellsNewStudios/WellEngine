@@ -1,0 +1,67 @@
+{
+    "Prefab": {
+        "Name": "Maxwell [labrat]",
+        "Entity": {
+            "Name": "Maxwell [labrat]",
+            "ID": 2361,
+            "Pos": [
+                0.0,
+                0.0,
+                0.0
+            ],
+            "Rot": [
+                -0.0,
+                0.0,
+                -0.0
+            ],
+            "Scale": [
+                1.0,
+                1.0,
+                1.0
+            ],
+            "Static": false,
+            "Select": true,
+            "InTree": true,
+            "Beh": [
+                {
+                    "Name": "MeshBehaviour",
+                    "Attributes": {
+                        "Mesh": "Maxwell",
+                        "Transparent": false,
+                        "Alpha Cutoff": 0.5,
+                        "Specular Factor": 1.0,
+                        "Tex": "Red",
+                        "Ambient": "AmbientBright"
+                    }
+                },
+                {
+                    "Name": "ColliderBehaviour",
+                    "Attributes": {
+                        "Type": 1,
+                        "Tag": 2,
+                        "Base": {
+                            "Center": [
+                                -0.0329505056142807,
+                                0.33841049671173096,
+                                -0.10227099061012268
+                            ],
+                            "Radius": 0.31151849031448364
+                        },
+                        "Transformed": {
+                            "Center": [
+                                -0.0329505056142807,
+                                0.33841049671173096,
+                                -0.10227099061012268
+                            ],
+                            "Radius": 0.31151849031448364
+                        }
+                    }
+                },
+                {
+                    "Name": "ExampleCollisionBehaviour",
+                    "Attributes": {}
+                }
+            ]
+        }
+    }
+}
