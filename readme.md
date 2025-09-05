@@ -1,6 +1,6 @@
-# Lurks Below - Game Engine
+# Well Engine
 
-A D3D11-based 3D game + engine originally developed as a group project by six students. 
+A D3D11-based 3D game + engine originally developed as a group project by six students for Lurks Below. 
 
 [Gameplay & Feature Showcase](https://www.youtube.com/watch?v=1Gf-hLuPSCU)
 
