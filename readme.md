@@ -13,7 +13,6 @@ A D3D11-based 3D game + engine originally developed as a group project by six st
 ### Entities & Behaviours
 
 - Similar to Unity's GameObjects & Components 
-- Not ECS (Possible improvement)
 
 ### Scenes
 
