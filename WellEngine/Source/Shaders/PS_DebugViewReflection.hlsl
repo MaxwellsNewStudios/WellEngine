@@ -1,9 +1,9 @@
 #ifdef RECOMPILE
-#include "Litet-Spelprojekt/Content/Shaders/Headers/Common.hlsli"
-#include "Litet-Spelprojekt/Content/Shaders/Headers/DefaultMaterial.hlsli"
+#include "WellEngine/Source/Shaders/Headers/DefaultMaterial.hlsli"
+#include "WellEngine/Source/Shaders/Headers/Common.hlsli"
 #else
-#include "Headers/Common.hlsli"
 #include "Headers/DefaultMaterial.hlsli"
+#include "Headers/Common.hlsli"
 #endif
 
 
@@ -16,7 +16,7 @@ float3 ComputeReflectionIntensity(
 	float3 r = normalize(reflect(v, n));
 
     // Base reflectivity
-	float3 f0 = lerp(float3(0.04, 0.04, 0.04), diffuse, metallic);
+	float3 f0 = lerp(float3(0.04, 0.04, 0.04), diffuse, MatProp_metallic);
 	
     // Get mip count and match it to highest mip index
 	uint _, lodCount;
@@ -37,6 +37,7 @@ float3 ComputeReflectionIntensity(
 	return reflection;
 }
 
+
 struct PixelShaderInput
 {
 	float4 position : SV_POSITION;
@@ -48,38 +49,53 @@ struct PixelShaderInput
 
 float4 main(PixelShaderInput input) : SV_TARGET
 {
-	const float diffuseColW = baseColor.w * Texture.Sample(Sampler, input.tex_coord).w;
+	bool sampleNormal, sampleSpecular, sampleGlossiness, sampleReflective, sampleAmbient, sampleOcclusion;
+	GetSampleFlags(sampleNormal, sampleSpecular, sampleGlossiness, sampleReflective, sampleAmbient, sampleOcclusion);
+
+	const float2 uv = input.tex_coord;
+	const float3 pos = input.world_position.xyz;
+	const float3 viewDir = normalize(cam_position.xyz - pos);
+	const float3 geoNormal = normalize(input.normal);
 	
-	if (alphaCutoff > 0.0)
+	const float diffuseColW = MatProp_baseColor.w * Texture.Sample(Sampler, uv).w;
+	
+	if (MatProp_alphaCutoff > 0.0)
 	{
-		float clipVal = diffuseColW - alphaCutoff;
+		float clipVal = diffuseColW - MatProp_alphaCutoff;
 		clip(clipVal);
 	
 		if (clipVal < 0.0)
 		{
-			return 0.0.rrrr;
+			return float4(0.0.xxx, 1.0);
 		}
 	}
 	
-	const float3 pos = input.world_position.xyz;
-	const float3 viewDir = normalize(cam_position.xyz - pos);
+	float3 surfaceNormal;
+	if (sampleNormal)
+	{
+		float3 geoTangent = normalize(input.tangent);
+		float3 geoBitangent = normalize(cross(geoNormal, geoTangent));
+		
+		float3 normalSample = float2(MatProp_normalFactor, 1.0).xxy * (NormalMap.Sample(Sampler, uv).xyz * 2.0 - 1.0.xxx);
+		surfaceNormal = mul(normalSample, float3x3(geoTangent, geoBitangent, geoNormal));
+		surfaceNormal = normalize(surfaceNormal);
+	}
+	else
+	{
+		surfaceNormal = geoNormal;
+	}
 	
-	const float3 bitangent = normalize(cross(input.normal, input.tangent));
-	const float3 norm = (sampleNormal > 0)
-		? normalize(mul(NormalMap.Sample(Sampler, input.tex_coord).xyz * 2.0 - float3(1.0, 1.0, 1.0), float3x3(input.tangent, bitangent, input.normal)))
-        : normalize(input.normal);
-	
-	const float glossiness = specularFactor * ((sampleGlossiness > 0)
-		? GlossinessMap.Sample(Sampler, input.tex_coord).x
-		: 1.0 - (1.0 / pow(max(0.0, specularExponent), 1.75)));
-	
-	const float reflective = reflectivity * ((sampleReflective > 0)
-		? ReflectiveMap.Sample(Sampler, input.tex_coord).x
+	const float glossiness = MatProp_glossFactor * (sampleGlossiness
+		? GlossinessMap.Sample(Sampler, uv)
+		: 1.0 - (1.0 / pow(max(0.0, SpecBuf_specularExponent), 1.75)));
+
+	const float reflective = MatProp_reflectFactor * (sampleReflective
+		? ReflectiveMap.Sample(Sampler, uv)
 		: 1.0);
 			
 	float reflectStrength;
 	float3 reflection = ComputeReflectionIntensity(
-		norm, viewDir,
+		surfaceNormal, viewDir,
 		0.0.rrr, saturate(1.0 - glossiness),
 		reflectStrength
 	);

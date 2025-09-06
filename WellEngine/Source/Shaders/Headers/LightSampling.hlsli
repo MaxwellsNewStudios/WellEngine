@@ -1,6 +1,6 @@
 #ifdef RECOMPILE
-#include "Litet-Spelprojekt/Content/Shaders/Headers/Common.hlsli"
-#include "Litet-Spelprojekt/Content/Shaders/Headers/LightData.hlsli"
+#include "WellEngine/Source/Shaders/Headers/Common.hlsli"
+#include "WellEngine/Source/Shaders/Headers/LightData.hlsli"
 #else
 #include "Common.hlsli"
 #include "LightData.hlsli"

@@ -48,19 +48,23 @@ bool MeshBehaviour::Start()
 		_material = content->GetDefaultMaterial();
 	}
 
-	MaterialProperties materialProperties = { };
-	materialProperties.sampleNormal = _material->normalID != CONTENT_NULL;
-	materialProperties.sampleSpecular = _material->specularID != CONTENT_NULL;
-	materialProperties.sampleGlossiness = _material->glossinessID != CONTENT_NULL;
-	materialProperties.sampleReflective = _material->reflectiveID != CONTENT_NULL;
-	materialProperties.sampleAmbient = _material->ambientID != CONTENT_NULL;
-	materialProperties.sampleOcclusion = _material->occlusionID != CONTENT_NULL;
-
-	materialProperties.alphaCutoff = _alphaCutoff;
-	materialProperties.specularFactor = _specularFactor;
-	materialProperties.baseColor = _baseColor;
-	materialProperties.metallic = _metallic;
-	materialProperties.reflectivity = _reflectivity;
+	MaterialProperties materialProperties = {};
+	materialProperties.baseColor		= _baseColor;
+	materialProperties.alphaCutoff		= _alphaCutoff;
+	materialProperties.normalFactor		= _normalFactor;
+	materialProperties.specularFactor	= _specularFactor;
+	materialProperties.glossFactor		= _glossFactor;
+	materialProperties.occlusionFactor	= _occlusionFactor;
+	materialProperties.reflectivity		= _reflectivity;
+	materialProperties.metallic			= _metallic;
+	materialProperties.SetSampleFlags(
+		_material->normalID != CONTENT_NULL,
+		_material->specularID != CONTENT_NULL,
+		_material->glossinessID != CONTENT_NULL,
+		_material->reflectiveID != CONTENT_NULL,
+		_material->ambientID != CONTENT_NULL,
+		_material->occlusionID != CONTENT_NULL
+	);
 
 	if (!_materialBuffer.Initialize(device, sizeof(MaterialProperties), &materialProperties))
 	{
@@ -68,8 +72,8 @@ bool MeshBehaviour::Start()
 		return false;
 	}
 
-	XMFLOAT4A pos = To4(GetTransform()->GetPosition());
-	if (!_posBuffer.Initialize(device, sizeof(dx::XMFLOAT4A), &pos))
+	//XMFLOAT4A pos = To4(GetTransform()->GetPosition());
+	if (!_posBuffer.Initialize(device, sizeof(dx::XMFLOAT3A), &(GetTransform()->GetPosition())))
 	{
 		ErrMsg("Failed to initialize position buffer!");
 		return false;
@@ -99,19 +103,23 @@ bool MeshBehaviour::Update(TimeUtils &time, const Input &input)
 
 	if (_updateMatBuffer)
 	{
-		MaterialProperties materialProperties = { };
-		materialProperties.sampleNormal = _material->normalID != CONTENT_NULL;
-		materialProperties.sampleSpecular = _material->specularID != CONTENT_NULL;
-		materialProperties.sampleGlossiness = _material->glossinessID != CONTENT_NULL;
-		materialProperties.sampleReflective = _material->reflectiveID != CONTENT_NULL;
-		materialProperties.sampleAmbient = _material->ambientID != CONTENT_NULL;
-		materialProperties.sampleOcclusion = _material->occlusionID != CONTENT_NULL;
-
-		materialProperties.alphaCutoff = _alphaCutoff;
-		materialProperties.specularFactor = _specularFactor;
-		materialProperties.baseColor = _baseColor;
-		materialProperties.metallic = _metallic;
-		materialProperties.reflectivity = _reflectivity;
+		MaterialProperties materialProperties = {};
+		materialProperties.baseColor		= _baseColor;
+		materialProperties.alphaCutoff		= _alphaCutoff;
+		materialProperties.normalFactor		= _normalFactor;
+		materialProperties.specularFactor	= _specularFactor;
+		materialProperties.glossFactor		= _glossFactor;
+		materialProperties.occlusionFactor	= _occlusionFactor;
+		materialProperties.reflectivity		= _reflectivity;
+		materialProperties.metallic			= _metallic;
+		materialProperties.SetSampleFlags(
+			_material->normalID != CONTENT_NULL,
+			_material->specularID != CONTENT_NULL,
+			_material->glossinessID != CONTENT_NULL,
+			_material->reflectiveID != CONTENT_NULL,
+			_material->ambientID != CONTENT_NULL,
+			_material->occlusionID != CONTENT_NULL
+		);
 
 		if (!_materialBuffer.UpdateBuffer(GetScene()->GetContext(), &materialProperties))
 		{
@@ -1352,6 +1360,12 @@ bool MeshBehaviour::RenderUI()
 	
 	if (ImGui::TreeNode("Renderer Parameters"))
 	{
+		if (ImGui::ColorEdit4("Base Color", &_baseColor.x, ImGuiColorEditFlags_AlphaBar | ImGuiColorEditFlags_NoInputs))
+			_updateMatBuffer = true;
+
+		if (ImGui::SliderFloat("Alpha Cutoff", &_alphaCutoff, 0, 1))
+			_updateMatBuffer = true;
+
 		if (ImGui::RadioButton("Overlay", _isOverlay))
 			_isOverlay = !_isOverlay;
 
@@ -1364,21 +1378,27 @@ bool MeshBehaviour::RenderUI()
 		if (ImGui::RadioButton("Shadows Only", _shadowsOnly))
 			_shadowsOnly = !_shadowsOnly;
 
-		if (ImGui::SliderFloat("Alpha Cutoff", &_alphaCutoff, 0, 1))
-			_updateMatBuffer = true;
-
 		if (ImGui::SliderFloat("Metallic", &_metallic, 0.0f, 1.0f))
 			_updateMatBuffer = true;
 
 		if (ImGui::SliderFloat("Reflectivity", &_reflectivity, 0.0f, 1.0f))
 			_updateMatBuffer = true;
 
+		if (ImGui::DragFloat("Normal Factor", &_normalFactor, 0.001f))
+			_updateMatBuffer = true;
+		ImGuiUtils::LockMouseOnActive();
+
 		if (ImGui::DragFloat("Specular Factor", &_specularFactor, 0.001f))
 			_updateMatBuffer = true;
 		ImGuiUtils::LockMouseOnActive();
 
-		if (ImGui::ColorEdit4("Base Color", &_baseColor.x, ImGuiColorEditFlags_AlphaBar | ImGuiColorEditFlags_NoInputs))
+		if (ImGui::DragFloat("Glossiness Factor", &_glossFactor, 0.001f))
 			_updateMatBuffer = true;
+		ImGuiUtils::LockMouseOnActive();
+
+		if (ImGui::DragFloat("Occlusion Factor", &_occlusionFactor, 0.001f))
+			_updateMatBuffer = true;
+		ImGuiUtils::LockMouseOnActive();
 
 		if (ImGui::TreeNode("Shader Settings"))
 		{
@@ -1594,11 +1614,14 @@ bool MeshBehaviour::Serialize(json::Document::AllocatorType &docAlloc, json::Val
 	obj.AddMember("Transparent", _isTransparent, docAlloc);
 	obj.AddMember("Shadow Caster", _castShadows, docAlloc);
 	obj.AddMember("Shadows Only", _shadowsOnly, docAlloc);
-	obj.AddMember("Alpha Cutoff", _alphaCutoff, docAlloc);
-	obj.AddMember("Specular Factor", _specularFactor, docAlloc);
 	obj.AddMember("Base Color", SerializerUtils::SerializeVec(_baseColor, docAlloc), docAlloc);
-	obj.AddMember("Metallic", _metallic, docAlloc);
+	obj.AddMember("Alpha Cutoff", _alphaCutoff, docAlloc);
+	obj.AddMember("Normal Factor", _normalFactor, docAlloc);
+	obj.AddMember("Specular Factor", _specularFactor, docAlloc);
+	obj.AddMember("Glossiness Factor", _glossFactor, docAlloc);
+	obj.AddMember("Occlusion Factor", _occlusionFactor, docAlloc);
 	obj.AddMember("Reflectivity", _reflectivity, docAlloc);
+	obj.AddMember("Metallic", _metallic, docAlloc);
 
 	if (_psSettings.data)
 	{
@@ -1718,14 +1741,23 @@ bool MeshBehaviour::Deserialize(const json::Value &obj, Scene *scene)
 	if (obj.HasMember("Shadows Only"))
 		_shadowsOnly = obj["Shadows Only"].GetBool();
 
+	if (obj.HasMember("Base Color"))
+		SerializerUtils::DeserializeVec(_baseColor, obj["Base Color"]);
+
 	if (obj.HasMember("Alpha Cutoff"))
 		_alphaCutoff = obj["Alpha Cutoff"].GetFloat();
+
+	if (obj.HasMember("Normal Factor"))
+		_normalFactor = obj["Normal Factor"].GetFloat();
 
 	if (obj.HasMember("Specular Factor"))
 		_specularFactor = obj["Specular Factor"].GetFloat();
 
-	if (obj.HasMember("Base Color"))
-		SerializerUtils::DeserializeVec(_baseColor, obj["Base Color"]);
+	if (obj.HasMember("Glossiness Factor"))
+		_glossFactor = obj["Glossiness Factor"].GetFloat();
+
+	if (obj.HasMember("Occlusion Factor"))
+		_occlusionFactor = obj["Occlusion Factor"].GetFloat();
 
 	if (obj.HasMember("Metallic"))
 		_metallic = obj["Metallic"].GetFloat();

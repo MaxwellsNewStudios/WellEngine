@@ -50,20 +50,22 @@ private:
 	UINT _blendStateID = CONTENT_NULL;
 	const Material *_material = nullptr;
 
-	bool 
-		_isTransparent = false,
-		_isOverlay = false,
-		_castShadows = true,
-		_shadowsOnly = false,
-		_updatePosBuffer = true,
-		_updateMatBuffer = false,
-		_recalculateBounds = true;
-
-	float _alphaCutoff = 0.5f;
-	float _specularFactor = 1.0f;
+	bool _updatePosBuffer = true;
+	bool _updateMatBuffer = false;
+	bool _recalculateBounds = true;
+	bool _isTransparent = false;
+	bool _isOverlay = false;
+	bool _castShadows = true;
+	bool _shadowsOnly = false;
+	
 	dx::XMFLOAT4 _baseColor = {1,1,1,1};
+	float _alphaCutoff = 0.0f;
+	float _normalFactor = 1.0f;
+	float _specularFactor = 1.0f;
+	float _glossFactor = 1.0f;
+	float _occlusionFactor = 0.85f;
+	float _reflectivity = 0.1f;
 	float _metallic = 0.0f;
-	float _reflectivity = 0.0f;
 
 	UINT _lastUsedLODIndex = 0;
 	float _lastUsedLODDist = 0.0f;
@@ -101,7 +103,6 @@ protected:
 	// OnDirty runs when the Entity's transform is modified.
 	void OnDirty() override;
 
-	
 public:
 	MeshBehaviour() = default;
 	MeshBehaviour(const dx::BoundingOrientedBox &bounds, bool isTransparent = false, bool castShadows = true, bool isOverlay = false) : 

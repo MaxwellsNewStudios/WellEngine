@@ -1352,7 +1352,7 @@ bool Content::RecompileShader(ID3D11Device *device, const std::string &name) con
 	}
 
 	ShaderType shaderType = shader->GetShaderType();
-	std::string path = PATH_FILE_EXT(ASSET_PATH_SHADERS, name, "hlsl");
+	std::string path = PATH_FILE_EXT(ENGINE_PATH_SHADERS, name, "hlsl");
 
 	auto shaderBlob = CompileShader(device, path, shaderType);
 

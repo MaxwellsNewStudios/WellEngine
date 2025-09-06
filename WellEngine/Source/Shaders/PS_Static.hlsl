@@ -1,6 +1,6 @@
 #ifdef RECOMPILE
-#include "Litet-Spelprojekt/Content/Shaders/Headers/DefaultMaterial.hlsli"
-#include "Litet-Spelprojekt/Content/Shaders/Headers/LightSampling.hlsli"
+#include "WellEngine/Source/Shaders/Headers/DefaultMaterial.hlsli"
+#include "WellEngine/Source/Shaders/Headers/LightSampling.hlsli"
 #else
 #include "Headers/DefaultMaterial.hlsli"
 #include "Headers/LightSampling.hlsli"
@@ -30,11 +30,11 @@ PixelShaderOutput main(PixelShaderInput input)
 	uint seed = (uint)((NoiseTexture.Sample(Sampler, input.tex_coord) * 10000.0 + time) * 100.0);
 	float randomValue = RandomValue(seed);
 	
-	if (alphaCutoff > 0.0)
-		clip(alphaCutoff - randomValue);
+	if (MatProp_alphaCutoff > 0.0)
+		clip(MatProp_alphaCutoff - randomValue);
 	
 	output.depth = length(input.world_position.xyz - cam_position.xyz) * 1.1f;
-	output.color = baseColor;
+	output.color = MatProp_baseColor;
 	output.emission = float3(0.0, 0.0, 0.0);
 	return output;
 }

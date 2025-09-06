@@ -129,6 +129,7 @@ bool DebugPlayerBehaviour::Update(TimeUtils &time, const Input &input)
 	DebugDrawer &debugDraw = DebugDrawer::Instance();
 	DebugData &debugData = DebugData::Get();
 
+	bool acceptInput = !ImGui::GetIO().WantCaptureKeyboard;
 	bool additiveSelect = BindingCollection::IsTriggered(InputBindings::InputAction::AdditiveSelect);
 
 	if (_mainCamera.IsValid())
@@ -416,7 +417,7 @@ bool DebugPlayerBehaviour::Update(TimeUtils &time, const Input &input)
 
 		for (auto &duplicateBind : _duplicateBinds)
 		{
-			if (input.GetKey(duplicateBind.first) == KeyState::Pressed)
+			if (input.GetKey(duplicateBind.first, true) == KeyState::Pressed && acceptInput)
 			{
 				// Copy by serializing and deserializing the entity
 				Entity *dupeEnt = sceneHolder->GetEntityByID(duplicateBind.second);
@@ -451,11 +452,75 @@ bool DebugPlayerBehaviour::Update(TimeUtils &time, const Input &input)
 			}
 		}
 
-		if (_currSelection.size() == 1)
+		if (_currSelection.size() == 1 && acceptInput)
 		{
-			Entity *selectedEnt = _currSelection[0].Get();
+			// Cycle selected entity up/down with numkeys +/-
 
-			if (input.GetKey(KeyCode::Add, true) == KeyState::Pressed)
+			constexpr float repeatStartDelay = 0.5f;
+			constexpr float repeatfrequency = 0.05f;
+
+			Entity *selectedEnt = _currSelection[0].Get();
+			int shiftDir = 0;
+
+			KeyState addState = input.GetKey(KeyCode::Add, true);
+			KeyState subState = input.GetKey(KeyCode::Subtract, true);
+
+			static bool hasPressedAdd = false;
+			static bool hasPressedSub = false;
+
+			if (addState != KeyState::None)
+			{
+				static float repeatTimer = 0.0f;
+
+				if (addState == KeyState::Pressed)
+				{
+					hasPressedAdd = true;
+					repeatTimer = repeatStartDelay;
+					shiftDir++;
+				}
+				else if (hasPressedAdd && addState == KeyState::Held)
+				{
+					repeatTimer -= time.GetDeltaTime();
+
+					if (repeatTimer <= 0.0f)
+					{
+						repeatTimer += repeatfrequency;
+						shiftDir++;
+					}
+				}
+			}
+			else
+			{
+				hasPressedAdd = false;
+			}
+
+			if (subState != KeyState::None)
+			{
+				static float repeatTimer = 0.0f;
+
+				if (subState == KeyState::Pressed)
+				{
+					hasPressedSub = true;
+					repeatTimer = repeatStartDelay;
+					shiftDir--;
+				}
+				else if (hasPressedSub && subState == KeyState::Held)
+				{
+					repeatTimer -= time.GetDeltaTime();
+
+					if (repeatTimer <= 0.0f)
+					{
+						repeatTimer += repeatfrequency;
+						shiftDir--;
+					}
+				}
+			}
+			else
+			{
+				hasPressedSub = false;
+			}
+
+			if (shiftDir > 0)
 			{
 				int selectionIndex = sceneHolder->GetEntityIndex(selectedEnt);
 				Entity *upperEntity = sceneHolder->GetEntity(selectionIndex + 1);
@@ -465,7 +530,7 @@ bool DebugPlayerBehaviour::Update(TimeUtils &time, const Input &input)
 
 				Select(upperEntity, additiveSelect);
 			}
-			else if (input.GetKey(KeyCode::Subtract, true) == KeyState::Pressed)
+			else if (shiftDir < 0)
 			{
 				int selectionIndex = sceneHolder->GetEntityIndex(selectedEnt);
 				Entity *lowerEntity = sceneHolder->GetEntity(selectionIndex - 1);
@@ -477,7 +542,7 @@ bool DebugPlayerBehaviour::Update(TimeUtils &time, const Input &input)
 			}
 		}
 
-		if (input.GetKey(KeyCode::Q) == KeyState::Pressed)
+		if (input.GetKey(KeyCode::Q, true) == KeyState::Pressed && acceptInput)
 			_currCamera = -3;
 
 		static bool freezeCamera = false;
@@ -855,7 +920,7 @@ bool DebugPlayerBehaviour::Update(TimeUtils &time, const Input &input)
 		}
 	}
 
-	if (!_currSelection.empty() && input.GetKey(KeyCode::Delete) == KeyState::Pressed && input.HasMouseFocus())
+	if (!_currSelection.empty() && input.GetKey(KeyCode::Delete, true) == KeyState::Pressed && acceptInput && input.HasMouseFocus())
 	{
 		for (auto &entRef : _currSelection)
 		{
@@ -956,7 +1021,7 @@ bool DebugPlayerBehaviour::Update(TimeUtils &time, const Input &input)
 	if (input.GetKey(KeyCode::M1) == KeyState::Held && (input.IsCursorLocked() || _rayCastFromMouse))
 		_drawPointer = true;
 
-	if (input.GetKey(KeyCode::C) == KeyState::Pressed || _currCamera == -3)
+	if ((input.GetKey(KeyCode::C, true) == KeyState::Pressed && acceptInput) || _currCamera == -3)
 	{ // Change camera
 		_currCamera++;
 

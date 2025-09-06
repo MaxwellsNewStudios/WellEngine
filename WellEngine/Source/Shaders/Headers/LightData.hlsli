@@ -1,7 +1,6 @@
 
 SamplerComparisonState ShadowSampler : register(s1);
 SamplerComparisonState ShadowCubeSampler : register(s2);
-SamplerComparisonState TestSampler : register(s3);
 sampler HQSampler : register(s4);
 
 struct SpotLight

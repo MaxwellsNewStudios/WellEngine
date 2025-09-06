@@ -1,9 +1,9 @@
 #ifdef RECOMPILE
-#include "Litet-Spelprojekt/Content/Shaders/Headers/Common.hlsli"
-#include "Litet-Spelprojekt/Content/Shaders/Headers/DefaultMaterial.hlsli"
+#include "WellEngine/Source/Shaders/Headers/DefaultMaterial.hlsli"
+#include "WellEngine/Source/Shaders/Headers/Common.hlsli"
 #else
-#include "Headers/Common.hlsli"
 #include "Headers/DefaultMaterial.hlsli"
+#include "Headers/Common.hlsli"
 #endif
 
 
@@ -18,8 +18,13 @@ struct PixelShaderInput
 
 float4 main(PixelShaderInput input) : SV_TARGET
 {
-    const float3 specularCol = (sampleSpecular > 0)
-		? SpecularMap.Sample(Sampler, input.tex_coord).xyz
+	bool sampleSpecular, _;
+	GetSampleFlags(_, sampleSpecular, _, _, _, _);
+    
+	const float2 uv = input.tex_coord;
+	
+	const float3 specularCol = sampleSpecular
+		? MatProp_specularFactor * SpecularMap.Sample(Sampler, uv).xyz
 		: float3(0.0, 0.0, 0.0);
     
 	return float4(specularCol, 1.0);

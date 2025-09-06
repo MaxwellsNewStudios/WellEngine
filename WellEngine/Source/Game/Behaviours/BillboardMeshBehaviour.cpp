@@ -68,6 +68,8 @@ bool BillboardMeshBehaviour::Start()
 		DebugPlayerBehaviour *debugPlayer = GetScene()->GetDebugPlayer();
 		if (debugPlayer)
 			debugPlayer->AddGizmoBillboard(this);
+
+		_meshBehaviour->SetAlphaCutoff(0.5f);
 	}
 #endif
 

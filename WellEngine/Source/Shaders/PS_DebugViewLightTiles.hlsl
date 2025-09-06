@@ -1,7 +1,7 @@
 #ifdef RECOMPILE
-#include "Litet-Spelprojekt/Content/Shaders/Headers/Common.hlsli"
-#include "Litet-Spelprojekt/Content/Shaders/Headers/DefaultMaterial.hlsli"
-#include "Litet-Spelprojekt/Content/Shaders/Headers/LightData.hlsli"
+#include "WellEngine/Source/Shaders/Headers/Common.hlsli"
+#include "WellEngine/Source/Shaders/Headers/DefaultMaterial.hlsli"
+#include "WellEngine/Source/Shaders/Headers/LightData.hlsli"
 #else
 #include "Headers/Common.hlsli"
 #include "Headers/DefaultMaterial.hlsli"
@@ -26,19 +26,25 @@ struct PixelShaderOutput
 
 PixelShaderOutput main(PixelShaderInput input)
 {
-    PixelShaderOutput output;
+	PixelShaderOutput output;
 	
+	uint lightsCounted = 0;
 	float3 tileColor = float3(0.0, 0.0, 0.0);
-    
+	
+	bool sampleNormal, sampleSpecular, sampleGlossiness, sampleReflective, sampleAmbient, sampleOcclusion;
+	GetSampleFlags(sampleNormal, sampleSpecular, sampleGlossiness, sampleReflective, sampleAmbient, sampleOcclusion);
+	
+	const float2 uv = input.tex_coord;
     const float3 pos = input.world_position.xyz;
+	const float3 viewDir = normalize(cam_position.xyz - pos);
+	const float3 geoNormal = normalize(input.normal);
 
-	const float4 diffuseColW = baseColor * Texture.Sample(Sampler, input.tex_coord);
+	const float4 diffuseColW = MatProp_baseColor * Texture.Sample(Sampler, uv);
     const float3 diffuseCol = diffuseColW.xyz;
 	
-	// TODO: Implement alpha cutout for real
-	if (alphaCutoff > 0.0)
+	if (MatProp_alphaCutoff > 0.0)
 	{
-		float clipVal = diffuseColW.w - alphaCutoff;
+		float clipVal = diffuseColW.w - MatProp_alphaCutoff;
 		clip(clipVal);
 		
 		if (clipVal < 0.0)
@@ -51,32 +57,42 @@ PixelShaderOutput main(PixelShaderInput input)
 	
 	output.depth = length(input.world_position.xyz - cam_position.xyz);
 	
-    const float3 bitangent = normalize(cross(input.normal, input.tangent));
-    const float3 norm = (sampleNormal > 0)
-		? normalize(mul(NormalMap.Sample(Sampler, input.tex_coord).xyz * 2.0 - float3(1.0, 1.0, 1.0), float3x3(input.tangent, bitangent, input.normal)))
-        : normalize(input.normal);
-    const float3 viewDir = normalize(cam_position.xyz - pos);
-
-    const float3 specularCol = (sampleSpecular > 0)
-		? SpecularMap.Sample(Sampler, input.tex_coord).xyz
+	float3 surfaceNormal;
+	if (sampleNormal)
+	{
+		float3 geoTangent = normalize(input.tangent);
+		float3 geoBitangent = normalize(cross(geoNormal, geoTangent));
+		
+		float3 normalSample = float2(MatProp_normalFactor, 1.0).xxy * (NormalMap.Sample(Sampler, uv).xyz * 2.0 - 1.0.xxx);
+		
+		surfaceNormal = mul(normalSample, float3x3(geoTangent, geoBitangent, geoNormal));
+		surfaceNormal = normalize(surfaceNormal);
+	}
+	else
+	{
+		surfaceNormal = geoNormal;
+	}
+	
+	const float3 specularCol = sampleSpecular
+		? MatProp_specularFactor * SpecularMap.Sample(Sampler, uv).xyz
 		: float3(0.0, 0.0, 0.0);
 	
-    const float glossiness = (sampleGlossiness > 0)
-		? GlossinessMap.Sample(Sampler, input.tex_coord).x
-		: 1.0 - (1.0 / pow(max(0.0, specularExponent), 1.75));
+	const float glossiness = MatProp_glossFactor * (sampleGlossiness
+		? GlossinessMap.Sample(Sampler, uv)
+		: 1.0 - (1.0 / pow(max(0.0, SpecBuf_specularExponent), 1.75)));
 
-    float3 ambientCol = (sampleAmbient > 0)
-		? AmbientMap.Sample(Sampler, input.tex_coord).xyz
+	const float3 ambientCol = sampleAmbient
+		? AmbientMap.Sample(Sampler, uv).xyz
         : float3(0.0, 0.0, 0.0);
 
-    const float occlusion = (sampleOcclusion > 0)
-		? 0.15 + (OcclusionMap.Sample(Sampler, input.tex_coord).x * 0.85)
+	const float occlusion = sampleOcclusion
+		? Remap(OcclusionMap.Sample(Sampler, uv), 0.0, 1.0, 1.0 - MatProp_occlusionFactor, 1.0)
 		: 1.0;
 	
     float3 totalDiffuseLight = ambient_light.xyz;
     float3 totalSpecularLight = float3(0.0, 0.0, 0.0);
     {
-        float3 normal = norm;
+		float3 normal = surfaceNormal;
         float3 specularColor = specularCol;
 	
 		// Calculate light tile position
@@ -158,7 +174,8 @@ PixelShaderOutput main(PixelShaderInput input)
 	
 			uint seed = 112 + currentSpotlight * 773;
 			float3 lightTileColor = float3(RandomValue(seed) * 1.0, RandomValue(seed) * 0.6, RandomValue(seed) * 0.1);
-			tileColor += lightTileColor * 0.5;
+			tileColor += lightTileColor;
+			lightsCounted++;
 		}
 	
 	
@@ -202,7 +219,8 @@ PixelShaderOutput main(PixelShaderInput input)
 			
 			uint seed = 672 + currentSimpleSpotlight * 1861;
 			float3 lightTileColor = float3(RandomValue(seed) * 0.3, RandomValue(seed) * 0.7, RandomValue(seed) * 0.3);
-			tileColor += lightTileColor * 0.5;
+			tileColor += lightTileColor;
+			lightsCounted++;
 		}
 	
 	
@@ -257,7 +275,8 @@ PixelShaderOutput main(PixelShaderInput input)
 			
 			uint seed = 274 + currentPointlight * 8789;
 			float3 lightTileColor = float3(RandomValue(seed) * 0.1, RandomValue(seed) * 0.6, RandomValue(seed) * 1.0);
-			tileColor += lightTileColor * 0.5;
+			tileColor += lightTileColor;
+			lightsCounted++;
 		}
 	
 	
@@ -294,14 +313,18 @@ PixelShaderOutput main(PixelShaderInput input)
 			
 			uint seed = 867 + currentSimplePointlight * 48654;
             float3 lightTileColor = float3(RandomValue(seed) * 0.7, RandomValue(seed) * 0.3, RandomValue(seed) * 0.3);
-			tileColor += lightTileColor * 0.5;
+			tileColor += lightTileColor;
+			lightsCounted++;
 		}
     }
 	
     float3 totalLight = diffuseCol * (occlusion * (ambientCol + totalDiffuseLight)) + occlusion * totalSpecularLight;
 	
-	tileColor = saturate(normalize(tileColor) * 0.5);
+	float maxChannel = max(tileColor.x, max(tileColor.y, tileColor.z));
+	tileColor = (maxChannel <= 1.0) ? (tileColor) : (tileColor / maxChannel);
 	
-	output.color = float4(totalLight + tileColor, 1.0);
+	float tileImportance = 0.75 * (1.0 - 1.0 / (float)(1 << lightsCounted));
+	
+	output.color = float4(lerp(totalLight, tileColor, tileImportance), 1.0);
     return output;
 }

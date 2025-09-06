@@ -1,6 +1,6 @@
 #ifdef RECOMPILE
-#include "Litet-Spelprojekt/Content/Shaders/Headers/DefaultMaterial.hlsli"
-#include "Litet-Spelprojekt/Content/Shaders/Headers/LightSampling.hlsli"
+#include "WellEngine/Source/Shaders/Headers/DefaultMaterial.hlsli"
+#include "WellEngine/Source/Shaders/Headers/LightSampling.hlsli"
 #else
 #include "Headers/DefaultMaterial.hlsli"
 #include "Headers/LightSampling.hlsli"
@@ -27,62 +27,77 @@ PixelShaderOutput main(PixelShaderInput input)
 {
     PixelShaderOutput output;
 	
-	const float4 diffuseColW = baseColor * Texture.Sample(Sampler, input.tex_coord);
-    const float3 diffuseCol = diffuseColW.xyz;
+	bool sampleNormal, sampleSpecular, sampleGlossiness, sampleReflective, sampleAmbient, sampleOcclusion;
+	GetSampleFlags(sampleNormal, sampleSpecular, sampleGlossiness, sampleReflective, sampleAmbient, sampleOcclusion);
+
+	const float2 uv = input.tex_coord;
+	const float3 pos = input.world_position.xyz;
+	const float3 viewDir = normalize(cam_position.xyz - pos);
+	const float3 geoNormal = normalize(input.normal);
 	
-	if (alphaCutoff > 0.0)
+	const float4 diffuseColW = MatProp_baseColor * Texture.Sample(Sampler, uv);
+	const float3 diffuseCol = diffuseColW.rgb;
+	
+	if (MatProp_alphaCutoff > 0.0)
 	{
-		float clipVal = diffuseColW.w - alphaCutoff;
+		float clipVal = diffuseColW.w - MatProp_alphaCutoff;
 		clip(clipVal);
 	
 		if (clipVal < 0.0)
 		{
-			output.color = float4(0, 0, 0, 0);
-			output.depth = 0;
-			output.emission = float3(0, 0, 0);
+			output.color = 0.0.rrrr;
+			output.depth = 0.0;
+			output.emission = 0.0.rrr;
 			return output;
 		}
 	}
 	
     output.depth = length(input.world_position.xyz - cam_position.xyz);
     
-    const float3 pos = input.world_position.xyz;
-    const float3 viewDir = normalize(cam_position.xyz - pos);
+	float3 surfaceNormal;
+	if (sampleNormal)
+	{
+		float3 geoTangent = normalize(input.tangent);
+		float3 geoBitangent = cross(geoNormal, geoTangent);
+		
+		float3 normalSample = float2(MatProp_normalFactor, 1.0).xxy * (NormalMap.Sample(Sampler, uv).xyz * 2.0 - 1.0.xxx);
+		surfaceNormal = mul(normalSample, float3x3(geoTangent, geoBitangent, geoNormal));
+		surfaceNormal = normalize(surfaceNormal);
+	}
+	else
+	{
+		surfaceNormal = geoNormal;
+	}
+
+	const float3 specularCol = sampleSpecular
+		? MatProp_specularFactor * SpecularMap.Sample(Sampler, uv).xyz
+		: 0.0.rrr;
 	
-    const float3 bitangent = normalize(cross(input.normal, input.tangent));
-    const float3 norm = (sampleNormal > 0)
-		? normalize(mul(NormalMap.Sample(Sampler, input.tex_coord).xyz * 2.0 - float3(1.0, 1.0, 1.0), float3x3(input.tangent, bitangent, input.normal)))
-        : normalize(input.normal);
+	const float glossiness = MatProp_glossFactor * (sampleGlossiness
+		? GlossinessMap.Sample(Sampler, uv)
+		: 1.0 - (1.0 / pow(max(0.0, SpecBuf_specularExponent), 1.75)));
 
-    const float3 specularCol = (sampleSpecular > 0)
-		? SpecularMap.Sample(Sampler, input.tex_coord).xyz
-		: float3(0.0, 0.0, 0.0);
-	
-	const float glossiness = specularFactor * ((sampleGlossiness > 0)
-		? GlossinessMap.Sample(Sampler, input.tex_coord).x
-		: 1.0 - (1.0 / pow(max(0.0, specularExponent), 1.75)));
+	const float3 ambientCol = sampleAmbient
+		? AmbientMap.Sample(Sampler, uv).xyz
+        : 0.0.rrr;
 
-    const float3 ambientCol = (sampleAmbient > 0)
-		? AmbientMap.Sample(Sampler, input.tex_coord).xyz
-        : float3(0.0, 0.0, 0.0);
-
-	const float occlusion = (sampleOcclusion > 0)
-		? 0.15 + (OcclusionMap.Sample(Sampler, input.tex_coord).x * 0.85)
+	const float occlusion = sampleOcclusion
+		? Remap(OcclusionMap.Sample(Sampler, uv), 0.0, 1.0, 1.0 - MatProp_occlusionFactor, 1.0)
 		: 1.0;
         
 	float3 totalDiffuseLight, totalSpecularLight;
-	
 	CalculateLighting(
-		pos, viewDir,									// View
-		input.normal, norm, specularCol, glossiness,	// Surface
-		totalDiffuseLight, totalSpecularLight			// Output
+		pos, viewDir,										// View
+		geoNormal, surfaceNormal, specularCol, glossiness,	// Surface
+		totalDiffuseLight, totalSpecularLight				// Output
 	);
 	
 	float3 totalLight = 
 		diffuseCol * (occlusion * (ambientCol + totalDiffuseLight))
-		+ occlusion * totalSpecularLight;
+		+ totalSpecularLight;
 	
-	float emissiveness = max(totalSpecularLight.x, max(totalSpecularLight.y, totalSpecularLight.z));
+	float3 emissivenessFactor = 0.1 * pow(max(totalLight, 0.0.rrr), 1.5) + 0.9 * totalSpecularLight;
+	float emissiveness = max(emissivenessFactor.x, max(emissivenessFactor.y, emissivenessFactor.z));
 	float remappedEmissiveness = emissiveness * 0.15 - 0.97;
 	emissiveness = 1.0 - pow(remappedEmissiveness, 2.0);
 	

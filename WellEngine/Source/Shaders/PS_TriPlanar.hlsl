@@ -1,6 +1,6 @@
 #ifdef RECOMPILE
-#include "Litet-Spelprojekt/Content/Shaders/Headers/DefaultMaterial.hlsli"
-#include "Litet-Spelprojekt/Content/Shaders/Headers/LightSampling.hlsli"
+#include "WellEngine/Source/Shaders/Headers/DefaultMaterial.hlsli"
+#include "WellEngine/Source/Shaders/Headers/LightSampling.hlsli"
 #else
 #include "Headers/DefaultMaterial.hlsli"
 #include "Headers/LightSampling.hlsli"
@@ -32,8 +32,13 @@ struct PixelShaderOutput
 PixelShaderOutput main(PixelShaderInput input)
 {
 	PixelShaderOutput output;
-		
+	
+	bool sampleNormal, sampleSpecular, sampleGlossiness, sampleReflective, sampleAmbient, sampleOcclusion;
+	GetSampleFlags(sampleNormal, sampleSpecular, sampleGlossiness, sampleReflective, sampleAmbient, sampleOcclusion);
+	
 	const float3 pos = input.world_position.xyz;
+	const float3 viewDir = normalize(cam_position.xyz - pos);
+	const float3 geoNormal = normalize(input.normal);
 	
 	// Calculate Tri-Planar UVs
 	float2 invTexSize = 1.0 / triplanar_tex_size;
@@ -44,16 +49,16 @@ PixelShaderOutput main(PixelShaderInput input)
 	if (triplanar_flip_with_normal)
 	{
 		// Flip UVs to correct for normal direction
-		uvx.x = input.normal.x > 0 ? 1.0 - uvx.x : uvx.x;
+		uvx.x = geoNormal.x > 0 ? 1.0 - uvx.x : uvx.x;
 		uvx.y = 1.0 - uvx.y;
 	
 		uvy = float2(1.0, 1.0) - uvy;
-		uvy.x = input.normal.y > 0 ? 1.0 - uvy.x : uvy.x;
+		uvy.x = geoNormal.y > 0 ? 1.0 - uvy.x : uvy.x;
 	
-		uvz.y = input.normal.z < 0 ? 1.0 - uvz.y : uvz.y;
+		uvz.y = geoNormal.z < 0 ? 1.0 - uvz.y : uvz.y;
 	}
 	
-	float3 weights = pow(abs(input.normal), triplanar_blend_sharpness);
+	float3 weights = pow(abs(geoNormal), triplanar_blend_sharpness);
 	weights /= weights.x + weights.y + weights.z;
 	
 	float3 uvWeightPair[3] = {
@@ -64,7 +69,7 @@ PixelShaderOutput main(PixelShaderInput input)
 	
 	int i = 0;
 	
-	float4 diffuseColW = float4(0, 0, 0, 0);
+	float4 diffuseColW = 0.0.rrrr;
 	[unroll]
 	for (i = 0; i < 3; ++i)
 	{
@@ -74,11 +79,11 @@ PixelShaderOutput main(PixelShaderInput input)
 		if (weight > 0.001)
 			diffuseColW += weight * Texture.Sample(Sampler, uv);
 	}
-	diffuseColW *= baseColor;
+	diffuseColW *= MatProp_baseColor;
 	
-	if (alphaCutoff > 0.0)
+	if (MatProp_alphaCutoff > 0.0)
 	{
-		float clipVal = diffuseColW.w - alphaCutoff;
+		float clipVal = diffuseColW.w - MatProp_alphaCutoff;
 		clip(clipVal);
 	
 		if (clipVal < 0.0)
@@ -93,18 +98,15 @@ PixelShaderOutput main(PixelShaderInput input)
 	output.depth = length(input.world_position.xyz - cam_position.xyz);
 	
 	const float3 diffuseCol = diffuseColW.xyz;
-	const float3 viewDir = normalize(cam_position.xyz - pos);
-	const float3 bitangent = cross(input.normal, input.tangent);
 	
-	const float3x3 normalMat = float3x3(
-		normalize(input.tangent), 
-		normalize(bitangent),
-		normalize(input.normal)
-	);
-	
-	float3 norm = float3(0, 0, 0);
-	if (sampleNormal > 0)
+	float3 surfaceNormal = 0.0.rrr;
+	if (sampleNormal)
 	{
+		const float3 geoTangent = normalize(input.tangent);
+		const float3 geoBitangent = cross(geoNormal, geoTangent);
+	
+		const float3x3 normalMat = float3x3(geoTangent, geoBitangent, geoNormal);
+		
 		[unroll]
 		for (i = 0; i < 3; ++i)
 		{
@@ -112,18 +114,18 @@ PixelShaderOutput main(PixelShaderInput input)
 			float weight = uvWeightPair[i].z;
 		
 			if (weight > 0.001)
-				norm += weight * (NormalMap.Sample(Sampler, uv).xyz * 2.0 - 1.0);
+				surfaceNormal += weight * float2(MatProp_normalFactor, 1.0).xxy * (NormalMap.Sample(Sampler, uv).xyz * 2.0 - 1.0.xxx);
 		}
 		
-		norm = normalize(mul(normalize(norm), normalMat));
+		surfaceNormal = normalize(mul(surfaceNormal, normalMat));
 	}
 	else
 	{
-		norm = normalize(input.normal);
+		surfaceNormal = geoNormal;
 	}
 	
-	float3 specularCol = float3(0, 0, 0);
-	if (sampleSpecular > 0)
+	float3 specularCol = 0.0.rrr;
+	if (sampleSpecular)
 	{
 		[unroll]
 		for (i = 0; i < 3; ++i)
@@ -134,10 +136,11 @@ PixelShaderOutput main(PixelShaderInput input)
 			if (weight > 0.001)
 				specularCol += weight * SpecularMap.Sample(Sampler, uv).xyz;
 		}
+		specularCol = MatProp_specularFactor * specularCol;
 	}
 	
 	float glossiness = 0.0;
-	if (sampleGlossiness > 0)
+	if (sampleGlossiness)
 	{
 		[unroll]
 		for (i = 0; i < 3; ++i)
@@ -151,12 +154,12 @@ PixelShaderOutput main(PixelShaderInput input)
 	}
 	else
 	{
-		glossiness = 1.0 - (1.0 / pow(max(0.0, specularExponent), 1.75));
+		glossiness = 1.0 - (1.0 / pow(max(0.0, SpecBuf_specularExponent), 1.75));
 	}
-	glossiness = specularFactor * glossiness;
+	glossiness = MatProp_glossFactor * glossiness;
 		
-	float3 ambientCol = float3(0, 0, 0);
-	if (sampleAmbient > 0)
+	float3 ambientCol = 0.0.rrr;
+	if (sampleAmbient)
 	{
 		[unroll]
 		for (i = 0; i < 3; ++i)
@@ -170,7 +173,7 @@ PixelShaderOutput main(PixelShaderInput input)
 	}
 		
 	float occlusion = 0;
-	if (sampleOcclusion > 0)
+	if (sampleOcclusion)
 	{
 		[unroll]
 		for (i = 0; i < 3; ++i)
@@ -181,7 +184,7 @@ PixelShaderOutput main(PixelShaderInput input)
 			if (weight > 0.001)
 				occlusion += weight * OcclusionMap.Sample(Sampler, uv).x;
 		}
-		occlusion = 0.15 + (occlusion * 0.85);
+		occlusion = Remap(occlusion, 0.0, 1.0, 1.0 - MatProp_occlusionFactor, 1.0);
 	}
 	else
 	{
@@ -191,14 +194,13 @@ PixelShaderOutput main(PixelShaderInput input)
 	
 	// Shading
 	float3 totalDiffuseLight, totalSpecularLight;
-	
 	CalculateLighting(
 		pos, viewDir, // View
-		input.normal, norm, specularCol, glossiness, // Surface
+		geoNormal, surfaceNormal, specularCol, glossiness, // Surface
 		totalDiffuseLight, totalSpecularLight // Output
 	);
 	
-	float3 totalLight = diffuseCol * (occlusion * (ambientCol + totalDiffuseLight)) + occlusion * totalSpecularLight;
+	float3 totalLight = diffuseCol * (occlusion * (ambientCol + totalDiffuseLight)) + totalSpecularLight;
 	
 	float emissiveness = max(totalSpecularLight.x, max(totalSpecularLight.y, totalSpecularLight.z));
 	float remappedEmissiveness = emissiveness * 0.15 - 0.97;

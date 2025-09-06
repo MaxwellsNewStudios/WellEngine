@@ -1,6 +1,6 @@
 #ifdef RECOMPILE
-#include "Litet-Spelprojekt/Content/Shaders/Headers/DefaultMaterial.hlsli"
-#include "Litet-Spelprojekt/Content/Shaders/Headers/Common.hlsli"
+#include "WellEngine/Source/Shaders/Headers/DefaultMaterial.hlsli"
+#include "WellEngine/Source/Shaders/Headers/Common.hlsli"
 #else
 #include "Headers/DefaultMaterial.hlsli"
 #include "Headers/Common.hlsli"
@@ -20,9 +20,9 @@ float1 main(PixelShaderInput input) : SV_Target0
 {
 	const float1 textureAlpha = Texture.Sample(Sampler, input.tex_coord).a;
 	
-	if (alphaCutoff > 0.0)
+	if (MatProp_alphaCutoff > 0.0)
 	{
-		clip(mad(textureAlpha, baseColor.a, -alphaCutoff));
+		clip(mad(textureAlpha, MatProp_baseColor.a, -MatProp_alphaCutoff));
 		clip(textureAlpha > 0.0 ? 1.0 : -1.0);
 	}
 	

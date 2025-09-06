@@ -17,20 +17,35 @@ inline constexpr UINT CONTENT_NULL = 0xFFFFFFFF;
 
 struct MaterialProperties
 {
-	int sampleNormal;					// Use normal map if greater than zero.
-	int sampleSpecular;					// Use specular map if greater than zero.
-	int sampleGlossiness;				// Use glossiness map if greater than zero.
-	int sampleReflective;				// Use reflection map if greater than zero.
-	int sampleAmbient;					// Use ambient map if greater than zero.
-	int sampleOcclusion;				// Use occlusion map if greater than zero.
+	dx::XMFLOAT4 baseColor		 = {1,1,1,1};	// Base color of the material.
+	float		 alphaCutoff	 = 0.0f;		// Alpha cutoff value for discarding pixels.
+	float		 specularFactor  = 1.0f;
+	float		 normalFactor	 = 1.0f;
+	float		 glossFactor	 = 1.0f;
+	float		 occlusionFactor = 0.85f;
+	float		 reflectivity	 = 0.1f;
+	float		 metallic		 = 0.0f;
 
-	float alphaCutoff = 0.5f;			// Alpha cutoff value for discarding pixels.
-	float specularFactor = 1.0f;		// Specular exponent multiplier.
-	dx::XMFLOAT4 baseColor = {1,1,1,1}; // Base color of the material.
-	float metallic = 0.0f;				// Metallic factor for PBR materials.
-	float reflectivity = 0.0f;			// Reflectivity factor for PBR materials.
+	// Bitwise flags for if certain maps should be sampled or skipped.
+	// 0: Normal		1: Specular			2: glossiness
+	// 3: reflective	4: ambient light	5: ambient occlusion
+	UINT		 sampleFlags	 = 0u;
 
-	float _padding[2];
+	//float _padding[1];		
+
+	UINT SetSampleFlags(
+		bool normal,	 bool specular,	bool glossiness,
+		bool reflective, bool ambient,	bool occlusion)
+	{
+		sampleFlags = 0u;
+		sampleFlags |= normal		? (1u << 0) : 0u;
+		sampleFlags |= specular		? (1u << 1) : 0u;
+		sampleFlags |= glossiness	? (1u << 2) : 0u;
+		sampleFlags |= reflective	? (1u << 3) : 0u;
+		sampleFlags |= ambient		? (1u << 4) : 0u;
+		sampleFlags |= occlusion	? (1u << 5) : 0u;
+		return sampleFlags;
+	}
 };
 
 class ContentBase

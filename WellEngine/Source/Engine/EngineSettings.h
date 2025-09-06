@@ -10,7 +10,7 @@
 	//#define COMPILE_CONTENT
 
 	/// BAKE_TEXTURES causes textures to be baked into their post-processed form after loading.
-	//#define BAKE_TEXTURES
+	#define BAKE_TEXTURES
 
 	#ifndef BAKE_TEXTURES
 		/// USE_BAKED_TEXTURES causes the pre-baked textures to be loaded during setup instead of processing them at runtime.
@@ -49,7 +49,7 @@
 	/// Makes meshes generate colliders using lower LODs when available, or skip it entirely.
 	/// This option exists as it drastically increases load times with compiler optimizations turned off.
 	/// 0: Use highest LOD.  1: Use middle LOD (default).  2: Use lowest LOD.  3: Raycast with bounding boxes only.
-	#define MESH_COLLISION_DETAIL_REDUCTION 2
+	#define MESH_COLLISION_DETAIL_REDUCTION 1
 
 	/// EXTRA_CULL_CHECK makes culling perform an extra intersection test between the entity's bounds and the frustum before being queued
 	#define EXTRA_CULL_CHECK
@@ -124,8 +124,9 @@
 
 
 #pragma region Path Configuration Defines
+constexpr auto ENGINE_PATH_SHADERS				= "WellEngine\\Source\\Shaders";
+
 constexpr auto ASSET_PATH						= "Assets";
-constexpr auto ASSET_PATH_SHADERS				= "Assets\\Shaders";
 constexpr auto ASSET_PATH_SCENES				= "Assets\\Scenes";
 constexpr auto ASSET_PATH_SAVES					= "Assets\\Saves";
 constexpr auto ASSET_PATH_PREFABS				= "Assets\\Prefabs";

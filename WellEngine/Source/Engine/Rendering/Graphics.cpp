@@ -1179,28 +1179,6 @@ bool Graphics::RenderToTarget(
 				return false;
 		break;
 
-	case RenderType::LIGHTING:
-		if (!RenderCustom(targetRTV, targetDepthRTV, targetDSV, targetViewport, "PS_DebugViewLighting"))
-		{
-			ErrMsg("Failed to render lighting view!");
-			return false;
-		}
-
-		if (_renderDebugDraw)
-		{
-			if (!DebugDrawer::Instance().Render(targetRTV, targetDSV, targetViewport))
-			{
-				ErrMsg("Failed to render debug drawer!");
-				return false;
-			}
-		}
-		DebugDrawer::Instance().Clear();
-
-		if (_renderOverlay)
-			if (!RenderCustom(targetRTV, targetDepthRTV, targetDSV, targetViewport, "PS_DebugViewLighting", true))
-				return false;
-		break;
-
 	case RenderType::SHADOW:
 		if (!RenderCustom(targetRTV, targetDepthRTV, targetDSV, targetViewport, "PS_DebugViewShadow"))
 		{
@@ -3851,7 +3829,6 @@ bool Graphics::RenderUI(TimeUtils &time)
 			"Ambient",
 			"Diffuse",
 			"Depth",
-			"Lighting",
 			"Shadow",
 			"Reflection",
 			"Reflectivity",

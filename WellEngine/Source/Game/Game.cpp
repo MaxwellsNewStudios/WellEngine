@@ -813,7 +813,6 @@ bool Game::Setup(TimeUtils &time, Window window)
 		{ ShaderType::PIXEL_SHADER,			"PS_DebugViewAmbient",			"PS_DebugViewAmbient"			},
 		{ ShaderType::PIXEL_SHADER,			"PS_DebugViewDiffuse",			"PS_DebugViewDiffuse"			},
 		{ ShaderType::PIXEL_SHADER,			"PS_DebugViewDepth",			"PS_DebugViewDepth"				},
-		{ ShaderType::PIXEL_SHADER,			"PS_DebugViewLighting",			"PS_DebugViewLighting"			},
 		{ ShaderType::PIXEL_SHADER,			"PS_DebugViewShadow",			"PS_DebugViewShadow"			},
 		{ ShaderType::PIXEL_SHADER,			"PS_DebugViewReflection",		"PS_DebugViewReflection"		},
 		{ ShaderType::PIXEL_SHADER,			"PS_DebugViewReflectivity",		"PS_DebugViewReflectivity"		},

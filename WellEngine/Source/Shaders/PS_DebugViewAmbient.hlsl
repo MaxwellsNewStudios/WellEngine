@@ -1,6 +1,6 @@
 #ifdef RECOMPILE
-#include "Litet-Spelprojekt/Content/Shaders/Headers/Common.hlsli"
-#include "Litet-Spelprojekt/Content/Shaders/Headers/DefaultMaterial.hlsli"
+#include "WellEngine/Source/Shaders/Headers/Common.hlsli"
+#include "WellEngine/Source/Shaders/Headers/DefaultMaterial.hlsli"
 #else
 #include "Headers/Common.hlsli"
 #include "Headers/DefaultMaterial.hlsli"
@@ -17,6 +17,9 @@ struct PixelShaderInput
 
 float4 main(PixelShaderInput input) : SV_TARGET
 {
+	bool _, sampleAmbient;
+	GetSampleFlags(_, _, _, _, sampleAmbient, _);
+    
     const float3 ambientCol = (sampleAmbient > 0)
 		? AmbientMap.Sample(Sampler, input.tex_coord).xyz
         : float3(0.0, 0.0, 0.0);

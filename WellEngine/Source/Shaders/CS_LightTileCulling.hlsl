@@ -1,5 +1,5 @@
 #ifdef RECOMPILE
-#include "Litet-Spelprojekt/Content/Shaders/Headers/Common.hlsli"
+#include "WellEngine/Source/Shaders/Headers/Common.hlsli"
 #else
 #include "Headers/Common.hlsli"
 #endif

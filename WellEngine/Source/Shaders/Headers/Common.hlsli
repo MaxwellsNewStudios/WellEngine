@@ -5,9 +5,11 @@ static const float SHADOW_NORMAL_OFFSET = 0.0005;
 static const float SHADOWCUBE_DEPTH_EPSILON = 0.01; // 0.01
 static const float SHADOWCUBE_NORMAL_OFFSET = 0.0035; // 0.0035
 
-sampler Sampler : register(s0);
-Texture2D NoiseTexture : register(t10);
 
+sampler Sampler : register(s0);
+sampler EnvSampler : register(s3);
+
+Texture2D NoiseTexture : register(t10);
 TextureCube EnvironmentCubemap : register(t20);
 
 cbuffer GlobalLight : register(b0)
