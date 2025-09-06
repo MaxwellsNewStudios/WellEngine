@@ -6,39 +6,17 @@
 namespace ImGuiUtils
 {
 #ifdef USE_IMGUI
+	void WrapMousePosEx(int axises_mask, const ImRect &wrap_rect);
+	void WrapMousePos(int axises_mask);
+	void LockMouseOnActive();
+
 	enum class StyleType
 	{
 		Green,
 		Red,
 	};
-
-
-	void WrapMousePosEx(int axises_mask, const ImRect &wrap_rect);
-	void WrapMousePos(int axises_mask);
-	void LockMouseOnActive();
-
 	void BeginButtonStyle(StyleType style);
 	void EndButtonStyle();
-
-	// Pushes ImGui ID on creation, popped automatically when going out of scope.
-	class ImGuiAutoID
-	{
-	public:
-		ImGuiAutoID(const std::string &id);
-		~ImGuiAutoID();
-	};
-
-	// ImGui style preset, popped automatically when going out of scope.
-	class ImGuiAutoStyle
-	{
-	private:
-		UINT _varStyles = 0;
-		UINT _colorStyles = 0;
-
-	public:
-		ImGuiAutoStyle();
-		~ImGuiAutoStyle();
-	};
 
 	// ImGui window, rendered at top level.
 	class ImGuiAutoWindow
@@ -67,7 +45,6 @@ namespace ImGuiUtils
 
 		[[nodiscard]] bool Render();
 	};
-
 
 	class Utils
 	{

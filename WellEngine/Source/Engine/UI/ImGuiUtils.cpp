@@ -98,30 +98,6 @@ void ImGuiUtils::EndButtonStyle()
 	ImGui::PopStyleColor(3);
 }
 
-#pragma region ImGuAutoiID
-ImGuiAutoID::ImGuiAutoID(const std::string &id)
-{
-	ImGui::PushID(id.c_str());
-}
-ImGuiAutoID::~ImGuiAutoID()
-{
-	ImGui::PopID();
-}
-#pragma endregion
-
-
-#pragma region ImGuiAutoStyle
-ImGuiAutoStyle::ImGuiAutoStyle()
-{
-	// TODO: push user defined styles, count the number of styles pushed
-}
-ImGuiAutoStyle::~ImGuiAutoStyle()
-{
-	ImGui::PopStyleVar(_varStyles);
-	ImGui::PopStyleColor(_colorStyles);
-}
-#pragma endregion
-
 
 #pragma region ImGuiAutoWindow
 const std::string &ImGuiAutoWindow::GetID() const

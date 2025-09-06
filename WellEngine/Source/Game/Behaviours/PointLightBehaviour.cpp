@@ -130,9 +130,9 @@ bool PointLightBehaviour::RenderUI()
 		newColor = true;
 
 	bool newStrength = false;
-	if (ImGui::DragFloat("Intensity", &colorStrength, 0.01f, 0.001f))
+	if (ImGui::DragFloat("Intensity", &colorStrength, 0.01f, 0.01f))
 	{
-		colorStrength = max(colorStrength, 0.001f);
+		colorStrength = max(colorStrength, 0.01f);
 		newStrength = true;
 	}
 	ImGuiUtils::LockMouseOnActive();

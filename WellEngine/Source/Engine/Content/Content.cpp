@@ -103,7 +103,6 @@ bool Content::RenderUI(ID3D11Device *device)
 				static bool filterID = false;
 				static dx::XMINT2 filterIDRange = {0, (int)_textures.size() - 1};
 				static DXGI_FORMAT filterFormat = DXGI_FORMAT_UNKNOWN;
-				static int filterTransparent = -1; // <0: not filtered, 1: filter non-matching, 2: filter matching
 
 				// Filter options
 				{
@@ -120,7 +119,6 @@ bool Content::RenderUI(ID3D11Device *device)
 						filterSearch.clear();
 						filterID = false;
 						filterFormat = DXGI_FORMAT_UNKNOWN;
-						filterTransparent = -1;
 
 						refreshTextures = true;
 					}
@@ -163,27 +161,6 @@ bool Content::RenderUI(ID3D11Device *device)
 							refreshTextures = true;
 						}
 						ImGuiUtils::LockMouseOnActive();
-						ImGui::EndDisabled();
-
-						// Transparent
-						bool filterTransparentState = (filterTransparent > 0);
-						if (ImGui::Checkbox("##TransparentFilter", &filterTransparentState))
-						{
-							filterTransparent *= -1;
-
-							refreshTextures = true;
-						}
-
-						ImGui::BeginDisabled(!filterTransparentState); ImGui::SameLine();
-						if (ImGui::Button(std::abs(filterTransparent) == 1 ? "Transparent" : "Opaque"))
-						{
-							if (filterTransparent == 1)
-								filterTransparent = 2;
-							else
-								filterTransparent = 1;
-
-							refreshTextures = true;
-						}
 						ImGui::EndDisabled();
 
 						// Format

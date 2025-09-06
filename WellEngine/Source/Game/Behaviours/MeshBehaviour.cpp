@@ -219,7 +219,11 @@ bool MeshBehaviour::RenderUI()
 			ImGui::Text("Mesh:"); ImGui::SameLine(); ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
 			if (ImGui::BeginCombo("", content->GetMeshName((UINT)inputMeshID).c_str(), comboFlags))
 			{
+				if (ImGui::IsWindowAppearing())
+					ImGui::SetKeyboardFocusHere(0);
+
 				static std::string filter = "";
+				ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
 				ImGui::InputText("##Filter", &filter, ImGuiInputTextFlags_AutoSelectAll);
 				if (!ImGui::IsItemActive() && filter.empty())
 				{
@@ -281,7 +285,11 @@ bool MeshBehaviour::RenderUI()
 			ImGui::Text("Texture:"); ImGui::SameLine(); ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
 			if (ImGui::BeginCombo("", content->GetTextureName((UINT)inputTexID).c_str(), comboFlags))
 			{
+				if (ImGui::IsWindowAppearing())
+					ImGui::SetKeyboardFocusHere(0);
+
 				static std::string filter = "";
+				ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
 				ImGui::InputText("##Filter", &filter, ImGuiInputTextFlags_AutoSelectAll);
 				if (!ImGui::IsItemActive() && filter.empty())
 				{
@@ -361,7 +369,11 @@ bool MeshBehaviour::RenderUI()
 			ImGui::Text("Normal:"); ImGui::SameLine(); ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x - ImGui::GetFrameHeight() - 6.0f);
 			if (ImGui::BeginCombo("", content->GetTextureName((UINT)inputNormID).c_str(), comboFlags))
 			{
+				if (ImGui::IsWindowAppearing())
+					ImGui::SetKeyboardFocusHere(0);
+
 				static std::string filter = "";
+				ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
 				ImGui::InputText("##Filter", &filter, ImGuiInputTextFlags_AutoSelectAll);
 				if (!ImGui::IsItemActive() && filter.empty())
 				{
@@ -453,7 +465,11 @@ bool MeshBehaviour::RenderUI()
 			ImGui::Text("Specular:"); ImGui::SameLine(); ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x - ImGui::GetFrameHeight() - 6.0f);
 			if (ImGui::BeginCombo("", content->GetTextureName((UINT)inputSpecID).c_str(), comboFlags))
 			{
+				if (ImGui::IsWindowAppearing())
+					ImGui::SetKeyboardFocusHere(0);
+
 				static std::string filter = "";
+				ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
 				ImGui::InputText("##Filter", &filter, ImGuiInputTextFlags_AutoSelectAll);
 				if (!ImGui::IsItemActive() && filter.empty())
 				{
@@ -544,7 +560,11 @@ bool MeshBehaviour::RenderUI()
 			ImGui::Text("Glossiness:"); ImGui::SameLine(); ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x - ImGui::GetFrameHeight() - 6.0f);
 			if (ImGui::BeginCombo("", content->GetTextureName((UINT)inputGlossID).c_str(), comboFlags))
 			{
+				if (ImGui::IsWindowAppearing())
+					ImGui::SetKeyboardFocusHere(0);
+
 				static std::string filter = "";
+				ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
 				ImGui::InputText("##Filter", &filter, ImGuiInputTextFlags_AutoSelectAll);
 				if (!ImGui::IsItemActive() && filter.empty())
 				{
@@ -636,7 +656,11 @@ bool MeshBehaviour::RenderUI()
 			ImGui::Text("Ambient:"); ImGui::SameLine(); ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x - ImGui::GetFrameHeight() - 6.0f);
 			if (ImGui::BeginCombo("", content->GetTextureName((UINT)inputAmbID).c_str(), comboFlags))
 			{
+				if (ImGui::IsWindowAppearing())
+					ImGui::SetKeyboardFocusHere(0);
+
 				static std::string filter = "";
+				ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
 				ImGui::InputText("##Filter", &filter, ImGuiInputTextFlags_AutoSelectAll);
 				if (!ImGui::IsItemActive() && filter.empty())
 				{
@@ -724,7 +748,11 @@ bool MeshBehaviour::RenderUI()
 			ImGui::Text("Reflection:"); ImGui::SameLine(); ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x - ImGui::GetFrameHeight() - 6.0f);
 			if (ImGui::BeginCombo("", content->GetTextureName((UINT)inputReflectID).c_str(), comboFlags))
 			{
+				if (ImGui::IsWindowAppearing())
+					ImGui::SetKeyboardFocusHere(0);
+
 				static std::string filter = "";
+				ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
 				ImGui::InputText("##Filter", &filter, ImGuiInputTextFlags_AutoSelectAll);
 				if (!ImGui::IsItemActive() && filter.empty())
 				{
@@ -813,7 +841,11 @@ bool MeshBehaviour::RenderUI()
 			ImGui::Text("Ambient Occlusion:"); ImGui::SameLine(); ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x - ImGui::GetFrameHeight() - 6.0f);
 			if (ImGui::BeginCombo("", content->GetTextureName((UINT)inputOcclusionID).c_str(), comboFlags))
 			{
+				if (ImGui::IsWindowAppearing())
+					ImGui::SetKeyboardFocusHere(0);
+
 				static std::string filter = "";
+				ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
 				ImGui::InputText("##Filter", &filter, ImGuiInputTextFlags_AutoSelectAll);
 				if (!ImGui::IsItemActive() && filter.empty())
 				{
@@ -905,7 +937,11 @@ bool MeshBehaviour::RenderUI()
 			ImGui::Text("Sampler:"); ImGui::SameLine(); ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x - ImGui::GetFrameHeight() - 6.0f);
 			if (ImGui::BeginCombo("", content->GetSamplerName((UINT)inputSampID).c_str(), comboFlags))
 			{
+				if (ImGui::IsWindowAppearing())
+					ImGui::SetKeyboardFocusHere(0);
+
 				static std::string filter = "";
+				ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
 				ImGui::InputText("##Filter", &filter, ImGuiInputTextFlags_AutoSelectAll);
 				if (!ImGui::IsItemActive() && filter.empty())
 				{
@@ -990,7 +1026,11 @@ bool MeshBehaviour::RenderUI()
 			ImGui::Text("Blend State:"); ImGui::SameLine(); ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x - ImGui::GetFrameHeight() - 6.0f);
 			if (ImGui::BeginCombo("", content->GetBlendStateName((UINT)inputBlendID).c_str(), comboFlags))
 			{
+				if (ImGui::IsWindowAppearing())
+					ImGui::SetKeyboardFocusHere(0);
+
 				static std::string filter = "";
+				ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
 				ImGui::InputText("##Filter", &filter, ImGuiInputTextFlags_AutoSelectAll);
 				if (!ImGui::IsItemActive() && filter.empty())
 				{
@@ -1075,7 +1115,11 @@ bool MeshBehaviour::RenderUI()
 			ImGui::Text("Vertex Shader:"); ImGui::SameLine(); ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x - ImGui::GetFrameHeight() - 6.0f);
 			if (ImGui::BeginCombo("", content->GetShaderName((UINT)inputVSID).c_str(), comboFlags))
 			{
+				if (ImGui::IsWindowAppearing())
+					ImGui::SetKeyboardFocusHere(0);
+
 				static std::string filter = "";
+				ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
 				ImGui::InputText("##Filter", &filter, ImGuiInputTextFlags_AutoSelectAll);
 				if (!ImGui::IsItemActive() && filter.empty())
 				{
@@ -1163,7 +1207,11 @@ bool MeshBehaviour::RenderUI()
 			ImGui::Text("Pixel Shader:"); ImGui::SameLine(); ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x - ImGui::GetFrameHeight() - 6.0f);
 			if (ImGui::BeginCombo("", content->GetShaderName((UINT)inputPSID).c_str(), comboFlags))
 			{
+				if (ImGui::IsWindowAppearing())
+					ImGui::SetKeyboardFocusHere(0);
+
 				static std::string filter = "";
+				ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
 				ImGui::InputText("##Filter", &filter, ImGuiInputTextFlags_AutoSelectAll);
 				if (!ImGui::IsItemActive() && filter.empty())
 				{

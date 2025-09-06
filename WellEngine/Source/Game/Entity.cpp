@@ -1174,9 +1174,8 @@ bool Entity::InitialRenderUI()
 		}
 
 		ImGui::Separator();
-		ImGui::Dummy({ 0.0f, 4.0f });
+		ImGui::Dummy({ 0.0f, 2.0f });
 
-		if (ImGui::TreeNode("Add Behaviour"))
 		{
 			auto &behaviourMap = BehaviourRegistry::Get();
 
@@ -1190,45 +1189,72 @@ bool Entity::InitialRenderUI()
 			// Sort the behaviour names
 			std::sort(behaviourNames.begin(), behaviourNames.end());
 
-			// Render the combo box for behaviour selection
-			static int selectedIndex = 0;
-			if (ImGui::BeginCombo("Behaviour Type", behaviourNames[selectedIndex].data()))
-			{
-				for (int i = 0; i < behaviourNames.size(); i++)
-				{
-					const bool isSelected = (selectedIndex == i);
-					if (ImGui::Selectable(behaviourNames[i].data(), isSelected))
-						selectedIndex = i;
-
-					if (isSelected)
-						ImGui::SetItemDefaultFocus();
-				}
-				ImGui::EndCombo();
-			}
-
 			if (ImGui::Button("Add Behaviour"))
+				ImGui::OpenPopup("Add Behaviour Popup");
+
+			if (ImGui::BeginPopup("Add Behaviour Popup", ImGuiWindowFlags_NoMove))
 			{
-				const std::string_view behaviourName = behaviourNames[selectedIndex];
+				static std::string filter = "";
 
-				auto it = behaviourMap.find(behaviourName);
-				if (it == behaviourMap.end())
+				if (ImGui::IsWindowAppearing())
+					ImGui::SetKeyboardFocusHere(0);
+
+				float inputBoxPosX = ImGui::GetCursorPosX();
+				ImGui::InputText("##Filter", &filter, ImGuiInputTextFlags_AutoSelectAll);
+				if (!ImGui::IsItemActive() && filter.empty())
 				{
-					ErrMsgF("Behaviour '{}' not found in map!", behaviourName);
-					return false;
+					ImGui::SameLine(inputBoxPosX + 8.0f);
+					ImGui::TextDisabled("Search");
 				}
 
-				std::function<Behaviour *()> behaviourConstructor = it->second;
-				Behaviour *newBehaviour = behaviourConstructor();
+				if (!filter.empty())
+					std::transform(filter.begin(), filter.end(), filter.begin(), ::tolower);
 
-				if (!newBehaviour->Initialize(this))
+				ImGui::Separator();
+
+				int selectedIndex = -1;
+				ImGui::BeginChild("BehaviourList", ImVec2(0, 200), ImGuiChildFlags_ResizeY);
+				for (UINT i = 0; i < behaviourNames.size(); i++)
 				{
-					ErrMsg("Failed to bind behaviour to entity!");
-					return false;
+					if (!filter.empty())
+					{
+						std::string lower = behaviourNames[i].data();
+						std::transform(lower.begin(), lower.end(), lower.begin(), ::tolower);
+
+						if (lower.find(filter) == std::string::npos)
+							continue;
+					}
+
+					if (ImGui::Selectable(behaviourNames[i].data(), false))
+						selectedIndex = i;
 				}
+				ImGui::EndChild();
+
+				if (selectedIndex >= 0)
+				{
+					std::string_view behaviourName = behaviourNames[selectedIndex];
+
+					auto it = behaviourMap.find(behaviourName);
+					if (it == behaviourMap.end())
+					{
+						ErrMsgF("Behaviour '{}' not found in map!", behaviourName);
+						return false;
+					}
+
+					std::function<Behaviour *()> behaviourConstructor = it->second;
+					Behaviour *newBehaviour = behaviourConstructor();
+
+					if (!newBehaviour->Initialize(this))
+					{
+						ErrMsg("Failed to bind behaviour to entity!");
+						return false;
+					}
+
+					ImGui::CloseCurrentPopup();
+				}
+
+				ImGui::EndPopup();
 			}
-
-			ImGui::TreePop();
-			ImGui::Separator();
 		}
 	}
 	ImGui::PopID();
