@@ -99,6 +99,9 @@ bool Scene::Serialize(bool asSaveFile)
 				const dx::BoundingBox &sceneBounds = _sceneHolder.GetBounds();
 				sceneBoundsObj.AddMember("Center", SerializerUtils::SerializeVec(sceneBounds.Center, docAlloc), docAlloc);
 				sceneBoundsObj.AddMember("Extents", SerializerUtils::SerializeVec(sceneBounds.Extents, docAlloc), docAlloc);
+
+				sceneBoundsObj.AddMember("Max Depth", _sceneHolder.GetTreeDepth(), docAlloc);
+				sceneBoundsObj.AddMember("Max Items In Node", _sceneHolder.GetTreeNodeSize(), docAlloc);
 			}
 			sceneSettingsObj.AddMember("Bounds", sceneBoundsObj, docAlloc);
 
@@ -382,6 +385,9 @@ bool Scene::Deserialize(bool sceneReload)
 			_transitionScene = sceneSettingsObj["Transitional"].GetBool();
 
 		dx::BoundingBox sceneBounds{};
+		UINT maxDepth = -1;
+		UINT maxItemsInNode = -1;
+
 		if (sceneSettingsObj.HasMember("Bounds"))
 		{
 			json::Value &sceneBoundsObj = sceneSettingsObj["Bounds"];
@@ -390,9 +396,15 @@ bool Scene::Deserialize(bool sceneReload)
 
 			if (sceneBoundsObj.HasMember("Extents"))
 				SerializerUtils::DeserializeVec(sceneBounds.Extents, sceneBoundsObj["Extents"]);
+
+			if (sceneBoundsObj.HasMember("Max Depth"))
+				maxDepth = sceneBoundsObj["Max Depth"].GetUint();
+
+			if (sceneBoundsObj.HasMember("Max Items In Node"))
+				maxItemsInNode = sceneBoundsObj["Max Items In Node"].GetUint();
 		}
 
-		if (!_sceneHolder.Initialize(sceneBounds))
+		if (!_sceneHolder.Initialize(sceneBounds, maxDepth, maxItemsInNode))
 		{
 			ErrMsg("Failed to initialize scene holder!");
 			return false;

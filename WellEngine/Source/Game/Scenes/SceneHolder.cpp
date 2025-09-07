@@ -113,16 +113,33 @@ SceneHolder::~SceneHolder()
 	for (const SceneContents::SceneEntity *ent : _entities)
 		delete ent;
 }
-bool SceneHolder::Initialize(const BoundingBox &sceneBounds)
+
+bool SceneHolder::Initialize(const BoundingBox &sceneBounds, UINT newMaxDepth, UINT newMaxItemsInNode)
 {
+	if (_isInitialized)
+		return SetTreeParams(&sceneBounds, newMaxDepth, newMaxItemsInNode);
+
 	_bounds = sceneBounds;
-	if (!_volumeTree.Initialize(sceneBounds))
+	if (!_volumeTree.Initialize(sceneBounds, newMaxDepth, newMaxItemsInNode))
 	{
 		ErrMsg("Failed to initialize volume tree!");
 		return false;
 	}
 
+#ifdef USE_IMGUI
+	_unsavedChanges = false;
+	_newMaxDepth = newMaxDepth;
+	_newMaxItemsInNode = newMaxItemsInNode;
+	_newBounds = sceneBounds;
+#endif
+
+	_isInitialized = true;
+
 	return true;
+}
+bool SceneHolder::IsInitialized() const
+{
+	return _isInitialized;
 }
 
 bool SceneHolder::Update()
@@ -201,6 +218,7 @@ bool SceneHolder::Update()
 		}
 	}
 
+	// Update Tree Insertion Queue
 	{
 		ZoneNamedXNC(updateTreeInsertionZone, "Update Tree Insertion Queue", RandomUniqueColor(), true);
 
@@ -220,6 +238,7 @@ bool SceneHolder::Update()
 		_treeInsertionQueue.clear();
 	}
 
+	// Update Entity Removal Queue
 	{
 		ZoneNamedXNC(updateEntRemovalZone, "Update Entity Removal Queue", RandomUniqueColor(), true);
 
@@ -243,6 +262,138 @@ bool SceneHolder::Update()
 	_recalculateColliders = false;
 	return true;
 }
+
+#ifdef USE_IMGUI
+void SceneHolder::DebugGetTreeStructure(std::vector<dx::BoundingBox> &boxCollection, bool full, bool culling) const
+{
+	_volumeTree.DebugGetStructure(boxCollection, full, culling);
+}
+void SceneHolder::DebugGetTreeStructure(std::vector<dx::BoundingBox> &boxCollection, const dx::BoundingFrustum &frustum, bool full, bool culling) const
+{
+	_volumeTree.DebugGetStructure(boxCollection, frustum, full, culling);
+}
+
+bool SceneHolder::RenderUI()
+{
+	ImGui::Text("Center:"); ImGui::SameLine();
+	if (ImGui::DragFloat3("Center##SceneTreeParams", (float *)&_newBounds.Center, 0.1f))
+		_unsavedChanges = true;
+	ImGuiUtils::LockMouseOnActive();
+
+	ImGui::Text("Extents:"); ImGui::SameLine();
+	if (ImGui::DragFloat3("Extents##SceneTreeParams", (float *)&_newBounds.Extents, 0.1f))
+	{
+		for (int i = 0; i < 3; i++)
+			*(((float *)&_newBounds.Extents.x) + i) = max(0.1f, *(((float *)&_newBounds.Extents.x) + i));
+		_unsavedChanges = true;
+	}
+	ImGuiUtils::LockMouseOnActive();
+
+	ImGui::Text("Max Depth:"); ImGui::SameLine();
+	if (ImGui::InputScalar("##MaxDepthSceneTreeParams", ImGuiDataType_U32, &_newMaxDepth))
+	{
+		_newMaxDepth = max(1, _newMaxDepth);
+		_unsavedChanges = true;
+	}
+
+	ImGui::Text("Split Threshold:"); ImGui::SameLine();
+	if (ImGui::InputScalar("##MaxItemsInNodeSceneTreeParams", ImGuiDataType_U32, &_newMaxItemsInNode))
+	{
+		_newMaxItemsInNode = max(1, _newMaxItemsInNode);
+		_unsavedChanges = true;
+	}
+
+	if (_unsavedChanges)
+	{
+		ImGui::TextColored({ 1.0f, 0.5f, 0.0f, 1.0f }, "Unapplied Changes");
+
+		ImGui::SameLine();
+		if (ImGui::Button("Apply##SceneTreeParams"))
+		{
+			if (!SetTreeParams(&_newBounds, _newMaxDepth, _newMaxItemsInNode))
+			{
+				ErrMsg("Failed to apply new tree parameters!");
+				return false;
+			}
+			_unsavedChanges = false;
+		}
+
+		ImGui::SameLine();
+		if (ImGui::Button("Revert##SceneTreeParams"))
+		{
+			_newBounds = _bounds;
+			_newMaxDepth = _volumeTree.GetMaxDepth();
+			_newMaxItemsInNode = _volumeTree.GetMaxItemsInNode();
+			_unsavedChanges = false;
+		}
+	}
+
+	ImGui::Separator();
+
+	ImGui::Text("Scene Entities: %d", GetEntityCount());
+
+	ImGuiChildFlags hashChildFlags = ImGuiChildFlags_None;
+	hashChildFlags |= ImGuiChildFlags_Borders;
+	hashChildFlags |= ImGuiChildFlags_ResizeY;
+
+	ImGuiWindowFlags hashWindowFlags = ImGuiWindowFlags_None;
+
+	ImGui::Text("Name Hash Size: %d / %d", _entNameSearchHash.size(), EntityNameHashMaxSize);
+	if (ImGui::TreeNode("Hashed Names"))
+	{
+		ImGui::BeginChild("NameHashChild", { ImGui::GetContentRegionAvail().x, 100 }, hashChildFlags, hashWindowFlags);
+		for (auto it = _entNameSearchHash.begin(); it != _entNameSearchHash.end(); it++)
+		{
+			std::string_view name = it->first;
+			SceneContents::HashedEntity &hashedEnt = it->second;
+
+			if (ImGui::Button(std::format("\"{}\": {} (age:{})", name.data(), hashedEnt.found ? "Found" : "Not Found", hashedEnt.age).c_str()))
+			{
+				if (Entity *ent = hashedEnt.entRef.Get())
+				{
+					Scene *scene = ent->GetScene();
+					scene->SetSelection(ent, ImGui::GetIO().KeyShift);
+				}
+			}
+		}
+		ImGui::EndChild();
+		ImGui::TreePop();
+	}
+
+	ImGui::Text("ID Hash Size: %d / %d", _entIDSearchHash.size(), EntityIDHashMaxSize);
+	if (ImGui::TreeNode("Hashed IDs"))
+	{
+		ImGui::BeginChild("IDHashChild", { ImGui::GetContentRegionAvail().x, 100 }, hashChildFlags, hashWindowFlags);
+		for (auto it = _entIDSearchHash.begin(); it != _entIDSearchHash.end(); it++)
+		{
+			UINT id = it->first;
+			SceneContents::HashedEntity &hashedEnt = it->second;
+
+			if (ImGui::Button(std::format("{}: {} (age:{})", id, hashedEnt.found ? "Found" : "Not Found", hashedEnt.age).c_str()))
+			{
+				if (Entity *ent = hashedEnt.entRef.Get())
+				{
+					Scene *scene = ent->GetScene();
+					scene->SetSelection(ent, ImGui::GetIO().KeyShift);
+				}
+			}
+		}
+		ImGui::EndChild();
+		ImGui::TreePop();
+	}
+
+	ImGui::Separator();
+
+	if (!_volumeTree.RenderUI())
+	{
+		ErrMsg("Failed to render quadtree UI!");
+		return false;
+	}
+
+	return true;
+}
+#endif
+
 
 Entity *SceneHolder::AddEntity(const BoundingOrientedBox &bounds, bool addToTree)
 {
@@ -301,7 +452,6 @@ bool SceneHolder::RemoveEntityImmediate(Entity *entity)
 
 	return true;
 }
-
 bool SceneHolder::RemoveEntity(Entity *entity)
 {
 	ZoneScopedXC(RandomUniqueColor());
@@ -499,6 +649,53 @@ bool SceneHolder::UpdateEntityPosition(Entity *entity)
 const dx::BoundingBox &SceneHolder::GetBounds() const
 {
 	return _bounds;
+}
+bool SceneHolder::SetBounds(const dx::BoundingBox &newBounds)
+{
+	return SetTreeParams(&newBounds);
+}
+
+UINT SceneHolder::GetTreeDepth() const
+{
+	return _volumeTree.GetMaxDepth();
+}
+UINT SceneHolder::GetTreeNodeSize() const
+{
+	return _volumeTree.GetMaxItemsInNode();
+}
+bool SceneHolder::SetTreeParams(const dx::BoundingBox *newBounds, UINT newMaxDepth, UINT newMaxItemsInNode)
+{
+	ZoneScopedC(RandomUniqueColor());
+
+	if (newBounds)
+		_bounds = *newBounds;
+
+	if (!_volumeTree.Initialize(_bounds, newMaxDepth, newMaxItemsInNode))
+	{
+		ErrMsg("Failed to reinitialize volume tree!");
+		return false;
+	}
+
+	// Reinsert all entities that are included in the tree
+	for (SceneContents::SceneEntity *sceneEntity : _entities)
+	{
+		if (!sceneEntity->includeInTree)
+			continue;
+
+		Entity *entity = sceneEntity->GetEntity();
+		if (!entity)
+			continue;
+
+		dx::BoundingOrientedBox entityBounds;
+		entity->StoreEntityBounds(entityBounds);
+
+		_volumeTree.Insert(entity, entityBounds);
+		entity->GetTransform()->CleanScenePos();
+	}
+
+	_treeInsertionQueue.clear();
+
+	return true;
 }
 
 Entity *SceneHolder::GetEntity(const UINT i) const
@@ -908,15 +1105,6 @@ bool SceneHolder::RaycastScene(const Shape::Ray &ray, Shape::RayHit &hit, Entity
 	return _volumeTree.RaycastTree(ray, hit, ent);
 }
 
-void SceneHolder::DebugGetTreeStructure(std::vector<dx::BoundingBox> &boxCollection, bool full, bool culling) const
-{
-	_volumeTree.DebugGetStructure(boxCollection, full, culling);
-}
-void SceneHolder::DebugGetTreeStructure(std::vector<dx::BoundingBox> &boxCollection, const dx::BoundingFrustum &frustum, bool full, bool culling) const
-{
-	_volumeTree.DebugGetStructure(boxCollection, frustum, full, culling);
-}
-
 void SceneHolder::ResetSceneHolder()
 {
 	ZoneScopedXC(RandomUniqueColor());
@@ -929,6 +1117,7 @@ void SceneHolder::ResetSceneHolder()
 	_bounds = {};
 	_entities = {};
 	_recalculateColliders = false;
+	_isInitialized = false;
 
 #ifdef QUADTREE_CULLING
 	_volumeTree = {};
@@ -955,74 +1144,3 @@ void SceneHolder::RecalculateTreeCullingBounds()
 
 	_volumeTree.RecalculateCullingBounds();
 }
-
-#ifdef USE_IMGUI
-bool SceneHolder::RenderUI()
-{
-	// TODO: Set bounds
-
-	ImGui::Separator();
-
-	ImGui::Text("Scene Entities: %d", GetEntityCount());
-
-	ImGuiChildFlags hashChildFlags = ImGuiChildFlags_None;
-	hashChildFlags |= ImGuiChildFlags_Borders;
-	hashChildFlags |= ImGuiChildFlags_ResizeY;
-
-	ImGuiWindowFlags hashWindowFlags = ImGuiWindowFlags_None;
-	
-	ImGui::Text("Name Hash Size: %d / %d", _entNameSearchHash.size(), EntityNameHashMaxSize);
-	if (ImGui::TreeNode("Hashed Names"))
-	{
-		ImGui::BeginChild("NameHashChild", { ImGui::GetContentRegionAvail().x, 100 }, hashChildFlags, hashWindowFlags );
-		for (auto it = _entNameSearchHash.begin(); it != _entNameSearchHash.end(); it++)
-		{
-			std::string_view name = it->first;
-			SceneContents::HashedEntity &hashedEnt = it->second;
-
-			if (ImGui::Button(std::format("\"{}\": {} (age:{})", name.data(), hashedEnt.found ? "Found" : "Not Found", hashedEnt.age).c_str()))
-			{
-				if (Entity *ent = hashedEnt.entRef.Get())
-				{
-					Scene *scene = ent->GetScene();
-					scene->SetSelection(ent, ImGui::GetIO().KeyShift);
-				}
-			}
-		}
-		ImGui::EndChild();
-		ImGui::TreePop();
-	}
-
-	ImGui::Text("ID Hash Size: %d / %d", _entIDSearchHash.size(), EntityIDHashMaxSize);
-	if (ImGui::TreeNode("Hashed IDs"))
-	{
-		ImGui::BeginChild("IDHashChild", { ImGui::GetContentRegionAvail().x, 100 }, hashChildFlags, hashWindowFlags);
-		for (auto it = _entIDSearchHash.begin(); it != _entIDSearchHash.end(); it++)
-		{
-			UINT id = it->first;
-			SceneContents::HashedEntity &hashedEnt = it->second;
-
-			if (ImGui::Button(std::format("{}: {} (age:{})", id, hashedEnt.found ? "Found" : "Not Found", hashedEnt.age).c_str()))
-			{
-				if (Entity *ent = hashedEnt.entRef.Get())
-				{
-					Scene *scene = ent->GetScene();
-					scene->SetSelection(ent, ImGui::GetIO().KeyShift);
-				}
-			}
-		}
-		ImGui::EndChild();
-		ImGui::TreePop();
-	}
-
-	ImGui::Separator();
-
-	if (!_volumeTree.RenderUI())
-	{
-		ErrMsg("Failed to render quadtree UI!");
-		return false;
-	}
-
-	return true;
-}
-#endif

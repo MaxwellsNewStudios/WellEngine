@@ -16,15 +16,15 @@
 
 class Quadtree
 {
-public:
-	static constexpr UINT MAX_DEPTH = 5;
-
 private:
-	static constexpr UINT MAX_ITEMS_IN_NODE = 16;
 	static constexpr UINT CHILD_COUNT = 4;
+	UINT _maxDepth = 5;
+	UINT _maxItemsInNode = 16;
 
 	struct Node
 	{
+		const UINT _maxDepth, _maxItemsInNode;
+
 		std::vector<Entity *> data;
 		dx::BoundingBox bounds, cullingBounds;
 		std::unique_ptr<Node> children[CHILD_COUNT];
@@ -39,6 +39,8 @@ private:
 		dx::XMFLOAT4 dataColor = { 0.0f, 0.0f, 1.0f, 0.2f };
 #endif
 
+		Node(UINT maxDepth, UINT maxItemsInNode) : _maxDepth(maxDepth), _maxItemsInNode(maxItemsInNode) {}
+
 		void Split(const UINT depth)
 		{
 			ZoneScopedXC(RandomUniqueColor());
@@ -49,10 +51,10 @@ private:
 				min = { center.x - extents.x, center.y - extents.y, center.z - extents.z },
 				max = { center.x + extents.x, center.y + extents.y, center.z + extents.z };
 
-			children[0] = std::make_unique<Node>();
-			children[1] = std::make_unique<Node>();
-			children[2] = std::make_unique<Node>();
-			children[3] = std::make_unique<Node>();
+			children[0] = std::make_unique<Node>(_maxDepth, _maxItemsInNode);
+			children[1] = std::make_unique<Node>(_maxDepth, _maxItemsInNode);
+			children[2] = std::make_unique<Node>(_maxDepth, _maxItemsInNode);
+			children[3] = std::make_unique<Node>(_maxDepth, _maxItemsInNode);
 
 			dx::BoundingBox::CreateFromPoints(children[0]->bounds, { min.x, min.y, min.z, 0 }, { center.x, max.y, center.z, 0 });
 			dx::BoundingBox::CreateFromPoints(children[1]->bounds, { center.x, min.y, min.z, 0 }, { max.x, max.y, center.z, 0 });
@@ -95,7 +97,7 @@ private:
 
 			if (isLeaf)
 			{
-				if (depth >= MAX_DEPTH || data.size() < MAX_ITEMS_IN_NODE)
+				if (depth >= _maxDepth || data.size() < _maxItemsInNode)
 				{
 					data.emplace_back(item);
 					return true;
@@ -140,7 +142,7 @@ private:
 			}
 
 			std::vector<Entity *> containingItems;
-			containingItems.reserve(MAX_ITEMS_IN_NODE);
+			containingItems.reserve(_maxItemsInNode);
 
 			for (int i = 0; i < CHILD_COUNT; i++)
 				if (children[i])
@@ -157,7 +159,7 @@ private:
 
 							if (std::ranges::find(containingItems, childItem) == containingItems.end())
 							{
-								if (containingItems.size() >= MAX_ITEMS_IN_NODE)
+								if (containingItems.size() >= _maxItemsInNode)
 									return;
 
 								containingItems.emplace_back(childItem);
@@ -478,8 +480,10 @@ private:
 		}
 
 		bool RaycastNode(const dx::XMFLOAT3 &orig, const dx::XMFLOAT3 &dir, float &length, Entity *&entity, bool cheap) const;
+
 		bool RaycastNode(const Shape::Ray &ray, Shape::RayHit &hit, Entity *&ent) const;
 
+#ifdef USE_IMGUI
 		void DebugGetStructure(std::vector<dx::BoundingBox> &boxCollection, bool full, bool culling) const
 		{
 			if (isEmpty)
@@ -534,7 +538,6 @@ private:
 			}
 		}
 
-#ifdef USE_IMGUI
 		bool RenderUI(std::string &path, bool drawFullPath, bool drawDataRec = false, const UINT depth = 0);
 #endif
 	};
@@ -549,14 +552,29 @@ public:
 	Quadtree(Quadtree &&other) = default;
 	Quadtree &operator=(Quadtree &&other) = default;
 
-	[[nodiscard]] bool Initialize(const dx::BoundingBox &sceneBounds)
+	[[nodiscard]] bool Initialize(const dx::BoundingBox &sceneBounds, UINT maxDepth = -1, UINT maxItemsInNode = -1)
 	{
-		_root = std::make_unique<Node>();
+		if (maxDepth != -1)
+		{
+			if (maxDepth == 0)
+				return false;
+
+			_maxDepth = maxDepth;
+		}
+
+		if (maxItemsInNode != -1)
+		{
+			if (maxItemsInNode == 0)
+				return false;
+
+			_maxItemsInNode = maxItemsInNode;
+		}
+
+		_root = std::make_unique<Node>(_maxDepth, _maxItemsInNode);
 		_root->bounds = sceneBounds;
 
 		return true;
 	}
-
 
 	void Insert(Entity *data, const dx::BoundingOrientedBox &bounds) const
 	{
@@ -587,7 +605,6 @@ public:
 		return true;
 	}
 
-
 	void RecalculateCullingBounds()
 	{
 		if (_root != nullptr)
@@ -601,7 +618,14 @@ public:
 
 		return &_root->bounds;
 	}
-
+	[[nodiscard]] UINT GetMaxDepth() const
+	{
+		return _maxDepth;
+	}
+	[[nodiscard]] UINT GetMaxItemsInNode() const
+	{
+		return _maxItemsInNode;
+	}
 
 	[[nodiscard]] bool FrustumCull(const dx::BoundingFrustum &frustum, std::vector<Entity *> &containingItems) const
 	{
@@ -644,6 +668,7 @@ public:
 
 		return _root->RaycastNode(orig, dir, length, entity, cheap);
 	}
+
 	bool RaycastTree(const Shape::Ray &ray, Shape::RayHit &hit, Entity *&ent) const
 	{
 		if (_root == nullptr)
@@ -662,6 +687,8 @@ public:
 		return _root->RaycastNode(ray, hit, ent);
 	}
 
+#ifdef USE_IMGUI
+	bool drawFullPath = false;
 
 	void DebugGetStructure(std::vector<dx::BoundingBox> &boxCollection, bool full, bool culling) const
 	{
@@ -677,10 +704,6 @@ public:
 
 		_root->DebugGetStructure(boxCollection, frustum, full, culling);
 	}
-
-
-#ifdef USE_IMGUI
-	bool drawFullPath = false;
 
 	bool RenderUI()
 	{

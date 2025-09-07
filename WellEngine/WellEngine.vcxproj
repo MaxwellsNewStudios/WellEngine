@@ -379,7 +379,6 @@
     <ClInclude Include="Source\Engine\Input\Input.h" />
     <ClInclude Include="Source\Engine\Input\InputBindings.h" />
     <ClInclude Include="Source\Engine\Rendering\Culling\NodePath.h" />
-    <ClInclude Include="Source\Engine\Rendering\Culling\Octree.h" />
     <ClInclude Include="Source\Engine\Rendering\Culling\Quadtree.h" />
     <ClInclude Include="Source\Engine\Rendering\Graphics.h" />
     <ClInclude Include="Source\Engine\Rendering\Lighting\PointLightCollection.h" />
