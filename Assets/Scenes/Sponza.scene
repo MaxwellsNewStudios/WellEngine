@@ -1659,6 +1659,86 @@
                     }
                 }
             ]
+        },
+        {
+            "Name": "Bounce Light",
+            "ID": 45,
+            "Enabled": true,
+            "Pos": [
+                1.3283098936080933,
+                3.84519100189209,
+                1.8760521411895752
+            ],
+            "Rot": [
+                -0.0,
+                0.0,
+                -0.0
+            ],
+            "Scale": [
+                1.0,
+                1.0,
+                1.0
+            ],
+            "Static": false,
+            "Select": true,
+            "InTree": true,
+            "Beh": [
+                {
+                    "Name": "SimplePointLightBehaviour",
+                    "Attributes": {
+                        "Falloff": 19.06999969482422,
+                        "Fog Strength": 7.300000190734863,
+                        "Color": [
+                            4.594409465789795,
+                            11.578316688537598,
+                            22.860000610351563
+                        ]
+                    }
+                }
+            ]
+        },
+        {
+            "Name": "Bounce Light",
+            "ID": 47,
+            "Enabled": true,
+            "Pos": [
+                -3.5427019596099854,
+                3.84519100189209,
+                2.516040086746216
+            ],
+            "Rot": [
+                -0.0,
+                0.0,
+                -0.0
+            ],
+            "Scale": [
+                1.0,
+                1.0,
+                1.0
+            ],
+            "Static": false,
+            "Select": true,
+            "InTree": true,
+            "Beh": [
+                {
+                    "Name": "SpotLightBehaviour",
+                    "Attributes": {
+                        "Falloff": 1.0,
+                        "Fog Strength": 1.0,
+                        "Color": [
+                            1.0,
+                            1.0,
+                            1.0
+                        ],
+                        "Projection": {
+                            "FOV": 1.3962632417678833,
+                            "Aspect": 1.0,
+                            "Near": -0.10000000149011612,
+                            "Far": -49.99951934814453
+                        }
+                    }
+                }
+            ]
         }
     ]
 }

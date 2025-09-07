@@ -554,7 +554,7 @@ public:
 
 	[[nodiscard]] bool Initialize(const dx::BoundingBox &sceneBounds, UINT maxDepth = -1, UINT maxItemsInNode = -1)
 	{
-		if (maxDepth != -1)
+		if (maxDepth != CONTENT_NULL)
 		{
 			if (maxDepth == 0)
 				return false;
@@ -562,7 +562,7 @@ public:
 			_maxDepth = maxDepth;
 		}
 
-		if (maxItemsInNode != -1)
+		if (maxItemsInNode != CONTENT_NULL)
 		{
 			if (maxItemsInNode == 0)
 				return false;

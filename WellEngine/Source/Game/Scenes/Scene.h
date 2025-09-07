@@ -206,6 +206,7 @@ public:
 	[[nodiscard]] DebugPlayerBehaviour *GetDebugPlayer() const;
 	void SetDebugPlayer(DebugPlayerBehaviour *debugPlayer);
 	void SetSelection(Entity *ent, bool additive = false);
+	Entity *GetPrimarySelection() const;
 #endif
 	[[nodiscard]] TimelineManager* GetTimelineManager();
 	[[nodiscard]] SoundEngine *GetSoundEngine();

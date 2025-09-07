@@ -5,7 +5,7 @@
 class [[register_behaviour]] BillboardMeshBehaviour : public Behaviour
 {
 private:
-	MeshBehaviour *_meshBehaviour = nullptr;
+	Ref<MeshBehaviour> _meshBehaviour = nullptr;
 	Material _material;
 
 	bool _transparent = true;
@@ -30,7 +30,11 @@ protected:
 	void OnEnable() override;
 	void OnDisable() override;
 
-	//[[nodiscard]] bool OnDebugSelect() override;
+	// Serializes the behaviour to a string.
+	[[nodiscard]] bool Serialize(json::Document::AllocatorType &docAlloc, json::Value &obj) override;
+
+	// Deserializes the behaviour from a string.
+	[[nodiscard]] bool Deserialize(const json::Value &obj, Scene *scene) override;
 
 public:
 	BillboardMeshBehaviour() = default;
@@ -42,11 +46,5 @@ public:
 
 	void SetSize(float size);
 	void SetRotation(float rotation);
-	MeshBehaviour* GetMeshBehaviour() const;
-
-	// Serializes the behaviour to a string.
-	[[nodiscard]] bool Serialize(json::Document::AllocatorType &docAlloc, json::Value &obj) override;
-
-	// Deserializes the behaviour from a string.
-	[[nodiscard]] bool Deserialize(const json::Value &obj, Scene *scene) override;
+	MeshBehaviour *GetMeshBehaviour() const;
 };

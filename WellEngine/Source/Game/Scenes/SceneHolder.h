@@ -84,6 +84,8 @@ namespace SceneContents
 	};
 }
 
+class Scene;
+
 class SceneHolder
 {
 private:
@@ -123,7 +125,7 @@ public:
 	UINT _newMaxDepth, _newMaxItemsInNode;
 	dx::BoundingBox _newBounds;
 
-	[[nodiscard]] bool RenderUI();
+	[[nodiscard]] bool RenderUI(Scene *scene);
 #endif
 
 	// Entity is Not initialized automatically. Initialize manually through the returned pointer.

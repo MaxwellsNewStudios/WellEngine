@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "Behaviours/SimplePointLightBehaviour.h"
+#include "Behaviours/PointLightBehaviour.h"
 #include "Behaviours/BillboardMeshBehaviour.h"
 #include "Entity.h"
 #include "Scenes/Scene.h"
@@ -14,6 +15,12 @@ SimplePointLightBehaviour::~SimplePointLightBehaviour()
 {
 	if (!IsInitialized())
 		return;
+
+#ifdef DEBUG_BUILD
+	if (!GetScene()->IsDestroyed() && !GetEntity()->IsRemoved())
+		if (_billboardMeshBehaviour.IsValid())
+			_billboardMeshBehaviour.Get()->Destroy();
+#endif
 
 	if (!IsEnabled())
 		return;
@@ -54,6 +61,8 @@ bool SimplePointLightBehaviour::Start()
 
 	if (!billboardMeshBehaviour->Initialize(GetEntity()))
 		Warn("Failed to Initialize billboard mesh behaviour!");
+
+	_billboardMeshBehaviour = billboardMeshBehaviour;
 #endif
 
 	return true;
@@ -62,6 +71,29 @@ bool SimplePointLightBehaviour::Start()
 #ifdef USE_IMGUI
 bool SimplePointLightBehaviour::RenderUI()
 {
+	if (ImGui::Button("Swap with Shadowcasting Variant"))
+	{
+		Entity *ent = GetEntity();
+
+		PointLightBehaviour *shadowLight = new PointLightBehaviour(
+			{ 0.1f, CalculateLightReach(_color, _falloff) },
+			_color, _falloff, _fogStrength
+		);
+
+		if (!shadowLight->Initialize(ent))
+		{
+			delete shadowLight;
+			ErrMsg("Failed to initialize shadow pointlight!");
+			return false;
+		}
+
+		ent->ReorderBehaviour(shadowLight, ent->GetBehaviourIndex(this) + 1);
+		shadowLight->SetUIOpen(true);
+
+		Destroy();
+		return true;
+	}
+
 	float color[3] = { _color.x, _color.y, _color.z };
 	float colorStrength = max(color[0], max(color[1], color[2]));
 
@@ -74,9 +106,9 @@ bool SimplePointLightBehaviour::RenderUI()
 		newColor = true;
 
 	bool newStrength = false;
-	if (ImGui::DragFloat("Intensity", &colorStrength, 0.01f, 0.001f))
+	if (ImGui::DragFloat("Intensity", &colorStrength, 0.01f, 0.1f))
 	{
-		colorStrength = max(colorStrength, 0.001f);
+		colorStrength = max(colorStrength, 0.1f);
 		newStrength = true;
 	}
 	ImGuiUtils::LockMouseOnActive();

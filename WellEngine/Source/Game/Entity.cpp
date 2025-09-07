@@ -108,6 +108,17 @@ bool Entity::IsInitialized() const
 	return _isInitialized;
 }
 
+void Entity::Destroy()
+{
+	if (!_isInitialized)
+		return;
+
+	if (_isRemoved)
+		return;
+
+	_scene->GetSceneHolder()->RemoveEntity(this);
+}
+
 void Entity::SetSerialization(bool state)
 {
 	_doSerialize = state;
@@ -141,6 +152,7 @@ void Entity::RemoveBehaviour(Behaviour *behaviour)
 		return;
 	}
 
+	std::unique_ptr<Behaviour> behPtr = nullptr;
 	for (int i = 0; i < _behaviours.size(); i++)
 	{
 		Behaviour *beh = _behaviours[i].get();
@@ -148,14 +160,69 @@ void Entity::RemoveBehaviour(Behaviour *behaviour)
 		if (beh != behaviour)
 			continue;
 
+		behPtr = std::move(_behaviours[i]);
 		_behaviours.erase(_behaviours.begin() + i);
+		break;
 	}
+
+	behPtr = nullptr;
 }
+void Entity::ReorderBehaviour(Behaviour *behaviour, UINT newIndex)
+{
+	if (!behaviour)
+	{
+		ErrMsg("Behaviour must not be null!");
+		return;
+	}
+
+	if (newIndex >= _behaviours.size())
+	{
+		ErrMsg("New index is out of bounds!");
+		return;
+	}
+
+	UINT behIndex = GetBehaviourIndex(behaviour);
+	if (behIndex == CONTENT_NULL)
+	{
+		ErrMsg("Behaviour not found in entity!");
+		return;
+	}
+
+	if (behIndex == newIndex)
+		return;
+
+	if (behIndex < newIndex)
+		newIndex--; // Account for the removal of the behaviour from its current position
+
+	auto it = _behaviours.begin() + behIndex;
+	auto beh = std::move(*it);
+
+	_behaviours.erase(it);
+	_behaviours.insert(_behaviours.begin() + newIndex, std::move(beh));
+}
+
 Behaviour *Entity::GetBehaviour(UINT index) const
 {
 	if (index >= _behaviours.size())
 		return nullptr;
+
 	return _behaviours[index].get();
+}
+UINT Entity::GetBehaviourIndex(Behaviour *behaviour) const
+{
+	if (!behaviour)
+		return CONTENT_NULL;
+
+	for (int i = 0; i < _behaviours.size(); i++)
+	{
+		Behaviour *beh = _behaviours[i].get();
+		if (beh != behaviour)
+			continue;
+
+		return i;
+	}
+
+	return CONTENT_NULL;
 }
 const std::vector<std::unique_ptr<Behaviour>> *Entity::GetBehaviours() const
 {
@@ -1155,6 +1222,11 @@ bool Entity::InitialRenderUI()
 		for (int i = 0; i < _behaviours.size(); i++)
 		{
 			auto &behaviour = _behaviours[i];
+
+			int openState = behaviour->PopUIOpenState();
+			if (openState >= 0)
+				ImGui::SetNextItemOpen(openState == 1);
+
 			ImGui::PushID(("Behaviour " + std::to_string(i)).c_str());
 			if (ImGui::TreeNode(behaviour.get()->GetName().c_str()))
 			{

@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "SceneHolder.h"
 #include "Scene.h"
+#include "Debug/DebugData.h"
 
 #ifdef LEAK_DETECTION
 #define new			DEBUG_NEW
@@ -128,8 +129,8 @@ bool SceneHolder::Initialize(const BoundingBox &sceneBounds, UINT newMaxDepth, U
 
 #ifdef USE_IMGUI
 	_unsavedChanges = false;
-	_newMaxDepth = newMaxDepth;
-	_newMaxItemsInNode = newMaxItemsInNode;
+	_newMaxDepth = _volumeTree.GetMaxDepth();
+	_newMaxItemsInNode = _volumeTree.GetMaxItemsInNode();
 	_newBounds = sceneBounds;
 #endif
 
@@ -273,8 +274,114 @@ void SceneHolder::DebugGetTreeStructure(std::vector<dx::BoundingBox> &boxCollect
 	_volumeTree.DebugGetStructure(boxCollection, frustum, full, culling);
 }
 
-bool SceneHolder::RenderUI()
+bool SceneHolder::RenderUI(Scene *scene)
 {
+	bool applyChanges = false;
+
+#ifdef USE_IMGUIZMO
+	static bool useImGuizmo = false;
+	ImGui::Checkbox("Use ImGuizmo", &useImGuizmo);
+
+	if (useImGuizmo)
+	{
+		if (scene->GetPrimarySelection())
+		{
+			ImGui::PushStyleColor(ImGuiCol_Text, { 1.0f, 0.2f, 0.0f, 1.0f });
+			ImGui::TextWrapped("ImGuizmo cannot be used for scene bounds while an entity is selected!");
+			ImGui::PopStyleColor();
+		}
+		else
+		{
+			using namespace dx;
+			CameraBehaviour *viewCamera = scene->GetViewCamera();
+
+			if (viewCamera)
+			{
+				Input &input = Input::Instance();
+
+			   // ImGuizmo setup
+				auto windowPos = input.GetWindowPos();
+				auto scenePos = input.GetSceneViewPos();
+				auto sceneSize = input.GetSceneViewSize();
+				float scenePosX = windowPos.x + scenePos.x;
+				float scenePosY = windowPos.y + scenePos.y;
+				float sceneWidth = sceneSize.x;
+				float sceneHeight = sceneSize.y;
+
+				ImGuizmo::SetOrthographic(viewCamera->GetOrtho());
+
+				const XMFLOAT4X4A camView = viewCamera->GetViewMatrix();
+				const XMFLOAT4X4A camProj = viewCamera->GetProjectionMatrix();
+
+				XMFLOAT3 snapBounds;
+				float *snapBoundsFloats = nullptr;
+				if (input.IsPressedOrHeld(KeyCode::LeftControl)) // Enable snap with Control
+				{
+					float snapFloat = DebugData::Get().transformSnap;
+					snapBounds = { snapFloat, snapFloat, snapFloat };
+					snapBoundsFloats = &snapBounds.x;
+				}
+
+				float bounds[6] = {
+					-1.0f, -1.0f, -1.0f,
+					1.0f, 1.0f, 1.0f
+				};
+
+				float 
+					px = _newBounds.Center.x, py = _newBounds.Center.y, pz = _newBounds.Center.z,
+					sx = _newBounds.Extents.x, sy = _newBounds.Extents.y, sz = _newBounds.Extents.z;
+
+				XMVECTOR posVec = Load(XMFLOAT3{ px, py, pz });
+				XMVECTOR rotQuat = Load(XMFLOAT4{ 0, 0, 0, 1 });
+				XMVECTOR scaleVec = Load(XMFLOAT3{ sx, sy, sz });
+
+				XMMATRIX pivotMatrix = XMMatrixAffineTransformation(scaleVec, XMVectorZero(), rotQuat, posVec);
+				XMFLOAT4X4A pivotMat;
+				Store(pivotMat, pivotMatrix);
+
+				ImGuizmo::SetRect(scenePosX, scenePosY, sceneWidth, sceneHeight);
+				ImGuizmo::Manipulate(
+					&(camView.m[0][0]), &(camProj.m[0][0]),
+					ImGuizmo::OPERATION::BOUNDS, ImGuizmo::MODE::WORLD,
+					(float *)(&pivotMat), nullptr,
+					nullptr, bounds, snapBoundsFloats
+				);
+
+				static bool wasUsing = false;
+				if (ImGuizmo::IsUsingAny())
+				{
+					XMMATRIX newMat = Load(pivotMat);
+					XMVECTOR newScale, newRotQuat, newTrans;
+					dx::XMMatrixDecompose(&newScale, &newRotQuat, &newTrans, newMat);
+
+					Store(_newBounds.Center, newTrans);
+					Store(_newBounds.Extents, newScale);
+
+					constexpr float applyFrequency = 0.1f;
+					static float applyTimer = applyFrequency;
+					applyTimer -= TimeUtils::GetDeltaTime();
+
+					if (applyTimer <= 0.0f)
+					{
+						_unsavedChanges = true;
+						applyChanges = true;
+						applyTimer = applyFrequency;
+					}
+
+					wasUsing = true;
+				}
+				else if (wasUsing)
+				{
+					_unsavedChanges = true;
+					applyChanges = true;
+					wasUsing = false;
+				}
+			}
+		}
+	}
+	ImGui::Dummy({ 0.0f, 3.0f });
+#endif
+
 	ImGui::Text("Center:"); ImGui::SameLine();
 	if (ImGui::DragFloat3("Center##SceneTreeParams", (float *)&_newBounds.Center, 0.1f))
 		_unsavedChanges = true;
@@ -305,25 +412,30 @@ bool SceneHolder::RenderUI()
 
 	if (_unsavedChanges)
 	{
-		ImGui::TextColored({ 1.0f, 0.5f, 0.0f, 1.0f }, "Unapplied Changes");
+		if (!applyChanges)
+		{
+			ImGui::TextColored({ 1.0f, 0.5f, 0.0f, 1.0f }, "Unapplied Changes");
 
-		ImGui::SameLine();
-		if (ImGui::Button("Apply##SceneTreeParams"))
+			ImGui::SameLine();
+			applyChanges = ImGui::Button("Apply##SceneTreeParams");
+
+			ImGui::SameLine();
+			if (ImGui::Button("Revert##SceneTreeParams"))
+			{
+				_newBounds = _bounds;
+				_newMaxDepth = _volumeTree.GetMaxDepth();
+				_newMaxItemsInNode = _volumeTree.GetMaxItemsInNode();
+				_unsavedChanges = false;
+			}
+		}
+
+		if (applyChanges)
 		{
 			if (!SetTreeParams(&_newBounds, _newMaxDepth, _newMaxItemsInNode))
 			{
 				ErrMsg("Failed to apply new tree parameters!");
 				return false;
 			}
-			_unsavedChanges = false;
-		}
-
-		ImGui::SameLine();
-		if (ImGui::Button("Revert##SceneTreeParams"))
-		{
-			_newBounds = _bounds;
-			_newMaxDepth = _volumeTree.GetMaxDepth();
-			_newMaxItemsInNode = _volumeTree.GetMaxItemsInNode();
 			_unsavedChanges = false;
 		}
 	}
@@ -384,16 +496,19 @@ bool SceneHolder::RenderUI()
 
 	ImGui::Separator();
 
-	if (!_volumeTree.RenderUI())
+	if (ImGui::TreeNode("Volume Tree"))
 	{
-		ErrMsg("Failed to render quadtree UI!");
-		return false;
+		if (!_volumeTree.RenderUI())
+		{
+			ErrMsg("Failed to render quadtree UI!");
+			return false;
+		}
+		ImGui::TreePop();
 	}
 
 	return true;
 }
 #endif
-
 
 Entity *SceneHolder::AddEntity(const BoundingOrientedBox &bounds, bool addToTree)
 {
@@ -1119,11 +1234,7 @@ void SceneHolder::ResetSceneHolder()
 	_recalculateColliders = false;
 	_isInitialized = false;
 
-#ifdef QUADTREE_CULLING
 	_volumeTree = {};
-#elif defined OCTREE_CULLING
-	Octree _volumeTree;
-#endif
 
 	_treeInsertionQueue = {};
 	_entityRemovalQueue = {};

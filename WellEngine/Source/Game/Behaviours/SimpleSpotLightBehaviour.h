@@ -30,6 +30,10 @@ private:
 	dx::BoundingFrustum _bounds = { };
 	bool _recalculateBounds = true;
 
+#ifdef DEBUG_BUILD
+	Ref<Behaviour> _billboardMeshBehaviour;
+#endif
+
 protected:
 	// Start runs once when the behaviour is created.
 	[[nodiscard]] bool Start() override;
