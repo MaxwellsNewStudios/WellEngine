@@ -3,15 +3,7 @@
 #include "Entity.h"
 #include "Collision/Raycast.h"
 #include "Debug/DebugNew.h"
-
-#define QUADTREE_CULLING
-//#define OCTREE_CULLING
-
-#ifdef QUADTREE_CULLING
 #include "Rendering/Culling/Quadtree.h"
-#elif defined OCTREE_CULLING
-#include "Rendering/Culling/Octree.h"
-#endif
 
 namespace SceneContents
 {
@@ -92,20 +84,18 @@ namespace SceneContents
 	};
 }
 
+class Scene;
+
 class SceneHolder
 {
 private:
 	UINT _entityCounter = 0;
+	bool _recalculateColliders = false;
+	bool _isInitialized = false;
 
 	dx::BoundingBox _bounds;
-	std::vector<SceneContents::SceneEntity *> _entities; 
-	bool _recalculateColliders = false;
-
-#ifdef QUADTREE_CULLING
 	Quadtree _volumeTree;
-#elif defined OCTREE_CULLING
-	Octree _volumeTree;
-#endif
+	std::vector<SceneContents::SceneEntity *> _entities;
 
 	std::vector<Ref<Entity>> _treeInsertionQueue;
 	std::vector<Ref<Entity>> _entityRemovalQueue;
@@ -115,11 +105,6 @@ private:
 	std::map<const std::string, SceneContents::HashedEntity> _entNameSearchHash;
 
 public:
-	enum BoundsType {
-		Frustum		= 0,
-		OrientedBox = 1
-	};
-
 	SceneHolder() = default;
 	~SceneHolder();
 	SceneHolder(const SceneHolder &other) = delete;
@@ -127,8 +112,21 @@ public:
 	SceneHolder(SceneHolder &&other) = delete;
 	SceneHolder &operator=(SceneHolder &&other) = delete;
 
-	[[nodiscard]] bool Initialize(const dx::BoundingBox &sceneBounds);
+	[[nodiscard]] bool Initialize(const dx::BoundingBox &sceneBounds, UINT newMaxDepth = -1, UINT newMaxItemsInNode = -1);
+	[[nodiscard]] bool IsInitialized() const;
+
 	[[nodiscard]] bool Update();
+
+#ifdef USE_IMGUI
+	void DebugGetTreeStructure(std::vector<dx::BoundingBox> &boxCollection, bool full = false, bool culling = false) const;
+	void DebugGetTreeStructure(std::vector<dx::BoundingBox> &boxCollection, const dx::BoundingFrustum &frustum, bool full = false, bool culling = false) const;
+
+	bool _unsavedChanges = false;
+	UINT _newMaxDepth, _newMaxItemsInNode;
+	dx::BoundingBox _newBounds;
+
+	[[nodiscard]] bool RenderUI(Scene *scene);
+#endif
 
 	// Entity is Not initialized automatically. Initialize manually through the returned pointer.
 	[[nodiscard]] Entity *AddEntity(const dx::BoundingOrientedBox &bounds, bool addToTree);
@@ -151,6 +149,11 @@ public:
 	[[nodiscard]] bool UpdateEntityPosition(Entity *entity);
 
 	[[nodiscard]] const dx::BoundingBox &GetBounds() const;
+	[[nodiscard]] bool SetBounds(const dx::BoundingBox &newBounds);
+
+	[[nodiscard]] UINT GetTreeDepth() const;
+	[[nodiscard]] UINT GetTreeNodeSize() const;
+	[[nodiscard]] bool SetTreeParams(const dx::BoundingBox *newBounds = nullptr, UINT newMaxDepth = -1, UINT newMaxItemsInNode = -1);
 
 	[[nodiscard]] Entity *GetEntity(UINT i) const;
 	[[nodiscard]] Entity *GetEntityByID(UINT id);
@@ -182,19 +185,12 @@ public:
 	bool RaycastScene(const dx::XMFLOAT3A &origin, const dx::XMFLOAT3A &direction, RaycastOut &result, bool cheap = true) const;
 	bool RaycastScene(const Shape::Ray &ray, Shape::RayHit &hit, Entity *&ent) const;
 
-	void DebugGetTreeStructure(std::vector<dx::BoundingBox> &boxCollection, bool full = false, bool culling = false) const;
-	void DebugGetTreeStructure(std::vector<dx::BoundingBox> &boxCollection, const dx::BoundingFrustum &frustum, bool full = false, bool culling = false) const;
-
 	bool GetRecalculateColliders() const;
 	void SetRecalculateColliders();
 
 	void ResetSceneHolder();
 
 	void RecalculateTreeCullingBounds();
-
-#ifdef USE_IMGUI
-	[[nodiscard]] bool RenderUI();
-#endif
 
 	TESTABLE()
 };

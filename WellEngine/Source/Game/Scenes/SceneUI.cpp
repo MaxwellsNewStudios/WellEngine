@@ -1156,7 +1156,7 @@ bool Scene::RenderUI()
 
 		if (ImGui::TreeNode("Scene Holder"))
 		{
-			if (!_sceneHolder.RenderUI())
+			if (!_sceneHolder.RenderUI(this))
 			{
 				ImGui::TreePop();
 				ErrMsg("Failed to render scene holder UI!");

@@ -2505,6 +2505,13 @@ void Scene::SetSelection(Entity *ent, bool additive)
 
 	_debugPlayer.Get()->Select(ent, additive);
 }
+Entity *Scene::GetPrimarySelection() const
+{
+	if (!_debugPlayer)
+		return nullptr;
+
+	return _debugPlayer.Get()->GetPrimarySelection();
+}
 #endif
 
 void Scene::SetViewCamera(CameraBehaviour *camera)
@@ -2940,15 +2947,13 @@ bool Scene::CreateSpotLightEntity(Entity **out, const std::string &name, dx::XMF
 {
 	const dx::BoundingOrientedBox bounds = dx::BoundingOrientedBox({}, { .2f,.2f,.2f }, {0,0,0,1});
 
-	nearZ = nearZ < 0.1f ? 0.1f : nearZ;
-
 	if (!CreateEntity(out, name, bounds, false))
 	{
 		ErrMsg("Failed to create entity '" + name + "'!");
 		return false;
 	}
 
-	ProjectionInfo projInfo = ProjectionInfo(angle * DEG_TO_RAD, 1.0f, { nearZ, 1.0f });
+	ProjectionInfo projInfo = ProjectionInfo(angle * DEG_TO_RAD, 1.0f, { max(0.1f, nearZ), CalculateLightReach(color, falloff) });
 	SpotLightBehaviour *light = new SpotLightBehaviour(projInfo, color, falloff, fogStrength, ortho, updateFrequency);
 
 	if (!light->Initialize(*out))
@@ -2963,15 +2968,13 @@ bool Scene::CreatePointLightEntity(Entity **out, const std::string &name, dx::XM
 {
 	const dx::BoundingOrientedBox bounds = dx::BoundingOrientedBox({}, { .2f,.2f,.2f }, {0,0,0,1});
 
-	nearZ = nearZ < 0.1f ? 0.1f : nearZ;
-
 	if (!CreateEntity(out, name, bounds, false))
 	{
 		ErrMsg("Failed to create entity '" + name + "'!");
 		return false;
 	}
 
-	PointLightBehaviour *light = new PointLightBehaviour({ nearZ, 1.0f }, color, falloff, updateFrequency);
+	PointLightBehaviour *light = new PointLightBehaviour({ max(0.1f, nearZ), CalculateLightReach(color, falloff) }, color, falloff, updateFrequency);
 
 	if (!light->Initialize(*out))
 	{

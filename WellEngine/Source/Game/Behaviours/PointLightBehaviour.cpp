@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "Behaviours/PointLightBehaviour.h"
+#include "Behaviours/SimplePointLightBehaviour.h"
 #include "Behaviours/BillboardMeshBehaviour.h"
 #include "Entity.h"
 #include "Scenes/Scene.h"
@@ -37,6 +38,18 @@ PointLightBehaviour::~PointLightBehaviour()
 	if (!IsInitialized())
 		return;
 
+	if (_shadowCameraCube)
+	{
+		_shadowCameraCube->Destroy();
+		_shadowCameraCube = nullptr;
+	}
+
+#ifdef DEBUG_BUILD
+	if (!GetScene()->IsDestroyed() && !GetEntity()->IsRemoved())
+		if (_billboardMeshBehaviour.IsValid())
+			_billboardMeshBehaviour.Get()->Destroy();
+#endif
+
 	if (!IsEnabled())
 		return;
 
@@ -66,6 +79,7 @@ bool PointLightBehaviour::Start()
 
 	_shadowCameraCube->SetRendererInfo({ false, true });
 	_shadowCameraCube->SetSerialization(false);
+	_shadowCameraCube->SetFarZ(CalculateLightReach(_color, _falloff));
 
 	PointLightCollection *pointlights = GetScene()->GetPointlights();
 
@@ -90,6 +104,8 @@ bool PointLightBehaviour::Start()
 
 	if (!billboardMeshBehaviour->Initialize(GetEntity()))
 		Warn("Failed to Initialize billboard mesh behaviour!");
+
+	_billboardMeshBehaviour = billboardMeshBehaviour;
 #endif
 
 	QueueParallelUpdate();
@@ -116,6 +132,28 @@ bool PointLightBehaviour::ParallelUpdate(const TimeUtils &time, const Input &inp
 #ifdef USE_IMGUI
 bool PointLightBehaviour::RenderUI()
 {
+	if (ImGui::Button("Swap with Non-Shadowcasting Variant"))
+	{
+		Entity *ent = GetEntity();
+
+		SimplePointLightBehaviour *simpleLight = new SimplePointLightBehaviour(
+			_color, _falloff,  _fogStrength
+		);
+
+		if (!simpleLight->Initialize(ent))
+		{
+			delete simpleLight;
+			ErrMsg("Failed to initialize simple pointlight!");
+			return false;
+		}
+
+		ent->ReorderBehaviour(simpleLight, ent->GetBehaviourIndex(this) + 1);
+		simpleLight->SetUIOpen(true);
+
+		Destroy();
+		return true;
+	}
+
 	float color[3] = { _color.x, _color.y, _color.z };
 	float colorStrength = max(color[0], max(color[1], color[2]));
 
@@ -130,9 +168,9 @@ bool PointLightBehaviour::RenderUI()
 		newColor = true;
 
 	bool newStrength = false;
-	if (ImGui::DragFloat("Intensity", &colorStrength, 0.01f, 0.01f))
+	if (ImGui::DragFloat("Intensity", &colorStrength, 0.01f, 0.1f))
 	{
-		colorStrength = max(colorStrength, 0.01f);
+		colorStrength = max(colorStrength, 0.1f);
 		newStrength = true;
 	}
 	ImGuiUtils::LockMouseOnActive();
@@ -162,6 +200,19 @@ bool PointLightBehaviour::RenderUI()
 
 	if (recalculateReach && _shadowCameraCube)
 		_shadowCameraCube->SetFarZ(CalculateLightReach(_color, _falloff));
+
+	static bool drawBounds = false;
+	ImGui::Checkbox("Draw Bounds", &drawBounds);
+
+	if (drawBounds)
+	{
+		float reach = CalculateLightReach(_color, _falloff);
+		BoundingBox boxBounds = BoundingBox(GetTransform()->GetPosition(World), XMFLOAT3(reach, reach, reach));
+		DebugDrawer::Instance().DrawBoxAABB(boxBounds, XMFLOAT4(color[0], color[1], color[2], 0.2f), 0.0f, true);
+	}
+
+	ImGui::Separator();
+	ImGui::Text("Light Reach: %.3f units", CalculateLightReach(_color, _falloff));
 
 	return true;
 }

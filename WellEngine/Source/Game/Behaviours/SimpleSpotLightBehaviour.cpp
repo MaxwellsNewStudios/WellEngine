@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "Behaviours/SimpleSpotLightBehaviour.h"
+#include "Behaviours/SpotLightBehaviour.h"
 #include "Behaviours/BillboardMeshBehaviour.h"
 #include "Entity.h"
 #include "Scenes/Scene.h"
@@ -15,6 +16,13 @@ SimpleSpotLightBehaviour::~SimpleSpotLightBehaviour()
 {
 	if (!IsInitialized())
 		return;
+
+#ifdef DEBUG_BUILD
+	if (!GetScene()->IsDestroyed() && !GetEntity()->IsRemoved())
+		if (_billboardMeshBehaviour.IsValid())
+			_billboardMeshBehaviour.Get()->Destroy();
+#endif
+
 	if (!IsEnabled())
 		return;
 
@@ -51,6 +59,8 @@ bool SimpleSpotLightBehaviour::Start()
 
 	if (!billboardMeshBehaviour->Initialize(GetEntity()))
 		Warn("Failed to Initialize billboard mesh behaviour!");
+
+	_billboardMeshBehaviour = billboardMeshBehaviour;
 #endif
 
 	return true;
@@ -59,6 +69,34 @@ bool SimpleSpotLightBehaviour::Start()
 #ifdef USE_IMGUI
 bool SimpleSpotLightBehaviour::RenderUI()
 {
+	if (ImGui::Button("Swap with Shadowcasting Variant"))
+	{
+		Entity *ent = GetEntity();
+
+		ProjectionInfo projInfo = ProjectionInfo(
+			min(_angle, 179.9f * DEG_TO_RAD), 
+			1.0f, 
+			{ 0.1f, CalculateLightReach(_color, _falloff) }
+		);
+
+		SpotLightBehaviour *shadowLight = new SpotLightBehaviour(
+			projInfo, _color, _falloff, _fogStrength, _isOrtho
+		);
+
+		if (!shadowLight->Initialize(ent))
+		{
+			delete shadowLight;
+			ErrMsg("Failed to initialize shadow spotlight!");
+			return false;
+		}
+
+		ent->ReorderBehaviour(shadowLight, ent->GetBehaviourIndex(this) + 1);
+		shadowLight->SetUIOpen(true);
+
+		Destroy();
+		return true;
+	}
+
 	float color[3] = { _color.x, _color.y, _color.z };
 	float colorStrength = max(color[0], max(color[1], color[2]));
 
@@ -68,14 +106,19 @@ bool SimpleSpotLightBehaviour::RenderUI()
 
 	bool newColor = false;
 	if (ImGui::ColorEdit3("Color", color))
+	{
 		newColor = true;
+		_recalculateBounds = true;
+	}
 
 	bool newStrength = false;
-	if (ImGui::InputFloat("Intensity", &colorStrength))
+	if (ImGui::DragFloat("Intensity", &colorStrength, 0.01f, 0.1f))
 	{
-		colorStrength = max(colorStrength, 0.001f);
+		colorStrength = max(colorStrength, 0.1f);
 		newStrength = true;
+		_recalculateBounds = true;
 	}
+	ImGuiUtils::LockMouseOnActive();
 
 	if (newColor || newStrength)
 	{
@@ -92,6 +135,7 @@ bool SimpleSpotLightBehaviour::RenderUI()
 	if (ImGui::DragFloat("Falloff", &_falloff, 0.01f, 0.001f))
 	{
 		_falloff = max(_falloff, 0.001f);
+		_recalculateBounds = true;
 	}
 	ImGuiUtils::LockMouseOnActive();
 
@@ -101,8 +145,12 @@ bool SimpleSpotLightBehaviour::RenderUI()
 	if (ImGui::SliderFloat("Angle", &angle, 0.01f, 359.99f))
 	{
 		_angle = angle * DEG_TO_RAD;
+		_recalculateBounds = true;
 	}
 	ImGuiUtils::LockMouseOnActive();
+
+	ImGui::Separator();
+	ImGui::Text("Light Reach: %.3f units", CalculateLightReach(_color, _falloff));
 
 	return true;
 }
@@ -138,6 +186,7 @@ void SimpleSpotLightBehaviour::OnDirty()
 
 bool SimpleSpotLightBehaviour::Serialize(json::Document::AllocatorType &docAlloc, json::Value &obj)
 {
+	obj.AddMember("Ortho", _isOrtho, docAlloc);
 	obj.AddMember("Falloff", _falloff, docAlloc);
 	obj.AddMember("Fog Strength", _fogStrength, docAlloc);
 	obj.AddMember("Angle", _angle, docAlloc);
@@ -152,9 +201,23 @@ bool SimpleSpotLightBehaviour::Serialize(json::Document::AllocatorType &docAlloc
 }
 bool SimpleSpotLightBehaviour::Deserialize(const json::Value &obj, Scene *scene)
 {
-	// TODO: Implement
-	ErrMsg("Deserialization of SimpleSpotLightBehaviour is not implemented!");
-	return false;
+	if (obj.HasMember("Ortho"))
+		_isOrtho = obj["Ortho"].GetBool();
+
+	if (obj.HasMember("Falloff"))
+		_falloff = obj["Falloff"].GetFloat();
+
+	if (obj.HasMember("Fog Strength"))
+		_fogStrength = obj["Fog Strength"].GetFloat();
+
+	if (obj.HasMember("Angle"))
+		_angle = obj["Angle"].GetFloat();
+
+	if (obj.HasMember("Color"))
+		SerializerUtils::DeserializeVec(_color, obj["Color"]);
+
+	_recalculateBounds = true;
+	return true;
 }
 
 SimpleSpotLightBufferData SimpleSpotLightBehaviour::GetLightBufferData() const

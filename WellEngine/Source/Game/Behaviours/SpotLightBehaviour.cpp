@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "Behaviours/SpotLightBehaviour.h"
+#include "Behaviours/SimpleSpotLightBehaviour.h"
 #include "Behaviours/BillboardMeshBehaviour.h"
 #include "Entity.h"
 #include "Scenes/Scene.h"
@@ -47,6 +48,18 @@ SpotLightBehaviour::~SpotLightBehaviour()
 	if (!IsInitialized())
 		return;
 
+	if (_shadowCamera)
+	{
+		_shadowCamera->Destroy();
+		_shadowCamera = nullptr;
+	}
+
+#ifdef DEBUG_BUILD
+	if (!GetScene()->IsDestroyed() && !GetEntity()->IsRemoved())
+		if (_billboardMeshBehaviour.IsValid())
+			_billboardMeshBehaviour.Get()->Destroy();
+#endif
+
 	if (!IsEnabled())
 		return;
 
@@ -77,6 +90,10 @@ bool SpotLightBehaviour::Start()
 
 	_shadowCamera->SetRendererInfo({ false, true });
 
+	auto planes = _shadowCamera->GetPlanes();
+	planes.farZ = CalculateLightReach(_color, _falloff);
+	_shadowCamera->SetPlanes(planes);
+
 	SpotLightCollection *spotlights = GetScene()->GetSpotlights();
 
 	if (spotlights)
@@ -97,6 +114,8 @@ bool SpotLightBehaviour::Start()
 
 	if (!billboardMeshBehaviour->Initialize(GetEntity()))
 		Warn("Failed to Initialize billboard mesh behaviour!");
+
+	_billboardMeshBehaviour = billboardMeshBehaviour;
 #endif
 
 	QueueParallelUpdate();
@@ -119,6 +138,28 @@ bool SpotLightBehaviour::ParallelUpdate(const TimeUtils &time, const Input &inpu
 #ifdef USE_IMGUI
 bool SpotLightBehaviour::RenderUI()
 {
+	if (ImGui::Button("Swap with Non-Shadowcasting Variant"))
+	{
+		Entity *ent = GetEntity();
+
+		SimpleSpotLightBehaviour *simpleLight = new SimpleSpotLightBehaviour(
+			_color, _shadowCamera->GetFOV(), _falloff, _shadowCamera->GetOrtho(), _fogStrength
+		);
+
+		if (!simpleLight->Initialize(ent))
+		{
+			delete simpleLight;
+			ErrMsg("Failed to initialize simple spotlight!");
+			return false;
+		}
+
+		ent->ReorderBehaviour(simpleLight, ent->GetBehaviourIndex(this) + 1);
+		simpleLight->SetUIOpen(true);
+
+		Destroy();
+		return true;
+	}
+
 	if (ImGui::Button("Reset Color"))
 		_color = { 1.0f, 1.0f, 1.0f };
 
@@ -136,11 +177,12 @@ bool SpotLightBehaviour::RenderUI()
 		newColor = true;
 
 	bool newStrength = false;
-	if (ImGui::InputFloat("Intensity", &colorStrength))
+	if (ImGui::DragFloat("Intensity", &colorStrength, 0.01f, 0.1f))
 	{
-		colorStrength = max(colorStrength, 0.001f);
+		colorStrength = max(colorStrength, 0.1f);
 		newStrength = true;
 	}
+	ImGuiUtils::LockMouseOnActive();
 
 	if (newColor || newStrength)
 	{
@@ -175,22 +217,22 @@ bool SpotLightBehaviour::RenderUI()
 		}
 	}
 
-	if (recalculateReach)
+	if (recalculateReach && _shadowCamera)
 	{
-		if (_shadowCamera)
-		{
-			CameraPlanes planes = _shadowCamera->GetPlanes();
+		CameraPlanes planes = _shadowCamera->GetPlanes();
 
-			float reach = CalculateLightReach(_color, _falloff);
+		float reach = CalculateLightReach(_color, _falloff);
 
-			if (planes.nearZ < planes.farZ)
-				planes.farZ = reach;
-			else
-				planes.nearZ = reach;
+		if (planes.nearZ < planes.farZ)
+			planes.farZ = reach;
+		else
+			planes.nearZ = reach;
 
-			_shadowCamera->SetPlanes(planes);
-		}
+		_shadowCamera->SetPlanes(planes);
 	}
+
+	ImGui::Separator();
+	ImGui::Text("Light Reach: %.3f units", CalculateLightReach(_color, _falloff));
 
 	return true;
 }

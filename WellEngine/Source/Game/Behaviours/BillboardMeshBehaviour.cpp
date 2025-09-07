@@ -40,6 +40,16 @@ BillboardMeshBehaviour::~BillboardMeshBehaviour()
 			debugPlayer->RemoveGizmoBillboard(this);
 	}
 #endif
+
+	if (!GetScene()->IsDestroyed() && !GetEntity()->IsRemoved())
+	{
+		if (_meshBehaviour.IsValid())
+		{
+			Entity *meshEntity = _meshBehaviour.Get()->GetEntity();
+			if (meshEntity)
+				meshEntity->Destroy();
+		}
+	}
 }
 
 bool BillboardMeshBehaviour::Start()
@@ -57,9 +67,11 @@ bool BillboardMeshBehaviour::Start()
 		return true;
 	}
 	entity->SetParent(GetEntity());
-
-	entity->GetBehaviourByType<MeshBehaviour>(_meshBehaviour);
 	entity->SetSerialization(false);
+
+	MeshBehaviour *meshBehaviour;
+	entity->GetBehaviourByType<MeshBehaviour>(meshBehaviour);
+	_meshBehaviour = meshBehaviour;
 
 #ifdef DEBUG_BUILD
 	if (_gizmo)
@@ -69,7 +81,7 @@ bool BillboardMeshBehaviour::Start()
 		if (debugPlayer)
 			debugPlayer->AddGizmoBillboard(this);
 
-		_meshBehaviour->SetAlphaCutoff(0.5f);
+		_meshBehaviour.Get()->SetAlphaCutoff(0.5f);
 	}
 #endif
 
@@ -100,12 +112,12 @@ bool BillboardMeshBehaviour::ParallelUpdate(const TimeUtils &time, const Input &
 	// If the camera is within the normal offset distance or the cameras near plane, disable the billboard mesh & return
 	if (XMVectorGetX(XMVector3Length(toCam)) <= max(_normalOffset, viewCamera->GetPlanes().nearZ))
 	{
-		_meshBehaviour->GetEntity()->Disable();
+		_meshBehaviour.Get()->GetEntity()->Disable();
 		return true;
 	}
 	else
 	{
-		_meshBehaviour->GetEntity()->Enable();
+		_meshBehaviour.Get()->GetEntity()->Enable();
 	}
 
 	XMVECTOR up;
@@ -148,11 +160,11 @@ bool BillboardMeshBehaviour::ParallelUpdate(const TimeUtils &time, const Input &
 	XMFLOAT4X4A billboardMatrixF;
 	Store(billboardMatrixF, billboardMatrix);
 
-	_meshBehaviour->GetTransform()->SetMatrix(billboardMatrixF, World);
+	_meshBehaviour.Get()->GetTransform()->SetMatrix(billboardMatrixF, World);
 
 	if (_scale >= 0.001f)
 	{
-		_meshBehaviour->GetTransform()->RotatePitch(90.0f * DEG_TO_RAD);
+		_meshBehaviour.Get()->GetTransform()->RotatePitch(90.0f * DEG_TO_RAD);
 	}
 
 	return true;
@@ -172,11 +184,11 @@ bool BillboardMeshBehaviour::RenderUI()
 
 void BillboardMeshBehaviour::OnEnable()
 {
-	_meshBehaviour->GetEntity()->Enable();
+	_meshBehaviour.Get()->GetEntity()->Enable();
 }
 void BillboardMeshBehaviour::OnDisable()
 {
-	_meshBehaviour->GetEntity()->Disable();
+	_meshBehaviour.Get()->GetEntity()->Disable();
 }
 
 bool BillboardMeshBehaviour::Serialize(json::Document::AllocatorType &docAlloc, json::Value &obj)
@@ -235,8 +247,7 @@ void BillboardMeshBehaviour::SetRotation(float rotation)
 	_rotation = rotation;
 }
 
-MeshBehaviour* BillboardMeshBehaviour::GetMeshBehaviour() const
+MeshBehaviour *BillboardMeshBehaviour::GetMeshBehaviour() const
 {
-	return _meshBehaviour;
+	return _meshBehaviour.Get();
 }
-

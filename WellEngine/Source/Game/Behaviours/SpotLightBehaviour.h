@@ -38,6 +38,10 @@ private:
 	dx::BoundingFrustum _transformedBounds = { };
 	bool _boundsDirty = true;
 
+#ifdef DEBUG_BUILD
+	Ref<Behaviour> _billboardMeshBehaviour;
+#endif
+
 protected:
 	[[nodiscard]] bool Start() override;
 

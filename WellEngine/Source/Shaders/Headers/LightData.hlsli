@@ -89,7 +89,7 @@ void CutoffLight(float3 color, inout float invSquare)
 {
 	// The intensity at which the light is considered to have no effect.
 	// Must match the value of the same name in CalculateLightReach().
-	float intensityCutoff = 0.02;
+	float intensityCutoff = 0.05;
 	
 	float strength = max(color.x, max(color.y, color.z));
 	float correction = strength / (strength - intensityCutoff);

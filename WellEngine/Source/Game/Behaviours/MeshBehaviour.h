@@ -26,7 +26,7 @@ struct ShaderSettings
 	}
 };
 
-class [[register_behaviour]] MeshBehaviour final : public Behaviour
+class [[register_behaviour]] MeshBehaviour final : public Behaviour, public IRefTarget<MeshBehaviour>
 {
 private:
 	struct DeserializedMesh

@@ -24,6 +24,9 @@ private:
 	bool _isDestroyed = false;
 	bool _isEnabledSelf = true;
 	bool _doSerialize = true;
+#ifdef USE_IMGUI
+	int _uiOpen = -1; // -1 = uninitialized, 0 = close, 1 = open
+#endif
 
 	Entity *_entity = nullptr;
 
@@ -63,7 +66,6 @@ protected:
 	// Render runs when objects are being queued for rendering.
 	[[nodiscard]] virtual bool Render(const RenderQueuer &queuer, const RendererInfo &rendererInfo);
 
-
 #ifdef USE_IMGUI
 	// RenderUI runs every frame during ImGui rendering if the entity is selected.
 	[[nodiscard]] virtual bool RenderUI();
@@ -100,6 +102,8 @@ public:
 
 	[[nodiscard]] bool Initialize(Entity *entity, const std::string &behaviourName = "");
 	[[nodiscard]] bool IsInitialized() const;
+
+	void Destroy();
 	[[nodiscard]] bool IsDestroyed() const;
 
 	void SetSerialization(bool state);
@@ -120,6 +124,8 @@ public:
 	[[nodiscard]] bool InitialBeforeRender();
 	[[nodiscard]] bool InitialRender(const RenderQueuer &queuer, const RendererInfo &rendererInfo);
 #ifdef USE_IMGUI
+	[[nodiscard]] int PopUIOpenState();
+	void SetUIOpen(bool state);
 	[[nodiscard]] bool InitialRenderUI();
 #endif
 	[[nodiscard]] bool InitialBindBuffers(ID3D11DeviceContext *context);

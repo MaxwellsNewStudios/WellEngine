@@ -22,6 +22,10 @@ private:
 	float _falloff = 1.0f;
 	float _fogStrength = 1.0f;
 
+#ifdef DEBUG_BUILD
+	Ref<Behaviour> _billboardMeshBehaviour;
+#endif
+
 protected:
 	// Start runs once when the behaviour is created.
 	[[nodiscard]] bool Start() override;

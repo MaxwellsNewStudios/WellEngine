@@ -62,10 +62,25 @@ bool Behaviour::Initialize(Entity *entity, const std::string &behaviourName)
 	_isInitialized = true;
 	return true;
 }
-
 bool Behaviour::IsInitialized() const
 {
 	return _isInitialized;
+}
+
+void Behaviour::Destroy()
+{
+	ZoneScopedC(RandomUniqueColor());
+
+	if (_isDestroyed)
+		return;
+
+	if (!_isInitialized)
+		return;
+
+	if (!_entity)
+		return;
+
+	_entity->RemoveBehaviour(this);
 }
 bool Behaviour::IsDestroyed() const
 {
@@ -308,6 +323,16 @@ bool Behaviour::InitialRender(const RenderQueuer &queuer, const RendererInfo &re
 	return Render(queuer, rendererInfo);
 }
 #ifdef USE_IMGUI
+int Behaviour::PopUIOpenState()
+{
+	int state = _uiOpen;
+	_uiOpen = -1;
+	return state;
+}
+void Behaviour::SetUIOpen(bool state)
+{
+	_uiOpen = state ? 1 : 0;
+}
 bool Behaviour::InitialRenderUI()
 {
 	ImGuiUtils::BeginButtonStyle(ImGuiUtils::StyleType::Red);

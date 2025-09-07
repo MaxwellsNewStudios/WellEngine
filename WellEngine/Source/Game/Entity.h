@@ -71,6 +71,8 @@ public:
 	[[nodiscard]] bool Initialize(ID3D11Device *device, Scene *scene, const std::string &name);
 	[[nodiscard]] bool IsInitialized() const;
 
+	void Destroy();
+
 	void SetSerialization(bool state);
 	[[nodiscard]] bool IsSerializable() const;
 
@@ -88,9 +90,13 @@ public:
 
 	void AddBehaviour(Behaviour *behaviour);
 	void RemoveBehaviour(Behaviour *behaviour);
+	void ReorderBehaviour(Behaviour *behaviour, UINT newIndex);
+
 	[[nodiscard]] Behaviour *GetBehaviour(UINT index) const;
+	[[nodiscard]] UINT GetBehaviourIndex(Behaviour *behaviour) const;
 	[[nodiscard]] const std::vector<std::unique_ptr<Behaviour>> *GetBehaviours() const;
 	[[nodiscard]] UINT GetBehaviourCount() const;
+
 	template <class T>
 	bool HasBehaviourOfType() const;
 	template <class T>
