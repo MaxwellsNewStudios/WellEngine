@@ -144,6 +144,9 @@ bool SimplePointLightBehaviour::RenderUI()
 		DebugDrawer::Instance().DrawBoxAABB(boxBounds, XMFLOAT4(color[0], color[1], color[2], 0.2f), 0.0f, true);
 	}
 
+	ImGui::Separator();
+	ImGui::Text("Light Reach: %.3f units", CalculateLightReach(_color, _falloff));
+
 	return true;
 }
 #endif

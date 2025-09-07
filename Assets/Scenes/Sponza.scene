@@ -310,10 +310,10 @@
                                 "Alpha Cutoff": 0.5,
                                 "Normal Factor": 1.0,
                                 "Specular Factor": 1.0,
-                                "Glossiness Factor": 1.0,
+                                "Glossiness Factor": 0.6000000238418579,
                                 "Occlusion Factor": 0.8500000238418579,
-                                "Reflectivity": 0.0,
-                                "Metallic": 0.0,
+                                "Reflectivity": 0.20000000298023224,
+                                "Metallic": 0.10000000149011612,
                                 "Tex": "sponza_dummy",
                                 "Normal": "sponza_dummy_ddn",
                                 "Specular": "sponza_dummy_specular",
@@ -361,8 +361,8 @@
                                 ],
                                 "Alpha Cutoff": 0.5,
                                 "Normal Factor": 1.0,
-                                "Specular Factor": 0.8450000286102295,
-                                "Glossiness Factor": 1.0,
+                                "Specular Factor": 1.0,
+                                "Glossiness Factor": 0.8450000286102295,
                                 "Occlusion Factor": 0.8500000238418579,
                                 "Reflectivity": 0.020999999716877937,
                                 "Metallic": 0.20999999344348907,
@@ -723,7 +723,7 @@
                                 "Alpha Cutoff": 0.5,
                                 "Normal Factor": 1.0,
                                 "Specular Factor": 1.0,
-                                "Glossiness Factor": 1.0,
+                                "Glossiness Factor": 0.800000011920929,
                                 "Occlusion Factor": 0.8500000238418579,
                                 "Reflectivity": 0.0,
                                 "Metallic": 0.15000000596046448,
@@ -826,11 +826,11 @@
                                 ],
                                 "Alpha Cutoff": 0.5,
                                 "Normal Factor": 1.0,
-                                "Specular Factor": 0.9580000042915344,
-                                "Glossiness Factor": 1.0,
+                                "Specular Factor": 2.0,
+                                "Glossiness Factor": 0.949999988079071,
                                 "Occlusion Factor": 0.8500000238418579,
-                                "Reflectivity": 0.0689999982714653,
-                                "Metallic": 0.47600001096725464,
+                                "Reflectivity": 0.05000000074505806,
+                                "Metallic": 0.25,
                                 "Tex": "sponza_lion",
                                 "Normal": "sponza_lion_ddn",
                                 "Specular": "sponza_lion_spec",
@@ -879,9 +879,9 @@
                                 "Alpha Cutoff": 0.5,
                                 "Normal Factor": 1.0,
                                 "Specular Factor": 1.0,
-                                "Glossiness Factor": 1.0,
+                                "Glossiness Factor": 0.5,
                                 "Occlusion Factor": 0.8500000238418579,
-                                "Reflectivity": 0.0,
+                                "Reflectivity": 0.03999999910593033,
                                 "Metallic": 0.0,
                                 "Tex": "sponza_ceiling_a_diff",
                                 "Normal": "sponza_ceiling_a_ddn",
@@ -930,7 +930,7 @@
                                 ],
                                 "Alpha Cutoff": 0.5,
                                 "Normal Factor": 1.0,
-                                "Specular Factor": 0.10000000149011612,
+                                "Specular Factor": 0.699999988079071,
                                 "Glossiness Factor": 0.6000000238418579,
                                 "Occlusion Factor": 0.8500000238418579,
                                 "Reflectivity": 0.10000000149011612,
@@ -1361,57 +1361,18 @@
             ]
         },
         {
-            "Name": "Main Light",
-            "ID": 29,
-            "Enabled": true,
-            "Pos": [
-                0.8352147340774536,
-                9.031537055969238,
-                0.8428280353546143
-            ],
-            "Rot": [
-                -0.0,
-                0.0,
-                0.0
-            ],
-            "Scale": [
-                1.0,
-                1.0,
-                1.0
-            ],
-            "Static": false,
-            "Select": true,
-            "InTree": true,
-            "Beh": [
-                {
-                    "Name": "PointLightBehaviour",
-                    "Attributes": {
-                        "Falloff": 0.5,
-                        "Fog Strength": 1.0,
-                        "Near": -0.10000000149011612,
-                        "Far": -28.21289825439453,
-                        "Color": [
-                            2.0,
-                            1.7900806665420532,
-                            1.490195870399475
-                        ]
-                    }
-                }
-            ]
-        },
-        {
             "Name": "Bounce Light",
             "ID": 31,
             "Enabled": true,
             "Pos": [
-                -3.173872232437134,
-                2.2777037620544434,
+                1.0727123022079468,
+                2.968329429626465,
                 0.23989759385585785
             ],
             "Rot": [
                 -0.0,
                 0.0,
-                0.0
+                -0.0
             ],
             "Scale": [
                 1.0,
@@ -1423,51 +1384,16 @@
             "InTree": true,
             "Beh": [
                 {
-                    "Name": "SimplePointLightBehaviour",
+                    "Name": "PointLightBehaviour",
                     "Attributes": {
-                        "Falloff": 0.30000001192092896,
+                        "Falloff": 0.20000000298023224,
                         "Fog Strength": 1.0,
+                        "Near": -0.10000000149011612,
+                        "Far": -6.123745441436768,
                         "Color": [
-                            0.15000000596046448,
-                            0.14273357391357422,
-                            0.114705890417099
-                        ]
-                    }
-                }
-            ]
-        },
-        {
-            "Name": "Bounce Light",
-            "ID": 33,
-            "Enabled": true,
-            "Pos": [
-                3.8849740028381348,
-                2.2777037620544434,
-                0.23989759385585785
-            ],
-            "Rot": [
-                -0.0,
-                0.0,
-                0.0
-            ],
-            "Scale": [
-                1.0,
-                1.0,
-                1.0
-            ],
-            "Static": false,
-            "Select": true,
-            "InTree": true,
-            "Beh": [
-                {
-                    "Name": "SimplePointLightBehaviour",
-                    "Attributes": {
-                        "Falloff": 0.30000001192092896,
-                        "Fog Strength": 1.0,
-                        "Color": [
-                            0.15000000596046448,
-                            0.14273357391357422,
-                            0.114705890417099
+                            0.125,
+                            0.11894463002681732,
+                            0.09558823704719543
                         ]
                     }
                 }
@@ -1475,12 +1401,12 @@
         },
         {
             "Name": "Main Light",
-            "ID": 35,
+            "ID": 33,
             "Enabled": true,
             "Pos": [
-                3.074345827102661,
-                14.433408737182617,
-                2.7785305976867676
+                0.7938201427459717,
+                11.983840942382813,
+                1.2891472578048706
             ],
             "Rot": [
                 -0.0,
@@ -1499,14 +1425,14 @@
                 {
                     "Name": "PointLightBehaviour",
                     "Attributes": {
-                        "Falloff": 0.25,
-                        "Fog Strength": 0.20000000298023224,
+                        "Falloff": 0.17499999701976776,
+                        "Fog Strength": 1.0,
                         "Near": -0.10000000149011612,
-                        "Far": -56.42962646484375,
+                        "Far": -24.908090591430664,
                         "Color": [
-                            2.0,
-                            1.6407151222229004,
-                            1.127450942993164
+                            1.0,
+                            0.7557668685913086,
+                            0.406862735748291
                         ]
                     }
                 }
@@ -1514,7 +1440,7 @@
         },
         {
             "Name": "Bounce Light",
-            "ID": 37,
+            "ID": 35,
             "Enabled": true,
             "Pos": [
                 -5.575446605682373,
@@ -1551,12 +1477,12 @@
         },
         {
             "Name": "Bounce Light",
-            "ID": 39,
+            "ID": 37,
             "Enabled": true,
             "Pos": [
-                -5.493840217590332,
-                1.7134662866592407,
-                2.404245615005493
+                -5.539491653442383,
+                1.871150255203247,
+                2.378957509994507
             ],
             "Rot": [
                 -0.0,
@@ -1573,10 +1499,12 @@
             "InTree": true,
             "Beh": [
                 {
-                    "Name": "SimplePointLightBehaviour",
+                    "Name": "PointLightBehaviour",
                     "Attributes": {
                         "Falloff": 22.889999389648438,
-                        "Fog Strength": 1.0,
+                        "Fog Strength": 0.30000001192092896,
+                        "Near": -0.10000000149011612,
+                        "Far": -3.04704213142395,
                         "Color": [
                             243.27999877929688,
                             96.59647369384766,
@@ -1588,12 +1516,12 @@
         },
         {
             "Name": "Bounce Light",
-            "ID": 41,
+            "ID": 39,
             "Enabled": true,
             "Pos": [
                 6.500007629394531,
-                1.579605221748352,
-                2.404245615005493
+                1.46441650390625,
+                2.391225576400757
             ],
             "Rot": [
                 -0.0,
@@ -1610,10 +1538,12 @@
             "InTree": true,
             "Beh": [
                 {
-                    "Name": "SimplePointLightBehaviour",
+                    "Name": "PointLightBehaviour",
                     "Attributes": {
                         "Falloff": 19.06999969482422,
                         "Fog Strength": 7.300000190734863,
+                        "Near": -0.10000000149011612,
+                        "Far": -1.1200230121612549,
                         "Color": [
                             4.594409465789795,
                             11.578316688537598,
@@ -1625,7 +1555,7 @@
         },
         {
             "Name": "Bounce Light",
-            "ID": 43,
+            "ID": 41,
             "Enabled": true,
             "Pos": [
                 6.503631591796875,
@@ -1649,13 +1579,56 @@
                 {
                     "Name": "SimplePointLightBehaviour",
                     "Attributes": {
-                        "Falloff": 7.489999771118164,
+                        "Falloff": 8.0,
                         "Fog Strength": 0.4650000035762787,
                         "Color": [
-                            32.060001373291016,
-                            31.237224578857422,
-                            4.086079120635986
+                            25.0,
+                            24.358407974243164,
+                            3.186275005340576
                         ]
+                    }
+                }
+            ]
+        },
+        {
+            "Name": "Bounce Light",
+            "ID": 43,
+            "Enabled": true,
+            "Pos": [
+                5.206963062286377,
+                4.551882743835449,
+                1.7130405902862549
+            ],
+            "Rot": [
+                0.7166048884391785,
+                -2.2724363803863525,
+                0.02714572101831436
+            ],
+            "Scale": [
+                1.0000512599945068,
+                1.0000015497207642,
+                1.0000591278076172
+            ],
+            "Static": false,
+            "Select": true,
+            "InTree": true,
+            "Beh": [
+                {
+                    "Name": "SpotLightBehaviour",
+                    "Attributes": {
+                        "Falloff": 1.2999999523162842,
+                        "Fog Strength": 2.5,
+                        "Color": [
+                            4.558797836303711,
+                            0.0,
+                            5.0
+                        ],
+                        "Projection": {
+                            "FOV": 1.1886041164398193,
+                            "Aspect": 1.0,
+                            "Near": -0.10000000149011612,
+                            "Far": -7.653765678405762
+                        }
                     }
                 }
             ]
@@ -1665,9 +1638,9 @@
             "ID": 45,
             "Enabled": true,
             "Pos": [
-                1.3283098936080933,
-                3.84519100189209,
-                1.8760521411895752
+                -1.2384662628173828,
+                4.27871561050415,
+                2.5800609588623047
             ],
             "Rot": [
                 -0.0,
@@ -1686,12 +1659,12 @@
                 {
                     "Name": "SimplePointLightBehaviour",
                     "Attributes": {
-                        "Falloff": 19.06999969482422,
-                        "Fog Strength": 7.300000190734863,
+                        "Falloff": 0.9100000262260437,
+                        "Fog Strength": 1.0,
                         "Color": [
-                            4.594409465789795,
-                            11.578316688537598,
-                            22.860000610351563
+                            0.3499999940395355,
+                            0.3499999940395355,
+                            0.3499999940395355
                         ]
                     }
                 }
@@ -1702,9 +1675,47 @@
             "ID": 47,
             "Enabled": true,
             "Pos": [
-                -3.5427019596099854,
-                3.84519100189209,
-                2.516040086746216
+                5.791810512542725,
+                7.373147487640381,
+                0.22056661546230316
+            ],
+            "Rot": [
+                0.44951945543289185,
+                -1.5721620321273804,
+                0.02269821986556053
+            ],
+            "Scale": [
+                1.0001022815704346,
+                1.0000149011611938,
+                1.000160574913025
+            ],
+            "Static": false,
+            "Select": true,
+            "InTree": true,
+            "Beh": [
+                {
+                    "Name": "SimpleSpotLightBehaviour",
+                    "Attributes": {
+                        "Falloff": 0.4000000059604645,
+                        "Fog Strength": 10.0,
+                        "Angle": 0.05235987901687622,
+                        "Color": [
+                            20.0,
+                            0.0,
+                            0.0
+                        ]
+                    }
+                }
+            ]
+        },
+        {
+            "Name": "Bounce Light",
+            "ID": 52,
+            "Enabled": true,
+            "Pos": [
+                2.5222043991088867,
+                3.1887617111206055,
+                -1.4981034994125366
             ],
             "Rot": [
                 -0.0,
@@ -1721,21 +1732,15 @@
             "InTree": true,
             "Beh": [
                 {
-                    "Name": "SpotLightBehaviour",
+                    "Name": "SimplePointLightBehaviour",
                     "Attributes": {
-                        "Falloff": 1.0,
-                        "Fog Strength": 1.0,
+                        "Falloff": 88.0999984741211,
+                        "Fog Strength": 0.10000000149011612,
                         "Color": [
-                            1.0,
-                            1.0,
-                            1.0
-                        ],
-                        "Projection": {
-                            "FOV": 1.3962632417678833,
-                            "Aspect": 1.0,
-                            "Near": -0.10000000149011612,
-                            "Far": -49.99951934814453
-                        }
+                            394.8553161621094,
+                            1006.9164428710938,
+                            1088.52001953125
+                        ]
                     }
                 }
             ]

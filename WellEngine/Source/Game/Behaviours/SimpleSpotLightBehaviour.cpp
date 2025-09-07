@@ -149,6 +149,9 @@ bool SimpleSpotLightBehaviour::RenderUI()
 	}
 	ImGuiUtils::LockMouseOnActive();
 
+	ImGui::Separator();
+	ImGui::Text("Light Reach: %.3f units", CalculateLightReach(_color, _falloff));
+
 	return true;
 }
 #endif
@@ -183,6 +186,7 @@ void SimpleSpotLightBehaviour::OnDirty()
 
 bool SimpleSpotLightBehaviour::Serialize(json::Document::AllocatorType &docAlloc, json::Value &obj)
 {
+	obj.AddMember("Ortho", _isOrtho, docAlloc);
 	obj.AddMember("Falloff", _falloff, docAlloc);
 	obj.AddMember("Fog Strength", _fogStrength, docAlloc);
 	obj.AddMember("Angle", _angle, docAlloc);
@@ -197,9 +201,23 @@ bool SimpleSpotLightBehaviour::Serialize(json::Document::AllocatorType &docAlloc
 }
 bool SimpleSpotLightBehaviour::Deserialize(const json::Value &obj, Scene *scene)
 {
-	// TODO: Implement
-	ErrMsg("Deserialization of SimpleSpotLightBehaviour is not implemented!");
-	return false;
+	if (obj.HasMember("Ortho"))
+		_isOrtho = obj["Ortho"].GetBool();
+
+	if (obj.HasMember("Falloff"))
+		_falloff = obj["Falloff"].GetFloat();
+
+	if (obj.HasMember("Fog Strength"))
+		_fogStrength = obj["Fog Strength"].GetFloat();
+
+	if (obj.HasMember("Angle"))
+		_angle = obj["Angle"].GetFloat();
+
+	if (obj.HasMember("Color"))
+		SerializerUtils::DeserializeVec(_color, obj["Color"]);
+
+	_recalculateBounds = true;
+	return true;
 }
 
 SimpleSpotLightBufferData SimpleSpotLightBehaviour::GetLightBufferData() const

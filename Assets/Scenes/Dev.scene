@@ -11,7 +11,9 @@
                 500.0,
                 500.0,
                 500.0
-            ]
+            ],
+            "Max Depth": 5,
+            "Max Items In Node": 16
         },
         "Graphics": {
             "Spotlight Resolution": 256,
@@ -185,8 +187,8 @@
                 8.0
             ],
             "Rot": [
-                0.0,
-                -1.4425075054168701,
+                -0.0,
+                -1.3162175416946411,
                 0.0
             ],
             "Scale": [
@@ -1598,76 +1600,6 @@
             ]
         },
         {
-            "Name": "Mesh Entity",
-            "ID": 27,
-            "Enabled": true,
-            "Pos": [
-                13.657855987548828,
-                0.07442474365234375,
-                13.123908042907715
-            ],
-            "Rot": [
-                -0.0,
-                2.654324531555176,
-                0.0
-            ],
-            "Scale": [
-                0.9999570250511169,
-                1.0,
-                0.9999570250511169
-            ],
-            "Static": false,
-            "Select": true,
-            "InTree": true,
-            "Beh": [
-                {
-                    "Name": "MeshBehaviour",
-                    "Attributes": {
-                        "Mesh": "Character1",
-                        "Transparent": false,
-                        "Shadow Caster": true,
-                        "Shadows Only": false,
-                        "Base Color": [
-                            1.0,
-                            1.0,
-                            1.0,
-                            1.0
-                        ],
-                        "Alpha Cutoff": 0.0,
-                        "Normal Factor": 1.0,
-                        "Specular Factor": 0.5,
-                        "Glossiness Factor": 1.0,
-                        "Occlusion Factor": 0.8500000238418579,
-                        "Reflectivity": 1.0,
-                        "Metallic": 1.0,
-                        "PS Settings": {
-                            "Size": 16,
-                            "Data": [
-                                0,
-                                0,
-                                64,
-                                65,
-                                0,
-                                0,
-                                64,
-                                65,
-                                0,
-                                0,
-                                0,
-                                66,
-                                1,
-                                0,
-                                0,
-                                0
-                            ]
-                        },
-                        "Tex": "Character_Texture",
-                        "PS": "PS_GeometryMetallic"
-                    }
-                }
-            ]
-        },
-        {
             "Name": "Point",
             "ID": 28,
             "Enabled": true,
@@ -1696,7 +1628,7 @@
                         "Falloff": 0.699999988079071,
                         "Fog Strength": 1.0,
                         "Near": -0.10000000149011612,
-                        "Far": -45.15401840209961,
+                        "Far": -20.15260887145996,
                         "Color": [
                             10.0,
                             0.0,
@@ -1743,7 +1675,7 @@
                             "FOV": 1.6033120155334473,
                             "Aspect": 1.0,
                             "Near": -0.10000000149011612,
-                            "Far": -98.70829772949219
+                            "Far": -44.088504791259766
                         }
                     }
                 }
@@ -1855,8 +1787,8 @@
                         ],
                         "Alpha Cutoff": 0.0,
                         "Normal Factor": 1.0,
-                        "Specular Factor": 0.5,
-                        "Glossiness Factor": 1.0,
+                        "Specular Factor": 1.0,
+                        "Glossiness Factor": 0.5,
                         "Occlusion Factor": 0.8500000238418579,
                         "Reflectivity": 1.5,
                         "Metallic": 0.5,
@@ -2536,7 +2468,7 @@
             "Rot": [
                 -0.0,
                 0.8436765074729919,
-                -0.0
+                0.0
             ],
             "Scale": [
                 1.9999982118606567,

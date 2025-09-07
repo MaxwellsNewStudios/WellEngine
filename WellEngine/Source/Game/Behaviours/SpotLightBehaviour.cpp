@@ -90,6 +90,10 @@ bool SpotLightBehaviour::Start()
 
 	_shadowCamera->SetRendererInfo({ false, true });
 
+	auto planes = _shadowCamera->GetPlanes();
+	planes.farZ = CalculateLightReach(_color, _falloff);
+	_shadowCamera->SetPlanes(planes);
+
 	SpotLightCollection *spotlights = GetScene()->GetSpotlights();
 
 	if (spotlights)
@@ -213,22 +217,22 @@ bool SpotLightBehaviour::RenderUI()
 		}
 	}
 
-	if (recalculateReach)
+	if (recalculateReach && _shadowCamera)
 	{
-		if (_shadowCamera)
-		{
-			CameraPlanes planes = _shadowCamera->GetPlanes();
+		CameraPlanes planes = _shadowCamera->GetPlanes();
 
-			float reach = CalculateLightReach(_color, _falloff);
+		float reach = CalculateLightReach(_color, _falloff);
 
-			if (planes.nearZ < planes.farZ)
-				planes.farZ = reach;
-			else
-				planes.nearZ = reach;
+		if (planes.nearZ < planes.farZ)
+			planes.farZ = reach;
+		else
+			planes.nearZ = reach;
 
-			_shadowCamera->SetPlanes(planes);
-		}
+		_shadowCamera->SetPlanes(planes);
 	}
+
+	ImGui::Separator();
+	ImGui::Text("Light Reach: %.3f units", CalculateLightReach(_color, _falloff));
 
 	return true;
 }

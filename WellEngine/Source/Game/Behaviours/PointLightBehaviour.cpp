@@ -38,6 +38,12 @@ PointLightBehaviour::~PointLightBehaviour()
 	if (!IsInitialized())
 		return;
 
+	if (_shadowCameraCube)
+	{
+		_shadowCameraCube->Destroy();
+		_shadowCameraCube = nullptr;
+	}
+
 #ifdef DEBUG_BUILD
 	if (!GetScene()->IsDestroyed() && !GetEntity()->IsRemoved())
 		if (_billboardMeshBehaviour.IsValid())
@@ -73,6 +79,7 @@ bool PointLightBehaviour::Start()
 
 	_shadowCameraCube->SetRendererInfo({ false, true });
 	_shadowCameraCube->SetSerialization(false);
+	_shadowCameraCube->SetFarZ(CalculateLightReach(_color, _falloff));
 
 	PointLightCollection *pointlights = GetScene()->GetPointlights();
 
@@ -193,6 +200,19 @@ bool PointLightBehaviour::RenderUI()
 
 	if (recalculateReach && _shadowCameraCube)
 		_shadowCameraCube->SetFarZ(CalculateLightReach(_color, _falloff));
+
+	static bool drawBounds = false;
+	ImGui::Checkbox("Draw Bounds", &drawBounds);
+
+	if (drawBounds)
+	{
+		float reach = CalculateLightReach(_color, _falloff);
+		BoundingBox boxBounds = BoundingBox(GetTransform()->GetPosition(World), XMFLOAT3(reach, reach, reach));
+		DebugDrawer::Instance().DrawBoxAABB(boxBounds, XMFLOAT4(color[0], color[1], color[2], 0.2f), 0.0f, true);
+	}
+
+	ImGui::Separator();
+	ImGui::Text("Light Reach: %.3f units", CalculateLightReach(_color, _falloff));
 
 	return true;
 }
