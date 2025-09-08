@@ -98,6 +98,23 @@ void ImGuiUtils::EndButtonStyle()
 	ImGui::PopStyleColor(3);
 }
 
+bool ImGuiUtils::BeginFont(const std::string &name, float scale)
+{
+	ImFont *font = nullptr;
+	if (!Utils::GetFont(name, font))
+	{
+		DbgMsgF("Font '{}' not found!", name);
+		return false;
+	}
+
+	ImGui::PushFont(font, scale);
+	return true;
+}
+void ImGuiUtils::EndFont()
+{
+	ImGui::PopFont();
+}
+
 
 #pragma region ImGuiAutoWindow
 const std::string &ImGuiAutoWindow::GetID() const
@@ -135,13 +152,13 @@ Utils *Utils::GetInstance()
 UINT Utils::GetWindowCount()
 {
 	Utils *instance = GetInstance();
-	return instance->windows.size();
+	return instance->_windows.size();
 }
 
 bool Utils::GetWindow(const std::string &id, ImGuiAutoWindow **window)
 {
 	Utils *instance = GetInstance();
-	for (ImGuiAutoWindow &wind : instance->windows)
+	for (ImGuiAutoWindow &wind : instance->_windows)
 	{
 		if (wind.GetID() == id)
 		{
@@ -156,10 +173,10 @@ bool Utils::GetWindow(const std::string &id, ImGuiAutoWindow **window)
 const std::string *Utils::GetWindowID(UINT index)
 {
 	Utils *instance = GetInstance();
-	if (index >= instance->windows.size())
+	if (index >= instance->_windows.size())
 		return nullptr;
 
-	return &instance->windows[index].GetID();
+	return &instance->_windows[index].GetID();
 }
 
 bool Utils::OpenWindow(const ImGuiAutoWindow &window)
@@ -169,7 +186,7 @@ bool Utils::OpenWindow(const ImGuiAutoWindow &window)
 	if (GetWindow(window.GetID(), nullptr))
 		return false;
 
-	instance->windows.push_back(window);
+	instance->_windows.push_back(window);
 	return true;
 }
 bool Utils::OpenWindow(const std::string &name, const std::string &id, std::function<bool(void)> func)
@@ -180,11 +197,11 @@ bool Utils::OpenWindow(const std::string &name, const std::string &id, std::func
 bool Utils::CloseWindow(const std::string &id)
 {
 	Utils *instance = GetInstance();
-	for (int i = 0; i < instance->windows.size(); i++)
+	for (int i = 0; i < instance->_windows.size(); i++)
 	{
-		if (instance->windows[i].GetID() == id)
+		if (instance->_windows[i].GetID() == id)
 		{
-			instance->windows.erase(instance->windows.begin() + i);
+			instance->_windows.erase(instance->_windows.begin() + i);
 			return true;
 		}
 	}
@@ -195,9 +212,9 @@ bool Utils::Render()
 {
 	Utils *instance = GetInstance();
 
-	for (int i = 0; i < instance->windows.size(); i++)
+	for (int i = 0; i < instance->_windows.size(); i++)
 	{
-		ImGuiAutoWindow &wind = instance->windows[i];
+		ImGuiAutoWindow &wind = instance->_windows[i];
 
 		if (!wind.Render())
 		{

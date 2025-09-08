@@ -1882,6 +1882,118 @@ bool Game::RenderUI(TimeUtils &time)
 		ImGui::Checkbox("[D3D11] Report Live Device Objects on Shutdown", &DebugData::Get().reportComObjectsOnShutdown);
 #endif
 
+		static bool showStyleEditor = false;
+		if (ImGui::Button(showStyleEditor ? "Hide Style Editor" : "Show Style Editor"))
+			showStyleEditor = !showStyleEditor;
+
+		if (showStyleEditor)
+		{
+			ImGui::BeginChild("StyleEditorChild", ImGui::GetContentRegionAvail(), true | ImGuiChildFlags_ResizeY);
+
+			// Layout load/save
+			{
+				static std::string selectedLoadout = "";
+				static std::string styleName = "";
+
+				if (ImGui::Button("Load Window Layout"))
+				{
+					ImGui::OpenPopup("Load Layout");
+					selectedLoadout = DebugData::Get().layoutName;
+				}
+				ImGui::SameLine();
+				if (ImGui::Button("Save Window Layout"))
+				{
+					ImGui::OpenPopup("Save Layout");
+					styleName = DebugData::Get().layoutName;
+				}
+
+				if (ImGui::BeginPopup("Load Layout"))
+				{
+					std::vector<std::string> layouts;
+					UILayout::GetLayoutNames(layouts);
+
+					if (ImGui::BeginCombo("Layouts", selectedLoadout.c_str()))
+					{
+						for (int i = 0; i < layouts.size(); i++)
+						{
+							const bool isSelected = layouts[i] == selectedLoadout;
+							if (ImGui::Selectable(layouts[i].c_str(), isSelected))
+								selectedLoadout = layouts[i];
+
+							if (isSelected)
+								ImGui::SetItemDefaultFocus();
+						}
+						ImGui::EndCombo();
+					}
+
+					if (ImGui::Button("Confirm"))
+					{
+						_pendingLayoutChange = selectedLoadout;
+						ImGui::CloseCurrentPopup();
+					}
+					ImGui::SameLine();
+
+					if (ImGui::Button("Cancel"))
+						ImGui::CloseCurrentPopup();
+
+					ImGui::EndPopup();
+				}
+
+				if (ImGui::BeginPopup("Save Layout"))
+				{
+					ImGui::InputText("Layout Name", &styleName);
+
+					if (ImGui::Button("Save"))
+					{
+						UILayout::SaveLayout(styleName);
+						ImGui::CloseCurrentPopup();
+					}
+					ImGui::SameLine();
+
+					if (ImGui::Button("Cancel"))
+						ImGui::CloseCurrentPopup();
+
+					ImGui::EndPopup();
+				}
+			}
+			ImGui::Separator();
+
+			ImGui::ShowStyleEditor();
+			ImGui::EndChild();
+		}
+
+		ImGui::SetWindowFontScale(imGuiFontScale);
+		ImGui::Dummy({ 0, 2 });
+
+		if (ImGui::TreeNode("Fonts"))
+		{
+			auto fonts = ImGuiUtils::Utils::GetFonts();
+			static std::string inputStr = "";
+
+			for (const auto &[name, font] : fonts)
+			{
+				ImGui::PushFont(font, 0.0f);
+
+				ImGui::Text("[%s]", name.c_str());
+				ImGui::TextWrapped("The quick brown fox jumps over the lazy dog .,!? +-/* 123 456 789");
+				ImGui::InputText(std::format("##FontTestInput {}", name).c_str(), &inputStr);
+
+				ImGui::PopFont();
+				ImGui::Dummy({ 0, 4 });
+			}
+			ImGui::TreePop();
+		}
+		ImGui::Dummy({ 0, 2 });
+
+		if (ImGui::DragFloat("ImGui Font Scale", &imGuiFontScale, 0.05f))
+			imGuiFontScale = max(0.25f, imGuiFontScale);
+		ImGuiUtils::LockMouseOnActive();
+
+		if (ImGui::Button("Reset Font Scale"))
+			imGuiFontScale = 1.0f;
+		ImGui::Dummy({ 0, 4 });
+
+
 		if (ImGui::DragFloat("Volume", &_gameVolume, 0.05f, 0.0f))
 		{
 			_gameVolume = max(0, _gameVolume);
@@ -1899,27 +2011,6 @@ bool Game::RenderUI(TimeUtils &time)
 		if (ImGui::DragFloat("Fixed Time Step", &fixedDeltaTime, 0.002f))
 			time.SetFixedDeltaTime(fixedDeltaTime);
 		ImGuiUtils::LockMouseOnActive();
-		ImGui::Dummy({ 0, 4 });
-
-		if (ImGui::DragFloat("ImGui Font Scale", &imGuiFontScale, 0.05f))
-			imGuiFontScale = max(0.25f, imGuiFontScale);
-		ImGuiUtils::LockMouseOnActive();
-
-		if (ImGui::Button("Reset Font Scale"))
-			imGuiFontScale = 1.0f;
-
-		static bool showStyleEditor = false;
-		if (ImGui::Button("Show Style Editor"))
-			showStyleEditor = true;
-
-		if (showStyleEditor)
-		{
-			ImGui::Begin("Dear ImGui Style Editor", &showStyleEditor);
-			ImGui::ShowStyleEditor();
-			ImGui::End();
-		}
-
-		ImGui::SetWindowFontScale(imGuiFontScale);
 		ImGui::Dummy({ 0, 4 });
 
 		if (ImGui::TreeNode("Utility"))

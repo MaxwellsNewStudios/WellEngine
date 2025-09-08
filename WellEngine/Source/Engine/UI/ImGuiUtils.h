@@ -18,6 +18,9 @@ namespace ImGuiUtils
 	void BeginButtonStyle(StyleType style);
 	void EndButtonStyle();
 
+	[[nodiscard]] bool BeginFont(const std::string &name, float scale = 0.0f);
+	void EndFont();
+
 	// ImGui window, rendered at top level.
 	class ImGuiAutoWindow
 	{
@@ -49,10 +52,53 @@ namespace ImGuiUtils
 	class Utils
 	{
 	private:
-		std::vector<ImGuiAutoWindow> windows;
+		std::map<std::string, ImFont*> _fonts;
+		std::vector<ImGuiAutoWindow> _windows;
 
 	public:
 		[[nodiscard]] static Utils *GetInstance();
+
+		[[nodiscard]] static bool AddFont(const std::string &name, ImFont *font)
+		{
+			Utils *utils = GetInstance();
+			if (utils->_fonts.find(name) != utils->_fonts.end())
+				return false;
+
+			utils->_fonts[name] = font;
+			return true;
+		}
+		[[nodiscard]] static UINT GetFontCount()
+		{
+			return static_cast<UINT>(GetInstance()->_fonts.size());
+		}
+		[[nodiscard]] static bool HasFont(const std::string &name)
+		{
+			Utils *utils = GetInstance();
+			return utils->_fonts.find(name) != utils->_fonts.end();
+		}
+		[[nodiscard]] static bool GetFont(const std::string &name, ImFont *&font)
+		{
+			Utils *utils = GetInstance();
+
+			auto it = utils->_fonts.find(name);
+			if (it == utils->_fonts.end())
+				return false;
+
+			font = it->second;
+			return true;
+		}
+		[[nodiscard]] static std::vector<std::pair<std::string, ImFont*>> GetFonts()
+		{
+			Utils *utils = GetInstance();
+
+			std::vector<std::pair<std::string, ImFont*>> fonts;
+			fonts.reserve(utils->_fonts.size());
+
+			for (const auto &pair : utils->_fonts)
+				fonts.push_back(pair);
+
+			return fonts;
+		}
 
 		[[nodiscard]] static UINT GetWindowCount();
 		[[nodiscard]] static bool GetWindow(const std::string &id, ImGuiAutoWindow **window);

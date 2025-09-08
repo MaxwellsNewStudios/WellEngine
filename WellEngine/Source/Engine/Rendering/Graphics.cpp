@@ -255,7 +255,30 @@ bool Graphics::Setup(bool fullscreen, const UINT width, const UINT height, const
 			fontPaths.emplace_back(std::make_pair(filename, path.generic_string()));
 		}
 
-		//ImGui::GetIO().Fonts
+		// Load first font
+		ImFont *defaultFont = io.Fonts->AddFontDefault();
+		if (!ImGuiUtils::Utils::AddFont("Default", defaultFont))
+		{
+			DbgMsg("Unknown Problem loading default font");
+		}
+		ImGui::SetCurrentFont(defaultFont, defaultFont->LegacySize, defaultFont->LegacySize);
+
+		for (const auto &[name, path] : fontPaths)
+		{
+			ImGuiIO &io = ImGui::GetIO();
+			ImFont *font = io.Fonts->AddFontFromFileTTF(path.c_str()/*, 12.0f*/);
+
+			if (!font)
+			{
+				WarnF("Failed to load font from path: {}", path.c_str());
+				continue;
+			}
+
+			if (!ImGuiUtils::Utils::AddFont(name, font))
+			{
+				DbgMsgF("Font with name {} already exists. Skipping...", name.c_str());
+			}
+		}
 	}
 
 	ImGui::StyleColorsDark();
