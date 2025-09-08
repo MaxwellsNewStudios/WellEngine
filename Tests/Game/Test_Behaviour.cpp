@@ -1,15 +1,24 @@
-#include "stdafx.h"
+#include "Tests/stdafx.h"
 #include "CppUnitTest.h"
+//#include "Game/Scenes/Scene.h"
 #include "Game/Behaviour.h"
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 using namespace TestUtils;
 
-void TestUtility::BehaviourTest(void *beh)
+class TestUtils::TestUtility
 {
-	Behaviour &b = *static_cast<Behaviour *>(beh);
+public:
+	static bool BehaviourTestConstruct()
+	{
+		//Scene scene{"TEST"};
+		//scene.InitializeNull(nullptr, nullptr, nullptr, nullptr, nullptr);
+		
+		Behaviour beh;
 
-}
+		return true;
+	}
+};
 
 namespace T_Game
 {
@@ -18,9 +27,10 @@ namespace T_Game
 	public:
 		TEST_METHOD(Construct)
 		{
-			//Behaviour beh;
-
-			//TestUtility::BehaviourTest(&beh);
+			if (!TestUtility::BehaviourTestConstruct())
+			{
+				Assert::Fail(L"Behaviour construction failed.");
+			}
 		}
 	};
 }

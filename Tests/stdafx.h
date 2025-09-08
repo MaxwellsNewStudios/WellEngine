@@ -1,8 +1,7 @@
 #pragma once
 
 #define _TEST_PROJ
-#include "TestUtils.h"
+#include "Tests/TestUtils.h"
 #undef _TEST_PROJ
-#include "stdafx.h"
+#include "WellEngine/stdafx.h"
 #define _TEST_PROJ
-

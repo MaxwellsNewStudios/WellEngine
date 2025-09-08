@@ -251,12 +251,14 @@ float ExpDecay(float a, float b, float d, float dT)
 float1 Remap(float1 value, float1 inMin, float1 inMax, float1 outMin, float1 outMax)
 {
 	if (inMin == inMax)
+	{
 		return outMin; // Avoid division by zero
-	
-	float1 t = (value - inMin) / (inMax - inMin);
-	float1 result = outMin + t * (outMax - outMin);
-	
-	return result;
+	}
+	else
+	{
+		float1 t = (value - inMin) / (inMax - inMin);
+		return outMin + t * (outMax - outMin);
+	}
 }
 float2 Remap(float2 value, float2 inMin, float2 inMax, float2 outMin, float2 outMax)
 {

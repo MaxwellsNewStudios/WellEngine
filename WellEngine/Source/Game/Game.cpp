@@ -897,7 +897,7 @@ bool Game::Setup(TimeUtils &time, Window window)
 		if (!SetScene("MainMenu"))
 		{
 			ErrMsg("Failed to set scene!");
-			return -1;
+			return false;
 		}
 #endif
 		LogIndentDecr();

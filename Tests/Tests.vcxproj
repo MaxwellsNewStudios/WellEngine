@@ -33,7 +33,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
-    <UseDebugLibraries>false</UseDebugLibraries>
+    <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
@@ -79,16 +79,25 @@
       <WarningLevel>Level3</WarningLevel>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>false</IntrinsicFunctions>
-      <SDLCheck>false</SDLCheck>
-      <AdditionalIncludeDirectories>$(VCInstallDir)UnitTest\include;%(AdditionalIncludeDirectories);$(ProjectDir);$(SolutionDir)WellEngine;$(SolutionDir)WellEngine/Source;$(SolutionDir)WellEngine/Source/Engine;$(SolutionDir)WellEngine/Source/Game;$(SolutionDir)WellEngine/Dependencies;$(SolutionDir)WellEngine/Dependencies/SDL3/include;$(SolutionDir)WellEngine/Dependencies/rapidjson/include</AdditionalIncludeDirectories>
+      <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>$(VCInstallDir)UnitTest\include;%(AdditionalIncludeDirectories);$(ProjectDir);$(SolutionDir);$(SolutionDir)WellEngine;$(SolutionDir)WellEngine/Source;$(SolutionDir)WellEngine/Source/Engine;$(SolutionDir)WellEngine/Source/Game;$(SolutionDir)WellEngine/Dependencies;$(SolutionDir)WellEngine/Dependencies/SDL3/include;$(SolutionDir)WellEngine/Dependencies/rapidjson/include</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_TESTING;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <UseFullPaths>true</UseFullPaths>
-      <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile>Tests/stdafx.h</PrecompiledHeaderFile>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <DisableSpecificWarnings>4244;6993;4018;4267;4006;26813;5030;5222;%(DisableSpecificWarnings)</DisableSpecificWarnings>
       <Optimization>Disabled</Optimization>
       <WholeProgramOptimization>false</WholeProgramOptimization>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <UseStandardPreprocessor>true</UseStandardPreprocessor>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <FavorSizeOrSpeed>Neither</FavorSizeOrSpeed>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <StringPooling>true</StringPooling>
+      <EnableParallelCodeGeneration>true</EnableParallelCodeGeneration>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <UndefinePreprocessorDefinitions>TRACY_ENABLE</UndefinePreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -105,15 +114,17 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>false</IntrinsicFunctions>
       <SDLCheck>false</SDLCheck>
-      <AdditionalIncludeDirectories>$(VCInstallDir)UnitTest\include;%(AdditionalIncludeDirectories);$(ProjectDir);$(SolutionDir)WellEngine;$(SolutionDir)WellEngine/Source;$(SolutionDir)WellEngine/Source/Engine;$(SolutionDir)WellEngine/Source/Game;$(SolutionDir)WellEngine/Dependencies;$(SolutionDir)WellEngine/Dependencies/SDL3/include;$(SolutionDir)WellEngine/Dependencies/rapidjson/include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(VCInstallDir)UnitTest\include;%(AdditionalIncludeDirectories);$(ProjectDir);$(SolutionDir);$(SolutionDir)WellEngine;$(SolutionDir)WellEngine/Source;$(SolutionDir)WellEngine/Source/Engine;$(SolutionDir)WellEngine/Source/Game;$(SolutionDir)WellEngine/Dependencies;$(SolutionDir)WellEngine/Dependencies/SDL3/include;$(SolutionDir)WellEngine/Dependencies/rapidjson/include</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_TESTING;_DEPLOY;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <UseFullPaths>true</UseFullPaths>
-      <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile>Tests/stdafx.h</PrecompiledHeaderFile>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <DisableSpecificWarnings>4244;6993;4018;4267;4006;26813;5030;5222;%(DisableSpecificWarnings)</DisableSpecificWarnings>
       <Optimization>Disabled</Optimization>
       <WholeProgramOptimization>false</WholeProgramOptimization>
+      <UseStandardPreprocessor>true</UseStandardPreprocessor>
+      <UndefinePreprocessorDefinitions>TRACY_ENABLE</UndefinePreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -128,10 +139,10 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>false</SDLCheck>
-      <AdditionalIncludeDirectories>$(VCInstallDir)UnitTest\include;%(AdditionalIncludeDirectories);$(ProjectDir);$(SolutionDir)WellEngine;$(SolutionDir)WellEngine/Source;$(SolutionDir)WellEngine/Source/Engine;$(SolutionDir)WellEngine/Source/Game;$(SolutionDir)WellEngine/Dependencies;$(SolutionDir)WellEngine/Dependencies/SDL3/include;$(SolutionDir)WellEngine/Dependencies/rapidjson/include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(VCInstallDir)UnitTest\include;%(AdditionalIncludeDirectories);$(ProjectDir);$(SolutionDir);$(SolutionDir)WellEngine;$(SolutionDir)WellEngine/Source;$(SolutionDir)WellEngine/Source/Engine;$(SolutionDir)WellEngine/Source/Game;$(SolutionDir)WellEngine/Dependencies;$(SolutionDir)WellEngine/Dependencies/SDL3/include;$(SolutionDir)WellEngine/Dependencies/rapidjson/include</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_TESTING;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <UseFullPaths>true</UseFullPaths>
-      <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile>Tests/stdafx.h</PrecompiledHeaderFile>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <SupportJustMyCode>true</SupportJustMyCode>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
@@ -139,6 +150,9 @@
       <DisableSpecificWarnings>4244;6993;4018;4267;4006;26813;5030;5222;%(DisableSpecificWarnings)</DisableSpecificWarnings>
       <UseDynamicDebugging>false</UseDynamicDebugging>
       <FunctionLevelLinking>true</FunctionLevelLinking>
+      <UseStandardPreprocessor>true</UseStandardPreprocessor>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <UndefinePreprocessorDefinitions>TRACY_ENABLE</UndefinePreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -164,6 +178,11 @@
   <ItemGroup>
     <None Include="cpp.hint" />
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\WellEngine\WellEngine.vcxproj">
+      <Project>{7f156b4b-4453-4b20-8765-7898d274bf6e}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

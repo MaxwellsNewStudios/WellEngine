@@ -42,6 +42,45 @@ Scene::~Scene()
 	_isDestroyed = true;
 }
 
+bool Scene::InitializeNull(ID3D11Device *device, ID3D11DeviceContext *context, Game *game, Content *content, Graphics *graphics)
+{
+	ZoneScopedC(RandomUniqueColor());
+
+	if (_initialized)
+		return false;
+	_isDestroyed = false;
+
+	_game = game;
+	_device = device;
+	_context = context;
+	_content = content;
+	_graphics = graphics;
+
+	// Create scene content holder
+	constexpr dx::BoundingBox sceneBounds = dx::BoundingBox(dx::XMFLOAT3(0, 0, 0), dx::XMFLOAT3(100.0f, 100.0f, 100.0f));
+	if (!_sceneHolder.Initialize(sceneBounds))
+	{
+		ErrMsg("Failed to initialize scene holder!");
+		return false;
+	}
+
+	if (!_pointlights->Initialize(device, 1))
+	{
+		ErrMsg("Failed to initialize pointlight collection!");
+		return false;
+	}
+
+	if (!_spotlights->Initialize(device, 1))
+	{
+		ErrMsg("Failed to initialize spotlight collection!");
+		return false;
+	}
+
+	_collisionHandler.Initialize(this);
+
+	_initialized = true;
+	return true;
+}
 bool Scene::InitializeBase(std::string sceneName, ID3D11Device *device, ID3D11DeviceContext *context, Game *game, Content *content, Graphics *graphics, float gameVolume)
 {
 	ZoneScopedC(RandomUniqueColor());

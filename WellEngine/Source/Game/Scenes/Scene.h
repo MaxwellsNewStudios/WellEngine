@@ -117,6 +117,7 @@ public:
 	Scene(Scene &&other) = default;
 	Scene &operator=(Scene &&other) = default;
 
+	[[nodiscard]] bool InitializeNull(ID3D11Device *device, ID3D11DeviceContext *context, Game *game, Content *content, Graphics *graphics);
 	[[nodiscard]] bool InitializeBase(std::string sceneName, ID3D11Device *device, ID3D11DeviceContext *context, Game *game, Content *content, Graphics *graphics, float gameVolume);
 	[[nodiscard]] bool InitializeMenu(std::string sceneName, ID3D11Device *device, ID3D11DeviceContext *context, Game *game, Content *content, Graphics *graphics, float gameVolume);
 	[[nodiscard]] bool InitializeEntr(std::string sceneName, ID3D11Device *device, ID3D11DeviceContext *context, Game *game, Content *content, Graphics *graphics, float gameVolume);

@@ -1,16 +1,22 @@
-#include "stdafx.h"
+#include "Tests/stdafx.h"
 #include "CppUnitTest.h"
 #include "Game/Transform.h"
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 using namespace TestUtils;
 
-void TestUtility::TransformTest(void *trans)
+class TestUtils::TestUtility
 {
-	Transform &t = *static_cast<Transform *>(trans);
+public:
+	static bool TransformTestConstruct()
+	{
+		Transform t{};
 
-	t._localMatrix;
-}
+		t._localMatrix;
+
+		return true;
+	}
+};
 
 namespace T_Game
 {
@@ -19,8 +25,10 @@ namespace T_Game
 	public:
 		TEST_METHOD(Construct)
 		{
-			Transform t{};
-			TestUtility::TransformTest(&t);
+			if (!TestUtility::TransformTestConstruct())
+			{
+				Assert::Fail(L"Transform construction failed.");
+			}
 		}
 	};
 }

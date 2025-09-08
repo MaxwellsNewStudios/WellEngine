@@ -12,10 +12,14 @@
 Behaviour::~Behaviour()
 {
 	_isDestroyed = true;
-	DequeueUpdate();
-	DequeueParallelUpdate();
-	DequeueLateUpdate();
-	DequeueFixedUpdate();
+
+	if (_isInitialized)
+	{
+		DequeueUpdate();
+		DequeueParallelUpdate();
+		DequeueLateUpdate();
+		DequeueFixedUpdate();
+	}
 }
 
 bool Behaviour::Initialize(Entity *entity, const std::string &behaviourName)

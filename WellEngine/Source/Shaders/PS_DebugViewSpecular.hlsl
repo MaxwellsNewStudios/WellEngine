@@ -26,7 +26,7 @@ float4 main(PixelShaderInput input) : SV_Target
 	const float3 viewDir = normalize(cam_position.xyz - pos);
 	const float3 geoNormal = normalize(input.normal);
     
-	const float diffuseColW = MatProp_baseColor * Texture.Sample(Sampler, uv).w;
+	const float diffuseColW = MatProp_baseColor.w * Texture.Sample(Sampler, uv).w;
 	
 	if (MatProp_alphaCutoff > 0.0)
 	{

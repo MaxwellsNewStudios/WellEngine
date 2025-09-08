@@ -101,7 +101,7 @@
       <PreserveSbr>true</PreserveSbr>
     </Bscmake>
     <PostBuildEvent>
-      <Command>$(SolutionDir)BuildTools\BuildMerger\x64\Debug\BuildMerger</Command>
+      <Command>$(SolutionDir)BuildTools\BuildMerger\x64\$(Configuration)\BuildMerger</Command>
       <Message>Merge Build</Message>
     </PostBuildEvent>
   </ItemDefinitionGroup>
@@ -139,7 +139,7 @@
     </Link>
     <PostBuildEvent>
       <Message>Merge Build</Message>
-      <Command>$(SolutionDir)BuildTools\BuildMerger\x64\Release\BuildMerger</Command>
+      <Command>$(SolutionDir)BuildTools\BuildMerger\x64\$(Configuration)\BuildMerger</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">
@@ -172,7 +172,7 @@
     </Link>
     <PostBuildEvent>
       <Message>Merge Build</Message>
-      <Command>$(SolutionDir)BuildTools\BuildMerger\x64\Release\BuildMerger</Command>
+      <Command>$(SolutionDir)BuildTools\BuildMerger\x64\$(Configuration)\BuildMerger</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -184,9 +184,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\WellEngine.vcxproj">
-      <Project>{7f156b4b-4453-4b20-8765-7898d274bf6e}</Project>
-    </ProjectReference>
     <ProjectReference Include="..\WellEngine\WellEngine.vcxproj">
       <Project>{7f156b4b-4453-4b20-8765-7898d274bf6e}</Project>
     </ProjectReference>

@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "Tests/stdafx.h"
 #include "CppUnitTest.h"
 #include "Math/GameMath.h"
 

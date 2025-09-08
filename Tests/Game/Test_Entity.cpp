@@ -1,15 +1,23 @@
-#include "stdafx.h"
+#include "Tests/stdafx.h"
 #include "CppUnitTest.h"
 #include "Game/Entity.h"
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 using namespace TestUtils;
 
-void TestUtility::EntityTest(void *ent)
+class TestUtils::TestUtility
 {
-	Entity &e = *static_cast<Entity *>(ent);
+public:
+	static bool EntityTestConstruct()
+	{
+		Entity ent(
+			(UINT)0, 
+			dx::BoundingOrientedBox({ 0,0,0 }, { 1,1,1 }, { 0,0,0,1 })
+		);
 
-}
+		return true;
+	}
+};
 
 namespace T_Game
 {
@@ -18,9 +26,10 @@ namespace T_Game
 	public:
 		TEST_METHOD(Construct)
 		{
-			Entity ent((UINT)0, dx::BoundingOrientedBox({ 0,0,0 }, { 1,1,1 }, {0,0,0,1}));
-
-			TestUtility::EntityTest(&ent);
+			if (!TestUtility::EntityTestConstruct())
+			{
+				Assert::Fail(L"Entity construction failed.");
+			}
 		}
 	};
 }

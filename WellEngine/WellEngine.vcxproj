@@ -138,7 +138,7 @@
       </Command>
     </CustomBuildStep>
     <PreBuildEvent>
-      <Command>$(SolutionDir)BuildTools\BehaviourRegistration\x64\Debug\BehaviourRegistration</Command>
+      <Command>$(SolutionDir)BuildTools\BehaviourRegistration\x64\$(Configuration)\BehaviourRegistration</Command>
       <Message>Registering Behaviours</Message>
     </PreBuildEvent>
     <PostBuildEvent>
@@ -197,7 +197,7 @@
       </Command>
     </CustomBuildStep>
     <PreBuildEvent>
-      <Command>$(SolutionDir)BuildTools\BehaviourRegistration\x64\Release\BehaviourRegistration</Command>
+      <Command>$(SolutionDir)BuildTools\BehaviourRegistration\x64\$(Configuration)\BehaviourRegistration</Command>
       <Message>Registering Behaviours</Message>
     </PreBuildEvent>
     <PostBuildEvent>
@@ -257,7 +257,7 @@
       </Command>
     </CustomBuildStep>
     <PreBuildEvent>
-      <Command>$(SolutionDir)BuildTools\BehaviourRegistration\x64\Release\BehaviourRegistration</Command>
+      <Command>$(SolutionDir)BuildTools\BehaviourRegistration\x64\$(Configuration)\BehaviourRegistration</Command>
       <Message>Registering Behaviours</Message>
     </PreBuildEvent>
     <PostBuildEvent>
@@ -268,9 +268,6 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Dependencies\SDL3\VisualC\SDL\SDL.vcxproj">
-      <Project>{81ce8daf-ebb2-4761-8e45-b71abcca8c68}</Project>
-    </ProjectReference>
     <ProjectReference Include="Dependencies\SDL3\VisualC\SDL\SDL.vcxproj">
       <Project>{81ce8daf-ebb2-4761-8e45-b71abcca8c68}</Project>
     </ProjectReference>

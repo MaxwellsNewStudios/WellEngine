@@ -140,7 +140,7 @@ namespace D3D11FormatData
 		return formatMap.at(name);
 	}
 	
-	[[nodiscard]] constexpr DXGI_FORMAT ToSRGB(DXGI_FORMAT format)
+	[[nodiscard]] inline DXGI_FORMAT ToSRGB(DXGI_FORMAT format)
 	{
 		switch (format)
 		{
@@ -179,7 +179,7 @@ namespace D3D11FormatData
 		}
 	}
 	
-	[[nodiscard]] constexpr bool IsBCFormat(DXGI_FORMAT format)
+	[[nodiscard]] inline bool IsBCFormat(DXGI_FORMAT format)
 	{
 		switch (format)
 		{
@@ -211,7 +211,7 @@ namespace D3D11FormatData
 		}
 	}
 	
-	[[nodiscard]] constexpr std::string GetName(DXGI_FORMAT format)
+	[[nodiscard]] inline std::string GetName(DXGI_FORMAT format)
 	{
 		switch (format)
 		{
@@ -466,7 +466,7 @@ namespace D3D11FormatData
 		}
 	}
 
-	[[nodiscard]] constexpr int GetChannelCount(DXGI_FORMAT format)
+	[[nodiscard]] inline int GetChannelCount(DXGI_FORMAT format)
 	{
 		switch (format)
 		{
@@ -606,7 +606,7 @@ namespace D3D11FormatData
 		}
 	}
 
-	[[nodiscard]] constexpr int GetBitsPerPixel(DXGI_FORMAT format)
+	[[nodiscard]] inline int GetBitsPerPixel(DXGI_FORMAT format)
 	{
 		switch (format)
 		{
@@ -782,7 +782,7 @@ namespace D3D11FormatData
 		}
 	}
 
-	[[nodiscard]] constexpr dx::XMINT4 GetBitsPerChannel(DXGI_FORMAT format)
+	[[nodiscard]] inline dx::XMINT4 GetBitsPerChannel(DXGI_FORMAT format)
 	{
 		switch (format)
 		{
@@ -980,9 +980,9 @@ namespace D3D11FormatData
 		}
 	}
 
-	[[nodiscard]] constexpr const DXGI_FORMAT *GetLinearList(int *count)
+	[[nodiscard]] inline const DXGI_FORMAT *GetLinearList(int *count)
 	{
-		constexpr DXGI_FORMAT linearList[123] = {
+		static const DXGI_FORMAT linearList[123] = {
 			DXGI_FORMAT_UNKNOWN,
 			DXGI_FORMAT_R32G32B32A32_TYPELESS,
 			DXGI_FORMAT_R32G32B32A32_FLOAT,
