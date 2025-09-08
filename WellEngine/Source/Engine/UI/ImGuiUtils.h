@@ -20,6 +20,7 @@ namespace ImGuiUtils
 
 	[[nodiscard]] bool BeginFont(const std::string &name, float scale = 0.0f);
 	void EndFont();
+	[[nodiscard]] bool SetDefaultFont(const std::string &name);
 
 	// ImGui window, rendered at top level.
 	class ImGuiAutoWindow
@@ -86,6 +87,19 @@ namespace ImGuiUtils
 
 			font = it->second;
 			return true;
+		}
+		[[nodiscard]] static const std::string &GetFontName(ImFont *font)
+		{
+			Utils *utils = GetInstance();
+
+			for (const auto &pair : utils->_fonts)
+			{
+				if (pair.second == font)
+					return pair.first;
+			}
+
+			static const std::string empty = "";
+			return empty;
 		}
 		[[nodiscard]] static std::vector<std::pair<std::string, ImFont*>> GetFonts()
 		{

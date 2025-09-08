@@ -255,13 +255,13 @@ bool Graphics::Setup(bool fullscreen, const UINT width, const UINT height, const
 			fontPaths.emplace_back(std::make_pair(filename, path.generic_string()));
 		}
 
-		// Load first font
+		/*// Load first font
 		ImFont *defaultFont = io.Fonts->AddFontDefault();
 		if (!ImGuiUtils::Utils::AddFont("Default", defaultFont))
 		{
 			DbgMsg("Unknown Problem loading default font");
 		}
-		ImGui::SetCurrentFont(defaultFont, defaultFont->LegacySize, defaultFont->LegacySize);
+		ImGui::SetCurrentFont(defaultFont, defaultFont->LegacySize, defaultFont->LegacySize);*/
 
 		for (const auto &[name, path] : fontPaths)
 		{

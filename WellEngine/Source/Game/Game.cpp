@@ -1426,7 +1426,6 @@ bool Game::RenderUI(TimeUtils &time)
 	stylesPushed++; ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
 	stylesPushed++; ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0);
 
-	//ImGui::SetNextWindowDockID(_graphics.GetBackgroundDockID(), ImGuiCond_FirstUseEver);
 	if (ImGui::Begin("View", nullptr, viewWindowFlags))
 	{
 		ImGui::PopStyleVar(stylesPushed);
@@ -1873,7 +1872,6 @@ bool Game::RenderUI(TimeUtils &time)
 		ImGui::PopStyleVar(stylesPushed);
 	ImGui::End();
 
-	//ImGui::SetNextWindowDockID(mainDockID, ImGuiCond_FirstUseEver);
 	if (ImGui::Begin("General", nullptr, defaultWindowFlags))
 	{
 		ImGui::SetWindowFontScale(imGuiFontScale);
@@ -2121,7 +2119,6 @@ bool Game::RenderUI(TimeUtils &time)
 	}
 	ImGui::End();
 
-	//ImGui::SetNextWindowDockID(mainDockID, ImGuiCond_FirstUseEver);
 	if (ImGui::Begin("Performance", nullptr, defaultWindowFlags))
 	{
 		ImGui::SetWindowFontScale(imGuiFontScale);
@@ -2390,7 +2387,6 @@ bool Game::RenderUI(TimeUtils &time)
 	}
 	ImGui::End();
 
-	//ImGui::SetNextWindowDockID(mainDockID, ImGuiCond_FirstUseEver);
 	if (ImGui::Begin("Content", nullptr, defaultWindowFlags))
 	{
 		ImGui::SetWindowFontScale(imGuiFontScale);
@@ -2403,7 +2399,6 @@ bool Game::RenderUI(TimeUtils &time)
 	}
 	ImGui::End();
 
-	//ImGui::SetNextWindowDockID(mainDockID, ImGuiCond_FirstUseEver);
 	if (ImGui::Begin("Graphics", nullptr, defaultWindowFlags))
 	{
 		ImGui::SetWindowFontScale(imGuiFontScale);
@@ -2416,7 +2411,6 @@ bool Game::RenderUI(TimeUtils &time)
 	}
 	ImGui::End();
 
-	//ImGui::SetNextWindowDockID(mainDockID, ImGuiCond_FirstUseEver);
 	if (ImGui::Begin("Scene", nullptr, defaultWindowFlags))
 	{
 		ImGui::SetWindowFontScale(imGuiFontScale);
@@ -2455,7 +2449,6 @@ bool Game::RenderUI(TimeUtils &time)
 		return false;
 	}
 
-	//ImGui::SetNextWindowDockID(mainDockID, ImGuiCond_FirstUseEver);
 	if (ImGui::Begin("Input", nullptr, defaultWindowFlags))
 	{
 		ImGui::SetWindowFontScale(imGuiFontScale);

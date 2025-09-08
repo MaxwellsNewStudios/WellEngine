@@ -35,11 +35,18 @@ void UILayout::SaveLayout(const std::string &name)
 	json::Value layoutObj(json::kObjectType);
 	{
 		ImGuiStyle &layoutStyle = ImGui::GetStyle();
+		ImFont *font = ImGui::GetDefaultFont();
+		const std::string &defaultFontName = ImGuiUtils::Utils::GetFontName(font);
+
+		layoutObj.AddMember("FontSizeBase", layoutStyle.FontSizeBase, docAlloc);   
+		layoutObj.AddMember("FontScaleMain", layoutStyle.FontScaleMain, docAlloc);
+		layoutObj.AddMember("FontScaleDpi", layoutStyle.FontScaleDpi, docAlloc);
 		layoutObj.AddMember("Alpha", layoutStyle.Alpha, docAlloc);
 		layoutObj.AddMember("DisabledAlpha", layoutStyle.DisabledAlpha, docAlloc);
 		layoutObj.AddMember("WindowPadding", SerializerUtils::SerializeVec(layoutStyle.WindowPadding, docAlloc), docAlloc);
 		layoutObj.AddMember("WindowRounding", layoutStyle.WindowRounding, docAlloc);
 		layoutObj.AddMember("WindowBorderSize", layoutStyle.WindowBorderSize, docAlloc);
+		layoutObj.AddMember("WindowBorderHoverPadding", layoutStyle.WindowBorderHoverPadding, docAlloc);
 		layoutObj.AddMember("WindowMinSize", SerializerUtils::SerializeVec(layoutStyle.WindowMinSize, docAlloc), docAlloc);
 		layoutObj.AddMember("WindowTitleAlign", SerializerUtils::SerializeVec(layoutStyle.WindowTitleAlign, docAlloc), docAlloc);
 		layoutObj.AddMember("WindowMenuButtonPosition", layoutStyle.WindowMenuButtonPosition, docAlloc);
@@ -58,16 +65,24 @@ void UILayout::SaveLayout(const std::string &name)
 		layoutObj.AddMember("ColumnsMinSpacing", layoutStyle.ColumnsMinSpacing, docAlloc);
 		layoutObj.AddMember("ScrollbarSize", layoutStyle.ScrollbarSize, docAlloc);
 		layoutObj.AddMember("ScrollbarRounding", layoutStyle.ScrollbarRounding, docAlloc);
+		layoutObj.AddMember("ScrollbarPadding", layoutStyle.ScrollbarPadding, docAlloc);
 		layoutObj.AddMember("GrabMinSize", layoutStyle.GrabMinSize, docAlloc);
 		layoutObj.AddMember("GrabRounding", layoutStyle.GrabRounding, docAlloc);
 		layoutObj.AddMember("LogSliderDeadzone", layoutStyle.LogSliderDeadzone, docAlloc);
+		layoutObj.AddMember("ImageBorderSize", layoutStyle.ImageBorderSize, docAlloc);
 		layoutObj.AddMember("TabRounding", layoutStyle.TabRounding, docAlloc);
 		layoutObj.AddMember("TabBorderSize", layoutStyle.TabBorderSize, docAlloc);
+		layoutObj.AddMember("TabMinWidthBase", layoutStyle.TabMinWidthBase, docAlloc);
+		layoutObj.AddMember("TabMinWidthShrink", layoutStyle.TabMinWidthShrink, docAlloc);
+		layoutObj.AddMember("TabCloseButtonMinWidthSelected", layoutStyle.TabCloseButtonMinWidthSelected, docAlloc);
 		layoutObj.AddMember("TabCloseButtonMinWidthUnselected", layoutStyle.TabCloseButtonMinWidthUnselected, docAlloc);
 		layoutObj.AddMember("TabBarBorderSize", layoutStyle.TabBarBorderSize, docAlloc);
 		layoutObj.AddMember("TabBarOverlineSize", layoutStyle.TabBarOverlineSize, docAlloc);
 		layoutObj.AddMember("TableAngledHeadersAngle", layoutStyle.TableAngledHeadersAngle, docAlloc);
 		layoutObj.AddMember("TableAngledHeadersTextAlign", SerializerUtils::SerializeVec(layoutStyle.TableAngledHeadersTextAlign, docAlloc), docAlloc);
+		layoutObj.AddMember("TreeLinesFlags", layoutStyle.TreeLinesFlags, docAlloc);
+		layoutObj.AddMember("TreeLinesSize", layoutStyle.TreeLinesSize, docAlloc);
+		layoutObj.AddMember("TreeLinesRounding", layoutStyle.TreeLinesRounding, docAlloc);
 		layoutObj.AddMember("ColorButtonPosition", layoutStyle.ColorButtonPosition, docAlloc);
 		layoutObj.AddMember("ButtonTextAlign", SerializerUtils::SerializeVec(layoutStyle.ButtonTextAlign, docAlloc), docAlloc);
 		layoutObj.AddMember("SelectableTextAlign", SerializerUtils::SerializeVec(layoutStyle.SelectableTextAlign, docAlloc), docAlloc);
@@ -95,6 +110,8 @@ void UILayout::SaveLayout(const std::string &name)
 		layoutObj.AddMember("HoverFlagsForTooltipMouse", layoutStyle.HoverFlagsForTooltipMouse, docAlloc);
 		layoutObj.AddMember("HoverFlagsForTooltipNav", layoutStyle.HoverFlagsForTooltipNav, docAlloc);
 
+		// Custom
+		layoutObj.AddMember("DefaultFont", SerializerUtils::SerializeString(defaultFontName.empty() ? "Default" : defaultFontName, docAlloc), docAlloc);
 	}
 	doc.SetObject().AddMember("Layout", layoutObj, docAlloc);
 
@@ -146,6 +163,18 @@ void UILayout::LoadLayout(const std::string &name)
 		ImGuiStyle &layoutStyle = ImGui::GetStyle();
 		std::string memberName;
 
+		memberName = "FontSizeBase";
+		if (settings.HasMember(memberName.c_str()) && settings[memberName.c_str()].IsFloat())
+			layoutStyle.FontSizeBase = settings[memberName.c_str()].GetFloat();
+
+		memberName = "FontScaleMain";
+		if (settings.HasMember(memberName.c_str()) && settings[memberName.c_str()].IsFloat())
+			layoutStyle.FontScaleMain = settings[memberName.c_str()].GetFloat();
+
+		memberName = "FontScaleDpi";
+		if (settings.HasMember(memberName.c_str()) && settings[memberName.c_str()].IsFloat())
+			layoutStyle.FontScaleDpi = settings[memberName.c_str()].GetFloat();
+
 		memberName = "Alpha";
 		if (settings.HasMember(memberName.c_str()) && settings[memberName.c_str()].IsFloat())
 			layoutStyle.Alpha = settings[memberName.c_str()].GetFloat();
@@ -165,6 +194,10 @@ void UILayout::LoadLayout(const std::string &name)
 		memberName = "WindowBorderSize";
 		if (settings.HasMember(memberName.c_str()) && settings[memberName.c_str()].IsFloat())
 			layoutStyle.WindowBorderSize = settings[memberName.c_str()].GetFloat();
+
+		memberName = "WindowBorderHoverPadding";
+		if (settings.HasMember(memberName.c_str()) && settings[memberName.c_str()].IsFloat())
+			layoutStyle.WindowBorderHoverPadding = settings[memberName.c_str()].GetFloat();
 
 		memberName = "WindowMinSize";
 		if (settings.HasMember(memberName.c_str()) && settings[memberName.c_str()].IsArray())
@@ -238,25 +271,9 @@ void UILayout::LoadLayout(const std::string &name)
 		if (settings.HasMember(memberName.c_str()) && settings[memberName.c_str()].IsFloat())
 			layoutStyle.ScrollbarRounding = settings[memberName.c_str()].GetFloat();
 
-		memberName = "GrabMinSize";
+		memberName = "ScrollbarPadding";
 		if (settings.HasMember(memberName.c_str()) && settings[memberName.c_str()].IsFloat())
-			layoutStyle.GrabMinSize = settings[memberName.c_str()].GetFloat();
-
-		memberName = "GrabRounding";
-		if (settings.HasMember(memberName.c_str()) && settings[memberName.c_str()].IsFloat())
-			layoutStyle.GrabRounding = settings[memberName.c_str()].GetFloat();
-
-		memberName = "LogSliderDeadzone";
-		if (settings.HasMember(memberName.c_str()) && settings[memberName.c_str()].IsFloat())
-			layoutStyle.LogSliderDeadzone = settings[memberName.c_str()].GetFloat();
-
-		memberName = "TabRounding";
-		if (settings.HasMember(memberName.c_str()) && settings[memberName.c_str()].IsFloat())
-			layoutStyle.TabRounding = settings[memberName.c_str()].GetFloat();
-
-		memberName = "ScrollbarRounding";
-		if (settings.HasMember(memberName.c_str()) && settings[memberName.c_str()].IsFloat())
-			layoutStyle.ScrollbarRounding = settings[memberName.c_str()].GetFloat();
+			layoutStyle.ScrollbarPadding = settings[memberName.c_str()].GetFloat();
 
 		memberName = "GrabMinSize";
 		if (settings.HasMember(memberName.c_str()) && settings[memberName.c_str()].IsFloat())
@@ -269,6 +286,10 @@ void UILayout::LoadLayout(const std::string &name)
 		memberName = "LogSliderDeadzone";
 		if (settings.HasMember(memberName.c_str()) && settings[memberName.c_str()].IsFloat())
 			layoutStyle.LogSliderDeadzone = settings[memberName.c_str()].GetFloat();
+
+		memberName = "ImageBorderSize";
+		if (settings.HasMember(memberName.c_str()) && settings[memberName.c_str()].IsFloat())
+			layoutStyle.ImageBorderSize = settings[memberName.c_str()].GetFloat();
 
 		memberName = "TabRounding";
 		if (settings.HasMember(memberName.c_str()) && settings[memberName.c_str()].IsFloat())
@@ -278,7 +299,19 @@ void UILayout::LoadLayout(const std::string &name)
 		if (settings.HasMember(memberName.c_str()) && settings[memberName.c_str()].IsFloat())
 			layoutStyle.TabBorderSize = settings[memberName.c_str()].GetFloat();
 
-		memberName = "TabCloseButtonMinWidthUnselected";//TabMinWidthForCloseButton
+		memberName = "TabMinWidthBase";
+		if (settings.HasMember(memberName.c_str()) && settings[memberName.c_str()].IsFloat())
+			layoutStyle.TabMinWidthBase = settings[memberName.c_str()].GetFloat();
+
+		memberName = "TabMinWidthShrink";
+		if (settings.HasMember(memberName.c_str()) && settings[memberName.c_str()].IsFloat())
+			layoutStyle.TabMinWidthShrink = settings[memberName.c_str()].GetFloat();
+
+		memberName = "TabCloseButtonMinWidthSelected";
+		if (settings.HasMember(memberName.c_str()) && settings[memberName.c_str()].IsFloat())
+			layoutStyle.TabCloseButtonMinWidthSelected = settings[memberName.c_str()].GetFloat();
+
+		memberName = "TabCloseButtonMinWidthUnselected";
 		if (settings.HasMember(memberName.c_str()) && settings[memberName.c_str()].IsFloat())
 			layoutStyle.TabCloseButtonMinWidthUnselected = settings[memberName.c_str()].GetFloat();
 
@@ -297,6 +330,18 @@ void UILayout::LoadLayout(const std::string &name)
 		memberName = "TableAngledHeadersTextAlign";
 		if (settings.HasMember(memberName.c_str()) && settings[memberName.c_str()].IsArray())
 			SerializerUtils::DeserializeVec(layoutStyle.TableAngledHeadersTextAlign, settings[memberName.c_str()].GetArray());
+
+		memberName = "TreeLinesFlags";
+		if (settings.HasMember(memberName.c_str()) && settings[memberName.c_str()].GetInt())
+			layoutStyle.TreeLinesFlags = (ImGuiTreeNodeFlags)settings[memberName.c_str()].GetInt();
+
+		memberName = "TreeLinesSize";
+		if (settings.HasMember(memberName.c_str()) && settings[memberName.c_str()].IsFloat())
+			layoutStyle.TreeLinesSize = settings[memberName.c_str()].GetFloat();
+
+		memberName = "TreeLinesRounding";
+		if (settings.HasMember(memberName.c_str()) && settings[memberName.c_str()].IsFloat())
+			layoutStyle.TreeLinesRounding = settings[memberName.c_str()].GetFloat();
 
 		memberName = "ColorButtonPosition";
 		if (settings.HasMember(memberName.c_str()) && settings[memberName.c_str()].IsInt())
@@ -388,6 +433,11 @@ void UILayout::LoadLayout(const std::string &name)
 		memberName = "HoverFlagsForTooltipNav";
 		if (settings.HasMember(memberName.c_str()) && settings[memberName.c_str()].IsFloat())
 			layoutStyle.HoverFlagsForTooltipNav = settings[memberName.c_str()].GetFloat();
+
+		// Custom
+		memberName = "DefaultFont";
+		if (settings.HasMember(memberName.c_str()) && settings[memberName.c_str()].IsString())
+			bool _ = ImGuiUtils::SetDefaultFont(settings[memberName.c_str()].GetString());
 	}
 
 	DebugData::Get().layoutName = name;

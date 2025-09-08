@@ -1,6 +1,7 @@
 #pragma region Includes & Usings
 #include "stdafx.h"
 #include "ImGuiUtils.h"
+#include "Debug/DebugData.h"
 
 using namespace ImGuiUtils;
 
@@ -8,10 +9,6 @@ using namespace ImGuiUtils;
 #define new			DEBUG_NEW
 #endif
 #pragma endregion
-
-#ifdef LEAK_DETECTION
-#define new			DEBUG_NEW
-#endif
 
 
 #ifdef USE_IMGUI
@@ -114,7 +111,18 @@ void ImGuiUtils::EndFont()
 {
 	ImGui::PopFont();
 }
+bool ImGuiUtils::SetDefaultFont(const std::string &name)
+{
+	ImFont *font = nullptr;
+	if (!Utils::GetFont(name, font))
+	{
+		DbgMsgF("Font '{}' not found!", name);
+		return false;
+	}
 
+	ImGui::GetIO().FontDefault = font;
+	return true;
+}
 
 #pragma region ImGuiAutoWindow
 const std::string &ImGuiAutoWindow::GetID() const
