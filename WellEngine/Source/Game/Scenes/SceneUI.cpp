@@ -645,7 +645,7 @@ bool Scene::RenderEntityHierarchyUI(Entity *root, UINT depth, const std::string 
 		}
 	}
 
-	float entityButtonPosX;
+	float entityButtonPosX = 0.0f;
 
 	// Entity selection button
 	{
@@ -764,13 +764,14 @@ bool Scene::RenderEntityHierarchyUI(Entity *root, UINT depth, const std::string 
 
 	float rightEdgeX = ImGui::GetContentRegionAvail().x;
 
+	const ImVec2 dockButtonRect = { 28, 20 };
+	const ImVec2 removeButtonRect = { 20, 20 };
+
 	// Dock/Undock button
 	{
 		ImGui::PushID(("Dock:" + std::to_string(entID)).c_str());
 
-		const ImVec2 dockButtonRect = { 30, 20 };
-
-		ImGui::SameLine(rightEdgeX - 8.0f - frameHeight - dockButtonRect.x);
+		ImGui::SameLine(rightEdgeX - 20.0f - frameHeight - removeButtonRect.x - dockButtonRect.x);
 		const std::string windowID = std::format("Ent#{}", entID);
 
 		// Check if entity is undocked
@@ -818,21 +819,41 @@ bool Scene::RenderEntityHierarchyUI(Entity *root, UINT depth, const std::string 
 
 	// Enabled checkbox
 	{
-		// Align checkbox to the right
-		ImGui::SameLine(rightEdgeX - frameHeight);
+		//ImGui::SameLine(rightEdgeX - frameHeight);
+		ImGui::SameLine(rightEdgeX - 10.0f - removeButtonRect.x - frameHeight);
 
 		bool isEnabled = root->IsEnabledSelf();
 		if (ImGui::Checkbox("##Enabled", &isEnabled))
 			root->SetEnabledSelf(isEnabled);
 	}
 
+	// Remove button
+	{
+		ImGui::SameLine(rightEdgeX - removeButtonRect.x);
+
+		ImGuiUtils::BeginButtonStyle(ImGuiUtils::StyleType::Red);
+		if (ImGui::Button("X##RemoveEnt", removeButtonRect))
+			root->Destroy();
+		ImGuiUtils::EndButtonStyle();
+	}
+
 	if (!isCollapsed)
 	{
-		const std::vector<Entity *> *children = root->GetChildren();
-		for (auto &child : *children)
+		const std::vector<Entity *> *currChildren = root->GetChildren();
+		std::vector<Ref<Entity>> tempChildrenVec;
+		tempChildrenVec.reserve(currChildren->size());
+
+		for (Entity *child : *currChildren)
+			tempChildrenVec.emplace_back(*child);
+
+		for (Ref<Entity> &childRef : tempChildrenVec)
 		{
-			if (!child)
+			Entity *child = nullptr;
+			if (!childRef.TryGet(child))
 				continue;
+
+			if (!child->IsChildOf(root, true))
+				continue; // Skip if no longer a child of this parent
 
 			if (!RenderEntityHierarchyUI(child, depth + 1))
 			{
@@ -921,11 +942,19 @@ bool Scene::RenderEntityHierarchyUI(Entity *root, UINT depth, const std::string 
 					Entity *rootParent = root->GetParent();
 
 					if (rootParent)
-						if (rootParent->IsChildOf(payloadEnt))
-							skipParenting = true;
+					{
+						skipParenting = rootParent->IsChildOf(payloadEnt);
+					}
 
 					if (!skipParenting)
+					{
 						payloadEnt->SetParent(rootParent, true);
+					}
+
+					if (rootParent)
+					{
+						rootParent->ReorderChild(payloadEnt, root);
+					}
 
 					_sceneHolder.ReorderEntity(payloadEnt, root);
 				}
@@ -936,7 +965,10 @@ bool Scene::RenderEntityHierarchyUI(Entity *root, UINT depth, const std::string 
 		ImGui::SameLine(entityButtonPosX, 0.0f);
 		ImGui::SetCursorPosY(dummyDropTargetPosY + (0.5f * dummyDropTargetHeight) - 1.0f);
 		ImGui::Separator();
+
 		ImGui::SetCursorPos(nextCursorPos);
+		ImGui::Dummy({ 0, 0 }); 
+		ImGui::SameLine(0.0f, 0.0f);
 	}
 
 	return true;

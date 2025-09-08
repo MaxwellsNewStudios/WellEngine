@@ -195,7 +195,7 @@ void Entity::ReorderBehaviour(Behaviour *behaviour, UINT newIndex)
 		newIndex--; // Account for the removal of the behaviour from its current position
 
 	auto it = _behaviours.begin() + behIndex;
-	auto beh = std::move(*it);
+	std::unique_ptr<Behaviour> beh = std::move(*it);
 
 	_behaviours.erase(it);
 	_behaviours.insert(_behaviours.begin() + newIndex, std::move(beh));
@@ -440,23 +440,17 @@ void Entity::SetParent(Entity *newParent, bool keepWorldTransform)
 
 	if (newParent == this)
 	{
-		ErrMsg("Cannot parent an entity to itself!");
+		DbgMsg("Cannot parent an entity to itself!");
 		return;
 	}
 
 	// Check if new parent is a child of this entity
 	if (newParent)
 	{
-		Entity *parentInHierarchy = newParent->GetParent();
-		while (parentInHierarchy)
+		if (newParent->IsChildOf(this))
 		{
-			if (parentInHierarchy == this)
-			{
-				ErrMsg("Cannot parent an entity to it's child! (Did you mean to unparent the child first?)");
-				return;
-			}
-
-			parentInHierarchy = parentInHierarchy->GetParent();
+			Warn("Cannot parent an entity to it's child! (Did you mean to unparent the child first?)");
+			return;
 		}
 	}
 
@@ -499,13 +493,93 @@ void Entity::GetChildrenRecursive(std::vector<Entity *> &children) const
 	for (auto &child : _children)
 		child->GetChildrenRecursive(children);
 }
-bool Entity::IsChildOf(const Entity *ent) const
+void Entity::ReorderChild(Entity *child, UINT newIndex)
+{
+	if (!child)
+		return;
+
+	if (newIndex >= _children.size())
+		return;
+
+	UINT currIndex = CONTENT_NULL;
+	for (UINT i = 0; i < _children.size(); i++)
+	{
+		if (_children[i] == child)
+		{
+			currIndex = i;
+			break;
+		}
+	}
+
+	if (currIndex == CONTENT_NULL)
+		return;
+
+	if (currIndex == newIndex)
+		return;
+
+	if (currIndex < newIndex)
+		newIndex--; // Account for the removal of the child from its current position
+
+	auto it = _children.begin() + currIndex;
+	_children.erase(it);
+	_children.insert(_children.begin() + newIndex, child);
+}
+void Entity::ReorderChild(Entity *child, Entity *after)
+{
+	if (!child)
+		return;
+
+	if (!after)
+		return;
+
+	if (child == after)
+		return;
+
+	UINT currIndex = CONTENT_NULL;
+	for (UINT i = 0; i < _children.size(); i++)
+	{
+		if (_children[i] == child)
+		{
+			currIndex = i;
+			break;
+		}
+	}
+
+	if (currIndex == CONTENT_NULL)
+		return;
+
+	UINT afterIndex = CONTENT_NULL;
+	for (UINT i = 0; i < _children.size(); i++)
+	{
+		if (_children[i] == after)
+		{
+			afterIndex = i;
+			break;
+		}
+	}
+
+	if (afterIndex == CONTENT_NULL)
+		return;
+
+	afterIndex++; // Insert one after the specified child
+
+	if (currIndex < afterIndex)
+		afterIndex--; // Account for the removal of the child from its current position
+
+	auto it = _children.begin() + currIndex;
+	_children.erase(it);
+	_children.insert(_children.begin() + afterIndex, child);
+}
+bool Entity::IsChildOf(const Entity *ent, bool immediate) const
 {
 	if (!ent)
 		return false;
 
 	if (this == ent)
 		return false;
+
+	if (immediate)
+		return _parent == ent;
 
 	Entity *parentIter = _parent;
 	while (parentIter)
@@ -518,9 +592,9 @@ bool Entity::IsChildOf(const Entity *ent) const
 
 	return false;
 }
-bool Entity::IsParentOf(const Entity *ent) const
+bool Entity::IsParentOf(const Entity *ent, bool immediate) const
 {
-	return ent->IsChildOf(this);
+	return ent->IsChildOf(this, immediate);
 }
 
 void Entity::SetScene(Scene *scene)

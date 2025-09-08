@@ -52,7 +52,7 @@
         "LogSliderDeadzone": 4.0,
         "TabRounding": 5.0,
         "TabBorderSize": 0.0,
-        "TabMinWidthForCloseButton": 0.0,
+        "TabCloseButtonMinWidthUnselected": 0.0,
         "TabBarBorderSize": 1.0,
         "TabBarOverlineSize": 1.0,
         "TableAngledHeadersAngle": 0.6108652353286743,

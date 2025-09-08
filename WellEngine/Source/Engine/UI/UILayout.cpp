@@ -63,7 +63,7 @@ void UILayout::SaveLayout(const std::string &name)
 		layoutObj.AddMember("LogSliderDeadzone", layoutStyle.LogSliderDeadzone, docAlloc);
 		layoutObj.AddMember("TabRounding", layoutStyle.TabRounding, docAlloc);
 		layoutObj.AddMember("TabBorderSize", layoutStyle.TabBorderSize, docAlloc);
-		layoutObj.AddMember("TabMinWidthForCloseButton", layoutStyle.TabMinWidthForCloseButton, docAlloc);
+		layoutObj.AddMember("TabCloseButtonMinWidthUnselected", layoutStyle.TabCloseButtonMinWidthUnselected, docAlloc);
 		layoutObj.AddMember("TabBarBorderSize", layoutStyle.TabBarBorderSize, docAlloc);
 		layoutObj.AddMember("TabBarOverlineSize", layoutStyle.TabBarOverlineSize, docAlloc);
 		layoutObj.AddMember("TableAngledHeadersAngle", layoutStyle.TableAngledHeadersAngle, docAlloc);
@@ -278,9 +278,9 @@ void UILayout::LoadLayout(const std::string &name)
 		if (settings.HasMember(memberName.c_str()) && settings[memberName.c_str()].IsFloat())
 			layoutStyle.TabBorderSize = settings[memberName.c_str()].GetFloat();
 
-		memberName = "TabMinWidthForCloseButton";
+		memberName = "TabCloseButtonMinWidthUnselected";//TabMinWidthForCloseButton
 		if (settings.HasMember(memberName.c_str()) && settings[memberName.c_str()].IsFloat())
-			layoutStyle.TabMinWidthForCloseButton = settings[memberName.c_str()].GetFloat();
+			layoutStyle.TabCloseButtonMinWidthUnselected = settings[memberName.c_str()].GetFloat();
 
 		memberName = "TabBarBorderSize";
 		if (settings.HasMember(memberName.c_str()) && settings[memberName.c_str()].IsFloat())

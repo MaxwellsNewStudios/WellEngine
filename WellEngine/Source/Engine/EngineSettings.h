@@ -10,7 +10,7 @@
 	//#define COMPILE_CONTENT
 
 	/// BAKE_TEXTURES causes textures to be baked into their post-processed form after loading.
-	#define BAKE_TEXTURES
+	//#define BAKE_TEXTURES
 
 	#ifndef BAKE_TEXTURES
 		/// USE_BAKED_TEXTURES causes the pre-baked textures to be loaded during setup instead of processing them at runtime.
@@ -29,9 +29,9 @@
 
 
 #pragma region Performance
-	constexpr auto LOD_DIST_MIN_MULT = 1.0f;
-	constexpr auto LOD_DIST_MAX_MULT = 0.7f;
-	constexpr auto LOD_DIST_DIM_SCALE_FACTOR = 0.5f;
+	constexpr auto LOD_DIST_MIN_MULT = 10.0f;
+	constexpr auto LOD_DIST_MAX_MULT = 1.0f;
+	constexpr auto LOD_DIST_DIM_SCALE_FACTOR = 0.65f;
 
 	/// PARALLEL_UPDATE enables the use of the ParallelUpdate method in entities.
 	#define PARALLEL_UPDATE
@@ -49,7 +49,7 @@
 	/// Makes meshes generate colliders using lower LODs when available, or skip it entirely.
 	/// This option exists as it drastically increases load times with compiler optimizations turned off.
 	/// 0: Use highest LOD.  1: Use middle LOD (default).  2: Use lowest LOD.  3: Raycast with bounding boxes only.
-	#define MESH_COLLISION_DETAIL_REDUCTION 1
+	#define MESH_COLLISION_DETAIL_REDUCTION 3
 
 	/// EXTRA_CULL_CHECK makes culling perform an extra intersection test between the entity's bounds and the frustum before being queued
 	#define EXTRA_CULL_CHECK
@@ -133,11 +133,13 @@ constexpr auto ASSET_PATH_PREFABS				= "Assets\\Prefabs";
 constexpr auto ASSET_PATH_MESHES				= "Assets\\Meshes";
 constexpr auto ASSET_PATH_TEXTURES				= "Assets\\Textures";
 constexpr auto ASSET_PATH_SOUNDS				= "Assets\\Sounds";
+constexpr auto ASSET_PATH_FONTS					= "Assets\\Fonts";
 constexpr auto ASSET_FILE_BINDINGS				= "Assets\\Bindings.json";
 constexpr auto ASSET_FILE_SEQUENCES				= "Assets\\Sequences.txt";
 constexpr auto ASSET_EXT_SCENE					= "scene";
 constexpr auto ASSET_EXT_SAVE					= "save";
 constexpr auto ASSET_EXT_PREFAB					= "prefab";
+constexpr auto ASSET_EXT_FONT					= "ttf";
 
 constexpr auto ASSET_REGISTRY_PATH				= "Assets\\_Registry";
 constexpr auto ASSET_REGISTRY_FILE_TEXTURES		= "Assets\\_Registry\\_textures.txt"; // TODO: Deprecated, replace with registry system

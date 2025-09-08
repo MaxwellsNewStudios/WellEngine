@@ -663,7 +663,7 @@ void Scene::GetPrefabNames(std::vector<std::string> &prefabs) const
 {
 	prefabs.clear();
 	
-	// Search for all .prefab files in PREFABS_PATH
+	// Search for all .prefab files in ASSET_PATH_PREFABS
 	for (const auto &entry : std::filesystem::directory_iterator(ASSET_PATH_PREFABS))
 	{
 		const auto &path = entry.path();

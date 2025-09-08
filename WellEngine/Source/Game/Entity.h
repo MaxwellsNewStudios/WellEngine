@@ -128,8 +128,10 @@ public:
 	[[nodiscard]] UINT GetChildCount() const;
 	[[nodiscard]] const std::vector<Entity *> *GetChildren() const;
 	void GetChildrenRecursive(std::vector<Entity *> &children) const;
-	[[nodiscard]] bool IsChildOf(const Entity *ent) const;
-	[[nodiscard]] bool IsParentOf(const Entity *ent) const;
+	void ReorderChild(Entity *child, UINT newIndex);
+	void ReorderChild(Entity *child, Entity *after);
+	[[nodiscard]] bool IsChildOf(const Entity *ent, bool immediate = false) const;
+	[[nodiscard]] bool IsParentOf(const Entity *ent, bool immediate = false) const;
 
 	void SetScene(Scene *scene);
 	// If this is called from a class with a circular dependency to Scene, you'll have to explicity include Scene.h from the caller.

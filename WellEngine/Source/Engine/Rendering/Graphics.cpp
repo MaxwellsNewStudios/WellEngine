@@ -237,6 +237,27 @@ bool Graphics::Setup(bool fullscreen, const UINT width, const UINT height, const
 	ImGui_ImplSDL3_InitForD3D(window.GetWindow());
 	ImGui_ImplDX11_Init(device, immediateContext);
 
+	// Load fonts in font folder
+	{
+		std::vector<std::pair<std::string, std::string>> fontPaths;
+
+		// Search for all .ttf files in ASSET_PATH_FONTS
+		for (const auto &entry : std::filesystem::directory_iterator(ASSET_PATH_FONTS))
+		{
+			const auto &path = entry.path();
+			std::string filename = path.filename().string();
+			std::string ext = filename.c_str() + filename.find_last_of('.') + 1;
+
+			if (ext != ASSET_EXT_FONT)
+				continue; // Skip non-font files
+
+			filename = filename.substr(0, filename.find_last_of('.'));
+			fontPaths.emplace_back(std::make_pair(filename, path.generic_string()));
+		}
+
+		//ImGui::GetIO().Fonts
+	}
+
 	ImGui::StyleColorsDark();
 
 	UILayout::LoadLayout(DebugData::Get().layoutName);

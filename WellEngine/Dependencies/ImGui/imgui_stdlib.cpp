@@ -1,6 +1,3 @@
-// This is a personal academic project. Dear PVS-Studio, please check it.
-// PVS-Studio Static Code Analyzer for C, C++, C#, and Java: https://pvs-studio.com
-
 // dear imgui: wrappers for C++ standard library (STL) types (std::string, etc.)
 // This is also an example of how you may wrap your own similar types.
 
@@ -11,6 +8,7 @@
 //   https://github.com/ocornut/imgui/wiki/Useful-Extensions#cness
 
 #include "stdafx.h"
+
 #include "imgui.h"
 #ifndef IMGUI_DISABLE
 #include "imgui_stdlib.h"
