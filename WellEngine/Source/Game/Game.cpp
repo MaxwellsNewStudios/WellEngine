@@ -953,8 +953,8 @@ bool Game::AddScene(Scene **newScene, const bool setActive)
 	{
 		if (existingScene->GetName() == scene->GetName())
 		{
-			delete scene;
 			DbgMsgF("A scene with the name '{}' already exists!", scene->GetName());
+			delete scene;
 			return false;
 		}
 	}

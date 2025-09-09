@@ -117,11 +117,8 @@ bool PointLightBehaviour::ParallelUpdate(const TimeUtils &time, const Input &inp
 {
 	if (_updateTimer <= 0)
 	{
-		if (_updateTimer == -1) // Randomize the first update timer
-			_updateTimer = std::rand() % (_updateFrequency + 1);
-		else
-			_updateTimer += _updateFrequency;
-
+		_updateTimer += (int)_updateFrequency;
+		_updateShadows = true;
 		_boundsDirty = true;
 	}
 
@@ -201,6 +198,11 @@ bool PointLightBehaviour::RenderUI()
 	if (recalculateReach && _shadowCameraCube)
 		_shadowCameraCube->SetFarZ(CalculateLightReach(_color, _falloff));
 
+	float step = 1.0f;
+	float stepFast = 5.0f;
+	if (ImGui::InputScalar("Shadow Update Frequency", ImGuiDataType_U32, &_updateFrequency, &step, &stepFast))
+		_updateFrequency = max(_updateFrequency, 1);
+
 	static bool drawBounds = false;
 	ImGui::Checkbox("Draw Bounds", &drawBounds);
 
@@ -243,6 +245,8 @@ void PointLightBehaviour::OnDisable()
 
 bool PointLightBehaviour::Serialize(json::Document::AllocatorType &docAlloc, json::Value &obj)
 {
+	obj.AddMember("Update Frequency", _updateFrequency, docAlloc);
+
 	// Save near and far plane for easy initialization
 	dx::XMFLOAT4X4 projectionMatrix = _shadowCameraCube->GetProjectionMatrix();
 	float nearPlane = projectionMatrix._43 / projectionMatrix._33;
@@ -260,6 +264,9 @@ bool PointLightBehaviour::Serialize(json::Document::AllocatorType &docAlloc, jso
 }
 bool PointLightBehaviour::Deserialize(const json::Value &obj, Scene *scene)
 {
+	if (obj.HasMember("Update Frequency"))
+		_updateFrequency = obj["Update Frequency"].GetUint();
+
 	float falloff		= obj["Falloff"].GetFloat();
 	float fogStrength	= obj["Fog Strength"].GetFloat();
 	float nearPlane		= obj["Near"].GetFloat();
@@ -274,14 +281,35 @@ bool PointLightBehaviour::Deserialize(const json::Value &obj, Scene *scene)
 	return true;
 }
 
-
-void PointLightBehaviour::SetUpdateTimer(UINT timer)
+UINT PointLightBehaviour::GetUpdateFrequency() const
+{
+	return _updateFrequency;
+}
+void PointLightBehaviour::SetUpdateFrequency(UINT frequency)
+{
+	_updateFrequency = max(1, frequency);
+}
+int PointLightBehaviour::GetUpdateTimer() const
+{
+	return _updateTimer;
+}
+void PointLightBehaviour::SetUpdateTimer(int timer)
 {
 	_updateTimer = timer;
 }
+
+void PointLightBehaviour::ForceUpdate()
+{
+	_updateShadows = true;
+	_boundsDirty = true;
+}
+void PointLightBehaviour::MarkUpdated()
+{
+	_updateShadows = false;
+}
 bool PointLightBehaviour::DoUpdate() const
 {
-	return _updateTimer <= 0;
+	return _updateShadows;
 }
 bool PointLightBehaviour::UpdateBuffers()
 {
@@ -320,6 +348,19 @@ void PointLightBehaviour::SetLightBufferData(XMFLOAT3 color, float falloff, floa
 
 	if (_shadowCameraCube)
 		_shadowCameraCube->SetFarZ(CalculateLightReach(color, falloff));
+}
+void PointLightBehaviour::SetIntensity(float intensity)
+{
+	float maxChannel = max(_color.x, max(_color.y, _color.z));
+	_color.x = (_color.x / maxChannel) * intensity;
+	_color.y = (_color.y / maxChannel) * intensity;
+	_color.z = (_color.z / maxChannel) * intensity;
+
+	if (_shadowCameraCube)
+	{
+		float reach = CalculateLightReach(_color, _falloff);
+		_shadowCameraCube->SetFarZ(reach);
+	}
 }
 
 CameraCubeBehaviour *PointLightBehaviour::GetShadowCameraCube() const

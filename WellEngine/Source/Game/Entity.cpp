@@ -49,7 +49,7 @@ Entity &Entity::operator=(Entity &&other) noexcept
 	_transformedBounds = std::move(other._transformedBounds);
 	_recalculateBounds = other._recalculateBounds;
 	_inheritedDisabled = other._inheritedDisabled;  
-	_cullingTreePaths = std::move(other._cullingTreePaths);
+	_cullingPlacement = std::move(other._cullingPlacement);
 	_showInHierarchy = other._showInHierarchy;  
 	_deserializedID = other._deserializedID;  
 	_isInitialized = other._isInitialized;  
@@ -595,6 +595,11 @@ bool Entity::IsChildOf(const Entity *ent, bool immediate) const
 bool Entity::IsParentOf(const Entity *ent, bool immediate) const
 {
 	return ent->IsChildOf(this, immediate);
+}
+
+Culling::CullingPlacement &Entity::GetCullingPlacement()
+{
+	return _cullingPlacement;
 }
 
 void Entity::SetScene(Scene *scene)

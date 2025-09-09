@@ -178,6 +178,8 @@ bool DebugPlayerBehaviour::Update(TimeUtils &time, const Input &input)
 
 	if (input.IsInFocus()) // Handle user input while window is in focus
 	{
+		ZoneScopedXNC("Window Focus Controls", RandomUniqueColor());
+
 		if (input.GetKey(KeyCode::B) == KeyState::Pressed)	// Toggle ray cast method (from cam/mouse)
 			_rayCastFromMouse = !_rayCastFromMouse;
 
@@ -188,6 +190,8 @@ bool DebugPlayerBehaviour::Update(TimeUtils &time, const Input &input)
 
 		if (_cursorPositioningTarget)
 		{
+			ZoneNamedXNC(cursorPositioningZone, "Cursor Positioning", RandomUniqueColor(), true);
+
 			Entity *positioningTargetEnt = _cursorPositioningTarget.Get();
 			Transform *positioningTargetTrans = positioningTargetEnt->GetTransform();
 
@@ -419,6 +423,8 @@ bool DebugPlayerBehaviour::Update(TimeUtils &time, const Input &input)
 		{
 			if (input.GetKey(duplicateBind.first, true) == KeyState::Pressed && acceptInput)
 			{
+				ZoneNamedXNC(performDuplicateBindZone, "Perform Duplicate Bind", RandomUniqueColor(), true);
+
 				// Copy by serializing and deserializing the entity
 				Entity *dupeEnt = sceneHolder->GetEntityByID(duplicateBind.second);
 
@@ -558,6 +564,8 @@ bool DebugPlayerBehaviour::Update(TimeUtils &time, const Input &input)
 		// Move camera
 		if (_currCameraPtr && !freezeCamera)
 		{
+			ZoneNamedXNC(moveCameraZone, "Move Camera", RandomUniqueColor(), true);
+
 			const XMFLOAT2 mPos = input.GetLocalMousePos();
 			const MouseState mState = input.GetMouse();
 			Transform *camTransform = _currCameraPtr.Get()->GetTransform();
@@ -960,7 +968,7 @@ bool DebugPlayerBehaviour::Update(TimeUtils &time, const Input &input)
 		}
 	}
 
-	for (int i = 0; i < _duplicateBinds.size(); i++)
+	/*for (int i = 0; i < _duplicateBinds.size(); i++)
 	{
 		Entity *ent = sceneHolder->GetEntityByID(_duplicateBinds[i].second);
 
@@ -1007,13 +1015,10 @@ bool DebugPlayerBehaviour::Update(TimeUtils &time, const Input &input)
 				RemoveDuplicateBind(duplicateBind.second);
 			}
 		}
-	}
+	}*/
 
 	if (!_currSelection.empty())
 	{
-		//if (input.GetKey(KeyCode::N) == KeyState::Pressed)
-		//	DebugData::Get().transformRelative = !DebugData::Get().transformRelative;
-
 		if (input.GetKey(KeyCode::M) == KeyState::Pressed)
 			DebugData::Get().transformSpace = (DebugData::Get().transformSpace == (int)World) ? (int)Local : (int)World;
 	}
@@ -1059,6 +1064,8 @@ bool DebugPlayerBehaviour::Update(TimeUtils &time, const Input &input)
 
 bool DebugPlayerBehaviour::UpdateGlobalEntities(TimeUtils &time, const Input &input)
 {
+	ZoneScopedXC(RandomUniqueColor());
+
 	std::vector<std::unique_ptr<Entity>> *globalEntities = GetScene()->GetGlobalEntities();
 
 	Entity *pointer = nullptr;

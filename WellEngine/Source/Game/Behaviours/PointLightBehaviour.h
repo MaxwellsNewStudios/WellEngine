@@ -27,8 +27,9 @@ private:
 	float _falloff = 1.0f;
 	float _fogStrength = 1.0f;
 
-	UINT _updateFrequency = 2;
-	int _updateTimer = -1;
+	bool _updateShadows = true;
+	UINT _updateFrequency = 3;
+	int _updateTimer = 0;
 
 	CameraCubeBehaviour *_shadowCameraCube = nullptr;
 	PointLightBufferData _lastLightBufferData = {};
@@ -51,8 +52,10 @@ protected:
 #endif
 
 	void OnEnable() override;
-
 	void OnDisable() override;
+
+	[[nodiscard]] bool Serialize(json::Document::AllocatorType &docAlloc, json::Value &obj) override;
+	[[nodiscard]] bool Deserialize(const json::Value &obj, Scene *scene) override;
 
 
 public:
@@ -61,20 +64,21 @@ public:
 	PointLightBehaviour(CameraPlanes planes, dx::XMFLOAT3 color, float falloff, float fogStrength, UINT updateFrequency = 3);
 	~PointLightBehaviour();
 
-	void SetUpdateTimer(UINT timer);
+	[[nodiscard]] UINT GetUpdateFrequency() const;
+	void SetUpdateFrequency(UINT frequency);
+	[[nodiscard]] int GetUpdateTimer() const;
+	void SetUpdateTimer(int timer);
+
+	void ForceUpdate();
+	void MarkUpdated();
 	[[nodiscard]] bool DoUpdate() const;
 	[[nodiscard]] bool UpdateBuffers();
 
 	[[nodiscard]] PointLightBufferData GetLightBufferData();
 	void SetLightBufferData(dx::XMFLOAT3 color, float falloff, float fogStrength);
+	void SetIntensity(float intensity);
 
 	[[nodiscard]] CameraCubeBehaviour *GetShadowCameraCube() const;
-
-	// Serializes the behaviour to a string.
-	[[nodiscard]] bool Serialize(json::Document::AllocatorType &docAlloc, json::Value &obj) override;
-
-	// Deserializes the behaviour from a string.
-	[[nodiscard]] bool Deserialize(const json::Value &obj, Scene *scene) override;
 
 	[[nodiscard]] bool ContainsPoint(const dx::XMFLOAT3A &point);
 	[[nodiscard]] bool IntersectsLightTile(const dx::BoundingFrustum &tile);

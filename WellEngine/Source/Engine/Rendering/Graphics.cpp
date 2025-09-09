@@ -255,14 +255,6 @@ bool Graphics::Setup(bool fullscreen, const UINT width, const UINT height, const
 			fontPaths.emplace_back(std::make_pair(filename, path.generic_string()));
 		}
 
-		/*// Load first font
-		ImFont *defaultFont = io.Fonts->AddFontDefault();
-		if (!ImGuiUtils::Utils::AddFont("Default", defaultFont))
-		{
-			DbgMsg("Unknown Problem loading default font");
-		}
-		ImGui::SetCurrentFont(defaultFont, defaultFont->LegacySize, defaultFont->LegacySize);*/
-
 		for (const auto &[name, path] : fontPaths)
 		{
 			ImGuiIO &io = ImGui::GetIO();
@@ -1451,6 +1443,9 @@ bool Graphics::RenderSpotlights()
 		return false;
 	}
 
+	if (!collection->DoUpdate())
+		return true;
+
 	// Used to compare if the mesh uses the distortion shader
 	const UINT vsNoDistID = _content->GetShaderID("VS_Geometry");
 
@@ -1487,6 +1482,7 @@ bool Graphics::RenderSpotlights()
 		// Shadows don't need to update every frame
 		if (!lightBehaviour->DoUpdate())
 			continue;
+		lightBehaviour->MarkUpdated();
 
 		auto camPos = Load(lightBehaviour->GetTransform()->GetPosition(World));
 		auto camDir = Load(lightBehaviour->GetTransform()->GetForward(World));
@@ -1641,6 +1637,9 @@ bool Graphics::RenderPointlights()
 		return false;
 	}
 
+	if (!collection->DoUpdate())
+		return true;
+
 	// Used to compare if the mesh uses the distortion shader
 	const UINT vsNoDistID = _content->GetShaderID("VS_Geometry");
 
@@ -1690,6 +1689,7 @@ bool Graphics::RenderPointlights()
 		// Shadows don't need to update every frame
 		if (!lightBehaviour->DoUpdate())
 			continue;
+		lightBehaviour->MarkUpdated();
 
 		auto camPos = Load(lightBehaviour->GetTransform()->GetPosition(World));
 		auto camDir = Load(lightBehaviour->GetTransform()->GetForward(World));

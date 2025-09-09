@@ -17,7 +17,7 @@
         },
         "Graphics": {
             "Spotlight Resolution": 256,
-            "Pointlight Resolution": 1024,
+            "Pointlight Resolution": 512,
             "Cubemap": "SandstoneCove",
             "Skybox": "PS_SkyboxEnvironment",
             "Ambient": [
@@ -29,7 +29,7 @@
                 "Thickness": 0.75,
                 "Step Size": 0.0,
                 "Min Steps": 0,
-                "Max Steps": 128
+                "Max Steps": 96
             },
             "Emission": {
                 "Strength": 1.0,
@@ -1362,11 +1362,11 @@
         },
         {
             "Name": "Bounce Light",
-            "ID": 31,
+            "ID": 29,
             "Enabled": true,
             "Pos": [
                 1.0727123022079468,
-                2.968329429626465,
+                3.0481061935424805,
                 0.23989759385585785
             ],
             "Rot": [
@@ -1386,6 +1386,7 @@
                 {
                     "Name": "PointLightBehaviour",
                     "Attributes": {
+                        "Update Frequency": 10,
                         "Falloff": 0.20000000298023224,
                         "Fog Strength": 1.0,
                         "Near": -0.10000000149011612,
@@ -1401,7 +1402,7 @@
         },
         {
             "Name": "Main Light",
-            "ID": 33,
+            "ID": 31,
             "Enabled": true,
             "Pos": [
                 0.7938201427459717,
@@ -1425,6 +1426,7 @@
                 {
                     "Name": "PointLightBehaviour",
                     "Attributes": {
+                        "Update Frequency": 10,
                         "Falloff": 0.17499999701976776,
                         "Fog Strength": 1.0,
                         "Near": -0.10000000149011612,
@@ -1440,7 +1442,7 @@
         },
         {
             "Name": "Bounce Light",
-            "ID": 35,
+            "ID": 33,
             "Enabled": true,
             "Pos": [
                 -5.575446605682373,
@@ -1477,7 +1479,7 @@
         },
         {
             "Name": "Bounce Light",
-            "ID": 37,
+            "ID": 35,
             "Enabled": true,
             "Pos": [
                 -5.539491653442383,
@@ -1501,6 +1503,7 @@
                 {
                     "Name": "PointLightBehaviour",
                     "Attributes": {
+                        "Update Frequency": 3,
                         "Falloff": 22.889999389648438,
                         "Fog Strength": 0.30000001192092896,
                         "Near": -0.10000000149011612,
@@ -1516,17 +1519,17 @@
         },
         {
             "Name": "Bounce Light",
-            "ID": 39,
+            "ID": 37,
             "Enabled": true,
             "Pos": [
                 6.500007629394531,
-                1.46441650390625,
+                1.4042038917541504,
                 2.391225576400757
             ],
             "Rot": [
                 -0.0,
                 0.0,
-                0.0
+                -0.0
             ],
             "Scale": [
                 1.0,
@@ -1540,6 +1543,7 @@
                 {
                     "Name": "PointLightBehaviour",
                     "Attributes": {
+                        "Update Frequency": 15,
                         "Falloff": 19.06999969482422,
                         "Fog Strength": 7.300000190734863,
                         "Near": -0.10000000149011612,
@@ -1555,7 +1559,7 @@
         },
         {
             "Name": "Bounce Light",
-            "ID": 41,
+            "ID": 39,
             "Enabled": true,
             "Pos": [
                 6.503631591796875,
@@ -1592,7 +1596,7 @@
         },
         {
             "Name": "Bounce Light",
-            "ID": 43,
+            "ID": 41,
             "Enabled": true,
             "Pos": [
                 5.206963062286377,
@@ -1616,6 +1620,7 @@
                 {
                     "Name": "SpotLightBehaviour",
                     "Attributes": {
+                        "Update Frequency": 7,
                         "Falloff": 1.2999999523162842,
                         "Fog Strength": 2.5,
                         "Color": [
@@ -1635,7 +1640,7 @@
         },
         {
             "Name": "Bounce Light",
-            "ID": 45,
+            "ID": 43,
             "Enabled": true,
             "Pos": [
                 -1.2384662628173828,
@@ -1645,7 +1650,7 @@
             "Rot": [
                 -0.0,
                 0.0,
-                -0.0
+                0.0
             ],
             "Scale": [
                 1.0,
@@ -1672,7 +1677,7 @@
         },
         {
             "Name": "Bounce Light",
-            "ID": 47,
+            "ID": 45,
             "Enabled": true,
             "Pos": [
                 5.791810512542725,
@@ -1696,6 +1701,7 @@
                 {
                     "Name": "SimpleSpotLightBehaviour",
                     "Attributes": {
+                        "Ortho": false,
                         "Falloff": 0.4000000059604645,
                         "Fog Strength": 10.0,
                         "Angle": 0.05235987901687622,
@@ -1710,7 +1716,7 @@
         },
         {
             "Name": "Bounce Light",
-            "ID": 52,
+            "ID": 47,
             "Enabled": true,
             "Pos": [
                 2.5222043991088867,
@@ -1720,7 +1726,7 @@
             "Rot": [
                 -0.0,
                 0.0,
-                -0.0
+                0.0
             ],
             "Scale": [
                 1.0,

@@ -4,11 +4,10 @@
 #include <utility>
 #include <vector>
 #include <DirectXCollision.h>
-#include "NodePath.h"
+#include "CullingPlacement.h"
 #include "Entity.h"
 #include "Behaviour.h"
 #include "Collision/Raycast.h"
-#include "Behaviours/MeshBehaviour.h"
 
 #ifdef LEAK_DETECTION
 #define new			DEBUG_NEW
@@ -63,19 +62,43 @@ private:
 
 			for (int i = 0; i < data.size(); i++)
 			{
-				if (data[i] != nullptr)
+				Entity *item = data[i];
+				if (item != nullptr)
 				{
 					bool hasBounds = false;
 					dx::BoundingOrientedBox itemBounds;
-					if (!data[i]->HasBounds(false, itemBounds))
+					if (!item->HasBounds(false, itemBounds))
 					{
-						dx::XMFLOAT3A pos = data[i]->GetTransform()->GetPosition();
+						dx::XMFLOAT3A pos = item->GetTransform()->GetPosition();
 						itemBounds.Center = { pos.x, pos.y, pos.z };
 						itemBounds.Extents = { 0.1f, 0.1f, 0.1f };
 					}
 
+					uint8_t lastChildInsertedInto;
+					UINT totalChildrenInserts = 0;
+
 					for (int j = 0; j < CHILD_COUNT; j++)
-						children[j]->Insert(data[i], itemBounds, depth + 1);
+					{
+						bool inserted = children[j]->Insert(item, itemBounds, nullptr, depth + 1);
+
+						if (inserted)
+						{
+							totalChildrenInserts++;
+							lastChildInsertedInto = (uint8_t)j;
+						}
+					}
+
+					// Update the item's culling placement, only if the following criteria are met:
+					// - The current path reaches this depth.
+					// - It was only inserted into one child.
+					if (totalChildrenInserts == 1)
+					{
+						auto &itemPath = item->GetCullingPlacement().quadTreePath;
+						if (itemPath.steps.size() == depth)
+						{
+							itemPath.steps.emplace_back(lastChildInsertedInto);
+						}
+					}
 				}
 			}
 
@@ -85,7 +108,7 @@ private:
 			isDirty = true;
 		}
 
-		bool Insert(Entity *item, const dx::BoundingOrientedBox &itemBounds, const UINT depth = 0)
+		UINT Insert(Entity *item, const dx::BoundingOrientedBox &itemBounds, Culling::TreePath *path, const UINT depth = 0)
 		{
 			ZoneScopedXC(RandomUniqueColor());
 
@@ -106,53 +129,97 @@ private:
 				Split(depth);
 			}
 
-			for (int i = 0; i < CHILD_COUNT; i++)
+			uint8_t lastChildInsertedInto;
+			UINT totalChildrenInserts = 0;
+
+			for (UINT i = 0; i < CHILD_COUNT; i++)
 			{
-				if (children[i])
-					children[i]->Insert(item, itemBounds, depth + 1);
+				auto &child = children[i];
+				if (!child)
+					continue;
+				
+				bool inserted = child->Insert(item, itemBounds, path, depth + 1);
+
+				if (inserted)
+				{
+					totalChildrenInserts++;
+					lastChildInsertedInto = (uint8_t)i;
+				}
 			}
 
-			return true;
+			if (path)
+			{
+				if (totalChildrenInserts == 1)
+				{
+					path->steps.insert(path->steps.begin(), lastChildInsertedInto);
+				}
+				else if (totalChildrenInserts > 1)
+				{
+					// If the item was inserted into multiple children, we can't determine a single path.
+					// Clear the path to indicate this. The parent node will start a new path with this as the tip.
+					path->steps.clear();
+				}
+			}
+
+			return totalChildrenInserts > 0;
 		}
 
-		void Remove(Entity *item, const dx::BoundingOrientedBox &itemBounds, const UINT depth = 0, const bool skipIntersection = false)
+		void Remove(Entity *item, const Culling::TreePath &path, const UINT depth = 0)
 		{
 			ZoneScopedXC(RandomUniqueColor());
 
-			if (!skipIntersection)
-				if (!bounds.Intersects(itemBounds))
-					return;
-
-			if (isLeaf)
+			if (isLeaf) // End of the path, check for entity here
 			{
-				size_t num = std::erase_if(data, [item](const Entity *otherItem) { return item == otherItem; });
+				size_t num = std::erase_if(data, [item](const Entity *otherItem) { 
+					return item == otherItem; 
+				});
 
 				if (num > 0)
 					isDirty = true;
 
 				return;
 			}
-
-			isDirty = true;
-
-			for (int i = 0; i < CHILD_COUNT; i++)
+			else if (depth >= path.steps.size()) // Look for entity in all children
 			{
-				if (children[i])
-					children[i]->Remove(item, itemBounds, depth + 1, skipIntersection);
+				for (int i = 0; i < CHILD_COUNT; i++)
+				{
+					auto &child = children[i];
+					if (child)
+					{
+						child->Remove(item, path, depth + 1);
+						isDirty |= child->isDirty;
+					}
+				}
+			}
+			else // Follow the path only, ignore other children
+			{
+				uint8_t step = path.steps[depth];
+				if (step >= CHILD_COUNT)
+					return;
+
+				auto &child = children[step];
+				if (!child)
+					return;
+
+				child->Remove(item, path, depth + 1);
+				isDirty |= child->isDirty;
 			}
 
 			std::vector<Entity *> containingItems;
 			containingItems.reserve(_maxItemsInNode);
 
 			for (int i = 0; i < CHILD_COUNT; i++)
-				if (children[i])
+			{
+				auto &child = children[i];
+
+				if (child)
 				{
-					if (!children[i]->isLeaf)
+					if (!child->isLeaf)
 						return;
 
-					if (!children[i]->data.empty())
+					if (!child->data.empty())
 					{
-						for (Entity *childItem : children[i]->data)
+						for (Entity *childItem : child->data)
 						{
 							if (!childItem)
 								continue;
@@ -167,9 +234,12 @@ private:
 						}
 					}
 				}
+			}
 
 			for (int i = 0; i < CHILD_COUNT; i++)
+			{
 				children[i] = nullptr;
+			}
 
 			isLeaf = true;
 			data.clear();
@@ -584,8 +654,11 @@ public:
 
 		data->UpdateCullingBounds();
 
+		auto &treePath = data->GetCullingPlacement().quadTreePath;
+		treePath.steps.clear();
+
 		if (_root != nullptr)
-			_root->Insert(data, bounds);
+			_root->Insert(data, bounds, &treePath);
 	}
 
 	[[nodiscard]] bool Remove(Entity *data, bool skipIntersectionTests = false) const
@@ -601,7 +674,12 @@ public:
 		if (_root == nullptr)
 			return false;
 
-		_root->Remove(data, data->GetLastCullingBounds(), 0, skipIntersectionTests); // TODO: Is this enough?
+		Culling::CullingPlacement &placement = data->GetCullingPlacement();
+
+		_root->Remove(data, placement.quadTreePath, 0);
+
+		placement.quadTreePath.steps.clear();
+
 		return true;
 	}
 

@@ -488,7 +488,9 @@ template<typename T>
 
 [[nodiscard]] static inline float RandomFloat(float min, float max)
 {
-	return min + static_cast<float>(rand()) / (static_cast<float>(RAND_MAX / (max - min)));
+	float rnd = min + static_cast<float>(rand());
+	float maxVal = static_cast<float>((float)RAND_MAX / (max - min));
+	return rnd / maxVal;
 };
 
 [[nodiscard]] static inline dx::BoundingBox OBBtoAABB(const dx::BoundingOrientedBox &obb) noexcept

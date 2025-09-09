@@ -127,11 +127,12 @@ bool SpotLightBehaviour::ParallelUpdate(const TimeUtils &time, const Input &inpu
 {
 	if (_updateTimer <= 0)
 	{
-		_updateTimer += _updateFrequency;
+		_updateTimer += (int)_updateFrequency;
+		_updateShadows = true;
 		_boundsDirty = true;
 	}
-	_updateTimer--;
 
+	_updateTimer--;
 	return true;
 }
 
@@ -231,6 +232,11 @@ bool SpotLightBehaviour::RenderUI()
 		_shadowCamera->SetPlanes(planes);
 	}
 
+	float step = 1.0f;
+	float stepFast = 5.0f;
+	if (ImGui::InputScalar("Shadow Update Frequency", ImGuiDataType_U32, &_updateFrequency, &step, &stepFast))
+		_updateFrequency = max(_updateFrequency, 1);
+
 	ImGui::Separator();
 	ImGui::Text("Light Reach: %.3f units", CalculateLightReach(_color, _falloff));
 
@@ -248,8 +254,6 @@ void SpotLightBehaviour::OnEnable()
 			ErrMsg("Failed to register spotlight!");
 		}
 	}
-
-	_updateTimer = 1;
 }
 void SpotLightBehaviour::OnDisable()
 {
@@ -265,6 +269,8 @@ void SpotLightBehaviour::OnDisable()
 
 bool SpotLightBehaviour::Serialize(json::Document::AllocatorType &docAlloc, json::Value &obj)
 {
+	obj.AddMember("Update Frequency", _updateFrequency, docAlloc);
+
 	dx::XMFLOAT4X4 projectionMatrix = _shadowCamera->GetProjectionMatrix();
 	float fovAngleY = 2.0f * std::atan(1.0f / projectionMatrix._22);
 	float aspectRatio = projectionMatrix._22 / projectionMatrix._11;
@@ -291,6 +297,9 @@ bool SpotLightBehaviour::Serialize(json::Document::AllocatorType &docAlloc, json
 }
 bool SpotLightBehaviour::Deserialize(const json::Value &obj, Scene *scene)
 {
+	if (obj.HasMember("Update Frequency"))
+		_updateFrequency = obj["Update Frequency"].GetUint();
+
 	float falloff		= obj["Falloff"].GetFloat();
 	float fogStrength	= obj["Fog Strength"].GetFloat();
 
@@ -309,14 +318,35 @@ bool SpotLightBehaviour::Deserialize(const json::Value &obj, Scene *scene)
 	return true;
 }
 
-
-void SpotLightBehaviour::SetUpdateTimer(UINT timer)
+UINT SpotLightBehaviour::GetUpdateFrequency() const
+{
+	return _updateFrequency;
+}
+void SpotLightBehaviour::SetUpdateFrequency(UINT frequency)
+{
+	_updateFrequency = max(1, frequency);
+}
+int SpotLightBehaviour::GetUpdateTimer() const
+{
+	return _updateTimer;
+}
+void SpotLightBehaviour::SetUpdateTimer(int timer)
 {
 	_updateTimer = timer;
 }
+
+void SpotLightBehaviour::ForceUpdate()
+{
+	_updateShadows = true;
+	_boundsDirty = true;
+}
+void SpotLightBehaviour::MarkUpdated()
+{
+	_updateShadows = false;
+}
 bool SpotLightBehaviour::DoUpdate() const
 {
-	return _updateTimer <= 0;
+	return _updateShadows;
 }
 bool SpotLightBehaviour::UpdateBuffers()
 {

@@ -62,6 +62,8 @@ public:
 	[[nodiscard]] UINT GetShadowResolution() const;
 	void SetShadowResolution(UINT resolution);
 
+	[[nodiscard]] bool DoUpdate() const;
+
 	[[nodiscard]] bool GetLightEnabled(UINT lightIndex) const;
 	[[nodiscard]] bool GetSimpleLightEnabled(UINT lightIndex) const;
 	void SetLightEnabled(UINT lightIndex, bool state);

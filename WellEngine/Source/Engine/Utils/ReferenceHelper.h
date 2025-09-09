@@ -111,7 +111,9 @@ public:
 #endif
 		for (Ref<T> *ref : _refs)
 		{
-			ZoneNamedXNC(dereferenceRefZone, "Dereference Ref", RandomUniqueColor(), true);
+#ifdef TRACY_REFS
+			ZoneNamedNC(dereferenceRefZone, "Dereference Ref", RandomUniqueColor(), true);
+#endif
 
 			if (!ref)
 				continue;

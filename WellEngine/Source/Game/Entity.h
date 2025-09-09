@@ -5,7 +5,7 @@
 #include "Input/Input.h"
 #include "Rendering/Graphics.h"
 #include "Behaviour.h"
-#include "Rendering/Culling/NodePath.h"
+#include "Rendering/Culling/CullingPlacement.h"
 #include "Rendering/RenderQueuer.h"
 #include "Collision/Colliders.h"
 
@@ -54,19 +54,19 @@ protected:
 	std::vector<Entity *> _children;
 	std::vector<std::unique_ptr<Behaviour>> _behaviours;
 
-	// Tracks all paths in the culling tree this entity is currently placed in 
-	std::vector<TreePath> _cullingTreePaths;
+	Culling::CullingPlacement _cullingPlacement;
 
 	inline void AddChild(Entity *child, bool keepWorldTransform = false);
 	inline void RemoveChild(Entity *child, bool keepWorldTransform = false);
+
+	Entity(Entity &&other) noexcept; // Move constructor, internal use only, DO NOT USE
+	Entity &operator=(Entity &&other) noexcept; // Move assignment operator, internal use only, DO NOT USE
 
 public:
 	Entity(UINT id, const dx::BoundingOrientedBox &bounds) : _entityID(id), _bounds(bounds) {}
 	virtual ~Entity();
 	Entity(const Entity &other) = delete;
 	Entity &operator=(const Entity &other) = delete;
-	Entity(Entity &&other) noexcept; // Move constructor, internal use only, DO NOT USE
-	Entity &operator=(Entity &&other) noexcept; // Move assignment operator, internal use only, DO NOT USE
 
 	[[nodiscard]] bool Initialize(ID3D11Device *device, Scene *scene, const std::string &name);
 	[[nodiscard]] bool IsInitialized() const;
@@ -132,6 +132,8 @@ public:
 	void ReorderChild(Entity *child, Entity *after);
 	[[nodiscard]] bool IsChildOf(const Entity *ent, bool immediate = false) const;
 	[[nodiscard]] bool IsParentOf(const Entity *ent, bool immediate = false) const;
+
+	[[nodiscard]] Culling::CullingPlacement &GetCullingPlacement();
 
 	void SetScene(Scene *scene);
 	// If this is called from a class with a circular dependency to Scene, you'll have to explicity include Scene.h from the caller.

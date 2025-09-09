@@ -62,13 +62,13 @@
 	//#undef TRACY_ENABLE
 	#ifdef TRACY_ENABLE
 		/// TRACY_GPU activates gpu zones.
-		//#define TRACY_GPU
+		#define TRACY_GPU
 
 		/// TRACY_DETAILED activates more, less important zones.
 		//#define TRACY_DETAILED
 
 		/// TRACY_MEMORY enables tracking memeory allocation with Tracy.
-		//#define TRACY_MEMORY
+		#define TRACY_MEMORY
 
 		/// TRACY_REFS Enables tracking of the Ref<T> interface.
 		//#define TRACY_REFS
@@ -115,7 +115,7 @@
 			#define USE_IMGUI_VIEWPORTS
 
 			/// USE_IMGUI enables the use of ImGuizmo.
-			/// Transformation is currently broken, but I believe it originates from ImGuizmo itself.
+			/// Scaling is currently broken, avoid using anything other than bounds scaling.
 			#define USE_IMGUIZMO
 		#endif
 	#endif
@@ -185,7 +185,7 @@ constexpr auto ASSETS_EDITOR_PATH_LAYOUTS		= "Assets\\Editor\\Layouts";
 	constexpr unsigned int MAX_LIGHTS = 7u;
 
 	/// Resolution of the light tile grid. Total amount of light tiles is LIGHT_GRID_RES^2.
-	constexpr unsigned int LIGHT_GRID_RES = 12u;
+	constexpr unsigned int LIGHT_GRID_RES = 8u;
 #pragma endregion
 
 

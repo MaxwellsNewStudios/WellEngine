@@ -29,8 +29,9 @@ private:
 	float _fogStrength = 1.0f;
 	bool _ortho = false;
 
+	bool _updateShadows = true;
 	UINT _updateFrequency = 2;
-	int _updateTimer = 1;
+	int _updateTimer = 0;
 
 	CameraBehaviour *_shadowCamera = nullptr;
 	SpotLightBufferData _lastLightBufferData = { };
@@ -53,7 +54,9 @@ protected:
 
 	void OnEnable() override;
 	void OnDisable() override;
-
+	
+	[[nodiscard]] bool Serialize(json::Document::AllocatorType &docAlloc, json::Value &obj) override;
+	[[nodiscard]] bool Deserialize(const json::Value &obj, Scene *scene) override;
 
 public:
 	SpotLightBehaviour() = default;
@@ -61,7 +64,13 @@ public:
 	SpotLightBehaviour(ProjectionInfo projInfo, dx::XMFLOAT3 color, float falloff, float fogStrength, bool isOrtho = false, UINT updateFrequency = 2);
 	~SpotLightBehaviour();
 
-	void SetUpdateTimer(UINT timer);
+	[[nodiscard]] UINT GetUpdateFrequency() const;
+	void SetUpdateFrequency(UINT frequency);
+	[[nodiscard]] int GetUpdateTimer() const;
+	void SetUpdateTimer(int timer);
+
+	void ForceUpdate();
+	void MarkUpdated();
 	[[nodiscard]] bool DoUpdate() const;
 	[[nodiscard]] bool UpdateBuffers();
 
@@ -70,11 +79,7 @@ public:
 	void SetIntensity(float intensity);
 
 	[[nodiscard]] CameraBehaviour *GetShadowCamera() const;
-	
-	[[nodiscard]] bool Serialize(json::Document::AllocatorType &docAlloc, json::Value &obj) override;
-	[[nodiscard]] bool Deserialize(const json::Value &obj, Scene *scene) override;
 
-	
 	[[nodiscard]] bool ContainsPoint(const dx::XMFLOAT3A &point);
 	[[nodiscard]] bool IntersectsLightTile(const dx::BoundingFrustum &tile);
 	[[nodiscard]] bool IntersectsLightTile(const dx::BoundingOrientedBox &tile);

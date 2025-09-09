@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "Rendering/Lighting/SpotLightCollection.h"
+#include "Entity.h"
 
 #ifdef LEAK_DETECTION
 #define new			DEBUG_NEW
@@ -94,7 +95,7 @@ bool SpotLightCollection::UpdateBuffers(ID3D11Device *device, ID3D11DeviceContex
 		SpotLightBehaviour *lightBehaviour = _lights[i].lightBehaviour;
 
 		if (hasResized)
-			lightBehaviour->SetUpdateTimer(0);
+			lightBehaviour->ForceUpdate();
 		else if (!lightBehaviour->DoUpdate())
 			continue;
 
@@ -272,6 +273,16 @@ void SpotLightCollection::SetShadowResolution(UINT resolution)
 	_isDirty = true; // Mark as dirty to recreate buffers
 }
 
+bool SpotLightCollection::DoUpdate() const
+{
+	for (const SpotLightData &lightData : _lights)
+	{
+		if (lightData.lightBehaviour->DoUpdate())
+			return true;
+	}
+	return false;
+}
+
 bool SpotLightCollection::GetLightEnabled(UINT lightIndex) const
 {
 	if (lightIndex < 0)
@@ -328,6 +339,12 @@ bool SpotLightCollection::RegisterLight(SpotLightBehaviour *light)
 	}
 
 	_lights.emplace_back(light, true);
+
+	static int nextOffset = -1;
+	nextOffset++;
+
+	light->SetUpdateTimer(nextOffset % (int)(light->GetUpdateFrequency() + 1));
+	light->ForceUpdate();
 
 	_isDirty = true;
 	return true;
