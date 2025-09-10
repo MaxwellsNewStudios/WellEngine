@@ -6,7 +6,7 @@
 #define new			DEBUG_NEW
 #endif
 
-Behaviour *BehaviourFactory::CreateBehaviour(std::string_view name)
+Behaviour *BehaviourFactory::CreateBehaviour(const std::string &name)
 {
 	auto &map = BehaviourRegistry::Get();
 

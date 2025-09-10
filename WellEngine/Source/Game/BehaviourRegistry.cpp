@@ -50,9 +50,9 @@
 #endif
 #pragma endregion
 
-const std::map<std::string_view, std::function<Behaviour *(void)>> &BehaviourRegistry::Get()
+const std::map<std::string, std::function<Behaviour *(void)>> &BehaviourRegistry::Get()
 {
-    static const std::map<std::string_view, std::function<Behaviour *(void)>> behaviourMap = {
+    static const std::map<std::string, std::function<Behaviour *(void)>> behaviourMap = {
 		{ "DebugPlayerBehaviour",      []() { return new DebugPlayerBehaviour(); }      },
 		{ "ExampleBehaviour",          []() { return new ExampleBehaviour(); }          },
 		{ "EndCutSceneBehaviour",      []() { return new EndCutSceneBehaviour(); }      },
@@ -103,9 +103,9 @@ const std::map<std::string_view, std::function<Behaviour *(void)>> &BehaviourReg
 };
 
 #ifdef DEBUG_BUILD
-const std::map<std::string_view, std::string> &BehaviourRegistry::GetCategories()
+const std::map<std::string, std::string> &BehaviourRegistry::GetCategories()
 {
-    static const std::map<std::string_view, std::string> behaviourCategoryMap = {
+    static const std::map<std::string, std::string> behaviourCategoryMap = {
 		{ "DebugPlayerBehaviour",      "Debug/"              },
 		{ "ExampleBehaviour",          "Debug/"              },
 		{ "EndCutSceneBehaviour",      "Events/"             },

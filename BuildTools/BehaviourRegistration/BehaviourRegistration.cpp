@@ -27,9 +27,9 @@ const std::string RegistryTemplate = "\
 #endif\n\
 #pragma endregion\n\
 \n\
-const std::map<std::string_view, std::function<Behaviour *(void)>> &BehaviourRegistry::Get()\n\
+const std::map<std::string, std::function<Behaviour *(void)>> &BehaviourRegistry::Get()\n\
 {\n\
-    static const std::map<std::string_view, std::function<Behaviour *(void)>> behaviourMap = {\n\
+    static const std::map<std::string, std::function<Behaviour *(void)>> behaviourMap = {\n\
 " + RegisterTag + "\n\
     };\n\
 \n\
@@ -37,9 +37,9 @@ const std::map<std::string_view, std::function<Behaviour *(void)>> &BehaviourReg
 };\n\
 \n\
 #ifdef DEBUG_BUILD\n\
-const std::map<std::string_view, std::string> &BehaviourRegistry::GetCategories()\n\
+const std::map<std::string, std::string> &BehaviourRegistry::GetCategories()\n\
 {\n\
-    static const std::map<std::string_view, std::string> behaviourCategoryMap = {\n\
+    static const std::map<std::string, std::string> behaviourCategoryMap = {\n\
 " + CategoryTag + "\n\
     };\n\
 \n\

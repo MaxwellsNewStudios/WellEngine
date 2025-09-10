@@ -3,7 +3,8 @@
         "Name": "Maxwell [labrat]",
         "Entity": {
             "Name": "Maxwell [labrat]",
-            "ID": 2361,
+            "ID": 2281,
+            "Enabled": true,
             "Pos": [
                 0.0,
                 0.0,
@@ -28,9 +29,22 @@
                     "Attributes": {
                         "Mesh": "Maxwell",
                         "Transparent": false,
-                        "Alpha Cutoff": 0.5,
+                        "Shadow Caster": true,
+                        "Shadows Only": false,
+                        "Base Color": [
+                            1.0,
+                            1.0,
+                            1.0,
+                            1.0
+                        ],
+                        "Alpha Cutoff": 0.0,
+                        "Normal Factor": 1.0,
                         "Specular Factor": 1.0,
-                        "Tex": "Red",
+                        "Glossiness Factor": 1.0,
+                        "Occlusion Factor": 0.8500000238418579,
+                        "Reflectivity": 0.10000000149011612,
+                        "Metallic": 0.0,
+                        "Tex": "Maxwell",
                         "Ambient": "AmbientBright"
                     }
                 },

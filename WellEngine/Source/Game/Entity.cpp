@@ -1331,11 +1331,11 @@ bool Entity::InitialRenderUI()
 			auto &behaviourMap = BehaviourRegistry::Get();
 
 			// Get vector of behaviour names from map
-			std::vector<std::string_view> behaviourNames;
+			std::vector<std::string> behaviourNames;
 			behaviourNames.reserve(behaviourMap.size());
 
 			for (const auto &pair : behaviourMap)
-				behaviourNames.push_back(pair.first);
+				behaviourNames.emplace_back(pair.first);
 
 			// Sort the behaviour names
 			std::sort(behaviourNames.begin(), behaviourNames.end());
@@ -1345,16 +1345,24 @@ bool Entity::InitialRenderUI()
 
 			if (ImGui::BeginPopup("Add Behaviour Popup", ImGuiWindowFlags_NoMove))
 			{
+				ImVec2 currSize = ImGui::GetWindowSize();
+				const float popupMinWidth = 300.0f;
+				float padding = ImGui::GetStyle().WindowPadding.x;
+				float popupWidth = max(currSize.x - padding, popupMinWidth);
+				
+				ImGui::SetWindowSize({ popupWidth, currSize.y }, ImGuiCond_Always);
+
 				static std::string filter = "";
 
 				if (ImGui::IsWindowAppearing())
 					ImGui::SetKeyboardFocusHere(0);
 
 				float inputBoxPosX = ImGui::GetCursorPosX();
+				ImGui::SetNextItemWidth(popupWidth - padding);
 				ImGui::InputText("##Filter", &filter, ImGuiInputTextFlags_AutoSelectAll);
 				if (!ImGui::IsItemActive() && filter.empty())
 				{
-					ImGui::SameLine(inputBoxPosX + 8.0f);
+					ImGui::SameLine(inputBoxPosX + padding);
 					ImGui::TextDisabled("Search");
 				}
 
@@ -1363,32 +1371,60 @@ bool Entity::InitialRenderUI()
 
 				ImGui::Separator();
 
-				int selectedIndex = -1;
-				ImGui::BeginChild("BehaviourList", ImVec2(0, 200), ImGuiChildFlags_ResizeY);
-				for (UINT i = 0; i < behaviourNames.size(); i++)
+				std::string selectedBehaviourName = "";
+				ImGui::BeginChild("BehaviourList", ImVec2(popupWidth - padding, 350.0f), ImGuiChildFlags_ResizeY);
+				if (filter.empty()) // Show categorized tree when not filtering
 				{
-					if (!filter.empty())
+					const BehaviourRegistry::CategoryTree &categoryTree = BehaviourRegistry::GetCategoryTree();
+
+					std::function<void(const BehaviourRegistry::CategoryTree::CategoryNode &)> renderCategory =
+						[&](const BehaviourRegistry::CategoryTree::CategoryNode &node)
 					{
-						std::string lower = behaviourNames[i].data();
-						std::transform(lower.begin(), lower.end(), lower.begin(), ::tolower);
+						for (const auto &[categoryName, subcategory] : node.subcategories)
+						{
+							ImGui::PushID(categoryName.c_str());
+							if (ImGui::TreeNode(categoryName.c_str()))
+							{
+								renderCategory(subcategory);
+								ImGui::TreePop();
+							}
+							ImGui::PopID();
+						}
 
-						if (lower.find(filter) == std::string::npos)
-							continue;
+						for (const auto &behaviourName : node.behaviours)
+						{
+							if (ImGui::Selectable(behaviourName.c_str(), false))
+								selectedBehaviourName = behaviourName;
+						}
+					};
+
+					renderCategory(categoryTree.root);
+				}
+				else // Show flattened list when filtering
+				{
+					for (UINT i = 0; i < behaviourNames.size(); i++)
+					{
+						if (!filter.empty())
+						{
+							std::string lower = behaviourNames[i].c_str();
+							std::transform(lower.begin(), lower.end(), lower.begin(), ::tolower);
+
+							if (lower.find(filter) == std::string::npos)
+								continue;
+						}
+
+						if (ImGui::Selectable(behaviourNames[i].c_str(), false))
+							selectedBehaviourName = behaviourNames[i].c_str();
 					}
-
-					if (ImGui::Selectable(behaviourNames[i].data(), false))
-						selectedIndex = i;
 				}
 				ImGui::EndChild();
 
-				if (selectedIndex >= 0)
+				if (!selectedBehaviourName.empty())
 				{
-					std::string_view behaviourName = behaviourNames[selectedIndex];
-
-					auto it = behaviourMap.find(behaviourName);
+					auto it = behaviourMap.find(selectedBehaviourName);
 					if (it == behaviourMap.end())
 					{
-						ErrMsgF("Behaviour '{}' not found in map!", behaviourName);
+						ErrMsgF("Behaviour '{}' not found in map!", selectedBehaviourName);
 						return false;
 					}
 
