@@ -2,8 +2,8 @@
 
 #include <vector>
 #include <DirectXCollision.h>
-#include "Collision/ColliderShapes.h"
-#include "Collision/Raycast.h"
+#include "ColliderShapes.h"
+#include "Raycast.h"
 
 // Forward declaration
 struct MeshData;

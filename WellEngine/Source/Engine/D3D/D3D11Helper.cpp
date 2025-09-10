@@ -1,7 +1,7 @@
 #include "stdafx.h"
-#include "D3D/D3D11Helper.h"
-#include "Rendering/Graphics.h"
-#include <wrl/client.h>
+#include "D3D11Helper.h"
+#include <Windows.h>
+#include "Source/Engine/Rendering/Graphics.h"
 
 #ifdef LEAK_DETECTION
 #define new			DEBUG_NEW

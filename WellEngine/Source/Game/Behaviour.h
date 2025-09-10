@@ -1,11 +1,11 @@
 #pragma once
 
 #include <d3d11.h>
-#include "EngineSettings.h"
-#include "Timing/TimeUtils.h"
-#include "Input/Input.h"
+#include "Source/Engine/EngineSettings.h"
+#include "Source/Engine/Timing/TimeUtils.h"
+#include "Source/Engine/Input/Input.h"
+#include "Source/Engine/Rendering/RendererInfo.h"
 #include "Transform.h"
-#include "Rendering/RendererInfo.h"
 #include "rapidjson/document.h"
 
 namespace dx = DirectX;

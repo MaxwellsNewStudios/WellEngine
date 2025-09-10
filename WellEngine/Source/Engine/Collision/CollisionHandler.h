@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Collision/Colliders.h"
-#include "Behaviours/ColliderBehaviour.h"
+#include "Colliders.h"
+#include "Source/Game/Behaviours/Physics/ColliderBehaviour.h"
 
 class Scene;
 

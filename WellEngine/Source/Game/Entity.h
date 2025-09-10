@@ -1,13 +1,13 @@
 #pragma once
 #include <type_traits>
 #include "Transform.h"
-#include "Timing/TimeUtils.h"
-#include "Input/Input.h"
-#include "Rendering/Graphics.h"
 #include "Behaviour.h"
-#include "Rendering/Culling/CullingPlacement.h"
-#include "Rendering/RenderQueuer.h"
-#include "Collision/Colliders.h"
+#include "Source/Engine/Timing/TimeUtils.h"
+#include "Source/Engine/Input/Input.h"
+#include "Source/Engine/Rendering/Graphics.h"
+#include "Source/Engine/Rendering/Culling/CullingPlacement.h"
+#include "Source/Engine/Rendering/RenderQueuer.h"
+#include "Source/Engine/Collision/Colliders.h"
 
 namespace dx = DirectX;
 

@@ -3,12 +3,12 @@
 #include <d3d11.h>
 #include <wrl/client.h>
 #include "Scenes/Scene.h"
-#include "Rendering/Graphics.h"
-#include "Content/Content.h"
-#include "Timing/TimeUtils.h"
-#include "Input/Input.h"
-#include "Window/Window.h"
-#include "Debug/DebugDrawer.h"
+#include "Source/Engine/Rendering/Graphics.h"
+#include "Source/Engine/Content/Content.h"
+#include "Source/Engine/Timing/TimeUtils.h"
+#include "Source/Engine/Input/Input.h"
+#include "Source/Engine/Window/Window.h"
+#include "Source/Engine/Debug/DebugDrawer.h"
 
 /// Game handles loading content like textures and meshes, as well as managing the update and render steps of the main game loop.
 class Game

@@ -1,6 +1,6 @@
 #include "Tests/stdafx.h"
 #include "CppUnitTest.h"
-#include "Math/GameMath.h"
+#include "Source/Math/GameMath.h"
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 using namespace TestUtils;

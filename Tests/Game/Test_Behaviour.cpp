@@ -1,7 +1,6 @@
 #include "Tests/stdafx.h"
 #include "CppUnitTest.h"
-//#include "Game/Scenes/Scene.h"
-#include "Game/Behaviour.h"
+#include "Source/Game/Behaviour.h"
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 using namespace TestUtils;

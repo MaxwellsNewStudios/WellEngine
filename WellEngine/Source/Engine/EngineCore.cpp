@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "EngineCore.h"
-#include "Debug/DebugData.h"
-#include "Behaviours/MeshBehaviour.h"
+#include "Source/Engine/Debug/DebugData.h"
+#include "Source/Game/Behaviours/Rendering/Mesh/MeshBehaviour.h"
 
 #ifdef LEAK_DETECTION
 #define new			DEBUG_NEW

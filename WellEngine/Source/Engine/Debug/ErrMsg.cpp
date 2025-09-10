@@ -1,6 +1,6 @@
 #include "stdafx.h"
-#include "Debug/ErrMsg.h"
-#include "Utils/StringUtils.h"
+#include "ErrMsg.h"
+#include "Source/Engine/Utils/StringUtils.h"
 
 #ifdef LEAK_DETECTION
 #define new			DEBUG_NEW

@@ -1,6 +1,5 @@
 #pragma once
-
-typedef unsigned int UINT;
+#include <intsafe.h>
 
 // Managed by the Content class. This will allow draw batching to be done much more cheaply.
 struct Material

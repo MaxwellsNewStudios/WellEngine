@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "ContentLoader.h"
-#include "Utils/StringUtils.h"
+#include "Source/Engine/Utils/StringUtils.h"
 
 #ifdef LEAK_DETECTION
 #define new			DEBUG_NEW
@@ -14,11 +14,11 @@
 
 #pragma warning(disable: 6262)
 #pragma warning(disable: 26819)
-#include "stb/stb_image.h"
-#include "stb/stb_image_write.h"
-#include "stb/stb_image_resize2.h"
-#include "stb/stb_rect_pack.h"
-#include "stb/stb_vorbis.h"
+#include "Dependencies/stb/stb_image.h"
+#include "Dependencies/stb/stb_image_write.h"
+#include "Dependencies/stb/stb_image_resize2.h"
+#include "Dependencies/stb/stb_rect_pack.h"
+#include "Dependencies/stb/stb_vorbis.h"
 #pragma warning(default: 26819)
 #pragma warning(default: 6262)
 

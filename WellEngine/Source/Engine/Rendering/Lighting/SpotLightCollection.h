@@ -3,11 +3,11 @@
 #include <vector>
 #include <d3d11.h>
 #include <DirectXMath.h>
-#include "D3D/StructuredBufferD3D11.h"
-#include "D3D/DepthBufferD3D11.h"
-#include "Behaviours/CameraBehaviour.h"
-#include "Behaviours/SpotLightBehaviour.h"
-#include "Behaviours/SimpleSpotLightBehaviour.h"
+#include "Source/Engine/D3D/StructuredBufferD3D11.h"
+#include "Source/Engine/D3D/DepthBufferD3D11.h"
+#include "Source/Game/Behaviours/Rendering/Camera/CameraBehaviour.h"
+#include "Source/Game/Behaviours/Rendering/Lighting/SpotLightBehaviour.h"
+#include "Source/Game/Behaviours/Rendering/Lighting/SimpleSpotLightBehaviour.h"
 
 class SpotLightCollection : public IRefTarget<SpotLightCollection>
 {

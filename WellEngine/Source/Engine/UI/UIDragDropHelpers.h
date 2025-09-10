@@ -1,7 +1,7 @@
 #pragma once
 #include <intsafe.h>
 #include <functional>
-#include <ImGui/imgui.h>
+#include "Dependencies/ImGui/imgui.h"
 
 class Entity;
 

@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include "Content/HeightMap.h"
+#include "HeightMap.h"
 
 #ifdef LEAK_DETECTION
 #define new			DEBUG_NEW

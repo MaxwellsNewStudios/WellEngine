@@ -1,9 +1,8 @@
 #pragma once
-
 #include <vector>
-#include "Debug/ErrMsg.h"
+#include "Source/Engine/Debug/ErrMsg.h"
 #ifdef TRACY_REFS
-#include "Math/ConstRand.h"
+#include "Source/Math/ConstRand.h"
 #endif
 
 //#define STRICT_CHECKS

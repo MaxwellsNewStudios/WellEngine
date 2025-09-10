@@ -5,17 +5,17 @@
 
 #include "rapidjson/document.h"
 #include "SceneHolder.h"
-#include "Entity.h"
-#include "Rendering/Graphics.h"
-#include "Rendering/Lighting/SpotLightCollection.h"
-#include "Rendering/Lighting/PointLightCollection.h"
-#include "Content/Material.h"
-#include "Audio/SoundEngine.h"
-#include "Behaviours/CameraBehaviour.h"
-#include "Collision/CollisionHandler.h"
-#include "Debug/DebugDrawer.h"
-#include "GraphManager.h"
-#include "Timing/TimelineManager.h"
+#include "../Entity.h"
+#include "../GraphManager.h"
+#include "../Behaviours/Rendering/Camera/CameraBehaviour.h"
+#include "Source/Engine/Rendering/Graphics.h"
+#include "Source/Engine/Rendering/Lighting/SpotLightCollection.h"
+#include "Source/Engine/Rendering/Lighting/PointLightCollection.h"
+#include "Source/Engine/Content/Material.h"
+#include "Source/Engine/Audio/SoundEngine.h"
+#include "Source/Engine/Collision/CollisionHandler.h"
+#include "Source/Engine/Debug/DebugDrawer.h"
+#include "Source/Engine/Timing/TimelineManager.h"
 
 namespace json = rapidjson;
 

@@ -68,7 +68,7 @@
 		//#define TRACY_DETAILED
 
 		/// TRACY_MEMORY enables tracking memeory allocation with Tracy.
-		#define TRACY_MEMORY
+		//#define TRACY_MEMORY
 
 		/// TRACY_REFS Enables tracking of the Ref<T> interface.
 		//#define TRACY_REFS

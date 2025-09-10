@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "Behaviour.h"
-#include "Behaviours/CameraBehaviour.h"
-#include "Rendering/RenderQueuer.h"
+#include "Behaviours/Rendering/Camera/CameraBehaviour.h"
+#include "Source/Engine/Rendering/RenderQueuer.h"
 #include "Scenes/Scene.h"
 #include "Entity.h"
 

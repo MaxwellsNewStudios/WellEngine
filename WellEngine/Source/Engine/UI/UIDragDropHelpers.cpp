@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "UIDragDropHelpers.h"
-#include "Entity.h"
-#include "Scenes/Scene.h"
+#include "Source/Game/Entity.h"
+#include "Source/Game/Scenes/Scene.h"
 
 #ifdef LEAK_DETECTION
 #define new			DEBUG_NEW

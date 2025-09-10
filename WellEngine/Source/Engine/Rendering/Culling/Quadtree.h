@@ -5,9 +5,9 @@
 #include <vector>
 #include <DirectXCollision.h>
 #include "CullingPlacement.h"
-#include "Entity.h"
-#include "Behaviour.h"
-#include "Collision/Raycast.h"
+#include "Source/Engine/Collision/Raycast.h"
+#include "Source/Game/Entity.h"
+#include "Source/Game/Behaviour.h"
 
 #ifdef LEAK_DETECTION
 #define new			DEBUG_NEW

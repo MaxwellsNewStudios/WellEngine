@@ -1,8 +1,8 @@
 #pragma once
 
 #include <map>
-#include "Input/Input.h"
-#include "Timing/TimeUtils.h"
+#include "Input.h"
+#include "Source/Engine/Timing/TimeUtils.h"
 
 namespace InputBindings
 {

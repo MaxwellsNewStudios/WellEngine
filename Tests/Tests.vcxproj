@@ -80,7 +80,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>false</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(VCInstallDir)UnitTest\include;%(AdditionalIncludeDirectories);$(ProjectDir);$(SolutionDir);$(SolutionDir)WellEngine;$(SolutionDir)WellEngine/Source;$(SolutionDir)WellEngine/Source/Engine;$(SolutionDir)WellEngine/Source/Game;$(SolutionDir)WellEngine/Dependencies;$(SolutionDir)WellEngine/Dependencies/SDL3/include;$(SolutionDir)WellEngine/Dependencies/rapidjson/include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(VCInstallDir)UnitTest\include;%(AdditionalIncludeDirectories);$(ProjectDir);$(SolutionDir);$(SolutionDir)WellEngine;$(SolutionDir)WellEngine/Dependencies/SDL3/include;$(SolutionDir)WellEngine/Dependencies/rapidjson/include</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_TESTING;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <UseFullPaths>true</UseFullPaths>
       <PrecompiledHeaderFile>Tests/stdafx.h</PrecompiledHeaderFile>
@@ -105,6 +105,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalLibraryDirectories>$(VCInstallDir)UnitTest\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>d3d11.lib;dxguid.lib;D3DCompiler.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">
@@ -112,9 +113,9 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <FunctionLevelLinking>true</FunctionLevelLinking>
-      <IntrinsicFunctions>false</IntrinsicFunctions>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>false</SDLCheck>
-      <AdditionalIncludeDirectories>$(VCInstallDir)UnitTest\include;%(AdditionalIncludeDirectories);$(ProjectDir);$(SolutionDir);$(SolutionDir)WellEngine;$(SolutionDir)WellEngine/Source;$(SolutionDir)WellEngine/Source/Engine;$(SolutionDir)WellEngine/Source/Game;$(SolutionDir)WellEngine/Dependencies;$(SolutionDir)WellEngine/Dependencies/SDL3/include;$(SolutionDir)WellEngine/Dependencies/rapidjson/include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(VCInstallDir)UnitTest\include;%(AdditionalIncludeDirectories);$(ProjectDir);$(SolutionDir);$(SolutionDir)WellEngine;$(SolutionDir)WellEngine/Dependencies/SDL3/include;$(SolutionDir)WellEngine/Dependencies/rapidjson/include</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_TESTING;_DEPLOY;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <UseFullPaths>true</UseFullPaths>
       <PrecompiledHeaderFile>Tests/stdafx.h</PrecompiledHeaderFile>
@@ -122,9 +123,11 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <DisableSpecificWarnings>4244;6993;4018;4267;4006;26813;5030;5222;%(DisableSpecificWarnings)</DisableSpecificWarnings>
       <Optimization>Disabled</Optimization>
-      <WholeProgramOptimization>false</WholeProgramOptimization>
+      <WholeProgramOptimization>true</WholeProgramOptimization>
       <UseStandardPreprocessor>true</UseStandardPreprocessor>
       <UndefinePreprocessorDefinitions>TRACY_ENABLE</UndefinePreprocessorDefinitions>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -132,14 +135,16 @@
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalLibraryDirectories>$(VCInstallDir)UnitTest\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>d3d11.lib;dxguid.lib;D3DCompiler.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
-      <SDLCheck>false</SDLCheck>
-      <AdditionalIncludeDirectories>$(VCInstallDir)UnitTest\include;%(AdditionalIncludeDirectories);$(ProjectDir);$(SolutionDir);$(SolutionDir)WellEngine;$(SolutionDir)WellEngine/Source;$(SolutionDir)WellEngine/Source/Engine;$(SolutionDir)WellEngine/Source/Game;$(SolutionDir)WellEngine/Dependencies;$(SolutionDir)WellEngine/Dependencies/SDL3/include;$(SolutionDir)WellEngine/Dependencies/rapidjson/include</AdditionalIncludeDirectories>
+      <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>$(VCInstallDir)UnitTest\include;%(AdditionalIncludeDirectories);$(ProjectDir);$(SolutionDir);$(SolutionDir)WellEngine;$(SolutionDir)WellEngine/Dependencies/SDL3/include;$(SolutionDir)WellEngine/Dependencies/rapidjson/include</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_TESTING;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <UseFullPaths>true</UseFullPaths>
       <PrecompiledHeaderFile>Tests/stdafx.h</PrecompiledHeaderFile>
@@ -153,11 +158,17 @@
       <UseStandardPreprocessor>true</UseStandardPreprocessor>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
       <UndefinePreprocessorDefinitions>TRACY_ENABLE</UndefinePreprocessorDefinitions>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <ConformanceMode>true</ConformanceMode>
+      <OpenMPSupport>true</OpenMPSupport>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <AdditionalLibraryDirectories>$(VCInstallDir)UnitTest\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>d3d11.lib;dxguid.lib;D3DCompiler.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>

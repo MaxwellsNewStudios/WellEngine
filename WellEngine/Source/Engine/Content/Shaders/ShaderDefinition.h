@@ -1,9 +1,8 @@
 #pragma once
 
 #include <string>
-#include <intsafe.h>
 #include <vector>
-#include "Content/Content.h"
+#include "../Content.h"
 
 namespace ShaderData
 {

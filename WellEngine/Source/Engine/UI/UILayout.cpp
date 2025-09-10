@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "UILayout.h"
-#include "Debug/DebugData.h"
+#include "Source/Engine/Debug/DebugData.h"
 
 #ifdef LEAK_DETECTION
 #define new			DEBUG_NEW

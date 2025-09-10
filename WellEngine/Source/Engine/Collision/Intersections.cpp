@@ -1,8 +1,5 @@
 ﻿#include "stdafx.h"
-#include "Collision/Intersections.h"
-#include "Debug/ErrMsg.h"
-
-#include <float.h>
+#include "Intersections.h"
 
 #ifdef LEAK_DETECTION
 #define new			DEBUG_NEW

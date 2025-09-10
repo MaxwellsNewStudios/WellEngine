@@ -1,10 +1,10 @@
 #include "stdafx.h"
-#include "Collision/Colliders.h"
+#include "Colliders.h"
 
-#include "Entity.h"
-#include "Content/Content.h"
-#include "Scenes/Scene.h"
-#include "Debug/DebugDrawer.h"
+#include "Source/Engine/Content/Content.h"
+#include "Source/Engine/Debug/DebugDrawer.h"
+#include "Source/Game/Scenes/Scene.h"
+#include "Source/Game/Entity.h"
 
 #ifdef LEAK_DETECTION
 #define new			DEBUG_NEW

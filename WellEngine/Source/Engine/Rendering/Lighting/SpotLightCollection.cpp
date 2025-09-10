@@ -1,6 +1,6 @@
 #include "stdafx.h"
-#include "Rendering/Lighting/SpotLightCollection.h"
-#include "Entity.h"
+#include "SpotLightCollection.h"
+//#include "Source/Game/Entity.h"
 
 #ifdef LEAK_DETECTION
 #define new			DEBUG_NEW

@@ -1,9 +1,9 @@
 #pragma once
 
-#include "Entity.h"
-#include "Collision/Raycast.h"
-#include "Debug/DebugNew.h"
-#include "Rendering/Culling/Quadtree.h"
+#include "../Entity.h"
+#include "Source/Engine/Collision/Raycast.h"
+#include "Source/Engine/Debug/DebugNew.h"
+#include "Source/Engine/Rendering/Culling/Quadtree.h"
 
 namespace SceneContents
 {

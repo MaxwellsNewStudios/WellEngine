@@ -1,13 +1,13 @@
 #pragma region Includes, Usings & Defines
 #include "stdafx.h"
 #include "Scene.h"
-#include "Game.h"
-#include "Debug/DebugData.h"
-#include "GraphManager.h"
-#include "Behaviours/BreadcrumbPileBehaviour.h"
-#include "Behaviours/MonsterHintBehaviour.h"
-#include "Behaviours/DebugPlayerBehaviour.h"
-#include "Behaviours/GraphNodeBehaviour.h"
+#include "../Game.h"
+#include "../GraphManager.h"
+#include "../Behaviours/Interaction/BreadcrumbPileBehaviour.h"
+#include "../Behaviours/Monster/MonsterHintBehaviour.h"
+#include "../Behaviours/Debug/DebugPlayerBehaviour.h"
+#include "../Behaviours/Navigation/GraphNodeBehaviour.h"
+#include "Source/Engine/Debug/DebugData.h"
 
 #ifdef LEAK_DETECTION
 #define new			DEBUG_NEW

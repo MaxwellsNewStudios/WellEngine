@@ -1,6 +1,5 @@
 #include "stdafx.h"
 #include "TimelineWaypoint.h"
-#include <sstream>
 
 #ifdef LEAK_DETECTION
 #define new			DEBUG_NEW

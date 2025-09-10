@@ -1,11 +1,7 @@
 #include "stdafx.h"
-#include "Collision/CollisionHandler.h"
-#include "Scenes/Scene.h"
-#include "Collision/Intersections.h"
-
-#include <vector>
-#include <map>
-#include <algorithm>
+#include "CollisionHandler.h"
+#include "Intersections.h"
+#include "Source/Game/Scenes/Scene.h"
 
 #ifdef LEAK_DETECTION
 #define new			DEBUG_NEW

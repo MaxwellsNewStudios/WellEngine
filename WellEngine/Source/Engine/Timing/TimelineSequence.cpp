@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include "Timing/TimelineSequence.h"
+#include "TimelineSequence.h"
 
 #ifdef LEAK_DETECTION
 #define new			DEBUG_NEW

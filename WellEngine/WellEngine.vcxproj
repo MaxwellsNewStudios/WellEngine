@@ -71,12 +71,14 @@
     <LinkIncremental>false</LinkIncremental>
     <MultiProcFXC>true</MultiProcFXC>
     <LibraryPath>$(VC_LibraryPath_x64);$(VCInstallDir)Auxiliary\VS\UnitTest\lib;$(WindowsSDK_LibraryPath_x64)</LibraryPath>
+    <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <IncludePath>$(ProjectDir)Dependencies\SDL3\include;$(VCInstallDir)Auxiliary\VS\UnitTest\include;$(IncludePath)</IncludePath>
     <LinkIncremental>false</LinkIncremental>
     <MultiProcFXC>true</MultiProcFXC>
     <LibraryPath>$(VC_LibraryPath_x64);$(VCInstallDir)Auxiliary\VS\UnitTest\lib;$(WindowsSDK_LibraryPath_x64)</LibraryPath>
+    <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">
     <IncludePath>$(ProjectDir)Dependencies\SDL3\include;$(VCInstallDir)Auxiliary\VS\UnitTest\include;$(IncludePath)</IncludePath>
@@ -84,6 +86,7 @@
     <MultiProcFXC>true</MultiProcFXC>
     <CopyLocalDeploymentContent>false</CopyLocalDeploymentContent>
     <LibraryPath>$(VC_LibraryPath_x64);$(VCInstallDir)Auxiliary\VS\UnitTest\lib;$(WindowsSDK_LibraryPath_x64)</LibraryPath>
+    <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -105,7 +108,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <WholeProgramOptimization>false</WholeProgramOptimization>
-      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(ProjectDir);$(ProjectDir)Dependencies;$(ProjectDir)Dependencies/SDL3/include;$(ProjectDir)Dependencies/rapidjson/include;$(ProjectDir)Source;$(ProjectDir)Source/Engine;$(ProjectDir)Source/Game</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(SolutionDir);$(ProjectDir);$(ProjectDir)Dependencies/SDL3/include;$(ProjectDir)Dependencies/rapidjson/include</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>4244;6993;4018;4267;4006;26813;5030;5222;%(DisableSpecificWarnings)</DisableSpecificWarnings>
       <MinimalRebuild>false</MinimalRebuild>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
@@ -165,7 +168,7 @@
       <Optimization>MaxSpeed</Optimization>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
-      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(ProjectDir);$(ProjectDir)Dependencies;$(ProjectDir)Dependencies/SDL3/include;$(ProjectDir)Dependencies/rapidjson/include;$(ProjectDir)Source;$(ProjectDir)Source/Engine;$(ProjectDir)Source/Game</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(SolutionDir);$(ProjectDir);$(ProjectDir)Dependencies/SDL3/include;$(ProjectDir)Dependencies/rapidjson/include</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>4244;6993;4018;4267;4006;26813;5030;5222;%(DisableSpecificWarnings)</DisableSpecificWarnings>
       <MinimalRebuild>false</MinimalRebuild>
       <StringPooling>true</StringPooling>
@@ -230,7 +233,7 @@
       <Optimization>MaxSpeed</Optimization>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
-      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(ProjectDir);$(ProjectDir)Dependencies;$(ProjectDir)Dependencies/SDL3/include;$(ProjectDir)Dependencies/rapidjson/include;$(ProjectDir)Source;$(ProjectDir)Source/Engine;$(ProjectDir)Source/Game</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(SolutionDir);$(ProjectDir);$(ProjectDir)Dependencies/SDL3/include;$(ProjectDir)Dependencies/rapidjson/include</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>4244;6993;4018;4267;4006;26813;5030;5222;%(DisableSpecificWarnings)</DisableSpecificWarnings>
       <StringPooling>true</StringPooling>
       <FloatingPointExceptions>false</FloatingPointExceptions>
@@ -397,53 +400,53 @@
     <ClInclude Include="Source\Game\Behaviour.h" />
     <ClInclude Include="Source\Game\BehaviourFactory.h" />
     <ClInclude Include="Source\Game\BehaviourRegistry.h" />
-    <ClInclude Include="Source\Game\Behaviours\AmbientSoundBehaviour.h" />
-    <ClInclude Include="Source\Game\Behaviours\BillboardMeshBehaviour.h" />
-    <ClInclude Include="Source\Game\Behaviours\BreadcrumbBehaviour.h" />
-    <ClInclude Include="Source\Game\Behaviours\BreadcrumbPileBehaviour.h" />
-    <ClInclude Include="Source\Game\Behaviours\ButtonBehaviours.h" />
-    <ClInclude Include="Source\Game\Behaviours\CameraBehaviour.h" />
-    <ClInclude Include="Source\Game\Behaviours\CameraCubeBehaviour.h" />
-    <ClInclude Include="Source\Game\Behaviours\CameraItemBehaviour.h" />
-    <ClInclude Include="Source\Game\Behaviours\ColliderBehaviour.h" />
-    <ClInclude Include="Source\Game\Behaviours\CompassBehaviour.h" />
-    <ClInclude Include="Source\Game\Behaviours\CreditsBehaviour.h" />
-    <ClInclude Include="Source\Game\Behaviours\DebugPlayerBehaviour.h" />
-    <ClInclude Include="Source\Game\Behaviours\EndCutSceneBehaviour.h" />
-    <ClInclude Include="Source\Game\Behaviours\ExampleBehaviour.h" />
-    <ClInclude Include="Source\Game\Behaviours\ExampleCollisionBehaviour.h" />
-    <ClInclude Include="Source\Game\Behaviours\FlashlightBehaviour.h" />
-    <ClInclude Include="Source\Game\Behaviours\FlashlightPropBehaviour.h" />
-    <ClInclude Include="Source\Game\Behaviours\GraphNodeBehaviour.h" />
-    <ClInclude Include="Source\Game\Behaviours\HideBehaviour.h" />
-    <ClInclude Include="Source\Game\Behaviours\InteractableBehaviour.h" />
-    <ClInclude Include="Source\Game\Behaviours\InteractorBehaviour.h" />
-    <ClInclude Include="Source\Game\Behaviours\InventoryBehaviour.h" />
-    <ClInclude Include="Source\Game\Behaviours\MenuCameraBehaviour.h" />
-    <ClInclude Include="Source\Game\Behaviours\MeshBehaviour.h" />
-    <ClInclude Include="Source\Game\Behaviours\MonsterBehaviour.h" />
-    <ClInclude Include="Source\Game\Behaviours\MonsterHintBehaviour.h" />
-    <ClInclude Include="Source\Game\Behaviours\MonsterStates\MonsterCapture.h" />
-    <ClInclude Include="Source\Game\Behaviours\MonsterStates\MonsterExtendedHunt.h" />
-    <ClInclude Include="Source\Game\Behaviours\MonsterStates\MonsterHunt.h" />
-    <ClInclude Include="Source\Game\Behaviours\MonsterStates\MonsterHuntDone.h" />
-    <ClInclude Include="Source\Game\Behaviours\MonsterStates\MonsterIdle.h" />
-    <ClInclude Include="Source\Game\Behaviours\MonsterStates\MonsterState.h" />
-    <ClInclude Include="Source\Game\Behaviours\PickupBehaviour.h" />
-    <ClInclude Include="Source\Game\Behaviours\PictureBehaviour.h" />
-    <ClInclude Include="Source\Game\Behaviours\PlayerCutsceneBehaviour.h" />
-    <ClInclude Include="Source\Game\Behaviours\PlayerMovementBehaviour.h" />
-    <ClInclude Include="Source\Game\Behaviours\PlayerViewBehaviour.h" />
-    <ClInclude Include="Source\Game\Behaviours\PointLightBehaviour.h" />
-    <ClInclude Include="Source\Game\Behaviours\RestrictedViewBehaviour.h" />
-    <ClInclude Include="Source\Game\Behaviours\SimplePointLightBehaviour.h" />
-    <ClInclude Include="Source\Game\Behaviours\SimpleSpotLightBehaviour.h" />
-    <ClInclude Include="Source\Game\Behaviours\SolidObjectBehaviour.h" />
-    <ClInclude Include="Source\Game\Behaviours\SoundBehaviour.h" />
-    <ClInclude Include="Source\Game\Behaviours\SpotLightBehaviour.h" />
-    <ClInclude Include="Source\Game\Behaviours\TrackerBehaviour.h" />
-    <ClInclude Include="Source\Game\Behaviours\UIButtonBehaviour.h" />
-    <ClInclude Include="Source\Game\Behaviours\UIButtonExampleBehaviour.h" />
+    <ClInclude Include="Source\Game\Behaviours\Sound\AmbientSoundBehaviour.h" />
+    <ClInclude Include="Source\Game\Behaviours\Rendering\Mesh\BillboardMeshBehaviour.h" />
+    <ClInclude Include="Source\Game\Behaviours\Interaction\BreadcrumbBehaviour.h" />
+    <ClInclude Include="Source\Game\Behaviours\Interaction\BreadcrumbPileBehaviour.h" />
+    <ClInclude Include="Source\Game\Behaviours\Menu\ButtonBehaviours.h" />
+    <ClInclude Include="Source\Game\Behaviours\Rendering\Camera\CameraBehaviour.h" />
+    <ClInclude Include="Source\Game\Behaviours\Rendering\Camera\CameraCubeBehaviour.h" />
+    <ClInclude Include="Source\Game\Behaviours\Interaction\CameraItemBehaviour.h" />
+    <ClInclude Include="Source\Game\Behaviours\Physics\ColliderBehaviour.h" />
+    <ClInclude Include="Source\Game\Behaviours\Inventory\CompassBehaviour.h" />
+    <ClInclude Include="Source\Game\Behaviours\Menu\CreditsBehaviour.h" />
+    <ClInclude Include="Source\Game\Behaviours\Debug\DebugPlayerBehaviour.h" />
+    <ClInclude Include="Source\Game\Behaviours\Events\EndCutSceneBehaviour.h" />
+    <ClInclude Include="Source\Game\Behaviours\Debug\ExampleBehaviour.h" />
+    <ClInclude Include="Source\Game\Behaviours\Physics\ExampleCollisionBehaviour.h" />
+    <ClInclude Include="Source\Game\Behaviours\Inventory\FlashlightBehaviour.h" />
+    <ClInclude Include="Source\Game\Behaviours\Menu\FlashlightPropBehaviour.h" />
+    <ClInclude Include="Source\Game\Behaviours\Navigation\GraphNodeBehaviour.h" />
+    <ClInclude Include="Source\Game\Behaviours\Interaction\HideBehaviour.h" />
+    <ClInclude Include="Source\Game\Behaviours\Interaction\InteractableBehaviour.h" />
+    <ClInclude Include="Source\Game\Behaviours\Interaction\InteractorBehaviour.h" />
+    <ClInclude Include="Source\Game\Behaviours\Inventory\InventoryBehaviour.h" />
+    <ClInclude Include="Source\Game\Behaviours\Menu\MenuCameraBehaviour.h" />
+    <ClInclude Include="Source\Game\Behaviours\Rendering\Mesh\MeshBehaviour.h" />
+    <ClInclude Include="Source\Game\Behaviours\Monster\MonsterBehaviour.h" />
+    <ClInclude Include="Source\Game\Behaviours\Monster\MonsterHintBehaviour.h" />
+    <ClInclude Include="Source\Game\Behaviours\Monster\MonsterStates\MonsterCapture.h" />
+    <ClInclude Include="Source\Game\Behaviours\Monster\MonsterStates\MonsterExtendedHunt.h" />
+    <ClInclude Include="Source\Game\Behaviours\Monster\MonsterStates\MonsterHunt.h" />
+    <ClInclude Include="Source\Game\Behaviours\Monster\MonsterStates\MonsterHuntDone.h" />
+    <ClInclude Include="Source\Game\Behaviours\Monster\MonsterStates\MonsterIdle.h" />
+    <ClInclude Include="Source\Game\Behaviours\Monster\MonsterStates\MonsterState.h" />
+    <ClInclude Include="Source\Game\Behaviours\Interaction\PickupBehaviour.h" />
+    <ClInclude Include="Source\Game\Behaviours\Inventory\PictureBehaviour.h" />
+    <ClInclude Include="Source\Game\Behaviours\Events\PlayerCutsceneBehaviour.h" />
+    <ClInclude Include="Source\Game\Behaviours\Player\PlayerMovementBehaviour.h" />
+    <ClInclude Include="Source\Game\Behaviours\Player\PlayerViewBehaviour.h" />
+    <ClInclude Include="Source\Game\Behaviours\Rendering\Lighting\PointLightBehaviour.h" />
+    <ClInclude Include="Source\Game\Behaviours\Player\RestrictedViewBehaviour.h" />
+    <ClInclude Include="Source\Game\Behaviours\Rendering\Lighting\SimplePointLightBehaviour.h" />
+    <ClInclude Include="Source\Game\Behaviours\Rendering\Lighting\SimpleSpotLightBehaviour.h" />
+    <ClInclude Include="Source\Game\Behaviours\Physics\SolidObjectBehaviour.h" />
+    <ClInclude Include="Source\Game\Behaviours\Sound\SoundBehaviour.h" />
+    <ClInclude Include="Source\Game\Behaviours\Rendering\Lighting\SpotLightBehaviour.h" />
+    <ClInclude Include="Source\Game\Behaviours\Misc\TrackerBehaviour.h" />
+    <ClInclude Include="Source\Game\Behaviours\Menu\UIButtonBehaviour.h" />
+    <ClInclude Include="Source\Game\Behaviours\Menu\UIButtonExampleBehaviour.h" />
     <ClInclude Include="Source\Game\Entity.h" />
     <ClInclude Include="Source\Game\Game.h" />
     <ClInclude Include="Source\Game\GraphManager.h" />
@@ -583,52 +586,52 @@
     <ClCompile Include="Source\Game\Behaviour.cpp" />
     <ClCompile Include="Source\Game\BehaviourFactory.cpp" />
     <ClCompile Include="Source\Game\BehaviourRegistry.cpp" />
-    <ClCompile Include="Source\Game\Behaviours\AmbientSoundBehaviour.cpp" />
-    <ClCompile Include="Source\Game\Behaviours\BillboardMeshBehaviour.cpp" />
-    <ClCompile Include="Source\Game\Behaviours\BreadcrumbBehaviour.cpp" />
-    <ClCompile Include="Source\Game\Behaviours\BreadcrumbPileBehaviour.cpp" />
-    <ClCompile Include="Source\Game\Behaviours\ButtonBehaviours.cpp" />
-    <ClCompile Include="Source\Game\Behaviours\CameraBehaviour.cpp" />
-    <ClCompile Include="Source\Game\Behaviours\CameraCubeBehaviour.cpp" />
-    <ClCompile Include="Source\Game\Behaviours\CameraItemBehaviour.cpp" />
-    <ClCompile Include="Source\Game\Behaviours\ColliderBehaviour.cpp" />
-    <ClCompile Include="Source\Game\Behaviours\CompassBehaviour.cpp" />
-    <ClCompile Include="Source\Game\Behaviours\CreditsBehaviour.cpp" />
-    <ClCompile Include="Source\Game\Behaviours\DebugPlayerBehaviour.cpp" />
-    <ClCompile Include="Source\Game\Behaviours\EndCutSceneBehaviour.cpp" />
-    <ClCompile Include="Source\Game\Behaviours\ExampleBehaviour.cpp" />
-    <ClCompile Include="Source\Game\Behaviours\ExampleCollisionBehaviour.cpp" />
-    <ClCompile Include="Source\Game\Behaviours\FlashlightBehaviour.cpp" />
-    <ClCompile Include="Source\Game\Behaviours\FlashlightPropBehaviour.cpp" />
-    <ClCompile Include="Source\Game\Behaviours\GraphNodeBehaviour.cpp" />
-    <ClCompile Include="Source\Game\Behaviours\HideBehaviour.cpp" />
-    <ClCompile Include="Source\Game\Behaviours\InteractableBehaviour.cpp" />
-    <ClCompile Include="Source\Game\Behaviours\InteractorBehaviour.cpp" />
-    <ClCompile Include="Source\Game\Behaviours\InventoryBehaviour.cpp" />
-    <ClCompile Include="Source\Game\Behaviours\MenuCameraBehaviour.cpp" />
-    <ClCompile Include="Source\Game\Behaviours\MeshBehaviour.cpp" />
-    <ClCompile Include="Source\Game\Behaviours\MonsterBehaviour.cpp" />
-    <ClCompile Include="Source\Game\Behaviours\MonsterHintBehaviour.cpp" />
-    <ClCompile Include="Source\Game\Behaviours\MonsterStates\MonsterCapture.cpp" />
-    <ClCompile Include="Source\Game\Behaviours\MonsterStates\MonsterExtendedHunt.cpp" />
-    <ClCompile Include="Source\Game\Behaviours\MonsterStates\MonsterHunt.cpp" />
-    <ClCompile Include="Source\Game\Behaviours\MonsterStates\MonsterHuntDone.cpp" />
-    <ClCompile Include="Source\Game\Behaviours\MonsterStates\MonsterIdle.cpp" />
-    <ClCompile Include="Source\Game\Behaviours\MonsterStates\MonsterState.cpp" />
-    <ClCompile Include="Source\Game\Behaviours\PickupBehaviour.cpp" />
-    <ClCompile Include="Source\Game\Behaviours\PictureBehaviour.cpp" />
-    <ClCompile Include="Source\Game\Behaviours\PlayerCutsceneBehaviour.cpp" />
-    <ClCompile Include="Source\Game\Behaviours\PlayerMovementBehaviour.cpp" />
-    <ClCompile Include="Source\Game\Behaviours\PlayerViewBehaviour.cpp" />
-    <ClCompile Include="Source\Game\Behaviours\PointLightBehaviour.cpp" />
-    <ClCompile Include="Source\Game\Behaviours\RestrictedViewBehaviour.cpp" />
-    <ClCompile Include="Source\Game\Behaviours\SimplePointLightBehaviour.cpp" />
-    <ClCompile Include="Source\Game\Behaviours\SimpleSpotLightBehaviour.cpp" />
-    <ClCompile Include="Source\Game\Behaviours\SolidObjectBehaviour.cpp" />
-    <ClCompile Include="Source\Game\Behaviours\SoundBehaviour.cpp" />
-    <ClCompile Include="Source\Game\Behaviours\SpotLightBehaviour.cpp" />
-    <ClCompile Include="Source\Game\Behaviours\TrackerBehaviour.cpp" />
-    <ClCompile Include="Source\Game\Behaviours\UIButtonExampleBehaviour.cpp" />
+    <ClCompile Include="Source\Game\Behaviours\Sound\AmbientSoundBehaviour.cpp" />
+    <ClCompile Include="Source\Game\Behaviours\Rendering\Mesh\BillboardMeshBehaviour.cpp" />
+    <ClCompile Include="Source\Game\Behaviours\Interaction\BreadcrumbBehaviour.cpp" />
+    <ClCompile Include="Source\Game\Behaviours\Interaction\BreadcrumbPileBehaviour.cpp" />
+    <ClCompile Include="Source\Game\Behaviours\Menu\ButtonBehaviours.cpp" />
+    <ClCompile Include="Source\Game\Behaviours\Rendering\Camera\CameraBehaviour.cpp" />
+    <ClCompile Include="Source\Game\Behaviours\Rendering\Camera\CameraCubeBehaviour.cpp" />
+    <ClCompile Include="Source\Game\Behaviours\Interaction\CameraItemBehaviour.cpp" />
+    <ClCompile Include="Source\Game\Behaviours\Physics\ColliderBehaviour.cpp" />
+    <ClCompile Include="Source\Game\Behaviours\Inventory\CompassBehaviour.cpp" />
+    <ClCompile Include="Source\Game\Behaviours\Menu\CreditsBehaviour.cpp" />
+    <ClCompile Include="Source\Game\Behaviours\Debug\DebugPlayerBehaviour.cpp" />
+    <ClCompile Include="Source\Game\Behaviours\Events\EndCutSceneBehaviour.cpp" />
+    <ClCompile Include="Source\Game\Behaviours\Debug\ExampleBehaviour.cpp" />
+    <ClCompile Include="Source\Game\Behaviours\Physics\ExampleCollisionBehaviour.cpp" />
+    <ClCompile Include="Source\Game\Behaviours\Inventory\FlashlightBehaviour.cpp" />
+    <ClCompile Include="Source\Game\Behaviours\Menu\FlashlightPropBehaviour.cpp" />
+    <ClCompile Include="Source\Game\Behaviours\Navigation\GraphNodeBehaviour.cpp" />
+    <ClCompile Include="Source\Game\Behaviours\Interaction\HideBehaviour.cpp" />
+    <ClCompile Include="Source\Game\Behaviours\Interaction\InteractableBehaviour.cpp" />
+    <ClCompile Include="Source\Game\Behaviours\Interaction\InteractorBehaviour.cpp" />
+    <ClCompile Include="Source\Game\Behaviours\Inventory\InventoryBehaviour.cpp" />
+    <ClCompile Include="Source\Game\Behaviours\Menu\MenuCameraBehaviour.cpp" />
+    <ClCompile Include="Source\Game\Behaviours\Rendering\Mesh\MeshBehaviour.cpp" />
+    <ClCompile Include="Source\Game\Behaviours\Monster\MonsterBehaviour.cpp" />
+    <ClCompile Include="Source\Game\Behaviours\Monster\MonsterHintBehaviour.cpp" />
+    <ClCompile Include="Source\Game\Behaviours\Monster\MonsterStates\MonsterCapture.cpp" />
+    <ClCompile Include="Source\Game\Behaviours\Monster\MonsterStates\MonsterExtendedHunt.cpp" />
+    <ClCompile Include="Source\Game\Behaviours\Monster\MonsterStates\MonsterHunt.cpp" />
+    <ClCompile Include="Source\Game\Behaviours\Monster\MonsterStates\MonsterHuntDone.cpp" />
+    <ClCompile Include="Source\Game\Behaviours\Monster\MonsterStates\MonsterIdle.cpp" />
+    <ClCompile Include="Source\Game\Behaviours\Monster\MonsterStates\MonsterState.cpp" />
+    <ClCompile Include="Source\Game\Behaviours\Interaction\PickupBehaviour.cpp" />
+    <ClCompile Include="Source\Game\Behaviours\Inventory\PictureBehaviour.cpp" />
+    <ClCompile Include="Source\Game\Behaviours\Events\PlayerCutsceneBehaviour.cpp" />
+    <ClCompile Include="Source\Game\Behaviours\Player\PlayerMovementBehaviour.cpp" />
+    <ClCompile Include="Source\Game\Behaviours\Player\PlayerViewBehaviour.cpp" />
+    <ClCompile Include="Source\Game\Behaviours\Rendering\Lighting\PointLightBehaviour.cpp" />
+    <ClCompile Include="Source\Game\Behaviours\Player\RestrictedViewBehaviour.cpp" />
+    <ClCompile Include="Source\Game\Behaviours\Rendering\Lighting\SimplePointLightBehaviour.cpp" />
+    <ClCompile Include="Source\Game\Behaviours\Rendering\Lighting\SimpleSpotLightBehaviour.cpp" />
+    <ClCompile Include="Source\Game\Behaviours\Physics\SolidObjectBehaviour.cpp" />
+    <ClCompile Include="Source\Game\Behaviours\Sound\SoundBehaviour.cpp" />
+    <ClCompile Include="Source\Game\Behaviours\Rendering\Lighting\SpotLightBehaviour.cpp" />
+    <ClCompile Include="Source\Game\Behaviours\Misc\TrackerBehaviour.cpp" />
+    <ClCompile Include="Source\Game\Behaviours\Menu\UIButtonExampleBehaviour.cpp" />
     <ClCompile Include="Source\Game\Entity.cpp" />
     <ClCompile Include="Source\Game\Game.cpp" />
     <ClCompile Include="Source\Game\GraphManager.cpp" />
@@ -638,7 +641,6 @@
     <ClCompile Include="Source\Game\Scenes\SceneUI.cpp" />
     <ClCompile Include="Source\Game\Transform.cpp" />
     <ClCompile Include="Source\Math\EasingFunctions.cpp" />
-    <ClCompile Include="Source\Math\GameMath.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">Create</PrecompiledHeader>

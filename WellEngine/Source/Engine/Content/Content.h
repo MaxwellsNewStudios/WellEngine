@@ -4,13 +4,13 @@
 #include <string>
 #include <set>
 
-#include "D3D/InputLayoutD3D11.h"
-#include "D3D/ShaderD3D11.h"
-#include "D3D/MeshD3D11.h"
-#include "D3D/SamplerD3D11.h"
-#include "D3D/ShaderResourceTextureD3D11.h"
+#include "Source/Engine/D3D/InputLayoutD3D11.h"
+#include "Source/Engine/D3D/ShaderD3D11.h"
+#include "Source/Engine/D3D/MeshD3D11.h"
+#include "Source/Engine/D3D/SamplerD3D11.h"
+#include "Source/Engine/D3D/ShaderResourceTextureD3D11.h"
+#include "Source/Engine/Audio/SoundSource.h"
 #include "Material.h"
-#include "Audio/SoundSource.h"
 #include "HeightMap.h"
 
 inline constexpr UINT CONTENT_NULL = 0xFFFFFFFF;

@@ -3,8 +3,8 @@
 #include <variant>
 #include <DirectXMath.h>
 #include <DirectXCollision.h>
-#include <Debug/ErrMsg.h>
-#include "Collision/ColliderShapes.h"
+#include "Source/Engine/Debug/ErrMsg.h"
+#include "Source/Engine/Collision/ColliderShapes.h"
 
 namespace dx = DirectX;
 

@@ -1,6 +1,5 @@
 #include "stdafx.h"
-#include "Math/EasingFunctions.h"
-#include <cmath>
+#include "EasingFunctions.h"
 
 #ifdef LEAK_DETECTION
 #define new			DEBUG_NEW

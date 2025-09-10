@@ -1,4 +1,3 @@
-#pragma region Includes, Usings & Defines
 #include "stdafx.h"
 #include "BehaviourFactory.h"
 #include "Behaviour.h"
@@ -6,7 +5,6 @@
 #ifdef LEAK_DETECTION
 #define new			DEBUG_NEW
 #endif
-#pragma endregion
 
 Behaviour *BehaviourFactory::CreateBehaviour(std::string_view name)
 {

@@ -1,7 +1,6 @@
 #pragma once
 #include <unordered_map>
-
-#include "Timing/TimelineSequence.h"
+#include "TimelineSequence.h"
 
 class TimelineManager
 {

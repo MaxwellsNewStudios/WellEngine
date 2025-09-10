@@ -12,6 +12,7 @@ const std::string RegistryFile = RegistryDir + "BehaviourRegistry.cpp";
 const std::string RegisterAttribute = "[[register_behaviour]]";
 const std::string IncludeTag = "%INCLUDE%";
 const std::string RegisterTag = "%REGISTER%";
+const std::string CategoryTag = "%CATEGORY%";
 const std::string RegistryTemplate = "\
 // Automatically generated during build by BehaviourRegistration.\n\
 // Scans for all behaviour definitions and includes them here for the behaviour factory to use.\n\
@@ -33,7 +34,18 @@ const std::map<std::string_view, std::function<Behaviour *(void)>> &BehaviourReg
     };\n\
 \n\
     return behaviourMap;\n\
-};\n";
+};\n\
+\n\
+#ifdef DEBUG_BUILD\n\
+const std::map<std::string_view, std::string> &BehaviourRegistry::GetCategories()\n\
+{\n\
+    static const std::map<std::string_view, std::string> behaviourCategoryMap = {\n\
+" + CategoryTag + "\n\
+    };\n\
+\n\
+    return behaviourCategoryMap;\n\
+};\n\
+#endif\n";
 
 
 static std::vector<std::string> ScanHeaderFileForBehaviours(const std::filesystem::path &filePath)
@@ -80,7 +92,7 @@ static std::vector<std::string> ScanHeaderFileForBehaviours(const std::filesyste
 struct BehaviourInfo
 {
     std::vector<std::string> includes;
-    std::vector<std::string> classes;
+	std::vector<std::pair<std::string, std::string>> classes; // Name, Category
 };
 static void RecursiveHeaderSearch(const std::string &recursedPath, std::filesystem::directory_iterator &dirIter, BehaviourInfo &info)
 {
@@ -117,7 +129,22 @@ static void RecursiveHeaderSearch(const std::string &recursedPath, std::filesyst
 #ifdef _DEBUG
                 std::cout << "Registering '" << behaviourName << "'\n";
 #endif
-                info.classes.emplace_back(std::move(behaviourName));
+				std::pair<std::string, std::string> behaviourEntry;
+				behaviourEntry.first = std::move(behaviourName);
+
+				behaviourEntry.second = recursedPath; // Script path
+
+				// Replace backslashes with forward slashes for category
+                if (behaviourEntry.second.find('\\') != std::string::npos)
+                {
+                    for (char &c : behaviourEntry.second)
+                    {
+                        if (c == '\\')
+                            c = '/';
+                    }
+                }
+                
+                info.classes.emplace_back(std::move(behaviourEntry));
             }
         }
         else if (entry.is_directory())
@@ -126,8 +153,8 @@ static void RecursiveHeaderSearch(const std::string &recursedPath, std::filesyst
             std::filesystem::directory_iterator subDirIter(path);
 
             std::string subDirName = path.filename().string();
-            if (!subDirName.ends_with('\\'))
-                subDirName += '\\';
+            if (!subDirName.ends_with('/'))
+                subDirName += '/';
 
             RecursiveHeaderSearch(recursedPath + subDirName, subDirIter, info);
         }
@@ -157,40 +184,66 @@ static std::string GenerateRegistryCode(const BehaviourInfo &behaviourInfo)
     std::string output = RegistryTemplate;
 
 	size_t maxClassNameLength = 0;
-    for (const auto &behaviourClass : behaviourInfo.classes)
-		maxClassNameLength = std::max(maxClassNameLength, behaviourClass.length());
-
-    std::string registerCode = "";
+	size_t maxClassCategoryLength = 0;
     for (const auto &behaviourClass : behaviourInfo.classes)
     {
-		size_t thisClassNameLength = behaviourClass.length();
-		size_t paddingLength = maxClassNameLength - thisClassNameLength;
-		std::string padding(paddingLength, ' ');
+        maxClassNameLength = std::max(maxClassNameLength, behaviourClass.first.length());
+        maxClassCategoryLength = std::max(maxClassCategoryLength, behaviourClass.second.length());
+    }
 
-        registerCode += "\t\t{ \"" + behaviourClass + "\", " + padding + "[]() { return new " + behaviourClass + "(); } " + padding + "},\n";
+    std::string registerCode = "";
+    std::string categoryCode = "";
+    for (const auto &behaviourClass : behaviourInfo.classes)
+    {
+		size_t thisClassNameLength = behaviourClass.first.length();
+		size_t thisClassCategoryLength = behaviourClass.second.length();
+
+		size_t namePaddingLength = maxClassNameLength - thisClassNameLength;
+		size_t categoryPaddingLength = maxClassCategoryLength - thisClassCategoryLength;
+
+		std::string namePadding(namePaddingLength, ' ');
+		std::string categoryPadding(categoryPaddingLength, ' ');
+
+        registerCode += "\t\t{ \"" + behaviourClass.first + "\", " + namePadding + "[]() { return new " + behaviourClass.first + "(); } " + namePadding + "},\n";
+        categoryCode += "\t\t{ \"" + behaviourClass.first + "\", " + namePadding + "\"" + behaviourClass.second + "\" " + categoryPadding + "},\n";
     }
 
 	std::string includeCode = "";
     for (const auto &behaviourInclude : behaviourInfo.includes)
         includeCode += "#include \"Behaviours/" + behaviourInclude + ".h\"\n";
 
+    // Locate category tag
+    {
+        size_t categoryPos = output.find(CategoryTag);
+
+        if (categoryPos == std::string::npos)
+            std::cerr << "Category tag not found in template!\n";
+
+        // Replace tag with generated code
+        output.replace(categoryPos, CategoryTag.length(), categoryCode);
+    }
+
     // Locate register tag
-    size_t registerPos = output.find(RegisterTag);
+    {
+        size_t registerPos = output.find(RegisterTag);
 
-    if (registerPos == std::string::npos)
-        std::cerr << "Register tag not found in template!\n";
+        if (registerPos == std::string::npos)
+            std::cerr << "Register tag not found in template!\n";
 
-	// Replace tag with generated code
-    output.replace(registerPos, RegisterTag.length(), registerCode);
+        // Replace tag with generated code
+        output.replace(registerPos, RegisterTag.length(), registerCode);
+    }
 
 	// Locate include tag
-	size_t includePos = output.find(IncludeTag);
+    {
+        size_t includePos = output.find(IncludeTag);
 
-	if (includePos == std::string::npos)
-		std::cerr << "Include tag not found in template!\n";
+        if (includePos == std::string::npos)
+            std::cerr << "Include tag not found in template!\n";
 
-	// Replace tag with generated code
-	output.replace(includePos, IncludeTag.length(), includeCode);
+        // Replace tag with generated code
+        output.replace(includePos, IncludeTag.length(), includeCode);
+    }
 
     return output;
 }

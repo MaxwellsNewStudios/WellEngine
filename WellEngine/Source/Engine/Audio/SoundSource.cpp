@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include "Audio/SoundSource.h"
+#include "SoundSource.h"
 
 #ifdef LEAK_DETECTION
 #define new			DEBUG_NEW

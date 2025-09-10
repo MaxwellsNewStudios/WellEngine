@@ -1,8 +1,8 @@
 #include "stdafx.h"
 #include "Entity.h"
 #include "Scenes/Scene.h"
-#include "Behaviours/DebugPlayerBehaviour.h"
-#include "Behaviours/MeshBehaviour.h"
+#include "Behaviours/Debug/DebugPlayerBehaviour.h"
+#include "Behaviours/Rendering/Mesh/MeshBehaviour.h"
 #include "BehaviourFactory.h"
 
 #ifdef LEAK_DETECTION

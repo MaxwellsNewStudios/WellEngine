@@ -1,10 +1,9 @@
 #pragma once
 #include <vector>
-
-#include "Transform.h"
 #include "TimelineWaypoint.h"
-#include "Timing/TimeUtils.h"
-#include "Math/EasingFunctions.h"
+#include "TimeUtils.h"
+#include "Source/Game/Transform.h"
+#include "Source/Math/EasingFunctions.h"
 
 enum class SequenceStatus
 {

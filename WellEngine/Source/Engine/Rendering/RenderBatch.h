@@ -1,6 +1,6 @@
 #pragma once
-#include "Content/Material.h"
-#include "D3D/StructuredBufferD3D11.h"
+#include "Source/Engine/Content/Material.h"
+#include "Source/Engine/D3D/StructuredBufferD3D11.h"
 
 class MeshBehaviour;
 

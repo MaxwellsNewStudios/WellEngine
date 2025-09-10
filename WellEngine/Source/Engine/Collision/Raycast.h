@@ -3,7 +3,7 @@
 #include <DirectXMath.h>
 #include <DirectXCollision.h>
 #include "ColliderShapes.h"
-#include "Math/GameMath.h"
+#include "Source/Math/GameMath.h"
 
 namespace dx = DirectX;
 

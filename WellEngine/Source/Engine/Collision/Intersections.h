@@ -3,7 +3,7 @@
 #include <DirectXMath.h>
 #include <DirectXCollision.h>
 
-#include "Collision/Colliders.h"
+#include "Colliders.h"
 
 namespace Collisions
 {

@@ -1,7 +1,7 @@
 #include "stdafx.h"
-#include "Input/Input.h"
-#include <winuser.h>
-#include "Debug/DebugData.h"
+#include "Input.h"
+//#include <winuser.h>
+#include "Source/Engine/Debug/DebugData.h"
 
 #ifdef LEAK_DETECTION
 #define new			DEBUG_NEW

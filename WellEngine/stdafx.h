@@ -1,12 +1,11 @@
 #pragma once
 #undef NDEBUG
 
-#include "../Tests/TestUtils.h"
+#include "Tests/TestUtils.h"
 
-#include "Engine/EngineSettings.h"
-
-#include "Debug/TrackedAlloc.h"
-#include "Debug/DebugNew.h"
+#include "Source/Engine/EngineSettings.h"
+#include "Source/Engine/Debug/TrackedAlloc.h"
+#include "Source/Engine/Debug/DebugNew.h"
 
 #define _USE_MATH_DEFINES
 
@@ -17,8 +16,10 @@
 #include <memory>
 #include <iostream>
 #include <fstream>
+#include <sstream>
 #include <variant>
 #include <ctime>
+#include <cmath>
 #include <filesystem>
 #include <cstdlib>
 #include <functional>
@@ -31,6 +32,8 @@
 #include <omp.h>
 #include <cassert>
 #include <random>
+#include <float.h>
+#include <intsafe.h>
 
 // DirectX & SDL
 #include <wrl/client.h>
@@ -54,26 +57,27 @@
 namespace dx = DirectX;
 using Microsoft::WRL::ComPtr;
 
-// External Libraries
+// Dependencies
 #ifdef USE_IMGUI
-#include "tinyfiledialogs/tinyfiledialogs.h"
-#include "ImGui/imconfig.h"
-#include "ImGui/imgui.h"
-#include "ImGui/imgui_impl_sdl3.h"
-#include "ImGui/imgui_impl_dx11.h"
-#include "ImGui/imgui_stdlib.h"
-#include "ImPlot/implot.h"
-#endif
-#ifdef USE_IMGUIZMO
-#include "ImGui/ImGuizmo.h"
-#include "ImGui/ImSequencer.h"
-#include "ImGui/ImZoomSlider.h"
-#include "ImGui/ImCurveEdit.h"
-#include "ImGui/GraphEditor.h"
+#include "Dependencies/tinyfiledialogs/tinyfiledialogs.h"
+#include "Dependencies/ImGui/imconfig.h"
+#include "Dependencies/ImGui/imgui.h"
+#include "Dependencies/ImGui/imgui_impl_sdl3.h"
+#include "Dependencies/ImGui/imgui_impl_dx11.h"
+#include "Dependencies/ImGui/imgui_stdlib.h"
+#include "Dependencies/ImPlot/implot.h"
 #endif
 
-#include "tracy-0.11.1/public/tracy/Tracy.hpp"
-#include "tracy-0.11.1/public/tracy/TracyD3D11.hpp"
+#ifdef USE_IMGUIZMO
+#include "Dependencies/ImGui/ImGuizmo.h"
+#include "Dependencies/ImGui/ImSequencer.h"
+#include "Dependencies/ImGui/ImZoomSlider.h"
+#include "Dependencies/ImGui/ImCurveEdit.h"
+#include "Dependencies/ImGui/GraphEditor.h"
+#endif
+
+#include "Dependencies/tracy-0.11.1/public/tracy/Tracy.hpp"
+#include "Dependencies/tracy-0.11.1/public/tracy/TracyD3D11.hpp"
 
 #include "rapidjson/document.h"
 #include "rapidjson/writer.h"
@@ -83,43 +87,53 @@ using Microsoft::WRL::ComPtr;
 #include "rapidjson/filewritestream.h"
 namespace json = rapidjson;
 
+
+// Math
+#include "Source/Math/GameMath.h"
+#include "Source/Math/ConstRand.h"
+
 // Engine
-#include "Utils/UIDHelper.h"
-#include "Utils/ReferenceHelper.h"
-#include "Utils/StringUtils.h"
-#include "Utils/SerializerUtils.h"
-#include "Transform.h"
-#include "Math/GameMath.h"
-#include "Math/ConstRand.h"
-#include "Content/Material.h"
-#include "Rendering/RendererInfo.h"
-#include "Rendering/RenderQueuer.h"
-#include "Window/Window.h"
-#include "Timing/TimeUtils.h"
-#include "Input/Input.h"
-#include "Input/InputBindings.h"
-#include "Collision/ColliderShapes.h"
-#include "Debug/ErrMsg.h"
+#include "Source/Engine/Utils/UIDHelper.h"
+#include "Source/Engine/Utils/ReferenceHelper.h"
+#include "Source/Engine/Utils/StringUtils.h"
+#include "Source/Engine/Utils/SerializerUtils.h"
+#include "Source/Engine/Content/Material.h"
+#include "Source/Engine/Rendering/RendererInfo.h"
+#include "Source/Engine/Rendering/RenderQueuer.h"
+#include "Source/Engine/Window/Window.h"
+#include "Source/Engine/Timing/TimeUtils.h"
+#include "Source/Engine/Input/Input.h"
+#include "Source/Engine/Input/InputBindings.h"
+#include "Source/Engine/Collision/ColliderShapes.h"
+#include "Source/Engine/Collision/Raycast.h"
+#include "Source/Engine/Debug/ErrMsg.h"
+
+#include "Source/Engine/D3D/D3D11Helper.h"
+#include "Source/Engine/D3D/D3D11FormatData.h"
+#include "Source/Engine/D3D/ConstantBufferD3D11.h"
+#include "Source/Engine/D3D/DepthBufferD3D11.h"
+#include "Source/Engine/D3D/IndexBufferD3D11.h"
+#include "Source/Engine/D3D/InputLayoutD3D11.h"
+#include "Source/Engine/D3D/MeshD3D11.h"
+#include "Source/Engine/D3D/RenderTargetD3D11.h"
+#include "Source/Engine/D3D/SamplerD3D11.h"
+#include "Source/Engine/D3D/ShaderD3D11.h"
+#include "Source/Engine/D3D/ShaderResourceTextureD3D11.h"
+#include "Source/Engine/D3D/SimpleMeshD3D11.h"
+#include "Source/Engine/D3D/StructuredBufferD3D11.h"
+#include "Source/Engine/D3D/SubMeshD3D11.h"
+#include "Source/Engine/D3D/VertexBufferD3D11.h"
+
 #ifdef USE_IMGUI
-#include "UI/UIDragDropHelpers.h"
-#include "UI/ImGuiUtils.h"
+#include "Source/Engine/UI/UIDragDropHelpers.h"
+#include "Source/Engine/UI/ImGuiUtils.h"
 #endif
 
-#include "D3D/D3D11Helper.h"
-#include "D3D/D3D11FormatData.h"
-#include "D3D/ConstantBufferD3D11.h"
-#include "D3D/DepthBufferD3D11.h"
-#include "D3D/IndexBufferD3D11.h"
-#include "D3D/InputLayoutD3D11.h"
-#include "D3D/MeshD3D11.h"
-#include "D3D/RenderTargetD3D11.h"
-#include "D3D/SamplerD3D11.h"
-#include "D3D/ShaderD3D11.h"
-#include "D3D/ShaderResourceTextureD3D11.h"
-#include "D3D/SimpleMeshD3D11.h"
-#include "D3D/StructuredBufferD3D11.h"
-#include "D3D/SubMeshD3D11.h"
-#include "D3D/VertexBufferD3D11.h"
+// Game
+#include "Source/Game/Transform.h"
+
+
+
 
 
 #define COUT_USAGE_WARNING abort(); static_assert(false, "Use Warn() or DbgMsg() instead of std::cout. They exist for a reason.")

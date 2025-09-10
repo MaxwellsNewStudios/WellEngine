@@ -1,13 +1,10 @@
 ﻿#include "stdafx.h"
-#include "Rendering/Graphics.h"
+#include "Graphics.h"
 
-#include "Entity.h"
-#include "Behaviours/MeshBehaviour.h"
-#include "D3D/D3D11Helper.h"
-#include "Debug/DebugData.h"
-#ifdef USE_IMGUI
-#include "UI/UILayout.h"
-#endif
+#include "Source/Game/Entity.h"
+#include "Source/Game/Behaviours/Rendering/Mesh/MeshBehaviour.h"
+#include "Source/Engine/Debug/DebugData.h"
+#include "Source/Engine/UI/UILayout.h"
 
 #ifdef LEAK_DETECTION
 #define new			DEBUG_NEW

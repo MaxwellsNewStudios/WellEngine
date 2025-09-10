@@ -3,14 +3,15 @@
 #include <d3d11.h>
 #include <array>
 #include <wrl/client.h>
-#include "Content/Content.h"
-#include "Timing/TimeUtils.h"
-#include "D3D/RenderTargetD3D11.h"
-#include "Window/Window.h"
-#include "Rendering/Lighting/SpotLightCollection.h"
-#include "Rendering/Lighting/PointLightCollection.h"
-#include "Behaviours/CameraBehaviour.h"
-#include "Debug/DebugDrawer.h"
+
+#include "./Lighting/SpotLightCollection.h"
+#include "./Lighting/PointLightCollection.h"
+#include "Source/Engine/Content/Content.h"
+#include "Source/Engine/Timing/TimeUtils.h"
+#include "Source/Engine/D3D/RenderTargetD3D11.h"
+#include "Source/Engine/Window/Window.h"
+#include "Source/Engine/Debug/DebugDrawer.h"
+#include "Source/Game/Behaviours/Rendering/Camera/CameraBehaviour.h"
 
 enum class RenderType
 {

@@ -2,9 +2,9 @@
 
 #include <DirectXMath.h>
 #include <unordered_map>
-#include <Windows.h>
+#include <intsafe.h>
 #include <SDL3/SDL.h>
-#include "Window/Window.h"
+#include "Source/Engine/Window/Window.h"
 
 namespace dx = DirectX;
 

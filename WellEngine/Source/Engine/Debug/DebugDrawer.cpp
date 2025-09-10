@@ -1,9 +1,6 @@
 #include "stdafx.h"
-#include "Debug/DebugDrawer.h"
+#include "DebugDrawer.h"
 #include <Windows.h>
-#include <algorithm>
-#include "Math/GameMath.h"
-#include "Debug/ErrMsg.h"
 
 #ifdef LEAK_DETECTION
 #define new			DEBUG_NEW

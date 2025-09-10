@@ -1,7 +1,7 @@
 #pragma region Includes & Usings
 #include "stdafx.h"
 #include "ImGuiUtils.h"
-#include "Debug/DebugData.h"
+#include "Source/Engine/Debug/DebugData.h"
 
 using namespace ImGuiUtils;
 

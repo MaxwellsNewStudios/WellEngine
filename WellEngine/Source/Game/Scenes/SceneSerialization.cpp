@@ -1,14 +1,12 @@
 #pragma region Includes, Usings & Defines
 #include "stdafx.h"
-#include "Scenes/Scene.h"
-#include "Game.h"
-#include "GraphManager.h"
-#include "Utils/SerializerUtils.h"
-#include "BehaviourFactory.h"
-#ifdef DEBUG_BUILD
-#include "Behaviours/DebugPlayerBehaviour.h"
-#endif
-#include "Behaviours/GraphNodeBehaviour.h"
+#include "Scene.h"
+#include "../Game.h"
+#include "../GraphManager.h"
+#include "../BehaviourFactory.h"
+#include "../Behaviours/Debug/DebugPlayerBehaviour.h"
+#include "../Behaviours/Navigation/GraphNodeBehaviour.h"
+#include "Source/Engine/Utils/SerializerUtils.h"
 
 #ifdef LEAK_DETECTION
 #define new			DEBUG_NEW

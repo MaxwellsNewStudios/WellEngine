@@ -1,9 +1,8 @@
 #include "stdafx.h"
 #include "Game.h"
-//#include <dxgiformat.h>
-#include "Debug/DebugData.h"
+#include "Source/Engine/Debug/DebugData.h"
 #ifdef USE_IMGUI
-#include "UI/UILayout.h"
+#include "Source/Engine/UI/UILayout.h"
 #endif
 
 #ifdef LEAK_DETECTION
