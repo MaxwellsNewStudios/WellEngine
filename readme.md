@@ -4,7 +4,9 @@ A D3D11-based 3D game + engine originally developed as a group project by six st
 
 [Gameplay & Feature Showcase](https://www.youtube.com/watch?v=1Gf-hLuPSCU)
 
-![Editor](Docs/Images/EditorPreview.png)
+![Editor](Docs/Images/PrefabEditing.png)
+
+![Sponza](Docs/Images/Sponza.png)
 
 ![Lighting](Docs/Images/VolumetricLighting.gif)
 
