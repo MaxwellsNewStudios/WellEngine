@@ -204,6 +204,7 @@ private:
 
 	UINT _skyboxPsID = CONTENT_NULL;
 	UINT _environmentCubemapID = CONTENT_NULL;
+	UINT _colorLutID = CONTENT_NULL;
 
 	UINT
 		_currMeshID			= CONTENT_NULL,

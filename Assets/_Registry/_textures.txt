@@ -10,7 +10,6 @@
 #      ...
 #  <pop mipmapped downsample>
 
-
 CaveSystem.dds
 CaveSystem_Large.dds
 
@@ -460,3 +459,9 @@ sponza\sponza_vase_round_ddn.dds
 sponza\sponza_vase_round_ddn.dds
 sponza\sponza_vase_round_spec.dds
 sponza\sponza_vase_spec.dds
+
+<push m=false>
+LUT_Default.dds
+LUT_Experimental.dds
+LUT_Test.dds
+<pop m>

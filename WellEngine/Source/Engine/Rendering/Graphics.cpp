@@ -3754,6 +3754,7 @@ bool Graphics::RenderPostFX()
 		};
 		_context->CSSetUnorderedAccessViews(0, 1, uav, nullptr);
 
+
 		// Bind screen, emission & fog resources
 		ID3D11ShaderResourceView *srvs[3] = { 
 			_sceneRT.GetSRV(),
@@ -3774,6 +3775,24 @@ bool Graphics::RenderPostFX()
 		_context->Dispatch(static_cast<UINT>(ceil(_viewportSceneView.Width / 8.0f)), static_cast<UINT>(ceil(_viewportSceneView.Height / 8.0f)), 1);
 
 
+		// Apply color grading LUT if one is set
+		if (_colorLutID != CONTENT_NULL)
+		{
+			std::string lutShaderName = "CS_ColorLUT";
+			if (!_content->GetShader(lutShaderName)->BindShader(_context))
+			{
+				ErrMsg("Failed to bind color LUT compute shader!");
+				return false;
+			}
+
+			ID3D11ShaderResourceView *lutSRV = _content->GetTexture(_colorLutID)->GetSRV();
+			_context->CSSetShaderResources(0, 1, &lutSRV);
+
+			// Send execution command
+			_context->Dispatch(static_cast<UINT>(ceil(_viewportSceneView.Width / 8.0f)), static_cast<UINT>(ceil(_viewportSceneView.Height / 8.0f)), 1);
+		}
+
+
 		// Unbind shader resources
 		memset(srvs, 0, sizeof(srvs));
 		_context->CSSetShaderResources(0, 3, srvs);
@@ -3790,6 +3809,7 @@ bool Graphics::RenderPostFX()
 		static ID3D11UnorderedAccessView *const nullUAV = nullptr;
 		_context->CSSetUnorderedAccessViews(0, 1, &nullUAV, nullptr);
 	}
+
 
 	return true;
 }
@@ -3970,6 +3990,44 @@ bool Graphics::RenderUI(TimeUtils &time)
 				ImGui::ContentPayload contentPayload = *(const ImGui::ContentPayload *)payload->Data;
 
 				SetEnvironmentCubemapID(contentPayload.id);
+			}
+			ImGui::EndDragDropTarget();
+		}
+	}
+	ImGui::Dummy(ImVec2(0.0f, 4.0f));
+
+	// Color LUT drag & drop target
+	{
+		ImGui::BeginGroup();
+		ImGui::Text("Color LUT:"); 
+		ImGui::SameLine();
+
+		if (_colorLutID != CONTENT_NULL)
+		{
+			std::string lutName = _content->GetTextureName(_colorLutID);
+			ImGui::Text("%s", lutName.c_str());
+
+			ImGui::SameLine();
+			ImGuiUtils::BeginButtonStyle(ImGuiUtils::StyleType::Red);
+			if (ImGui::Button("X"))
+				_colorLutID = CONTENT_NULL;
+			ImGuiUtils::EndButtonStyle();
+		}
+		else
+		{
+			ImGui::Text("None");
+		}
+
+		ImGui::EndGroup();
+
+		if (ImGui::BeginDragDropTarget())
+		{
+			if (const ImGuiPayload *payload = ImGui::AcceptDragDropPayload(ImGui::PayloadTags.at(ImGui::PayloadType::TEXTURE)))
+			{
+				IM_ASSERT(payload->DataSize == sizeof(ImGui::ContentPayload));
+				ImGui::ContentPayload contentPayload = *(const ImGui::ContentPayload *)payload->Data;
+
+				_colorLutID  = contentPayload.id;
 			}
 			ImGui::EndDragDropTarget();
 		}

@@ -415,3 +415,4 @@ FodyWeavers.xsd
 *.sln.iml
 WellEngine/Content/CompiledContent
 DebugData.json
+/Assets/Textures/Tools/t

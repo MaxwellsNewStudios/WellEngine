@@ -1019,9 +1019,30 @@ bool LoadTextureFromFile(
 
 	D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
 	srvDesc.Format = metadata.format;
-	srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
-	srvDesc.Texture2D.MipLevels = metadata.mipLevels;
-	srvDesc.Texture2D.MostDetailedMip = 0;
+
+	switch (metadata.dimension)
+	{
+	case dx::TEX_DIMENSION_TEXTURE1D:
+		srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE1D;
+		srvDesc.Texture1D.MipLevels = metadata.mipLevels;
+		srvDesc.Texture1D.MostDetailedMip = 0;
+		break;
+
+	case dx::TEX_DIMENSION_TEXTURE2D:
+		srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+		srvDesc.Texture2D.MipLevels = metadata.mipLevels;
+		srvDesc.Texture2D.MostDetailedMip = 0;
+		break;
+
+	case dx::TEX_DIMENSION_TEXTURE3D:
+		srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE3D;
+		srvDesc.Texture3D.MipLevels = metadata.mipLevels;
+		srvDesc.Texture3D.MostDetailedMip = 0;
+		break;
+
+	default:
+		break;
+	}
 
 	hr = device->CreateShaderResourceView(texture, &srvDesc, &srv);
 	if (FAILED(hr)) 

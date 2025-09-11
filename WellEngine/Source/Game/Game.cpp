@@ -793,6 +793,7 @@ bool Game::Setup(TimeUtils &time, Window window)
 		{ ShaderType::COMPUTE_SHADER,		"CS_BlurVerticalEmission",		"CS_BlurVerticalEmission"		},
 		{ ShaderType::COMPUTE_SHADER,		"CS_Downsample",				"CS_Downsample"					},
 		{ ShaderType::COMPUTE_SHADER,		"CS_DownsampleCheap",			"CS_DownsampleCheap"			},
+		{ ShaderType::COMPUTE_SHADER,		"CS_ColorLUT",					"CS_ColorLUT"					},
 		{ ShaderType::COMPUTE_SHADER,		"CS_FogFX",						"CS_FogFX"						},
 		{ ShaderType::COMPUTE_SHADER,		"CS_CombineFX",					"CS_CombineFX"					},
 
