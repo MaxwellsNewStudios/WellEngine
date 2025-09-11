@@ -358,8 +358,9 @@ bool Content::RenderUI(ID3D11Device *device)
 								);
 
 								ImGui::Text("ID: %d", texture->id);
-								ImGui::Text(texture->name.c_str());
-								ImGui::Text(texture->path.c_str());
+								ImGui::Text("Name: %s", texture->name.c_str());
+								ImGui::Text("Asset: %s", texture->path.c_str());
+								ImGui::Text("Loaded From: %s", texture->actualPath.c_str());
 								ImGui::Text("%d x %d", size.x, size.y);
 								ImGui::Text(D3D11FormatData::GetName(texData.GetFormat()).c_str());
 								ImGui::Text("Mipmapped: %s", (texture->mipmapped ? "True" : "False"));
@@ -1369,8 +1370,48 @@ UINT Content::AddTexture(ID3D11Device *device, ID3D11DeviceContext *context, con
 			ComPtr<ID3D11Texture2D> texture;
 			ComPtr<ID3D11ShaderResourceView> srv;
 
+			const std::string *pathToUse = &path;
+			bool doBake = true;
+			bool flip = true;
+
+#ifndef FORCE_BAKE_TEXTURES
+			std::string bakePath = GetTextureBakePath(path);
+
+			// Check if texture is prebaked
+			if (std::filesystem::exists(bakePath))
+			{
+				if (std::filesystem::exists(path))
+				{
+					// Ensure that the original has not been modified since the bake
+					auto originalWriteTime = std::filesystem::last_write_time(path);
+					auto bakedWriteTime = std::filesystem::last_write_time(bakePath);
+
+					if (originalWriteTime < bakedWriteTime)
+					{
+						// Baked is newer, use it
+						pathToUse = &bakePath;
+
+						doBake = false;
+						flip = false;
+						downsample = 0;
+						format = DXGI_FORMAT_UNKNOWN;
+					}
+				}
+				else
+				{
+					// Original doesn't exist but baked does, use baked
+					pathToUse = &bakePath;
+
+					doBake = false;
+					flip = false;
+					downsample = 0;
+					format = DXGI_FORMAT_UNKNOWN;
+				}
+			}
+#endif
+
 			bool failed = false;
-			if (!LoadTextureFromFile(device, context, path, *texture.GetAddressOf(), *srv.GetAddressOf(), format, useMipmaps, downsample))
+			if (!LoadTextureFromFile(device, context, *pathToUse, *texture.GetAddressOf(), *srv.GetAddressOf(), format, useMipmaps, downsample, flip, doBake))
 			{
 				Warn("Failed to load texture from file!");
 				failed = true;
@@ -1390,6 +1431,8 @@ UINT Content::AddTexture(ID3D11Device *device, ID3D11DeviceContext *context, con
 				{
 					_textures.emplace_back(addedTexture);
 				}
+
+				addedTexture->actualPath = *pathToUse;
 			}
 		}
 	}

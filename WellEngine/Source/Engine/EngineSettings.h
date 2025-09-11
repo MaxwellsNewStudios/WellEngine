@@ -5,17 +5,12 @@
 
 
 #pragma region Content
-	/// COMPILE_CONTENT enables recompilation of the content file upon startup. Required after modifying or adding new meshes.
+	/// FORCE_COMPILE_CONTENT enables recompilation of the content file upon startup. Required after modifying or adding new meshes.
 	/// Disabled by default as it slightly increases load time.
-	//#define COMPILE_CONTENT
+	//#define FORCE_COMPILE_CONTENT
 
-	/// BAKE_TEXTURES causes textures to be baked into their post-processed form after loading.
-	#define BAKE_TEXTURES
-
-	#ifndef BAKE_TEXTURES
-		/// USE_BAKED_TEXTURES causes the pre-baked textures to be loaded during setup instead of processing them at runtime.
-		#define USE_BAKED_TEXTURES
-	#endif
+	/// FORCE_BAKE_TEXTURES causes textures to be baked into their post-processed form after loading.
+	//#define FORCE_BAKE_TEXTURES
 
 	/// USE_OWN_RESIZE_ALGORITHM enables the use of a custom resize algorithm for downsampling textures.
 	/// Otherwise, use stb_image_resize2, which produces blurrier results.

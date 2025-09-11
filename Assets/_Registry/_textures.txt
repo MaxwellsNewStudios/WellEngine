@@ -464,4 +464,5 @@ sponza\sponza_vase_spec.dds
 LUT_Default.dds
 LUT_Experimental.dds
 LUT_Test.dds
+LUT_HueShift.dds
 <pop m>

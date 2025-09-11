@@ -91,7 +91,7 @@ public:
 class Texture : public ContentBase
 {
 public:
-	std::string path;
+	std::string path, actualPath;
 	bool mipmapped = false;
 	ShaderResourceTextureD3D11 data;
 

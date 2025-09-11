@@ -687,6 +687,28 @@ bool WriteMeshToFile(const char *path, const MeshData *meshData)
 
 
 #pragma region Texture
+std::string GetTextureBakePath(const std::string &file)
+{
+	std::string assetPath = file;
+
+	size_t assetPathStart = assetPath.find(ASSET_PATH_TEXTURES);
+	if (assetPathStart == std::string::npos)
+	{
+		size_t lastSlash = assetPath.find_last_of("\\/");
+		assetPath = assetPath.substr(lastSlash + 1);
+	}
+	else
+	{
+		size_t toCut = strlen(ASSET_PATH_TEXTURES) + 1; // +1 to also remove slash
+		assetPath = assetPath.substr(assetPathStart + toCut);
+	}
+
+	size_t lastDot = assetPath.find_last_of('.');
+	assetPath = assetPath.substr(0, lastDot);
+
+	return PATH_FILE_EXT(ASSET_COMPILED_PATH_TEXTURES, assetPath, "dds");
+}
+
 bool LoadDDSTextureFromFile(
 	ID3D11Device *device, ID3D11DeviceContext *context, 
 	const std::string &path, ID3D11Texture2D *&texture, ID3D11ShaderResourceView *&srv, 
@@ -717,7 +739,7 @@ bool LoadDDSTextureFromFile(
 bool LoadTextureFromFile(
 	ID3D11Device *device, ID3D11DeviceContext *context, 
 	const std::string &path, ID3D11Texture2D *&texture, ID3D11ShaderResourceView *&srv, 
-	DXGI_FORMAT format, bool mipmapped, UINT downsample, bool flip)
+	DXGI_FORMAT format, bool mipmapped, UINT downsample, bool flip, bool bake)
 {
 	std::wstring wPath = StringUtils::NarrowToWide(path);
 
@@ -960,27 +982,13 @@ bool LoadTextureFromFile(
 		}
 	}
 
-#if !defined(_DEPLOY) && defined(BAKE_TEXTURES)
+#if !defined(_DEPLOY)
 	// Save processed texture to TEXTURE_BAKE_PATH
+#ifndef FORCE_BAKE_TEXTURES
+	if (bake)
+#endif
 	{
-		std::string assetPath = path;
-
-		size_t assetPathStart = assetPath.find(ASSET_PATH_TEXTURES);
-		if (assetPathStart == std::string::npos)
-		{
-			size_t lastSlash = assetPath.find_last_of("\\/");
-			assetPath = assetPath.substr(lastSlash + 1);
-		}
-		else
-		{
-			size_t toCut = strlen(ASSET_PATH_TEXTURES) + 1; // +1 to also remove slash
-			assetPath = assetPath.substr(assetPathStart + toCut);
-		}
-
-		size_t lastDot = assetPath.find_last_of('.');
-		assetPath = assetPath.substr(0, lastDot);
-
-		std::string bakePath = PATH_FILE_EXT(ASSET_COMPILED_PATH_TEXTURES, assetPath, "dds");
+		std::string bakePath = GetTextureBakePath(path);
 		std::wstring wBakePath = StringUtils::NarrowToWide(bakePath);
 
 		// Ensure directory exists

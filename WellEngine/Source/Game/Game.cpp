@@ -101,7 +101,7 @@ bool Game::DecompileContent()
 	std::ifstream reader(ASSET_COMPILED_FILE_MESHES, std::ios::binary | std::ios::in | std::ios::ate);
 	if (!reader.is_open())
 	{
-		ErrMsg("Failed to open compiled content file! Try running once with COMPILE_CONTENT enabled.");
+		ErrMsg("Failed to open compiled content file! Try running once with FORCE_COMPILE_CONTENT enabled.");
 		return false;
 	}
 
@@ -405,7 +405,7 @@ bool Game::Setup(TimeUtils &time, Window window)
 	// Determine if a compiled content file exists or if it needs to be created
 	bool compileContent = false;
 
-#ifdef COMPILE_CONTENT
+#ifdef FORCE_COMPILE_CONTENT
 	compileContent = true;
 	DbgMsg("Forcing recompilation of content files...");
 #else
@@ -471,9 +471,6 @@ bool Game::Setup(TimeUtils &time, Window window)
 	}
 
 	std::string texPath = ASSET_PATH_TEXTURES;
-#ifdef USE_BAKED_TEXTURES
-	texPath = ASSET_COMPILED_PATH_TEXTURES;
-#endif
 
 	std::vector<TextureData> textureNames = {
 		{ DXGI_FORMAT_UNKNOWN,			"Error",						PATH_FILE(texPath, "Error.dds"),						false,	1	},
@@ -534,20 +531,6 @@ bool Game::Setup(TimeUtils &time, Window window)
 		{ DXGI_FORMAT_UNKNOWN,			"Transparent2",					PATH_FILE(texPath, "Transparent2.dds"),					false,	2	},
 #endif
 	};
-
-#ifdef USE_BAKED_TEXTURES
-	for (TextureData &texData : textureNames)
-	{
-		if (texData.file.ends_with(".dds") || texData.file.ends_with(".DDS"))
-			continue;
-
-		size_t extPos = texData.file.find_last_of('.');
-		if (extPos != std::string::npos)
-			texData.file = texData.file.substr(0, extPos);
-
-		texData.file += ".dds";
-	}
-#endif
 
 	std::ifstream texStream(ASSET_REGISTRY_FILE_TEXTURES);
 	if (texStream)
@@ -705,30 +688,14 @@ bool Game::Setup(TimeUtils &time, Window window)
 				continue;
 #endif
 
-#ifdef USE_BAKED_TEXTURES
-			mipmapped = true;
-			downsample = 0;
-			format = DXGI_FORMAT_UNKNOWN;
-
-			size_t assetPathStart = line.find(ASSET_PATH_TEXTURES);
-			if (assetPathStart == std::string::npos)
-				assetPathStart = 0;
-			else
-				assetPathStart += strlen(ASSET_PATH_TEXTURES) + 1;
-
-			std::string assetPath = line.substr(assetPathStart, fileNameStart - assetPathStart);
-
-			line = PATH_FILE_EXT(ASSET_COMPILED_PATH_TEXTURES, assetPath + name, "dds");
-#else
 			line = PATH_FILE(ASSET_PATH_TEXTURES, line);
-#endif
 
 			textureNames.emplace(textureNames.begin(), format, name, line, mipmapped, downsample);
 		}
 		texStream.close();
 	}
 
-	texPath = ASSET_PATH_TEXTURES; // HACK: cubemaps should also be baked. Until then, always load from source
+	// TODO: cubemaps should also be baked. Until then, always load from source
 	std::vector<TextureData> cubemapNames = {
 		{ DXGI_FORMAT_R8G8B8A8_UNORM,		"Fallback",				PATH_FILE(texPath, "FallbackCubemap.png"),				true,	0 },
 		{ DXGI_FORMAT_R8G8B8A8_UNORM,		"RundownIndustrial",	PATH_FILE(texPath, "RundownIndustrialCubemap.png"),		true,	0 },
@@ -2062,7 +2029,7 @@ bool Game::RenderUI(TimeUtils &time)
 				ImGui::Dummy({ 0, 3 });
 #endif
 
-#ifdef COMPILE_CONTENT
+#ifdef FORCE_COMPILE_CONTENT
 				ImGui::Text("Compile Content");
 				ImGui::Dummy({ 0, 3 });
 #endif
