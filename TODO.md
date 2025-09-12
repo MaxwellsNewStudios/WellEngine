@@ -11,7 +11,7 @@
    - Implement rect selection in both hierarchy (supported by ImGui) & scene view (handle rect as frustum).
  - Generalize materials.
    - Store files like prefabs, contains shaders & textures by name, struct data by value.
-   - Make shaders & meshes track vertex data. 
+   - Make shaders & meshes track vertex formats. 
    - Automatically create input layouts based on loaded shaders.
    - Only allow linking same-format meshes & shaders.
 
