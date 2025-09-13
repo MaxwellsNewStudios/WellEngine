@@ -10,6 +10,8 @@ A D3D11-based 3D game + engine originally developed as a group project by six st
 
 ![Lighting](Docs/Images/VolumetricLighting.gif)
 
+![Performance Tools](Docs/Images/Overdraw.png)
+
 ## Functionality
 
 ### Entities & Behaviours

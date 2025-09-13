@@ -1408,6 +1408,45 @@ bool Graphics::RenderToTarget(
 				return false;
 		break;
 
+	case RenderType::OVERDRAW:
+	{
+		if (_overdrawIncludeDiscards)
+			_context->OMSetDepthStencilState(_tdss.Get(), 0);
+		
+		ID3D11BlendState *prevBlendState;
+		FLOAT prevBlendFactor[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
+		UINT prevSampleMask = 0;
+		_context->OMGetBlendState(&prevBlendState, prevBlendFactor, &prevSampleMask);
+
+		static UINT overdrawBlendStateID = _content->GetBlendStateID("Overdraw");
+		ID3D11BlendState *const overdrawBlendState = _content->GetBlendState(overdrawBlendStateID);
+		if (_currBlendStateID != overdrawBlendStateID)
+		{
+			_context->OMSetBlendState(overdrawBlendState, &_overdrawBlendFactor.x, 0xffffffff);
+			_currBlendStateID = overdrawBlendStateID;
+		}
+
+		if (!RenderCustom(targetRTV, targetDepthRTV, targetDSV, targetViewport, "PS_DebugViewOverdraw"))
+		{
+			ErrMsg("Failed to render overdraw view!");
+			return false;
+		}
+
+		DebugDrawer::Instance().Clear();
+
+		if (_renderOverlay)
+			if (!RenderCustom(targetRTV, targetDepthRTV, targetDSV, targetViewport, "PS_DebugViewOverdraw", true))
+				return false;
+
+		// Reset blend state
+		_context->OMSetBlendState(prevBlendState, prevBlendFactor, prevSampleMask);
+
+		if (_overdrawIncludeDiscards)
+			_context->OMSetDepthStencilState(GetCurrentDepthStencilState(), 0);
+
+		break;
+	}
+
 	default:
 		ErrMsg("Invalid render type!");
 		return false;
@@ -3898,7 +3937,8 @@ bool Graphics::RenderUI(TimeUtils &time)
 			"UV Coordinates",
 			"Occlusion",
 			"Transparency",
-			"Light Tiles"
+			"Light Tiles",
+			"Overdraw"
 		};
 
 		ImGui::Text("Render Type:");
@@ -3915,6 +3955,20 @@ bool Graphics::RenderUI(TimeUtils &time)
 					ImGui::SetItemDefaultFocus();
 			}
 			ImGui::EndCombo();
+		}
+
+		if (_renderOutput == RenderType::OVERDRAW)
+		{
+			ImGui::DragFloat4("##OverdrawBlendFactor", &_overdrawBlendFactor.x, 0.01f);
+
+			ImGui::Checkbox("Include Discarded", &_overdrawIncludeDiscards);
+			ImGui::SetItemTooltip(
+				"Include triangles that would be discarded by the GPU.\n"
+				"Easier to read & prevents flickering when moving the camera,\n"
+				"but gives a less accurate representation of the overdraw."
+			);
+
+			ImGui::Dummy(ImVec2(0.0f, 8.0f));
 		}
 	}
 	ImGui::Dummy(ImVec2(0.0f, 4.0f));

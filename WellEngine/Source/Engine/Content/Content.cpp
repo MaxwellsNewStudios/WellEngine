@@ -2298,18 +2298,11 @@ UINT Content::GetBlendStateID(const std::string &name) const
 	if (name == "_" || name == "Uninitialized")
 		return CONTENT_NULL;
 
-	std::string lookupName;
-
-	if (name.find("", 0) != 0)
-		lookupName = "" + name; // Add prefix if it is missing.
-	else
-		lookupName = name;
-
 	const UINT count = static_cast<UINT>(_blendStates.size());
 
 	for (UINT i = 0; i < count; i++)
 	{
-		if (_blendStates[i]->name == lookupName)
+		if (_blendStates[i]->name == name)
 			return i;
 	}
 

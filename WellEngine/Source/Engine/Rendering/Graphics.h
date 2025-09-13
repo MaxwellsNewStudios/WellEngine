@@ -30,6 +30,7 @@ enum class RenderType
 	OCCLUSION,
 	TRANSPARENCY,
 	LIGHT_TILES,
+	OVERDRAW,
 
 	COUNT
 };
@@ -235,6 +236,9 @@ private:
 
 	RenderTargetD3D11 _outlineRT;
 	RenderTargetD3D11 _intermediateOutlineRT;
+
+	ImVec4 _overdrawBlendFactor = { 0.2f, 0.05f, 0.4f, 0.0f };
+	bool _overdrawIncludeDiscards = true;
 #endif
 
 #ifdef USE_IMGUI

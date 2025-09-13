@@ -311,6 +311,22 @@ bool Game::LoadContent(
 			ErrMsg("Failed to add fallback blend state!");
 			return false;
 		}
+
+#ifdef DEBUG_BUILD
+		blendDesc.RenderTarget[0].SrcBlend = D3D11_BLEND_BLEND_FACTOR;
+		blendDesc.RenderTarget[0].DestBlend = D3D11_BLEND_DEST_ALPHA;
+		blendDesc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
+
+		blendDesc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_BLEND_FACTOR;
+		blendDesc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_INV_BLEND_FACTOR;
+		blendDesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
+
+		if (_content.AddBlendState(_device.Get(), "Overdraw", blendDesc) == CONTENT_NULL)
+		{
+			ErrMsg("Failed to add overdraw blend state!");
+			return false;
+		}
+#endif
 	}
 
 	// Input layouts
@@ -788,6 +804,7 @@ bool Game::Setup(TimeUtils &time, Window window)
 		{ ShaderType::PIXEL_SHADER,			"PS_DebugViewUVCoords",			"PS_DebugViewUVCoords"			},
 		{ ShaderType::PIXEL_SHADER,			"PS_DebugViewOcclusion",		"PS_DebugViewOcclusion"			},
 		{ ShaderType::PIXEL_SHADER,			"PS_DebugViewLightTiles",		"PS_DebugViewLightTiles"		},
+		{ ShaderType::PIXEL_SHADER,			"PS_DebugViewOverdraw",			"PS_DebugViewOverdraw"			},
 
 		{ ShaderType::COMPUTE_SHADER,		"CS_BlurHorizontalOutline",		"CS_BlurHorizontalOutline"		},
 		{ ShaderType::COMPUTE_SHADER,		"CS_BlurVerticalOutline",		"CS_BlurVerticalOutline"		},
