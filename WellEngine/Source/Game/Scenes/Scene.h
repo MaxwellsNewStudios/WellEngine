@@ -73,6 +73,7 @@ private:
 	UINT _skyboxShaderID = CONTENT_NULL;
 	FogSettingsBuffer _fogSettings = { };
 	EmissionSettingsBuffer _emissionSettings = { };
+	DepthOfFieldSettingsBuffer _depthOfFieldSettings = {};
 
 #ifdef DEBUG_BUILD
 	bool _isGeneratingEntityBounds = false;
@@ -228,6 +229,8 @@ public:
 	void SetFogSettings(const FogSettingsBuffer &settings);
 	[[nodiscard]] const EmissionSettingsBuffer &GetEmissionSettings() const;
 	void SetEmissionSettings(const EmissionSettingsBuffer &settings);
+	[[nodiscard]] const DepthOfFieldSettingsBuffer &GetDepthOfFieldSettings() const;
+	void SetDepthOfFieldSettings(const DepthOfFieldSettingsBuffer &settings);
 	[[nodiscard]] const dx::XMFLOAT3 &GetAmbientColor() const;
 	void SetAmbientColor(const dx::XMFLOAT3 &color);
 #pragma endregion

@@ -142,6 +142,10 @@ bool Scene::InitializeBase(std::string sceneName, ID3D11Device *device, ID3D11De
 		_emissionSettings.strength = 1.0f;
 		_emissionSettings.exponent = 0.5f;
 		_emissionSettings.threshold = 1.0f;
+
+		_depthOfFieldSettings.focalPlane = 0.0f;
+		_depthOfFieldSettings.aperture = 0.0f;
+		_depthOfFieldSettings.imageDistance = 0.0f;
 	}
 
 #ifdef DEBUG_BUILD
@@ -265,6 +269,10 @@ bool Scene::InitializeMenu(std::string sceneName, ID3D11Device *device, ID3D11De
 		_emissionSettings.strength = 1.0f;
 		_emissionSettings.exponent = 0.5f;
 		_emissionSettings.threshold = 1.0f;
+
+		_depthOfFieldSettings.focalPlane = 0.0f;
+		_depthOfFieldSettings.aperture = 0.0f;
+		_depthOfFieldSettings.imageDistance = 0.0f;
 	}
 
 #ifdef DEBUG_BUILD
@@ -688,6 +696,10 @@ bool Scene::InitializeEntr(std::string sceneName, ID3D11Device *device, ID3D11De
 		_emissionSettings.strength = 1.25f;
 		_emissionSettings.exponent = 0.5f;
 		_emissionSettings.threshold = 1.0f;
+
+		_depthOfFieldSettings.focalPlane = 0.0f;
+		_depthOfFieldSettings.aperture = 0.0f;
+		_depthOfFieldSettings.imageDistance = 0.0f;
 	}
 
 #ifdef DEBUG_BUILD
@@ -894,6 +906,10 @@ bool Scene::InitializeCave(std::string sceneName, ID3D11Device *device, ID3D11De
 		_emissionSettings.strength = 1.2f;
 		_emissionSettings.exponent = 0.5f;
 		_emissionSettings.threshold = 1.0f;
+
+		_depthOfFieldSettings.focalPlane = 0.0f;
+		_depthOfFieldSettings.aperture = 0.0f;
+		_depthOfFieldSettings.imageDistance = 0.0f;
 	}
 	
 #ifdef DEBUG_BUILD
@@ -1229,6 +1245,10 @@ bool Scene::InitializeCred(std::string sceneName, ID3D11Device *device, ID3D11De
 		_emissionSettings.strength = 1.0f;
 		_emissionSettings.exponent = 1.0f;
 		_emissionSettings.threshold = 1.0f;
+
+		_depthOfFieldSettings.focalPlane = 0.0f;
+		_depthOfFieldSettings.aperture = 0.0f;
+		_depthOfFieldSettings.imageDistance = 0.0f;
 	}
 
 #ifdef DEBUG_BUILD
@@ -1547,6 +1567,7 @@ void Scene::EnterScene()
 	_graphics->SetAmbientColor(_ambientColor);
 	_graphics->SetFogSettings(_fogSettings);
 	_graphics->SetEmissionSettings(_emissionSettings);
+	_graphics->SetDepthOfFieldSettings(_depthOfFieldSettings);
 
 	_graphics->SetEnvironmentCubemapID(_envCubemapID);
 	_graphics->SetSkyboxShaderID(_skyboxShaderID);
@@ -1565,6 +1586,7 @@ void Scene::ExitScene()
 	_ambientColor = _graphics->GetAmbientColor();
 	_fogSettings = _graphics->GetFogSettings();
 	_emissionSettings = _graphics->GetEmissionSettings();
+	_depthOfFieldSettings = _graphics->GetDepthOfFieldSettings();
 	_envCubemapID = _graphics->GetEnvironmentCubemapID();
 	_skyboxShaderID = _graphics->GetSkyboxShaderID();
 
@@ -2598,6 +2620,14 @@ const EmissionSettingsBuffer &Scene::GetEmissionSettings() const
 void Scene::SetEmissionSettings(const EmissionSettingsBuffer &settings)
 {
 	_emissionSettings = settings;
+}
+const DepthOfFieldSettingsBuffer &Scene::GetDepthOfFieldSettings() const
+{
+	return _depthOfFieldSettings;
+}
+void Scene::SetDepthOfFieldSettings(const DepthOfFieldSettingsBuffer &settings)
+{
+	_depthOfFieldSettings = settings;
 }
 const dx::XMFLOAT3 &Scene::GetAmbientColor() const
 {

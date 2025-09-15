@@ -98,7 +98,7 @@ struct DistortionSettingsBuffer
 
 struct DepthOfFieldSettingsBuffer
 {
-	float focalPlane = 5;
+	float focalPlane = 2.5f;
 	float aperture = 20;
 	float imageDistance = 1;
 
@@ -352,12 +352,14 @@ public:
 
 	[[nodiscard]] FogSettingsBuffer GetFogSettings() const;
 	[[nodiscard]] EmissionSettingsBuffer GetEmissionSettings() const;
+	[[nodiscard]] DepthOfFieldSettingsBuffer GetDepthOfFieldSettings() const;
 	[[nodiscard]] dx::XMFLOAT3 GetAmbientColor() const;
 	[[nodiscard]] UINT GetSkyboxShaderID() const;
 	[[nodiscard]] UINT GetEnvironmentCubemapID() const;
 
 	void SetFogSettings(const FogSettingsBuffer &fogSettings);
 	void SetEmissionSettings(const EmissionSettingsBuffer &emissionSettings);
+	void SetDepthOfFieldSettings(const DepthOfFieldSettingsBuffer& dofSettings);
 	void SetAmbientColor(const dx::XMFLOAT3 &color);
 	void SetSkyboxShaderID(UINT shaderID);
 	void SetEnvironmentCubemapID(UINT cubemapID);
