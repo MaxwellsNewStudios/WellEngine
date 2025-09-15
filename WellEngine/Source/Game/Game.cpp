@@ -779,6 +779,7 @@ bool Game::Setup(TimeUtils &time, Window window)
 		{ ShaderType::COMPUTE_SHADER,		"CS_ColorLUT",					"CS_ColorLUT"					},
 		{ ShaderType::COMPUTE_SHADER,		"CS_FogFX",						"CS_FogFX"						},
 		{ ShaderType::COMPUTE_SHADER,		"CS_CombineFX",					"CS_CombineFX"					},
+		{ ShaderType::COMPUTE_SHADER,		"CS_DepthOfFieldFX",			"CS_DepthOfFieldFX"				},
 
 #ifdef DEBUG_BUILD
 		{ ShaderType::VERTEX_SHADER,		"VS_DebugDraw",					"VS_DebugDraw"					},
