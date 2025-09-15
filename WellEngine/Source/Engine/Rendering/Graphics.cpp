@@ -139,6 +139,12 @@ bool Graphics::Setup(bool fullscreen, const UINT width, const UINT height, const
 			return false;
 		}
 
+		if (!_depthOfFieldSettingsBuffer.Initialize(device, sizeof(DepthOfFieldSettingsBuffer), &_currDepthOfFieldSettings))
+		{
+			ErrMsg("Failed to initialize depth of field settings buffer!");
+			return false;
+		}
+
 #ifdef DEBUG_BUILD
 		if (!_outlineSettingsBuffer.Initialize(device, sizeof(OutlineSettingsBuffer), &_outlineSettings))
 		{
@@ -315,12 +321,14 @@ void Graphics::Shutdown()
 	_intermediateBlurRT.Reset();
 	_fogRT.Reset();
 	_intermediateFogRT.Reset();
+	_dofRT.Reset();
 	_lightGridBuffer.Reset();
 	_globalLightBuffer.Reset();
 	_generalDataBuffer.Reset();
 	_fogSettingsBuffer.Reset();
 	_emissionSettingsBuffer.Reset();
 	_distortionSettingsBuffer.Reset();
+	_depthOfFieldSettingsBuffer.Reset();
 	_fogGaussianWeightsBuffer.Reset();
 	_emissionGaussianWeightsBuffer.Reset();
 
@@ -438,6 +446,7 @@ bool Graphics::ResizeSceneViewBuffers(UINT newWidth, UINT newHeight)
 	_intermediateBlurRT.Reset();
 	_fogRT.Reset();
 	_intermediateFogRT.Reset();
+	_dofRT.Reset();
 #ifdef DEBUG_BUILD
 	_outlineRT.Reset();
 	_intermediateOutlineRT.Reset();
@@ -505,7 +514,7 @@ bool Graphics::ResizeSceneViewBuffers(UINT newWidth, UINT newHeight)
 
 		if (!_intermediateBlurRT.Initialize(_device, static_cast<UINT>(_viewportBlur.Width), static_cast<UINT>(_viewportBlur.Height), DXGI_FORMAT_R11G11B10_FLOAT, true, true))
 		{
-			ErrMsg("Failed to initialize blur stage onw render target!");
+			ErrMsg("Failed to initialize blur stage one render target!");
 			return false;
 		}
 
@@ -518,6 +527,12 @@ bool Graphics::ResizeSceneViewBuffers(UINT newWidth, UINT newHeight)
 		if (!_intermediateFogRT.Initialize(_device, static_cast<UINT>(_viewportFog.Width), static_cast<UINT>(_viewportFog.Height), DXGI_FORMAT_R16G16B16A16_FLOAT, true, true))
 		{
 			ErrMsg("Failed to initialize fog stage one render target!");
+			return false;
+		}
+
+		if (!_dofRT.Initialize(_device, newWidth, newHeight, DXGI_FORMAT_R11G11B10_FLOAT, true, true))
+		{
+			ErrMsg("Failed to initialize dof render target!");
 			return false;
 		}
 
@@ -967,6 +982,12 @@ bool Graphics::EndSceneRender(TimeUtils &time)
 		if (!_distortionSettingsBuffer.UpdateBuffer(_context, &_distortionSettings))
 		{
 			ErrMsg("Failed to update distortion settings buffer!");
+			return false;
+		}
+
+		if (!_depthOfFieldSettingsBuffer.UpdateBuffer(_context, &_currDepthOfFieldSettings))
+		{
+			ErrMsg("Failed to update depth of field settings buffer")
 			return false;
 		}
 	
@@ -3522,7 +3543,6 @@ bool Graphics::RenderPostFX()
 			_context->CSSetShaderResources(3, 1, nullSRV);
 		}
 
-
 		// Perform Emission downsample
 		if (_renderEmissionFX && _emissionBlurIterations > 0)
 		{
@@ -3659,7 +3679,8 @@ bool Graphics::RenderPostFX()
 			_context->CSSetShaderResources(3, 1, nullSRV);
 		}
 
-
+		// Perform Depth of Field Blur
+	
 #ifdef DEBUG_BUILD
 		// Perform Outline Blur
 		if (_renderOutlineFX && _outlineBlurIterations > 0)
@@ -3713,6 +3734,7 @@ bool Graphics::RenderPostFX()
 					// Unbind render target
 					static ID3D11UnorderedAccessView *const nullUAV = nullptr;
 					_context->CSSetUnorderedAccessViews(0, 1, &nullUAV, nullptr);
+
 				}
 
 				// Blur Stage Two
@@ -3784,18 +3806,21 @@ bool Graphics::RenderPostFX()
 		}
 
 		// Bind combine render target
-		ID3D11UnorderedAccessView *const uav[1] = { 
+		ID3D11UnorderedAccessView* outputUAV = _uav.Get();
 #ifdef USE_IMGUI
-			_intermediateRT.GetUAV()
-#else
-			_uav.Get()
+		outputUAV = _intermediateRT.GetUAV();
 #endif
+		if (_renderDepthOfFieldFX)
+			outputUAV = _dofRT.GetUAV();
+
+		ID3D11UnorderedAccessView *const uav[1] = { 
+			outputUAV
 		};
 		_context->CSSetUnorderedAccessViews(0, 1, uav, nullptr);
 
 
 		// Bind screen, emission & fog resources
-		ID3D11ShaderResourceView *srvs[3] = { 
+		ID3D11ShaderResourceView *srvs[3] = {
 			_sceneRT.GetSRV(),
 			_blurRT.GetSRV(),
 			_fogRT.GetSRV(),
@@ -3849,6 +3874,51 @@ bool Graphics::RenderPostFX()
 		_context->CSSetUnorderedAccessViews(0, 1, &nullUAV, nullptr);
 	}
 
+	if (_renderDepthOfFieldFX)
+	{
+		ZoneNamedXNC(depthOfFieldD3D11Zone, "Depth of Field", RandomUniqueColor(), true);
+		TracyD3D11NamedZoneXC(_tracyD3D11Context, depthOfFieldD3D11Zone, "Depth of Field", RandomUniqueColor(), true);
+
+		// Bind compute shader
+		if (!_content->GetShader("CS_DepthOfFieldFX")->BindShader(_context))
+		{
+			ErrMsg("Failed to bind downscale emission compute shader!");
+			return false;
+		}
+
+		// Bind render target
+		ID3D11UnorderedAccessView *const uav[1] = { 
+#ifdef USE_IMGUI
+			_intermediateRT.GetUAV()
+#else
+			_uav.Get()
+#endif
+		};
+		_context->CSSetUnorderedAccessViews(0, 1, uav, nullptr);
+
+		// Bind depth & scene resource
+		ID3D11ShaderResourceView *const srv[2] = { 
+			_dofRT.GetSRV(),
+			_depthRT.GetSRV() 
+		};
+		_context->CSSetShaderResources(0, 2, srv);
+
+		ID3D11Buffer *const dofSettings = _depthOfFieldSettingsBuffer.GetBuffer();
+		_context->CSSetConstantBuffers(6, 1, &dofSettings);
+
+		// Send execution command
+		_context->Dispatch(static_cast<UINT>(ceil(_viewportSceneView.Width / 8.0f)), static_cast<UINT>(ceil(_viewportSceneView.Height / 8.0f)), 1);
+
+
+		// Unbind compute shader resources
+		ID3D11ShaderResourceView *nullSRV[1] = {};
+		memset(nullSRV, 0, 2*sizeof(ID3D11ShaderResourceView));
+		_context->CSSetShaderResources(0, 2, nullSRV);
+
+		// Unbind render target
+		static ID3D11UnorderedAccessView *const nullUAV = nullptr;
+		_context->CSSetUnorderedAccessViews(0, 1, &nullUAV, nullptr);
+	}
 
 	return true;
 }
@@ -4127,6 +4197,7 @@ bool Graphics::RenderUI(TimeUtils &time)
 			_context->ClearRenderTargetView(_blurRT.GetRTV(), clearColor);
 			_context->ClearRenderTargetView(_fogRT.GetRTV(), clearColor);
 			_context->ClearRenderTargetView(_outlineRT.GetRTV(), clearColor);
+			_context->ClearRenderTargetView(_dofRT.GetRTV(), clearColor);
 		}
 	}
 
@@ -4456,6 +4527,37 @@ bool Graphics::RenderUI(TimeUtils &time)
 					ImGui::PopID();
 				}
 				ImGui::TreePop();
+			}
+
+			if (ImGui::TreeNode("Depth of Field"))
+			{
+				if (ImGui::Checkbox("Render Depth of Field", &_renderDepthOfFieldFX))
+				{
+					if (!_renderDepthOfFieldFX)
+					{
+						// Clear emission resources
+						constexpr float clearBlur[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
+						_context->ClearRenderTargetView(_dofRT.GetRTV(), clearBlur);
+					}
+				}
+
+				if (_renderDepthOfFieldFX)
+				{
+					ImGui::PushID("Depth of Field Settings");
+
+					ImGui::DragFloat("Focal Plane", &_currDepthOfFieldSettings.focalPlane, 0.01f);
+					ImGuiUtils::LockMouseOnActive();
+
+					ImGui::DragFloat("Aperture", &_currDepthOfFieldSettings.aperture, 0.01f);
+					ImGuiUtils::LockMouseOnActive();
+
+					ImGui::DragFloat("imageDistance", &_currDepthOfFieldSettings.imageDistance, 0.01f);
+					ImGuiUtils::LockMouseOnActive();
+
+					ImGui::PopID();
+				}
+				ImGui::TreePop();
+
 			}
 
 			if (ImGui::TreeNode("Outline"))

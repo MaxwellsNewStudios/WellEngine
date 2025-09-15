@@ -96,6 +96,15 @@ struct DistortionSettingsBuffer
 	float distortionStrength = 0.0f;
 };
 
+struct DepthOfFieldSettingsBuffer
+{
+	float focalPlane = 5;
+	float aperture = 20;
+	float imageDistance = 1;
+
+	float _padding[1];
+};
+
 struct OutlineSettingsBuffer
 {
 	dx::XMFLOAT4 color = { 0.2f, 0.7f, 1.0f, 1.0f };
@@ -153,6 +162,7 @@ private:
 	bool _renderPostFX = true;
 	bool _renderFogFX = true;
 	bool _renderEmissionFX = true;
+	bool _renderDepthOfFieldFX = true;
 	bool _renderOutlineFX = true;
 	bool _wireframe = false;
 	uint8_t _vSync = 1;
@@ -171,12 +181,14 @@ private:
 	RenderTargetD3D11 _intermediateBlurRT; // RGB
 	RenderTargetD3D11 _fogRT; // RGBA
 	RenderTargetD3D11 _intermediateFogRT; // RGBA
+	RenderTargetD3D11 _dofRT; // RGB
 
 	RenderType _renderOutput = RenderType::DEFAULT;
 
 	dx::XMFLOAT4A _currAmbientColor = { 0.01f, 0.01f, 0.01f, 0.0f };
 	FogSettingsBuffer _currFogSettings = { };
 	EmissionSettingsBuffer _currEmissionSettings = { };
+	DepthOfFieldSettingsBuffer _currDepthOfFieldSettings = { };
 
 	GeneralDataBuffer _generalDataSettings = { };
 	DistortionSettingsBuffer _distortionSettings = { };
@@ -193,6 +205,7 @@ private:
 	ConstantBufferD3D11 _fogSettingsBuffer;
 	ConstantBufferD3D11 _emissionSettingsBuffer;
 	ConstantBufferD3D11 _distortionSettingsBuffer;
+	ConstantBufferD3D11 _depthOfFieldSettingsBuffer;
 
 	std::vector<float> _fogGaussWeights = { 0.7788081181217f, 0.2165377067336f, 0.0046541751447f };
 	std::vector<float> _emissionGaussWeights = { 0.2270270270f, 0.1945945946f, 0.1216216216f, 0.0540540541f, 0.0162162162f };
