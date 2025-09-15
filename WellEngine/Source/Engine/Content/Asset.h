@@ -28,8 +28,7 @@ protected:
 	bool _isLoaded = false;
 
 public:
-	Asset(std::string name, std::string path, AssetType type) 
-		: _name(std::move(name)), _storagePath(std::move(path)), _type(type) { }
+	Asset(std::string_view name, std::string_view path, AssetType type) : _name(name), _storagePath(path), _type(type) { }
 	virtual ~Asset() = default;
 
 	[[nodiscard]] const std::string &GetName() const noexcept	{ return _name; }
