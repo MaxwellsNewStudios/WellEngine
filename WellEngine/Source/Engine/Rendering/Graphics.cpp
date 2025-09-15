@@ -10,8 +10,6 @@
 #define new			DEBUG_NEW
 #endif
 
-using Microsoft::WRL::ComPtr;
-
 Graphics::~Graphics()
 {
 	delete[] _lightGrid;

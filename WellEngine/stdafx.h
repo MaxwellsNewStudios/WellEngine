@@ -1,7 +1,7 @@
 #pragma once
 #undef NDEBUG
 
-#include "Tests/TestUtils.h"
+#include "../Tests/TestUtils.h"
 
 #include "Source/Engine/EngineSettings.h"
 #include "Source/Engine/Debug/TrackedAlloc.h"

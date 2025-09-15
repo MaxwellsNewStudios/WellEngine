@@ -108,7 +108,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <WholeProgramOptimization>false</WholeProgramOptimization>
-      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(SolutionDir);$(ProjectDir);$(ProjectDir)Dependencies/SDL3/include;$(ProjectDir)Dependencies/rapidjson/include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(ProjectDir);$(ProjectDir)Dependencies/SDL3/include;$(ProjectDir)Dependencies/rapidjson/include</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>4244;6993;4018;4267;4006;26813;5030;5222;%(DisableSpecificWarnings)</DisableSpecificWarnings>
       <MinimalRebuild>false</MinimalRebuild>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
@@ -168,7 +168,7 @@
       <Optimization>MaxSpeed</Optimization>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
-      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(SolutionDir);$(ProjectDir);$(ProjectDir)Dependencies/SDL3/include;$(ProjectDir)Dependencies/rapidjson/include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(ProjectDir);$(ProjectDir)Dependencies/SDL3/include;$(ProjectDir)Dependencies/rapidjson/include</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>4244;6993;4018;4267;4006;26813;5030;5222;%(DisableSpecificWarnings)</DisableSpecificWarnings>
       <MinimalRebuild>false</MinimalRebuild>
       <StringPooling>true</StringPooling>
@@ -233,7 +233,7 @@
       <Optimization>MaxSpeed</Optimization>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
-      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(SolutionDir);$(ProjectDir);$(ProjectDir)Dependencies/SDL3/include;$(ProjectDir)Dependencies/rapidjson/include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(ProjectDir);$(ProjectDir)Dependencies/SDL3/include;$(ProjectDir)Dependencies/rapidjson/include</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>4244;6993;4018;4267;4006;26813;5030;5222;%(DisableSpecificWarnings)</DisableSpecificWarnings>
       <StringPooling>true</StringPooling>
       <FloatingPointExceptions>false</FloatingPointExceptions>
@@ -350,6 +350,8 @@
     <ClInclude Include="Source\Engine\Collision\Intersections.h" />
     <ClInclude Include="Source\Engine\Collision\MeshCollider.h" />
     <ClInclude Include="Source\Engine\Collision\Raycast.h" />
+    <ClInclude Include="Source\Engine\Content\Asset.h" />
+    <ClInclude Include="Source\Engine\Content\AssetTypes\MeshAsset.h" />
     <ClInclude Include="Source\Engine\Content\Content.h" />
     <ClInclude Include="Source\Engine\Content\ContentLoader.h" />
     <ClInclude Include="Source\Engine\Content\HeightMap.h" />
