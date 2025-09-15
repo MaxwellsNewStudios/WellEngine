@@ -785,6 +785,10 @@ EmissionSettingsBuffer Graphics::GetEmissionSettings() const
 {
 	return _currEmissionSettings;
 }
+DepthOfFieldSettingsBuffer Graphics::GetDepthOfFieldSettings() const
+{
+	return _currDepthOfFieldSettings;
+}
 dx::XMFLOAT3 Graphics::GetAmbientColor() const
 {
 	return To3(_currAmbientColor);
@@ -805,6 +809,10 @@ void Graphics::SetFogSettings(const FogSettingsBuffer &fogSettings)
 void Graphics::SetEmissionSettings(const EmissionSettingsBuffer &emissionSettings)
 {
 	_currEmissionSettings = emissionSettings;
+}
+void Graphics::SetDepthOfFieldSettings(const DepthOfFieldSettingsBuffer& dofSettings)
+{
+	_currDepthOfFieldSettings = dofSettings;
 }
 void Graphics::SetAmbientColor(const dx::XMFLOAT3 &color)
 {
