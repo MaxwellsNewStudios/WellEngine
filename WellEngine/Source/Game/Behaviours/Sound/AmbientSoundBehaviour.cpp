@@ -80,33 +80,27 @@ bool AmbientSoundBehaviour::RenderUI()
 	if (ImGui::Button("Play", ImVec2(50, 20)))
 		TriggerSound();
 
-	const float pointOne = 0.1f;
-	float vol = _volume;
-	ImGui::InputScalar("Volume", ImGuiDataType_Float, &vol, &pointOne);
-	if (vol != _volume)
-	{
-		_volume = round(vol * 1000) / 1000;
+	if (ImGui::DragFloat("Volume", &_volume, 0.01f))
 		_soundBehaviour->SetVolume(_volume);
-	}
+	ImGuiUtils::LockMouseOnActive();
 
 	ImGui::Checkbox("Loop", &_loop);
 
-	ImGui::DragFloat("Min Delay", &_delayMin, 0.01f);
+	if (ImGui::DragFloat("Min Delay", &_delayMin, 0.01f, 0.0f, 0.0f, "%.2f"))
+		_delayMin = max(0.0f, min(_delayMin, _delayMax));
 	ImGuiUtils::LockMouseOnActive();
 
-	ImGui::DragFloat("Max Delay", &_delayMax, 0.01f);
+	if (ImGui::DragFloat("Max Delay", &_delayMax, 0.01f, 0.0f, 0.0f, "%.2f"))
+		_delayMax = max(_delayMin, _delayMax);
 	ImGuiUtils::LockMouseOnActive();
 
-	ImGui::DragFloat("Distance scaler", &_distanceScaler, 0.01f);
+	if (ImGui::DragFloat("Distance scaler", &_distanceScaler, 0.01f))
+		_distanceScaler = max(0.0f, _distanceScaler);
 	ImGuiUtils::LockMouseOnActive();
 
-	ImGui::DragFloat("Reverb scaler", &_reverbScaler, 0.01f);
+	if (ImGui::DragFloat("Reverb scaler", &_reverbScaler, 0.01f))
+		_reverbScaler = max(0.0f, _reverbScaler);
 	ImGuiUtils::LockMouseOnActive();
-
-	_delayMin = _delayMin < 0.0f ? 0.0f : round(_delayMin * 1000) / 1000;
-	_delayMax = _delayMax < _delayMin ? _delayMin : round(_delayMax * 1000) / 1000;
-	_distanceScaler = _distanceScaler < 0.0f ? 0.0f : round(_distanceScaler * 1000) / 1000;
-	_reverbScaler = _reverbScaler < 0.0f ? 0.0f : round(_reverbScaler * 1000) / 1000;
 
 	return true;
 }
