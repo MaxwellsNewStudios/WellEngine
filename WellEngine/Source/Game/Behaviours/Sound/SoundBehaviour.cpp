@@ -282,27 +282,28 @@ void SoundBehaviour::OnDisable()
 
 bool SoundBehaviour::Serialize(json::Document::AllocatorType &docAlloc, json::Value &obj)
 {
-	json::Value fileNameStr(json::kStringType);
-	fileNameStr.SetString(_fileName.c_str(), docAlloc);
-	obj.AddMember("File Name", fileNameStr, docAlloc);
-	obj.AddMember("Sound Effect Flag", (uint32_t)_soundEffectFlag, docAlloc); // TODO: Shorten name
-	obj.AddMember("Volume", _volume, docAlloc);
-	obj.AddMember("Loop", _loop, docAlloc);
-	obj.AddMember("Play", _play, docAlloc);
-	obj.AddMember("Distance Scaler", _distanceScaler, docAlloc);
-	obj.AddMember("Reverb Scaler", _reverbScaler, docAlloc);
+	obj.AddMember("File Name",			SerializerUtils::SerializeString(_fileName, docAlloc), docAlloc);
+	obj.AddMember("Flag",				(uint32_t)_soundEffectFlag, docAlloc);
+	obj.AddMember("Volume",				_volume, docAlloc);
+	obj.AddMember("Loop",				_loop, docAlloc);
+	obj.AddMember("Distance Scaler",	_distanceScaler, docAlloc);
+	obj.AddMember("Reverb Scaler",		_reverbScaler, docAlloc);
 
 	return true;
 }
 bool SoundBehaviour::Deserialize(const json::Value &obj, Scene *scene)
 {
-	_fileName = obj["File Name"].GetString();
-	_soundEffectFlag = (dx::SOUND_EFFECT_INSTANCE_FLAGS)(obj["Sound Effect Flag"].GetUint()); // TODO: Shorten name
-	_volume = obj["Volume"].GetFloat();
-	_loop = obj["Loop"].GetBool();
-	_play = obj["Play"].GetBool();
-	_distanceScaler = obj["Distance Scaler"].GetFloat();
-	_reverbScaler = obj["Reverb Scaler"].GetFloat();
+	_fileName			= obj["File Name"].GetString();
+
+	if (obj.HasMember("Flag"))
+		_soundEffectFlag = (dx::SOUND_EFFECT_INSTANCE_FLAGS)(obj["Flag"].GetUint());
+	else if (obj.HasMember("Sound Effect Flag")) // For backward compatibility
+		_soundEffectFlag = (dx::SOUND_EFFECT_INSTANCE_FLAGS)(obj["Sound Effect Flag"].GetUint());
+
+	_volume				= obj["Volume"].GetFloat();
+	_loop				= obj["Loop"].GetBool();
+	_distanceScaler		= obj["Distance Scaler"].GetFloat();
+	_reverbScaler		= obj["Reverb Scaler"].GetFloat();
 
 	return true;
 }
