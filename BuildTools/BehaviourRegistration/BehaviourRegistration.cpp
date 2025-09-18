@@ -73,7 +73,33 @@ static std::vector<std::string> ScanHeaderFileForBehaviours(const std::filesyste
 
 		offset = pos + RegisterAttribute.length();
 
-		// If found, extract the class name that follows
+		// Ensure the attribute is not in a comment
+        {
+			size_t lineStart = headerCode.rfind('\n', pos);
+			size_t commentPos = headerCode.find("//", lineStart == std::string::npos ? 0 : lineStart);
+            if (commentPos != std::string::npos && commentPos < pos)
+            {
+#ifdef _DEBUG
+			std::cout << "Skipping commented-out attribute in file: '" << filePath << "', Pos: " << pos << ".\n";
+#endif
+                continue; // Attribute is in a comment, skip it
+            }
+
+			size_t blockCommentStart = headerCode.rfind("/*", pos);
+			if (blockCommentStart != std::string::npos)
+            {
+                size_t blockCommentEnd = headerCode.rfind("*/", pos);
+                if (blockCommentEnd == std::string::npos || blockCommentEnd < blockCommentStart)
+                {
+#ifdef _DEBUG
+                    std::cout << "Skipping commented-out attribute in file: '" << filePath << "', Pos: " << pos << ".\n";
+#endif
+                    continue; // Attribute is in a block comment, skip it
+                }
+            }
+        }
+
+		// Extract the class name that follows the attribute
         // Ex: class [[register_behaviour]] ExampleBehaviour : public Behaviour
 		//                                  ^--------------^
 

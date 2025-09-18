@@ -3814,7 +3814,7 @@ bool Graphics::RenderPostFX()
 		}
 
 		// Bind combine render target
-		ID3D11UnorderedAccessView* outputUAV = _uav.Get();
+		ID3D11UnorderedAccessView *outputUAV = _uav.Get();
 #ifdef USE_IMGUI
 		outputUAV = _intermediateRT.GetUAV();
 #endif
@@ -3919,7 +3919,7 @@ bool Graphics::RenderPostFX()
 
 
 		// Unbind compute shader resources
-		ID3D11ShaderResourceView *nullSRV[1] = {};
+		ID3D11ShaderResourceView *nullSRV[2] = {};
 		memset(nullSRV, 0, 2*sizeof(ID3D11ShaderResourceView));
 		_context->CSSetShaderResources(0, 2, nullSRV);
 

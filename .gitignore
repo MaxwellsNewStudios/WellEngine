@@ -35,9 +35,6 @@ bld/
 [Ll]ogs/
 *.plog
 
-*/Content/Shaders/cso/*
-*/Content/CompiledContent
-
 !*/Source/Engine/Debug/*
 !*/Source/Engine/Debug/TrackedAlloc.*
 
@@ -110,10 +107,12 @@ StyleCopReport.xml
 # Ignore compiled content file
 */Content/CompiledContent
 
-!*/Content/Meshes/**
-!*/Content/Textures/**
-!*/Content/Sounds/**
-!*/Content/Saves/**
+**/Assets/_Compiled/**
+!**/Assets/Meshes/**
+!**/Assets/Meshes/**
+!**/Assets/Textures/**
+!**/Assets/Sounds/**
+!**/Assets/Saves/**
 
 # Chutzpah Test files
 _Chutzpah*

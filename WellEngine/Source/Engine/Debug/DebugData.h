@@ -3,7 +3,7 @@
 class DebugData
 {
 private:
-	static constexpr const char *dataFileName = "Assets\\Editor\\DebugData.json";
+	static constexpr const char *dataFileName = ASSETS_EDITOR_PATH "\\DebugData.json";
 	float _saveInterval = 3.0f; // Continuously save with this interval
 	float _timeUntilNextSave = 0.0f;
 	bool _isDirty = false;
@@ -17,10 +17,10 @@ public:
 	int			transformOriginMode			= 1; // TransformOriginMode enum
 	bool		transformRelative			= false;
 	bool		showViewManipGizmo			= false;
-	bool		stretchToFitView			= false;
+	bool		stretchToFitView			= true;
 	float		imGuiFontScale				= 1.0f;
 	bool		windowFullscreen			= false;
-	bool		windowMaximized				= false;
+	bool		windowMaximized				= true;
 	int			windowSizeX					= WINDOW_WIDTH;
 	int			windowSizeY					= WINDOW_HEIGHT;
 	int			sceneViewSizeX				= WINDOW_WIDTH;
@@ -33,7 +33,7 @@ public:
 	float		movementSpeed				= 1.0f;
 	float		mouseSensitivity			= 1.0f;
 	float		debugCamNearDist			= 0.1f;
-	float		debugCamFarDist				= 1000.0f;
+	float		debugCamFarDist				= 200.0f;
 	bool		reportComObjectsOnShutdown	= false;
 
 

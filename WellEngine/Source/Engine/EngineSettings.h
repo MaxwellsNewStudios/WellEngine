@@ -119,40 +119,40 @@
 
 
 #pragma region Path Configuration Defines
-constexpr auto ENGINE_PATH_SHADERS				= "WellEngine\\Source\\Shaders";
+#define ENGINE_PATH_SHADERS				"WellEngine\\Source\\Shaders"
 
-constexpr auto ASSET_PATH						= "Assets";
-constexpr auto ASSET_PATH_SCENES				= "Assets\\Scenes";
-constexpr auto ASSET_PATH_SAVES					= "Assets\\Saves";
-constexpr auto ASSET_PATH_PREFABS				= "Assets\\Prefabs";
-constexpr auto ASSET_PATH_MESHES				= "Assets\\Meshes";
-constexpr auto ASSET_PATH_TEXTURES				= "Assets\\Textures";
-constexpr auto ASSET_PATH_SOUNDS				= "Assets\\Sounds";
-constexpr auto ASSET_PATH_FONTS					= "Assets\\Fonts";
-constexpr auto ASSET_FILE_BINDINGS				= "Assets\\Bindings.json";
-constexpr auto ASSET_FILE_SEQUENCES				= "Assets\\Sequences.txt";
-constexpr auto ASSET_EXT_SCENE					= "scene";
-constexpr auto ASSET_EXT_SAVE					= "save";
-constexpr auto ASSET_EXT_PREFAB					= "prefab";
-constexpr auto ASSET_EXT_FONT					= "ttf";
+#define ASSET_PATH						"..\\Assets"
+#define ASSET_PATH_SCENES				ASSET_PATH "\\Scenes"
+#define ASSET_PATH_SAVES				ASSET_PATH "\\Saves"
+#define ASSET_PATH_PREFABS				ASSET_PATH "\\Prefabs"
+#define ASSET_PATH_MESHES				ASSET_PATH "\\Meshes"
+#define ASSET_PATH_TEXTURES				ASSET_PATH "\\Textures"
+#define ASSET_PATH_SOUNDS				ASSET_PATH "\\Sounds"
+#define ASSET_PATH_FONTS				ASSET_PATH "\\Fonts"
+#define ASSET_FILE_BINDINGS				ASSET_PATH "\\Bindings.json"
+#define ASSET_FILE_SEQUENCES			ASSET_PATH "\\Sequences.txt"
+#define ASSET_EXT_SCENE					"scene"
+#define ASSET_EXT_SAVE					"save"
+#define ASSET_EXT_PREFAB				"prefab"
+#define ASSET_EXT_FONT					"ttf"
 
-constexpr auto ASSET_REGISTRY_PATH				= "Assets\\_Registry";
-constexpr auto ASSET_REGISTRY_FILE_TEXTURES		= "Assets\\_Registry\\_textures.txt"; // TODO: Deprecated, replace with registry system
-constexpr auto ASSET_REGISTRY_FILE_CUBEMAPS		= "Assets\\_Registry\\_cubemaps.txt"; // TODO: Deprecated, replace with registry system
-constexpr auto ASSET_REGISTRY_FILE_MESHES		= "Assets\\_Registry\\_meshNames.txt"; // TODO: Deprecated, replace with registry system
+#define ASSET_REGISTRY_PATH				ASSET_PATH "\\_Registry"
+#define ASSET_REGISTRY_FILE_TEXTURES	ASSET_REGISTRY_PATH "\\_textures.txt" // TODO: Deprecated, replace with registry system
+#define ASSET_REGISTRY_FILE_CUBEMAPS	ASSET_REGISTRY_PATH "\\_cubemaps.txt" // TODO: Deprecated, replace with registry system
+#define ASSET_REGISTRY_FILE_MESHES		ASSET_REGISTRY_PATH "\\_meshNames.txt" // TODO: Deprecated, replace with registry system
 
-constexpr auto ASSET_COMPILED_PATH				= "Assets\\_Compiled";
-constexpr auto ASSET_COMPILED_PATH_CSO			= "Assets\\_Compiled\\Shaders";
-constexpr auto ASSET_COMPILED_PATH_TEXTURES		= "Assets\\_Compiled\\Textures";
-constexpr auto ASSET_COMPILED_FILE_MESHES		= "Assets\\_Compiled\\CompiledContent";
+#define ASSET_COMPILED_PATH				ASSET_PATH "\\_Compiled"
+#define ASSET_COMPILED_PATH_CSO			ASSET_COMPILED_PATH "\\Shaders"
+#define ASSET_COMPILED_PATH_TEXTURES	ASSET_COMPILED_PATH "\\Textures"
+#define ASSET_COMPILED_FILE_MESHES		ASSET_COMPILED_PATH "\\CompiledContent"
 
 #ifdef USE_IMGUI
-constexpr auto ASSETS_EDITOR_PATH				= "Assets\\Editor";
-constexpr auto ASSETS_EDITOR_PATH_LAYOUTS		= "Assets\\Editor\\Layouts";
+#define ASSETS_EDITOR_PATH				ASSET_PATH "\\Editor"
+#define ASSETS_EDITOR_PATH_LAYOUTS		ASSETS_EDITOR_PATH "\\Layouts"
 #endif
 
-#define PATH_FILE(path, file) std::format("{}\\{}", path, file)
-#define PATH_FILE_EXT(path, file, ext) std::format("{}\\{}.{}", path, file, ext)
+#define PATH_FILE(path, file)			std::format("{}\\{}", path, file)
+#define PATH_FILE_EXT(path, file, ext)	std::format("{}\\{}.{}", path, file, ext)
 #pragma endregion
 
 

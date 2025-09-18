@@ -1,3 +1,13 @@
+/*
+	Notice:
+		All non-abstract classes deriving from Behaviour should likely have the [[register_behaviour]] attribute.
+		This exposes the behaviour to the behaviour factory. Leaving out the attribute means the behaviour will 
+		not be serialized/deserialized, it will also be excluded from the "Add Behaviour" list in the editor.
+	
+		It makes sense to leave out the attribute for internal/hidden classes that are only created manually 
+		in code, but remember to disable serialization for all instances of those classes.
+*/
+
 #pragma once
 
 #include <d3d11.h>

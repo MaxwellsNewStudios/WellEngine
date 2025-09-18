@@ -13,7 +13,8 @@ Behaviour *BehaviourFactory::CreateBehaviour(const std::string &name)
 	if (!map.contains(name))
 	{
 #ifdef DEBUG_BUILD
-		WarnF("Unrecognized behaviour name '{}'! Is the behaviour definition missing a [[register_behaviour]] attribute?", name);
+		WarnF("Unrecognized behaviour name '{}'! Is the behaviour definition missing a [[register_behaviour]] attribute?\n"
+			  "See the top of Behaviour.h for more info.", name);
 #endif
 
 		return nullptr;
