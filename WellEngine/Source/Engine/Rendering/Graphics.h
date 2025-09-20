@@ -98,8 +98,8 @@ struct DistortionSettingsBuffer
 
 struct DepthOfFieldSettingsBuffer
 {
-	float focalPlane = 2.5f;
-	float aperture = 20;
+	float focalPlane = 0.25f;
+	float aperture = 15;
 	float imageDistance = 1;
 
 	float _padding[1];
@@ -151,6 +151,7 @@ private:
 	D3D11_VIEWPORT _viewportEmission = { };
 	D3D11_VIEWPORT _viewportBlur = { };
 	D3D11_VIEWPORT _viewportFog = { };
+	D3D11_VIEWPORT _viewportDof = { };
 
 	ComPtr<ID3D11RasterizerState> _defaultRasterizer = nullptr;
 	ComPtr<ID3D11RasterizerState> _wireframeRasterizer = nullptr;
@@ -181,7 +182,11 @@ private:
 	RenderTargetD3D11 _intermediateBlurRT; // RGB
 	RenderTargetD3D11 _fogRT; // RGBA
 	RenderTargetD3D11 _intermediateFogRT; // RGBA
-	RenderTargetD3D11 _dofRT; // RGB
+	RenderTargetD3D11 _cocRT; // R
+	RenderTargetD3D11 _dofSharpRT; // RGBA
+	RenderTargetD3D11 _dofHalfBlur1RT; // RGB
+	RenderTargetD3D11 _dofHalfBlur2RT; // RGB
+	RenderTargetD3D11 _dofFullBlurRT; // RGBA
 
 	RenderType _renderOutput = RenderType::DEFAULT;
 
@@ -209,9 +214,11 @@ private:
 
 	std::vector<float> _fogGaussWeights = { 0.7788081181217f, 0.2165377067336f, 0.0046541751447f };
 	std::vector<float> _emissionGaussWeights = { 0.2270270270f, 0.1945945946f, 0.1216216216f, 0.0540540541f, 0.0162162162f };
+	std::vector<float> _dofGaussWeights = { 0.02f, 0.053f, 0.122f, 0.243f, 0.562f };
 
 	StructuredBufferD3D11 _fogGaussianWeightsBuffer;
 	StructuredBufferD3D11 _emissionGaussianWeightsBuffer;
+	StructuredBufferD3D11 _dofGaussianWeightsBuffer;
 
 	Ref<SpotLightCollection> _currSpotLightCollection = nullptr;
 	Ref<PointLightCollection> _currPointLightCollection = nullptr;
@@ -349,6 +356,7 @@ public:
 
 	void SetFogGaussianWeightsBuffer(float *const weights, UINT count);
 	void SetEmissionGaussianWeightsBuffer(float *const weights, UINT count);
+	void SetDofGaussianWeightsBuffer(float *const weights, UINT count);
 
 	[[nodiscard]] FogSettingsBuffer GetFogSettings() const;
 	[[nodiscard]] EmissionSettingsBuffer GetEmissionSettings() const;
