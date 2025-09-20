@@ -19,9 +19,9 @@ void main(uint3 DTid : SV_DispatchThreadID)
 	uint2 pixelsToSample = inDim / outDim;
 	float3 result = float3(0.0, 0.0, 0.0);
 	
-	for (uint y = 0; y <= pixelsToSample.y; y++)
+	for (uint y = 0; y < pixelsToSample.y; y++)
 	{
-		for (uint x = 0; x <= pixelsToSample.x; x++)
+		for (uint x = 0; x < pixelsToSample.x; x++)
 		{
 			result += Input.SampleLevel(Sampler, float2(inCoord + uint2(x, y)) / float2(inDim), 0);
 		}
