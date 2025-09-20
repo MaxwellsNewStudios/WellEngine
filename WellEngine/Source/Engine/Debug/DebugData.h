@@ -35,6 +35,10 @@ public:
 	float		debugCamNearDist			= 0.1f;
 	float		debugCamFarDist				= 200.0f;
 	bool		reportComObjectsOnShutdown	= false;
+	bool		graphicsFogEnabled			= true;
+	bool		graphicsEmissionEnabled		= true;
+	bool		graphicsDofEnabled			= true;
+	bool		graphicsOutlineEnabled		= true;
 
 
 	[[nodiscard]] static inline DebugData &Get()

@@ -1,6 +1,6 @@
 #ifdef RECOMPILE
-#include "WellEngine/Source/Shaders/Headers/DefaultMaterial.hlsli"
-#include "WellEngine/Source/Shaders/Headers/Common.hlsli"
+#include "../WellEngine/Source/Shaders/Headers/DefaultMaterial.hlsli"
+#include "../WellEngine/Source/Shaders/Headers/Common.hlsli"
 #else
 #include "Headers/DefaultMaterial.hlsli"
 #include "Headers/Common.hlsli"

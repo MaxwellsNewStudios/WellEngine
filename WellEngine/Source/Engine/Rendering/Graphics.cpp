@@ -36,7 +36,7 @@ bool Graphics::Setup(bool fullscreen, const UINT width, const UINT height, const
 		device, immediateContext, deferredContexts,
 		*_swapChain.ReleaseAndGetAddressOf(),
 		*_rtv.ReleaseAndGetAddressOf(),
-		* _dsTexture.ReleaseAndGetAddressOf(),
+		*_dsTexture.ReleaseAndGetAddressOf(),
 		*_dsView.ReleaseAndGetAddressOf(),
 		*_uav.ReleaseAndGetAddressOf(),
 		*_ndss.ReleaseAndGetAddressOf(),
@@ -293,6 +293,13 @@ bool Graphics::Setup(bool fullscreen, const UINT width, const UINT height, const
 	SetDofGaussianWeightsBuffer(_dofGaussWeights.data(), _dofGaussWeights.size());
 #ifdef DEBUG_BUILD
 	SetGaussianWeightsBuffer(&_outlineGaussianWeightsBuffer, _outlineGaussWeights.data(), _outlineGaussWeights.size());
+#endif
+
+#ifdef DEBUG_BUILD
+	_renderFogFX = DebugData::Get().graphicsFogEnabled;
+	_renderEmissionFX = DebugData::Get().graphicsEmissionEnabled;
+	_renderDepthOfFieldFX = DebugData::Get().graphicsDofEnabled;
+	_renderOutlineFX = DebugData::Get().graphicsOutlineEnabled;
 #endif
 
 	_isSetup = true;
@@ -4462,6 +4469,8 @@ bool Graphics::RenderUI(TimeUtils &time)
 						constexpr float clearFog[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
 						_context->ClearRenderTargetView(_fogRT.GetRTV(), clearFog);
 					}
+
+					DebugData::Get().graphicsFogEnabled = _renderFogFX;
 				}
 
 				if (_renderFogFX)
@@ -4626,6 +4635,8 @@ bool Graphics::RenderUI(TimeUtils &time)
 						constexpr float clearBlur[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
 						_context->ClearRenderTargetView(_blurRT.GetRTV(), clearBlur);
 					}
+
+					DebugData::Get().graphicsEmissionEnabled = _renderEmissionFX;
 				}
 
 				if (_renderEmissionFX)
@@ -4787,6 +4798,8 @@ bool Graphics::RenderUI(TimeUtils &time)
 						_context->ClearRenderTargetView(_dofHalfBlur2RT.GetRTV(), clearBlur);
 						_context->ClearRenderTargetView(_dofFullBlurRT.GetRTV(), clearBlur);
 					}
+
+					DebugData::Get().graphicsDofEnabled = _renderDepthOfFieldFX;
 				}
 
 				if (_renderDepthOfFieldFX)
@@ -4939,6 +4952,8 @@ bool Graphics::RenderUI(TimeUtils &time)
 						constexpr float clearOutline = 0.0f;
 						_context->ClearRenderTargetView(_outlineRT.GetRTV(), &clearOutline);
 					}
+
+					DebugData::Get().graphicsOutlineEnabled = _renderOutlineFX;
 				}
 
 				if (_renderOutlineFX)

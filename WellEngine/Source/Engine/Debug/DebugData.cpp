@@ -60,6 +60,10 @@ void DebugData::SaveState()
 		settingsObj.AddMember("Mouse Sensitivity", data.mouseSensitivity, docAlloc);
 		settingsObj.AddMember("Debug Camera Near Plane", data.debugCamNearDist, docAlloc);
 		settingsObj.AddMember("Debug Camera Far Plane", data.debugCamFarDist, docAlloc);
+		settingsObj.AddMember("Enable Fog", data.graphicsFogEnabled, docAlloc);
+		settingsObj.AddMember("Enable Emission", data.graphicsEmissionEnabled, docAlloc);
+		settingsObj.AddMember("Enable Depth of Field", data.graphicsDofEnabled, docAlloc);
+		settingsObj.AddMember("Enable Outline", data.graphicsOutlineEnabled, docAlloc);
 	}
 	doc.SetObject().AddMember("Settings", settingsObj, docAlloc);
 
@@ -197,5 +201,21 @@ void DebugData::LoadState()
 		memberName = "Debug Camera Far Plane";
 		if (settings.HasMember(memberName.c_str()))
 			data.debugCamFarDist = settings[memberName.c_str()].GetFloat();
+
+		memberName = "Enable Fog";
+		if (settings.HasMember(memberName.c_str()))
+			data.graphicsFogEnabled = settings[memberName.c_str()].GetBool();
+
+		memberName = "Enable Emission";
+		if (settings.HasMember(memberName.c_str()))
+			data.graphicsEmissionEnabled = settings[memberName.c_str()].GetBool();
+
+		memberName = "Enable Depth of Field";
+		if (settings.HasMember(memberName.c_str()))
+			data.graphicsDofEnabled = settings[memberName.c_str()].GetBool();
+
+		memberName = "Enable Outline";
+		if (settings.HasMember(memberName.c_str()))
+			data.graphicsOutlineEnabled = settings[memberName.c_str()].GetBool();
 	}
 }

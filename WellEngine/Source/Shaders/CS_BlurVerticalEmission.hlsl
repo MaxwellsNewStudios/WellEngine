@@ -1,6 +1,6 @@
 #ifdef RECOMPILE
-#include "WellEngine/Source/Shaders/Headers/Common.hlsli"
-#include "WellEngine/Source/Shaders/Headers/BlurParams.hlsli"
+#include "../WellEngine/Source/Shaders/Headers/Common.hlsli"
+#include "../WellEngine/Source/Shaders/Headers/BlurParams.hlsli"
 #else
 #include "Headers/Common.hlsli"
 #include "Headers/BlurParams.hlsli"

@@ -34,7 +34,7 @@
             "Emission": {
                 "Strength": 1.149999976158142,
                 "Exponent": 0.6000000238418579,
-                "Threshold": 1.034999966621399
+                "Threshold": 1.024999976158142
             }
         }
     },
@@ -187,8 +187,8 @@
                 8.0
             ],
             "Rot": [
-                -0.0,
-                -1.3162175416946411,
+                0.0,
+                -1.3813045024871826,
                 0.0
             ],
             "Scale": [
@@ -1601,7 +1601,7 @@
         },
         {
             "Name": "Point",
-            "ID": 28,
+            "ID": 27,
             "Enabled": true,
             "Pos": [
                 -3.8684403896331787,
@@ -1625,6 +1625,7 @@
                 {
                     "Name": "PointLightBehaviour",
                     "Attributes": {
+                        "Update Frequency": 3,
                         "Falloff": 0.699999988079071,
                         "Fog Strength": 1.0,
                         "Near": -0.10000000149011612,
@@ -1640,7 +1641,7 @@
         },
         {
             "Name": "Light Entity",
-            "ID": 30,
+            "ID": 29,
             "Enabled": true,
             "Pos": [
                 -1.3002991676330566,
@@ -1664,6 +1665,7 @@
                 {
                     "Name": "SpotLightBehaviour",
                     "Attributes": {
+                        "Update Frequency": 2,
                         "Falloff": 0.4000000059604645,
                         "Fog Strength": 0.5550000071525574,
                         "Color": [
@@ -1683,7 +1685,7 @@
         },
         {
             "Name": "Node",
-            "ID": 32,
+            "ID": 31,
             "Enabled": true,
             "Pos": [
                 0.0,
@@ -1714,7 +1716,7 @@
         },
         {
             "Name": "Sun Light",
-            "ID": 33,
+            "ID": 32,
             "Enabled": true,
             "Pos": [
                 37.876991271972656,
@@ -1751,7 +1753,7 @@
         },
         {
             "Name": "Mesh Entity",
-            "ID": 35,
+            "ID": 34,
             "Enabled": true,
             "Pos": [
                 0.0,
@@ -1801,7 +1803,7 @@
         },
         {
             "Name": "Sniper",
-            "ID": 36,
+            "ID": 35,
             "Enabled": true,
             "Pos": [
                 0.0,
@@ -1822,7 +1824,7 @@
         },
         {
             "Name": "Sniper Raw Tex",
-            "ID": 41,
+            "ID": 40,
             "Enabled": false,
             "Pos": [
                 0.0,
@@ -1846,7 +1848,7 @@
             "Child": [
                 {
                     "Name": "Body",
-                    "ID": 42,
+                    "ID": 41,
                     "Enabled": true,
                     "Pos": [
                         0.0,
@@ -1921,7 +1923,7 @@
                 },
                 {
                     "Name": "Bolt",
-                    "ID": 43,
+                    "ID": 42,
                     "Enabled": true,
                     "Pos": [
                         0.0,
@@ -1996,7 +1998,7 @@
                 },
                 {
                     "Name": "Trigger",
-                    "ID": 44,
+                    "ID": 43,
                     "Enabled": true,
                     "Pos": [
                         0.0,
@@ -2071,7 +2073,7 @@
                 },
                 {
                     "Name": "Magazine",
-                    "ID": 45,
+                    "ID": 44,
                     "Enabled": true,
                     "Pos": [
                         0.0,
@@ -2148,7 +2150,7 @@
         },
         {
             "Name": "Sniper Error",
-            "ID": 46,
+            "ID": 45,
             "Enabled": false,
             "Pos": [
                 0.0,
@@ -2172,7 +2174,7 @@
             "Child": [
                 {
                     "Name": "Body",
-                    "ID": 47,
+                    "ID": 46,
                     "Enabled": true,
                     "Pos": [
                         0.0,
@@ -2243,7 +2245,7 @@
                 },
                 {
                     "Name": "Bolt",
-                    "ID": 48,
+                    "ID": 47,
                     "Enabled": true,
                     "Pos": [
                         0.0,
@@ -2314,7 +2316,7 @@
                 },
                 {
                     "Name": "Trigger",
-                    "ID": 49,
+                    "ID": 48,
                     "Enabled": true,
                     "Pos": [
                         0.0,
@@ -2385,7 +2387,7 @@
                 },
                 {
                     "Name": "Magazine",
-                    "ID": 50,
+                    "ID": 49,
                     "Enabled": true,
                     "Pos": [
                         0.0,
@@ -2458,7 +2460,7 @@
         },
         {
             "Name": "Sponza",
-            "ID": 51,
+            "ID": 50,
             "Enabled": true,
             "Pos": [
                 -65.413818359375,

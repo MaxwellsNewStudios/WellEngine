@@ -119,7 +119,7 @@
 
 
 #pragma region Path Configuration Defines
-#define ENGINE_PATH_SHADERS				"WellEngine\\Source\\Shaders"
+#define ENGINE_PATH_SHADERS				"..\\WellEngine\\Source\\Shaders"
 
 #define ASSET_PATH						"..\\Assets"
 #define ASSET_PATH_SCENES				ASSET_PATH "\\Scenes"
