@@ -80,33 +80,27 @@ bool AmbientSoundBehaviour::RenderUI()
 	if (ImGui::Button("Play", ImVec2(50, 20)))
 		TriggerSound();
 
-	const float pointOne = 0.1f;
-	float vol = _volume;
-	ImGui::InputScalar("Volume", ImGuiDataType_Float, &vol, &pointOne);
-	if (vol != _volume)
-	{
-		_volume = round(vol * 1000) / 1000;
+	if (ImGui::DragFloat("Volume", &_volume, 0.01f))
 		_soundBehaviour->SetVolume(_volume);
-	}
+	ImGuiUtils::LockMouseOnActive();
 
 	ImGui::Checkbox("Loop", &_loop);
 
-	ImGui::DragFloat("Min Delay", &_delayMin, 0.01f);
+	if (ImGui::DragFloat("Min Delay", &_delayMin, 0.01f, 0.0f, 0.0f, "%.2f"))
+		_delayMin = max(0.0f, min(_delayMin, _delayMax));
 	ImGuiUtils::LockMouseOnActive();
 
-	ImGui::DragFloat("Max Delay", &_delayMax, 0.01f);
+	if (ImGui::DragFloat("Max Delay", &_delayMax, 0.01f, 0.0f, 0.0f, "%.2f"))
+		_delayMax = max(_delayMin, _delayMax);
 	ImGuiUtils::LockMouseOnActive();
 
-	ImGui::DragFloat("Distance scaler", &_distanceScaler, 0.01f);
+	if (ImGui::DragFloat("Distance scaler", &_distanceScaler, 0.01f))
+		_distanceScaler = max(0.0f, _distanceScaler);
 	ImGuiUtils::LockMouseOnActive();
 
-	ImGui::DragFloat("Reverb scaler", &_reverbScaler, 0.01f);
+	if (ImGui::DragFloat("Reverb scaler", &_reverbScaler, 0.01f))
+		_reverbScaler = max(0.0f, _reverbScaler);
 	ImGuiUtils::LockMouseOnActive();
-
-	_delayMin = _delayMin < 0.0f ? 0.0f : round(_delayMin * 1000) / 1000;
-	_delayMax = _delayMax < _delayMin ? _delayMin : round(_delayMax * 1000) / 1000;
-	_distanceScaler = _distanceScaler < 0.0f ? 0.0f : round(_distanceScaler * 1000) / 1000;
-	_reverbScaler = _reverbScaler < 0.0f ? 0.0f : round(_reverbScaler * 1000) / 1000;
 
 	return true;
 }
@@ -114,22 +108,25 @@ bool AmbientSoundBehaviour::RenderUI()
 
 bool AmbientSoundBehaviour::Serialize(json::Document::AllocatorType &docAlloc, json::Value &obj)
 {
-	json::Value fileNameStr(json::kStringType);
-	fileNameStr.SetString(_fileName.c_str(), docAlloc);
-	obj.AddMember("File Name", fileNameStr, docAlloc);
-	obj.AddMember("Sound Effect Flag", (uint32_t)_soundEffectFlag, docAlloc); // TODO: Shorten name
-	obj.AddMember("Volume", _volume, docAlloc);
-	obj.AddMember("Loop", _loop, docAlloc);
-	obj.AddMember("Distance Scaler", _distanceScaler, docAlloc);
-	obj.AddMember("Reverb Scaler", _reverbScaler, docAlloc);
-	obj.AddMember("Delay Min", _delayMin, docAlloc);
-	obj.AddMember("Delay Max", _delayMax, docAlloc);
+	obj.AddMember("File Name",			SerializerUtils::SerializeString(_fileName, docAlloc), docAlloc);
+	obj.AddMember("Flag",				(uint32_t)_soundEffectFlag, docAlloc);
+	obj.AddMember("Volume",				_volume, docAlloc);
+	obj.AddMember("Loop",				_loop, docAlloc);
+	obj.AddMember("Distance Scaler",	_distanceScaler, docAlloc);
+	obj.AddMember("Reverb Scaler",		_reverbScaler, docAlloc);
+	obj.AddMember("Delay Min",			_delayMin, docAlloc);
+	obj.AddMember("Delay Max",			_delayMax, docAlloc);
 	return true;
 }
 bool AmbientSoundBehaviour::Deserialize(const json::Value &obj, Scene *scene)
 {
 	_fileName			= obj["File Name"].GetString();
-	_soundEffectFlag	= (dx::SOUND_EFFECT_INSTANCE_FLAGS)(obj["Sound Effect Flag"].GetUint()); // TODO: Shorten name
+
+	if (obj.HasMember("Flag"))
+		_soundEffectFlag = (dx::SOUND_EFFECT_INSTANCE_FLAGS)(obj["Flag"].GetUint());
+	else if (obj.HasMember("Sound Effect Flag")) // For backward compatibility
+		_soundEffectFlag = (dx::SOUND_EFFECT_INSTANCE_FLAGS)(obj["Sound Effect Flag"].GetUint());
+
 	_volume				= obj["Volume"].GetFloat();
 	_loop				= obj["Loop"].GetBool();
 	_distanceScaler		= obj["Distance Scaler"].GetFloat();
