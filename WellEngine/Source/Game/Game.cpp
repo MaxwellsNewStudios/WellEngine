@@ -779,6 +779,11 @@ bool Game::Setup(TimeUtils &time, Window window)
 		{ ShaderType::COMPUTE_SHADER,		"CS_ColorLUT",					"CS_ColorLUT"					},
 		{ ShaderType::COMPUTE_SHADER,		"CS_FogFX",						"CS_FogFX"						},
 		{ ShaderType::COMPUTE_SHADER,		"CS_CombineFX",					"CS_CombineFX"					},
+		{ ShaderType::COMPUTE_SHADER,		"CS_Upsample",					"CS_Upsample"					},
+		{ ShaderType::COMPUTE_SHADER,		"CS_BlurHorizontalDof",			"CS_BlurHorizontalDof"			},
+		{ ShaderType::COMPUTE_SHADER,		"CS_BlurVerticalDof",			"CS_BlurVerticalDof"			},
+		{ ShaderType::COMPUTE_SHADER,		"CS_CircleOfConfusionFX",		"CS_CircleOfConfusionFX"		},
+		{ ShaderType::COMPUTE_SHADER,		"CS_CombineDepthOfFieldFX",		"CS_CombineDepthOfFieldFX"		},
 
 #ifdef DEBUG_BUILD
 		{ ShaderType::VERTEX_SHADER,		"VS_DebugDraw",					"VS_DebugDraw"					},

@@ -96,6 +96,15 @@ struct DistortionSettingsBuffer
 	float distortionStrength = 0.0f;
 };
 
+struct DepthOfFieldSettingsBuffer
+{
+	float focalPlane = 0.25f;
+	float aperture = 15;
+	float imageDistance = 1;
+
+	float _padding[1];
+};
+
 struct OutlineSettingsBuffer
 {
 	dx::XMFLOAT4 color = { 0.2f, 0.7f, 1.0f, 1.0f };
@@ -142,6 +151,7 @@ private:
 	D3D11_VIEWPORT _viewportEmission = { };
 	D3D11_VIEWPORT _viewportBlur = { };
 	D3D11_VIEWPORT _viewportFog = { };
+	D3D11_VIEWPORT _viewportDof = { };
 
 	ComPtr<ID3D11RasterizerState> _defaultRasterizer = nullptr;
 	ComPtr<ID3D11RasterizerState> _wireframeRasterizer = nullptr;
@@ -153,6 +163,7 @@ private:
 	bool _renderPostFX = true;
 	bool _renderFogFX = true;
 	bool _renderEmissionFX = true;
+	bool _renderDepthOfFieldFX = true;
 	bool _renderOutlineFX = true;
 	bool _wireframe = false;
 	uint8_t _vSync = 1;
@@ -171,12 +182,18 @@ private:
 	RenderTargetD3D11 _intermediateBlurRT; // RGB
 	RenderTargetD3D11 _fogRT; // RGBA
 	RenderTargetD3D11 _intermediateFogRT; // RGBA
+	RenderTargetD3D11 _cocRT; // R
+	RenderTargetD3D11 _dofSharpRT; // RGBA
+	RenderTargetD3D11 _dofHalfBlur1RT; // RGB
+	RenderTargetD3D11 _dofHalfBlur2RT; // RGB
+	RenderTargetD3D11 _dofFullBlurRT; // RGBA
 
 	RenderType _renderOutput = RenderType::DEFAULT;
 
 	dx::XMFLOAT4A _currAmbientColor = { 0.01f, 0.01f, 0.01f, 0.0f };
 	FogSettingsBuffer _currFogSettings = { };
 	EmissionSettingsBuffer _currEmissionSettings = { };
+	DepthOfFieldSettingsBuffer _currDepthOfFieldSettings = { };
 
 	GeneralDataBuffer _generalDataSettings = { };
 	DistortionSettingsBuffer _distortionSettings = { };
@@ -193,12 +210,15 @@ private:
 	ConstantBufferD3D11 _fogSettingsBuffer;
 	ConstantBufferD3D11 _emissionSettingsBuffer;
 	ConstantBufferD3D11 _distortionSettingsBuffer;
+	ConstantBufferD3D11 _depthOfFieldSettingsBuffer;
 
 	std::vector<float> _fogGaussWeights = { 0.7788081181217f, 0.2165377067336f, 0.0046541751447f };
 	std::vector<float> _emissionGaussWeights = { 0.2270270270f, 0.1945945946f, 0.1216216216f, 0.0540540541f, 0.0162162162f };
+	std::vector<float> _dofGaussWeights = { 0.02f, 0.053f, 0.122f, 0.243f, 0.562f };
 
 	StructuredBufferD3D11 _fogGaussianWeightsBuffer;
 	StructuredBufferD3D11 _emissionGaussianWeightsBuffer;
+	StructuredBufferD3D11 _dofGaussianWeightsBuffer;
 
 	Ref<SpotLightCollection> _currSpotLightCollection = nullptr;
 	Ref<PointLightCollection> _currPointLightCollection = nullptr;
@@ -336,15 +356,18 @@ public:
 
 	void SetFogGaussianWeightsBuffer(float *const weights, UINT count);
 	void SetEmissionGaussianWeightsBuffer(float *const weights, UINT count);
+	void SetDofGaussianWeightsBuffer(float *const weights, UINT count);
 
 	[[nodiscard]] FogSettingsBuffer GetFogSettings() const;
 	[[nodiscard]] EmissionSettingsBuffer GetEmissionSettings() const;
+	[[nodiscard]] DepthOfFieldSettingsBuffer GetDepthOfFieldSettings() const;
 	[[nodiscard]] dx::XMFLOAT3 GetAmbientColor() const;
 	[[nodiscard]] UINT GetSkyboxShaderID() const;
 	[[nodiscard]] UINT GetEnvironmentCubemapID() const;
 
 	void SetFogSettings(const FogSettingsBuffer &fogSettings);
 	void SetEmissionSettings(const EmissionSettingsBuffer &emissionSettings);
+	void SetDepthOfFieldSettings(const DepthOfFieldSettingsBuffer& dofSettings);
 	void SetAmbientColor(const dx::XMFLOAT3 &color);
 	void SetSkyboxShaderID(UINT shaderID);
 	void SetEnvironmentCubemapID(UINT cubemapID);

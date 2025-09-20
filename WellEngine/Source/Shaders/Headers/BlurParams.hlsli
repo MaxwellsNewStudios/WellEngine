@@ -13,11 +13,10 @@ float4 GaussianBlur(in int2 uv, in int2 direction, in int2 dimensions, in bool u
 	
 	uint weightCount, _;
 	GaussianWeights.GetDimensions(weightCount, _);
+	float weightSum = 0.0;
 	
 	if (useDepth)
 	{
-		float weightSum = 0.0;
-		
 		int2 depthDimensions;
 		Depth.GetDimensions(depthDimensions.x, depthDimensions.y);
 	
@@ -48,10 +47,12 @@ float4 GaussianBlur(in int2 uv, in int2 direction, in int2 dimensions, in bool u
 			sampleUV = clamp(sampleUV, int2(0, 0), dimensions - 1);
 				
 			float weight = GaussianWeights[abs(i)];
+            weightSum += weight;
 		
 			sum += weight * Input[sampleUV];
 		}
-	}
+        sum /= weightSum;
+    }
 	
 	return sum;
 }

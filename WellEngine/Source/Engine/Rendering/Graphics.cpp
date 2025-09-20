@@ -139,6 +139,12 @@ bool Graphics::Setup(bool fullscreen, const UINT width, const UINT height, const
 			return false;
 		}
 
+		if (!_depthOfFieldSettingsBuffer.Initialize(device, sizeof(DepthOfFieldSettingsBuffer), &_currDepthOfFieldSettings))
+		{
+			ErrMsg("Failed to initialize depth of field settings buffer!");
+			return false;
+		}
+
 #ifdef DEBUG_BUILD
 		if (!_outlineSettingsBuffer.Initialize(device, sizeof(OutlineSettingsBuffer), &_outlineSettings))
 		{
@@ -284,6 +290,7 @@ bool Graphics::Setup(bool fullscreen, const UINT width, const UINT height, const
 
 	SetFogGaussianWeightsBuffer(_fogGaussWeights.data(), _fogGaussWeights.size());
 	SetEmissionGaussianWeightsBuffer(_emissionGaussWeights.data(), _emissionGaussWeights.size());
+	SetDofGaussianWeightsBuffer(_dofGaussWeights.data(), _dofGaussWeights.size());
 #ifdef DEBUG_BUILD
 	SetGaussianWeightsBuffer(&_outlineGaussianWeightsBuffer, _outlineGaussWeights.data(), _outlineGaussWeights.size());
 #endif
@@ -315,14 +322,21 @@ void Graphics::Shutdown()
 	_intermediateBlurRT.Reset();
 	_fogRT.Reset();
 	_intermediateFogRT.Reset();
+	_cocRT.Reset();
+	_dofSharpRT.Reset();
+	_dofHalfBlur1RT.Reset();
+	_dofHalfBlur2RT.Reset();
+	_dofFullBlurRT.Reset();
 	_lightGridBuffer.Reset();
 	_globalLightBuffer.Reset();
 	_generalDataBuffer.Reset();
 	_fogSettingsBuffer.Reset();
 	_emissionSettingsBuffer.Reset();
 	_distortionSettingsBuffer.Reset();
+	_depthOfFieldSettingsBuffer.Reset();
 	_fogGaussianWeightsBuffer.Reset();
 	_emissionGaussianWeightsBuffer.Reset();
+	_dofGaussianWeightsBuffer.Reset();
 
 #ifdef DEBUG_BUILD
 	_outlineSettingsBuffer.Reset();
@@ -438,6 +452,11 @@ bool Graphics::ResizeSceneViewBuffers(UINT newWidth, UINT newHeight)
 	_intermediateBlurRT.Reset();
 	_fogRT.Reset();
 	_intermediateFogRT.Reset();
+	_cocRT.Reset();
+	_dofSharpRT.Reset();
+	_dofHalfBlur1RT.Reset();
+	_dofHalfBlur2RT.Reset();
+	_dofFullBlurRT.Reset();
 #ifdef DEBUG_BUILD
 	_outlineRT.Reset();
 	_intermediateOutlineRT.Reset();
@@ -454,6 +473,10 @@ bool Graphics::ResizeSceneViewBuffers(UINT newWidth, UINT newHeight)
 	_viewportFog = _viewportSceneView;
 	_viewportFog.Width *= 0.25f;
 	_viewportFog.Height *= 0.25f;
+
+	_viewportDof = _viewportSceneView;
+	_viewportDof.Width *= 0.5f;
+	_viewportDof.Height *= 0.5f;
 
 #ifdef DEBUG_BUILD
 	_viewportOutline = _viewportSceneView;
@@ -505,7 +528,7 @@ bool Graphics::ResizeSceneViewBuffers(UINT newWidth, UINT newHeight)
 
 		if (!_intermediateBlurRT.Initialize(_device, static_cast<UINT>(_viewportBlur.Width), static_cast<UINT>(_viewportBlur.Height), DXGI_FORMAT_R11G11B10_FLOAT, true, true))
 		{
-			ErrMsg("Failed to initialize blur stage onw render target!");
+			ErrMsg("Failed to initialize blur stage one render target!");
 			return false;
 		}
 
@@ -518,6 +541,36 @@ bool Graphics::ResizeSceneViewBuffers(UINT newWidth, UINT newHeight)
 		if (!_intermediateFogRT.Initialize(_device, static_cast<UINT>(_viewportFog.Width), static_cast<UINT>(_viewportFog.Height), DXGI_FORMAT_R16G16B16A16_FLOAT, true, true))
 		{
 			ErrMsg("Failed to initialize fog stage one render target!");
+			return false;
+		}
+
+		if (!_cocRT.Initialize(_device, newWidth, newHeight, DXGI_FORMAT_R16_FLOAT, true, true))
+		{
+			ErrMsg("Failed to initialize dof render target!");
+			return false;
+		}
+
+		if (!_dofSharpRT.Initialize(_device, newWidth, newHeight, SWAPCHAIN_BUFFER_FORMAT, true, true))
+		{
+			ErrMsg("Failed to initialize dof render target!");
+			return false;
+		}
+
+		if (!_dofHalfBlur1RT.Initialize(_device, static_cast<UINT>(_viewportDof.Width), static_cast<UINT>(_viewportDof.Height), DXGI_FORMAT_R11G11B10_FLOAT, true, true))
+		{
+			ErrMsg("Failed to initialize dof render target!");
+			return false;
+		}
+
+		if (!_dofHalfBlur2RT.Initialize(_device, static_cast<UINT>(_viewportDof.Width), static_cast<UINT>(_viewportDof.Height), DXGI_FORMAT_R11G11B10_FLOAT, true, true))
+		{
+			ErrMsg("Failed to initialize dof render target!");
+			return false;
+		}
+
+		if (!_dofFullBlurRT.Initialize(_device, newWidth, newHeight, DXGI_FORMAT_R16G16B16A16_FLOAT, true, true))
+		{
+			ErrMsg("Failed to initialize dof render target!");
 			return false;
 		}
 
@@ -761,6 +814,10 @@ void Graphics::SetEmissionGaussianWeightsBuffer(float *const weights, UINT count
 {
 	SetGaussianWeightsBuffer(&_emissionGaussianWeightsBuffer, weights, count);
 }
+void Graphics::SetDofGaussianWeightsBuffer(float *const weights, UINT count)
+{
+	SetGaussianWeightsBuffer(&_dofGaussianWeightsBuffer, weights, count);
+}
 
 FogSettingsBuffer Graphics::GetFogSettings() const
 {
@@ -769,6 +826,10 @@ FogSettingsBuffer Graphics::GetFogSettings() const
 EmissionSettingsBuffer Graphics::GetEmissionSettings() const
 {
 	return _currEmissionSettings;
+}
+DepthOfFieldSettingsBuffer Graphics::GetDepthOfFieldSettings() const
+{
+	return _currDepthOfFieldSettings;
 }
 dx::XMFLOAT3 Graphics::GetAmbientColor() const
 {
@@ -790,6 +851,10 @@ void Graphics::SetFogSettings(const FogSettingsBuffer &fogSettings)
 void Graphics::SetEmissionSettings(const EmissionSettingsBuffer &emissionSettings)
 {
 	_currEmissionSettings = emissionSettings;
+}
+void Graphics::SetDepthOfFieldSettings(const DepthOfFieldSettingsBuffer& dofSettings)
+{
+	//_currDepthOfFieldSettings = dofSettings; TODO: Uncomment this to give control to the scene
 }
 void Graphics::SetAmbientColor(const dx::XMFLOAT3 &color)
 {
@@ -967,6 +1032,12 @@ bool Graphics::EndSceneRender(TimeUtils &time)
 		if (!_distortionSettingsBuffer.UpdateBuffer(_context, &_distortionSettings))
 		{
 			ErrMsg("Failed to update distortion settings buffer!");
+			return false;
+		}
+
+		if (!_depthOfFieldSettingsBuffer.UpdateBuffer(_context, &_currDepthOfFieldSettings))
+		{
+			ErrMsg("Failed to update depth of field settings buffer")
 			return false;
 		}
 	
@@ -3522,7 +3593,6 @@ bool Graphics::RenderPostFX()
 			_context->CSSetShaderResources(3, 1, nullSRV);
 		}
 
-
 		// Perform Emission downsample
 		if (_renderEmissionFX && _emissionBlurIterations > 0)
 		{
@@ -3659,7 +3729,8 @@ bool Graphics::RenderPostFX()
 			_context->CSSetShaderResources(3, 1, nullSRV);
 		}
 
-
+		// Perform Depth of Field Blur
+	
 #ifdef DEBUG_BUILD
 		// Perform Outline Blur
 		if (_renderOutlineFX && _outlineBlurIterations > 0)
@@ -3713,6 +3784,7 @@ bool Graphics::RenderPostFX()
 					// Unbind render target
 					static ID3D11UnorderedAccessView *const nullUAV = nullptr;
 					_context->CSSetUnorderedAccessViews(0, 1, &nullUAV, nullptr);
+
 				}
 
 				// Blur Stage Two
@@ -3784,18 +3856,19 @@ bool Graphics::RenderPostFX()
 		}
 
 		// Bind combine render target
-		ID3D11UnorderedAccessView *const uav[1] = { 
+		ID3D11UnorderedAccessView *outputUAV = _uav.Get();
 #ifdef USE_IMGUI
-			_intermediateRT.GetUAV()
-#else
-			_uav.Get()
+		outputUAV = _intermediateRT.GetUAV();
 #endif
+
+		ID3D11UnorderedAccessView *const uav[1] = { 
+			outputUAV
 		};
 		_context->CSSetUnorderedAccessViews(0, 1, uav, nullptr);
 
 
 		// Bind screen, emission & fog resources
-		ID3D11ShaderResourceView *srvs[3] = { 
+		ID3D11ShaderResourceView *srvs[3] = {
 			_sceneRT.GetSRV(),
 			_blurRT.GetSRV(),
 			_fogRT.GetSRV(),
@@ -3849,6 +3922,243 @@ bool Graphics::RenderPostFX()
 		_context->CSSetUnorderedAccessViews(0, 1, &nullUAV, nullptr);
 	}
 
+	if (_renderDepthOfFieldFX)
+	{
+		ZoneNamedXNC(depthOfFieldZone, "Depth of Field", RandomUniqueColor(), true);
+		TracyD3D11NamedZoneC(_tracyD3D11Context, depthOfFieldD3D11Zone, "Depth of Field", RandomUniqueColor(), true);
+
+		// Calculate circle of confusion
+		{
+			ZoneNamedXNC(cocZone, "Circle Of Confusion", RandomUniqueColor(), true);
+			TracyD3D11NamedZoneC(_tracyD3D11Context, cocD3D11Zone, "Depth of Field", RandomUniqueColor(), true);
+
+			// Bind compute shader
+			if (!_content->GetShader("CS_CircleOfConfusionFX")->BindShader(_context))
+			{
+				ErrMsg("Failed to bind downscale emission compute shader!");
+				return false;
+			}
+
+			// Bind render target
+			ID3D11UnorderedAccessView *uav[2] = {
+				_cocRT.GetUAV(),
+				_dofSharpRT.GetUAV()
+			};
+			_context->CSSetUnorderedAccessViews(0, 2, uav, nullptr);
+
+			// Bind depth & sharp resource
+			ID3D11ShaderResourceView *const srv[2] = {
+#ifdef USE_IMGUI
+				_intermediateRT.GetSRV(),
+#else
+				nullptr, // TODO: Make sure this works without IMGUI
+#endif
+				_depthRT.GetSRV()
+			};
+			_context->CSSetShaderResources(0, 2, srv);
+
+			ID3D11Buffer *const dofSettings = _depthOfFieldSettingsBuffer.GetBuffer();
+			_context->CSSetConstantBuffers(6, 1, &dofSettings);
+
+			// Send execution command
+			_context->Dispatch(static_cast<UINT>(ceil(_viewportSceneView.Width / 8.0f)), static_cast<UINT>(ceil(_viewportSceneView.Height / 8.0f)), 1);
+
+
+			// Unbind compute shader resources
+			ID3D11ShaderResourceView *nullSRV[2] = {};
+			memset(nullSRV, 0, 2 * sizeof(ID3D11ShaderResourceView));
+			_context->CSSetShaderResources(0, 2, nullSRV);
+
+			// Unbind render target
+			static ID3D11UnorderedAccessView *const nullUAV[2] = { nullptr, nullptr };
+			_context->CSSetUnorderedAccessViews(0, 2, nullUAV, nullptr);
+		}
+
+		// Pre-calculate Blur
+		{
+			ZoneNamedXNC(blurZone, "Blur", RandomUniqueColor(), true);
+			TracyD3D11NamedZoneC(_tracyD3D11Context, blurD3D11Zone, "Blur", RandomUniqueColor(), true);
+
+			// Downsample
+			{
+				// Bind compute shader
+				if (!_content->GetShader("CS_DownsampleCheap")->BindShader(_context))
+				{
+					ErrMsg("Failed to bind downscale emission compute shader!");
+					return false;
+				}
+
+				// Bind render target
+				ID3D11UnorderedAccessView *const uav[1] = { _dofHalfBlur1RT.GetUAV() };
+				_context->CSSetUnorderedAccessViews(0, 1, uav, nullptr);
+
+				// Bind shader resource
+				ID3D11ShaderResourceView *const srv[1] = { _dofSharpRT.GetSRV() };
+				_context->CSSetShaderResources(0, 1, srv);
+
+
+				// Send execution command
+				_context->Dispatch(static_cast<UINT>(ceil(_viewportDof.Width / 8.0f)), static_cast<UINT>(ceil(_viewportDof.Height / 8.0f)), 1);
+
+
+				// Unbind compute shader resources
+				ID3D11ShaderResourceView *nullSRV[1] = {};
+				memset(nullSRV, 0, sizeof(ID3D11ShaderResourceView));
+				_context->CSSetShaderResources(0, 1, nullSRV);
+
+				// Unbind render target
+				static ID3D11UnorderedAccessView *const nullUAV = nullptr;
+				_context->CSSetUnorderedAccessViews(0, 1, &nullUAV, nullptr);
+			}
+
+			ID3D11ShaderResourceView *const srvGaussianWeights[1] = { _dofGaussianWeightsBuffer.GetSRV() };
+			_context->CSSetShaderResources(3, 1, srvGaussianWeights);
+
+			// Horizontal Blur
+			{
+				TracyD3D11NamedZoneXC(_tracyD3D11Context, outlineBlurIterationXD3D11Zone, "Horizontal", RandomUniqueColor(), true);
+
+				// Bind compute shader
+				if (!_content->GetShader("CS_BlurHorizontalDof")->BindShader(_context))
+				{
+					ErrMsg("Failed to bind horizontal blur compute shader!");
+					return false;
+				}
+
+				// Bind render target
+				ID3D11UnorderedAccessView *const uav[1] = { _dofHalfBlur2RT.GetUAV() };
+				_context->CSSetUnorderedAccessViews(0, 1, uav, nullptr);
+
+				// Bind shader resource
+				ID3D11ShaderResourceView *const srv[1] = { _dofHalfBlur1RT.GetSRV() };
+				_context->CSSetShaderResources(0, 1, srv);
+
+
+				// Send execution command
+				_context->Dispatch(static_cast<UINT>(ceil(_viewportDof.Width / 8.0f)), static_cast<UINT>(ceil(_viewportDof.Height / 8.0f)), 1);
+
+
+				// Unbind compute shader resources
+				ID3D11ShaderResourceView *nullSRV[1] = {};
+				memset(nullSRV, 0, sizeof(ID3D11ShaderResourceView));
+				_context->CSSetShaderResources(0, 1, nullSRV);
+
+				// Unbind render target
+				static ID3D11UnorderedAccessView *const nullUAV = nullptr;
+				_context->CSSetUnorderedAccessViews(0, 1, &nullUAV, nullptr);
+			}
+
+			// Vertical Blur
+			{
+				TracyD3D11NamedZoneXC(_tracyD3D11Context, outlineBlurIterationXD3D11Zone, "Vertical", RandomUniqueColor(), true);
+
+				// Bind compute shader
+				if (!_content->GetShader("CS_BlurVerticalDof")->BindShader(_context))
+				{
+					ErrMsg("Failed to bind horizontal blur compute shader!");
+					return false;
+				}
+
+				// Bind render target
+				ID3D11UnorderedAccessView *const uav[1] = { _dofHalfBlur1RT.GetUAV() };
+				_context->CSSetUnorderedAccessViews(0, 1, uav, nullptr);
+
+				// Bind shader resource
+				ID3D11ShaderResourceView *const srv[1] = { _dofHalfBlur2RT.GetSRV() };
+				_context->CSSetShaderResources(0, 1, srv);
+
+
+				// Send execution command
+				_context->Dispatch(static_cast<UINT>(ceil(_viewportDof.Width / 8.0f)), static_cast<UINT>(ceil(_viewportDof.Height / 8.0f)), 1);
+
+
+				// Unbind compute shader resources
+				ID3D11ShaderResourceView *nullSRV[1] = {};
+				memset(nullSRV, 0, sizeof(ID3D11ShaderResourceView));
+				_context->CSSetShaderResources(0, 1, nullSRV);
+
+				// Unbind render target
+				static ID3D11UnorderedAccessView *const nullUAV = nullptr;
+				_context->CSSetUnorderedAccessViews(0, 1, &nullUAV, nullptr);
+			}
+
+			ID3D11ShaderResourceView *const nullSRV[1] = { nullptr };
+			_context->CSSetShaderResources(3, 1, nullSRV);
+
+			// Upsample
+			{
+				// Bind compute shader
+				if (!_content->GetShader("CS_Upsample")->BindShader(_context))
+				{
+					ErrMsg("Failed to bind downscale emission compute shader!");
+					return false;
+				}
+
+				// Bind render target
+				ID3D11UnorderedAccessView *const uav[1] = { _dofFullBlurRT.GetUAV() };
+				_context->CSSetUnorderedAccessViews(0, 1, uav, nullptr);
+
+				// Bind shader resource
+				ID3D11ShaderResourceView *const srv[1] = { _dofHalfBlur1RT.GetSRV() };
+				_context->CSSetShaderResources(0, 1, srv);
+
+				// Send execution command
+				_context->Dispatch(static_cast<UINT>(ceil(_viewportSceneView.Width / 8.0f)), static_cast<UINT>(ceil(_viewportSceneView.Height / 8.0f)), 1);
+
+				// Unbind compute shader resources
+				ID3D11ShaderResourceView *nullSRV[1] = {};
+				memset(nullSRV, 0, sizeof(ID3D11ShaderResourceView));
+				_context->CSSetShaderResources(0, 1, nullSRV);
+
+				// Unbind render target
+				static ID3D11UnorderedAccessView *const nullUAV = nullptr;
+				_context->CSSetUnorderedAccessViews(0, 1, &nullUAV, nullptr);
+
+			}
+		}
+
+		// Combine depth of field
+		{
+			// Bind combine compute shader
+			if (!_content->GetShader("CS_CombineDepthOfFieldFX")->BindShader(_context))
+			{
+				ErrMsg("Failed to bind fog compute shader!");
+				return false;
+			}
+
+			// Bind combine render target
+			ID3D11UnorderedAccessView *const uav[1] = {
+#ifdef USE_IMGUI
+				_intermediateRT.GetUAV()
+#else
+				_uav.Get()
+#endif
+			};
+			_context->CSSetUnorderedAccessViews(0, 1, uav, nullptr);
+
+
+			// Bind screen, emission & fog resources
+			ID3D11ShaderResourceView *srvs[3] = {
+				_dofSharpRT.GetSRV(),
+				_cocRT.GetSRV(),
+				_dofFullBlurRT.GetSRV(),
+			};
+			_context->CSSetShaderResources(0, 3, srvs);
+
+			// Send execution command
+			_context->Dispatch(static_cast<UINT>(ceil(_viewportSceneView.Width / 8.0f)), static_cast<UINT>(ceil(_viewportSceneView.Height / 8.0f)), 1);
+
+
+			// Unbind shader resources
+			memset(srvs, 0, sizeof(srvs));
+			_context->CSSetShaderResources(0, 3, srvs);
+
+			// Unbind render target
+			static ID3D11UnorderedAccessView *const nullUAV = nullptr;
+			_context->CSSetUnorderedAccessViews(0, 1, &nullUAV, nullptr);
+
+		}
+	}
 
 	return true;
 }
@@ -4127,6 +4437,11 @@ bool Graphics::RenderUI(TimeUtils &time)
 			_context->ClearRenderTargetView(_blurRT.GetRTV(), clearColor);
 			_context->ClearRenderTargetView(_fogRT.GetRTV(), clearColor);
 			_context->ClearRenderTargetView(_outlineRT.GetRTV(), clearColor);
+			_context->ClearRenderTargetView(_cocRT.GetRTV(), clearColor);
+			_context->ClearRenderTargetView(_dofSharpRT.GetRTV(), clearColor);
+			_context->ClearRenderTargetView(_dofHalfBlur1RT.GetRTV(), clearColor);
+			_context->ClearRenderTargetView(_dofHalfBlur2RT.GetRTV(), clearColor);
+			_context->ClearRenderTargetView(_dofFullBlurRT.GetRTV(), clearColor);
 		}
 	}
 
@@ -4456,6 +4771,162 @@ bool Graphics::RenderUI(TimeUtils &time)
 					ImGui::PopID();
 				}
 				ImGui::TreePop();
+			}
+
+			if (ImGui::TreeNode("Depth of Field"))
+			{
+				if (ImGui::Checkbox("Render Depth of Field", &_renderDepthOfFieldFX))
+				{
+					if (!_renderDepthOfFieldFX)
+					{
+						// Clear dof resources
+						constexpr float clearBlur[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
+						_context->ClearRenderTargetView(_cocRT.GetRTV(), clearBlur);
+						_context->ClearRenderTargetView(_dofSharpRT.GetRTV(), clearBlur);
+						_context->ClearRenderTargetView(_dofHalfBlur1RT.GetRTV(), clearBlur);
+						_context->ClearRenderTargetView(_dofHalfBlur2RT.GetRTV(), clearBlur);
+						_context->ClearRenderTargetView(_dofFullBlurRT.GetRTV(), clearBlur);
+					}
+				}
+
+				if (_renderDepthOfFieldFX)
+				{
+					ImGui::PushID("Depth of Field Settings");
+
+					ImGui::DragFloat("Focal Plane", &_currDepthOfFieldSettings.focalPlane, 0.01f);
+					ImGuiUtils::LockMouseOnActive();
+
+					ImGui::DragFloat("Aperture", &_currDepthOfFieldSettings.aperture, 0.01f);
+					ImGuiUtils::LockMouseOnActive();
+
+					ImGui::DragFloat("imageDistance", &_currDepthOfFieldSettings.imageDistance, 0.01f);
+					ImGuiUtils::LockMouseOnActive();
+
+					if (ImGui::TreeNode("Blur Weights"))
+					{
+						std::vector<float> &gaussWeights = _dofGaussWeights;
+						bool modified = false;
+
+						static float valueRange[2] = { 0.0f, 1.0f };
+						if (ImGui::DragFloat2("Range", valueRange, 0.01f))
+							valueRange[1] = max(valueRange[1], valueRange[0]);
+						ImGuiUtils::LockMouseOnActive();
+
+						static bool normalizeWeights = true;
+						if (ImGui::Checkbox("Normalize", &normalizeWeights))
+						{
+							if (normalizeWeights)
+							{
+								float sum = 0.0f;
+								for (float &weight : gaussWeights)
+									sum += weight;
+
+								if (sum > 0.0f)
+								{
+									for (float &weight : gaussWeights)
+										weight /= sum;
+								}
+
+								modified = true;
+							}
+						}
+						ImGui::SetItemTooltip("Normalize the weights to sum to 1.0.");
+
+						int weightCount = gaussWeights.size();
+						if (ImGui::InputInt("Weight Count", &weightCount))
+						{
+							weightCount = max(weightCount, 1);
+
+							if (weightCount != gaussWeights.size())
+							{
+								gaussWeights.resize(weightCount);
+								modified = true;
+							}
+						}
+
+						ImGui::Separator();
+						ImGui::BeginChild("Weights", { 0, 0 }, ImGuiChildFlags_Borders | ImGuiChildFlags_ResizeY);
+						for (int i = 0; i < weightCount; i++)
+						{
+							ImGui::PushID(i);
+
+							if (ImGui::SliderFloat("", &gaussWeights[i], valueRange[0], valueRange[1]))
+							{
+								modified = true;
+
+								// Normalize weights without changing the modified weight
+								if (normalizeWeights)
+								{
+									float restSum = 1.0f - gaussWeights[i];
+
+									if (std::abs(restSum) > 0.001f)
+									{
+										float sum = 0.0f;
+										for (int j = 0; j < weightCount; j++)
+										{
+											if (j != i)
+												sum += gaussWeights[j];
+										}
+
+										if (sum > 0.0f)
+										{
+											float invScaledSum = restSum / sum;
+
+											for (int j = 0; j < weightCount; j++)
+											{
+												if (j != i)
+													gaussWeights[j] *= invScaledSum;
+											}
+										}
+									}
+								}
+
+							}
+
+							ImGui::PopID();
+						}
+						ImGui::EndChild();
+						ImGui::Separator();
+
+						static bool applyContinuously = false;
+						if (ImGui::Checkbox("Apply Continuously", &applyContinuously))
+							modified = true;
+						ImGui::SetItemTooltip("Apply the new weights as soon as they are modified.\nUseful for seeing changes in real-time.");
+
+						bool apply = applyContinuously && modified;
+
+						if (!applyContinuously)
+						{
+							if (ImGui::Button("Apply"))
+								apply = true;
+						}
+
+						if (apply)
+						{
+							if (normalizeWeights)
+							{
+								float sum = 0.0f;
+								for (float &weight : gaussWeights)
+									sum += weight;
+
+								if (sum > 0.0f)
+								{
+									for (float &weight : gaussWeights)
+										weight /= sum;
+								}
+							}
+
+							SetDofGaussianWeightsBuffer(gaussWeights.data(), gaussWeights.size());
+						}
+
+						ImGui::TreePop();
+					}
+
+
+					ImGui::PopID();
+				}
+				ImGui::TreePop();
+
 			}
 
 			if (ImGui::TreeNode("Outline"))
