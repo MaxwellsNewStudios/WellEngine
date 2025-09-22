@@ -377,12 +377,17 @@ bool ShaderResourceTextureD3D11::Initialize(ComPtr<ID3D11Texture2D> &&texture, C
 	D3D11_TEXTURE2D_DESC desc;
 	_texture->GetDesc(&desc);
 
+	D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc;
+	_srv->GetDesc(&srvDesc);
+
 	_size = { desc.Width, desc.Height };
 	_format = desc.Format;
 	_mipmapped = desc.MipLevels > 1;
 
 	if ((desc.MiscFlags & D3D11_RESOURCE_MISC_TEXTURECUBE) != 0)
 		_dim = TexDim::Cubemap;
+	else if (srvDesc.ViewDimension == D3D_SRV_DIMENSION_TEXTURE3D)
+		_dim = TexDim::Tex3D;
 
 	return true;
 }
@@ -411,4 +416,8 @@ bool ShaderResourceTextureD3D11::IsMipmapped() const
 bool ShaderResourceTextureD3D11::IsCubemap() const
 {
 	return _dim == TexDim::Cubemap;
+}
+TexDim ShaderResourceTextureD3D11::GetDim() const
+{
+	return _dim;
 }

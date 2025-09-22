@@ -16,7 +16,7 @@ private:
 
 	float _volume = 1.0f;
 	float _distanceScaler = 75.0f;
-	float _reverbScaler = 1.0f;
+	float _reverbScaler = 0.2f;
 	bool _loop = false;
 	bool _play = true;
 	bool _isValid = false;
@@ -54,7 +54,7 @@ public:
 	SoundBehaviour() = default;
 	SoundBehaviour(std::string fileName, 
 		dx::SOUND_EFFECT_INSTANCE_FLAGS flags = dx::SoundEffectInstance_Use3D | dx::SoundEffectInstance_ReverbUseFilters, 
-		bool loop = false, float distanceScaler = 75.0f, float reverbScaler = 1.0f);
+		bool loop = false, float distanceScaler = 75.0f, float reverbScaler = 0.2f);
 	~SoundBehaviour() = default;
 
 	void Play();

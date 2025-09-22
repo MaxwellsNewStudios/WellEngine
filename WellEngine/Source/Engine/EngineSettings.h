@@ -20,6 +20,8 @@
 	/// MIPS_DISCARDED discards a specified amount of higher resultion mipmaps for all textures.
 	/// This is used to reduce memory usage and bandwidth.
 	constexpr auto MIPS_DISCARDED = 0;
+
+	constexpr float FIXED_DELTA_TIME = 1.0f / 20.0f;
 #pragma endregion
 
 
@@ -137,9 +139,9 @@
 #define ASSET_EXT_FONT					"ttf"
 
 #define ASSET_REGISTRY_PATH				ASSET_PATH "\\_Registry"
-#define ASSET_REGISTRY_FILE_TEXTURES	ASSET_REGISTRY_PATH "\\_textures.txt" // TODO: Deprecated, replace with registry system
-#define ASSET_REGISTRY_FILE_CUBEMAPS	ASSET_REGISTRY_PATH "\\_cubemaps.txt" // TODO: Deprecated, replace with registry system
-#define ASSET_REGISTRY_FILE_MESHES		ASSET_REGISTRY_PATH "\\_meshNames.txt" // TODO: Deprecated, replace with registry system
+#define ASSET_REGISTRY_FILE_TEXTURES	ASSET_REGISTRY_PATH "\\_textures.txt" // TODO: Deprecate, replace with registry system
+#define ASSET_REGISTRY_FILE_CUBEMAPS	ASSET_REGISTRY_PATH "\\_cubemaps.txt" // TODO: Deprecate, replace with registry system
+#define ASSET_REGISTRY_FILE_MESHES		ASSET_REGISTRY_PATH "\\_meshNames.txt" // TODO: Deprecate, replace with registry system
 
 #define ASSET_COMPILED_PATH				ASSET_PATH "\\_Compiled"
 #define ASSET_COMPILED_PATH_CSO			ASSET_COMPILED_PATH "\\Shaders"

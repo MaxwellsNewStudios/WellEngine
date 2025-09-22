@@ -1017,7 +1017,7 @@ bool LoadTextureFromFile(
 #endif
 
 	// Create D3D11 texture
-	hr = dx::CreateTexture(device, image.GetImages(), image.GetImageCount(), metadata, (ID3D11Resource**)&texture);
+	hr = dx::CreateTexture(device, image.GetImages(), image.GetImageCount(), metadata, (ID3D11Resource **)&texture);
 	if (FAILED(hr))
 	{
 		WarnF("Failed to create D3D11 texture from file at path \"{}\"! hr: {}, {}", path, hr, StringUtils::HResultToString(hr));

@@ -47,6 +47,7 @@ public:
 	[[nodiscard]] DXGI_FORMAT GetFormat() const;
 	[[nodiscard]] bool IsMipmapped() const;
 	[[nodiscard]] bool IsCubemap() const;
+	[[nodiscard]] TexDim GetDim() const;
 
 	TESTABLE()
 };

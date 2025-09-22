@@ -1228,8 +1228,8 @@ bool Game::Update(TimeUtils &time, const Input& input)
 		}
 
 #ifdef _DEBUG
-		if (_tickTimer >= time.GetFixedDeltaTime() * 4.0f)
-			_tickTimer = time.GetFixedDeltaTime() * 4.0f;
+		if (_tickTimer >= time.GetFixedDeltaTime() * 16.0f)
+			_tickTimer = time.GetFixedDeltaTime() * 16.0f;
 #endif
 		time.TakeSnapshot("SceneFixedUpdateTime");
 	}

@@ -129,8 +129,11 @@ bool DebugPlayerBehaviour::Update(TimeUtils &time, const Input &input)
 	DebugDrawer &debugDraw = DebugDrawer::Instance();
 	DebugData &debugData = DebugData::Get();
 
-	bool acceptInput = !ImGui::GetIO().WantCaptureKeyboard;
-	bool additiveSelect = BindingCollection::IsTriggered(InputBindings::InputAction::AdditiveSelect);
+	const float deltaTime = time.GetDeltaTime();
+	const float realDeltaTime = time.GetRealDeltaTime();
+
+	const bool acceptInput = !ImGui::GetIO().WantCaptureKeyboard;
+	const bool additiveSelect = BindingCollection::IsTriggered(InputBindings::InputAction::AdditiveSelect);
 
 	if (_mainCamera.IsValid())
 	{
@@ -486,7 +489,7 @@ bool DebugPlayerBehaviour::Update(TimeUtils &time, const Input &input)
 				}
 				else if (hasPressedAdd && addState == KeyState::Held)
 				{
-					repeatTimer -= time.GetDeltaTime();
+					repeatTimer -= realDeltaTime;
 
 					if (repeatTimer <= 0.0f)
 					{
@@ -512,7 +515,7 @@ bool DebugPlayerBehaviour::Update(TimeUtils &time, const Input &input)
 				}
 				else if (hasPressedSub && subState == KeyState::Held)
 				{
-					repeatTimer -= time.GetDeltaTime();
+					repeatTimer -= realDeltaTime;
 
 					if (repeatTimer <= 0.0f)
 					{
@@ -573,19 +576,19 @@ bool DebugPlayerBehaviour::Update(TimeUtils &time, const Input &input)
 			if (input.IsCursorLocked())
 			{
 				if (BindingCollection::IsTriggered(InputBindings::InputAction::StrafeRight))
-					camTransform->MoveRelative({ time.GetDeltaTime() * currSpeed, 0.0f, 0.0f }, World);
+					camTransform->MoveRelative({ realDeltaTime * currSpeed, 0.0f, 0.0f }, World);
 				else if (BindingCollection::IsTriggered(InputBindings::InputAction::StrafeLeft))
-					camTransform->MoveRelative({ -time.GetDeltaTime() * currSpeed, 0.0f, 0.0f }, World);
+					camTransform->MoveRelative({ -realDeltaTime * currSpeed, 0.0f, 0.0f }, World);
 
 				if (input.IsPressedOrHeld(KeyCode::Space))
-					camTransform->MoveRelative({ 0.0f, time.GetDeltaTime() * currSpeed, 0.0f }, World);
+					camTransform->MoveRelative({ 0.0f, realDeltaTime * currSpeed, 0.0f }, World);
 				else if (input.IsPressedOrHeld(KeyCode::X))
-					camTransform->MoveRelative({ 0.0f, -time.GetDeltaTime() * currSpeed, 0.0f }, World);
+					camTransform->MoveRelative({ 0.0f, -realDeltaTime * currSpeed, 0.0f }, World);
 
 				if (BindingCollection::IsTriggered(InputBindings::InputAction::WalkForward))
-					camTransform->MoveRelative({ 0.0f, 0.0f, time.GetDeltaTime() * currSpeed }, World);
+					camTransform->MoveRelative({ 0.0f, 0.0f, realDeltaTime * currSpeed }, World);
 				else if (BindingCollection::IsTriggered(InputBindings::InputAction::WalkBackward))
-					camTransform->MoveRelative({ 0.0f, 0.0f, -time.GetDeltaTime() * currSpeed }, World);
+					camTransform->MoveRelative({ 0.0f, 0.0f, -realDeltaTime * currSpeed }, World);
 
 				float sensitivity = input.GetMouseSensitivity();
 

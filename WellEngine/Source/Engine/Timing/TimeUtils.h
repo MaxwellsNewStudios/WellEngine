@@ -27,10 +27,9 @@ private:
 
 	float _deltaTime = 1.0f / 60.0f;
 	float _realDeltaTime = 1.0f / 60.0f;
-	float _fixedDeltaTime = 1.0f / 20.0f;
+	float _fixedDeltaTime = FIXED_DELTA_TIME;
 
 public:
-
 	TimeUtils();
 	~TimeUtils() = default;
 	TimeUtils(const TimeUtils &) = delete;

@@ -4369,26 +4369,42 @@ bool Graphics::RenderUI(TimeUtils &time)
 
 	// Color LUT drag & drop target
 	{
+		std::vector<std::string> lutNames;
+		_content->GetTextureNames(&lutNames);
+
 		ImGui::BeginGroup();
 		ImGui::Text("Color LUT:"); 
 		ImGui::SameLine();
 
-		if (_colorLutID != CONTENT_NULL)
+		ImGui::SameLine();
+		if (ImGui::BeginCombo("##LUTTextureCombo", _colorLutID == CONTENT_NULL ? "None" : (lutNames[_colorLutID].c_str())))
 		{
-			std::string lutName = _content->GetTextureName(_colorLutID);
-			ImGui::Text("%s", lutName.c_str());
+			// Add "None" option
+			{
+				const bool isNoneSelected = (_colorLutID == CONTENT_NULL);
+				if (ImGui::Selectable("None", isNoneSelected))
+					_colorLutID = CONTENT_NULL;
 
-			ImGui::SameLine();
-			ImGuiUtils::BeginButtonStyle(ImGuiUtils::StyleType::Red);
-			if (ImGui::Button("X"))
-				_colorLutID = CONTENT_NULL;
-			ImGuiUtils::EndButtonStyle();
-		}
-		else
-		{
-			ImGui::Text("None");
-		}
+				if (isNoneSelected)
+					ImGui::SetItemDefaultFocus();
+			}
 
+			for (int i = 0; i < lutNames.size(); i++)
+			{
+				std::string &lutName = lutNames[i];
+
+				if (_content->GetTexture(i)->GetDim() != TexDim::Tex3D)
+					continue; // Only show LUT textures
+
+				const bool isSelected = (_colorLutID == i);
+				if (ImGui::Selectable(lutName.c_str(), isSelected))
+					_colorLutID = i;
+
+				if (isSelected)
+					ImGui::SetItemDefaultFocus();
+			}
+			ImGui::EndCombo();
+		}
 		ImGui::EndGroup();
 
 		if (ImGui::BeginDragDropTarget())

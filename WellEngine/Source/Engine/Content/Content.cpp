@@ -357,12 +357,25 @@ bool Content::RenderUI(ID3D11Device *device)
 									ImVec2(1, 1), ImVec2(0, 0)
 								);
 
+								std::string dimName;
+								switch (texture->data.GetDim())
+								{
+								case TexDim::Tex2D:			dimName = "2D"; break;
+								case TexDim::Tex2DArray:	dimName = "2D Array"; break;
+								case TexDim::Tex3D:			dimName = "3D"; break;
+								case TexDim::Tex3DArray:	dimName = "3D Array"; break;
+								case TexDim::Cubemap:		dimName = "Cubemap"; break;
+								case TexDim::CubemapArray:	dimName = "Cubemap Array"; break;
+								default:					dimName = "Unknown"; break;
+								}
+
 								ImGui::Text("ID: %d", texture->id);
 								ImGui::Text("Name: %s", texture->name.c_str());
 								ImGui::Text("Asset: %s", texture->path.c_str());
-								ImGui::Text("Loaded From: %s", texture->actualPath.c_str());
+								ImGui::Text("Loaded: %s", texture->actualPath.c_str());
 								ImGui::Text("%d x %d", size.x, size.y);
-								ImGui::Text(D3D11FormatData::GetName(texData.GetFormat()).c_str());
+								ImGui::Text("Type: %s", dimName.c_str());
+								ImGui::Text("Format: %s", D3D11FormatData::GetName(texData.GetFormat()).c_str());
 								ImGui::Text("Mipmapped: %s", (texture->mipmapped ? "True" : "False"));
 								ImGui::EndTooltip();
 							}

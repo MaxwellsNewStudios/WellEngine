@@ -121,7 +121,7 @@ bool SoundBehaviour::RenderUI()
 		{
 			const char *filterPatterns[] = { "*.wav" };
 			const char *selectedFiles = tinyfd_openFileDialog(
-				"Open File",
+				"Open Sound File",
 				PATH_FILE(ASSET_PATH_SOUNDS, "").c_str(),
 				1,
 				filterPatterns,
