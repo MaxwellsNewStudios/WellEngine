@@ -1327,6 +1327,7 @@ bool Entity::InitialRenderUI()
 		ImGui::Separator();
 		ImGui::Dummy({ 0.0f, 2.0f });
 
+		// Add behaviour
 		{
 			auto &behaviourMap = BehaviourRegistry::Get();
 

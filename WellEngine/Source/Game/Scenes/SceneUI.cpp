@@ -503,9 +503,17 @@ bool Scene::RenderEntityCreatorUI()
 bool Scene::RenderSceneHierarchyUI()
 {
 	static std::string search = "";
-	ImGui::InputText("Search", &search);
-	if (ImGui::SmallButton("Clear Search"))
-		search.clear();
+
+	float padding = ImGui::GetStyle().WindowPadding.x;
+	float inputBoxPosX = ImGui::GetCursorPosX();
+
+	ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
+	ImGui::InputText("##HierarchySearch", &search, ImGuiInputTextFlags_AutoSelectAll);
+	if (!ImGui::IsItemActive() && search.empty())
+	{
+		ImGui::SameLine(inputBoxPosX + padding);
+		ImGui::TextDisabled("Name Search");
+	}
 
 	std::string searchLower = search;
 	std::transform(searchLower.begin(), searchLower.end(), searchLower.begin(), ::tolower);
@@ -515,17 +523,19 @@ bool Scene::RenderSceneHierarchyUI()
 	childFlags |= ImGuiChildFlags_ResizeY;
 
 	ImGui::BeginChild("Scene Hierarchy", ImVec2(0, 300), childFlags);
-	SceneContents::SceneIterator entIter = _sceneHolder.GetEntities();
-
-	while (Entity *entity = entIter.Step())
 	{
-		if (entity->GetParent() != nullptr) // Skip non-root entities
-			continue;
+		SceneContents::SceneIterator entIter = _sceneHolder.GetEntities();
 
-		if (!RenderEntityHierarchyUI(entity, 0, searchLower))
+		while (Entity *entity = entIter.Step())
 		{
-			ImGui::EndChild();
-			return false;
+			if (entity->GetParent() != nullptr) // Skip non-root entities
+				continue;
+
+			if (!RenderEntityHierarchyUI(entity, 0, searchLower))
+			{
+				ImGui::EndChild();
+				return false;
+			}
 		}
 	}
 	ImGui::EndChild();
@@ -535,9 +545,17 @@ bool Scene::RenderSceneHierarchyUI()
 bool Scene::RenderSelectionHierarchyUI()
 {
 	static std::string search = "";
-	ImGui::InputText("Search", &search);
-	if (ImGui::SmallButton("Clear Search"))
-		search.clear();
+
+	float padding = ImGui::GetStyle().WindowPadding.x;
+	float inputBoxPosX = ImGui::GetCursorPosX();
+
+	ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
+	ImGui::InputText("##SelectionSearch", &search, ImGuiInputTextFlags_AutoSelectAll);
+	if (!ImGui::IsItemActive() && search.empty())
+	{
+		ImGui::SameLine(inputBoxPosX + padding);
+		ImGui::TextDisabled("Name Search");
+	}
 
 	std::string searchLower = search;
 	std::transform(searchLower.begin(), searchLower.end(), searchLower.begin(), ::tolower);
@@ -547,22 +565,23 @@ bool Scene::RenderSelectionHierarchyUI()
 	childFlags |= ImGuiChildFlags_ResizeY;
 
 	ImGui::BeginChild("Selection Hierarchy", ImVec2(0, 300), childFlags);
-
-	auto &selection = _debugPlayer.Get()->GetSelection();
-
-	for (int i = 0; i < selection.size(); i++)
 	{
-		if (Entity *ent = selection[i].Get())
+		auto &selection = _debugPlayer.Get()->GetSelection();
+
+		for (int i = 0; i < selection.size(); i++)
 		{
-			if (!RenderEntityHierarchyUI(ent, 0, searchLower))
+			if (Entity *ent = selection[i].Get())
 			{
-				ImGui::EndChild();
-				return false;
+				if (!RenderEntityHierarchyUI(ent, 0, searchLower))
+				{
+					ImGui::EndChild();
+					return false;
+				}
 			}
 		}
 	}
-
 	ImGui::EndChild();
+
 	return true;
 }
 bool Scene::RenderEntityHierarchyUI(Entity *root, UINT depth, const std::string &search)
@@ -1020,6 +1039,8 @@ bool Scene::RenderUI()
 							return false;
 						}
 					}
+
+					ImGui::SameLine();
 				}
 
 				if (!RenderSceneHierarchyUI())
@@ -1055,6 +1076,8 @@ bool Scene::RenderUI()
 							return false;
 						}
 					}
+
+					ImGui::SameLine();
 				}
 
 				if (!RenderSelectionHierarchyUI())
