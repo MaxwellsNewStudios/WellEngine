@@ -42,6 +42,7 @@ A D3D11-based 3D game + engine originally developed as a group project by six st
 - Post-processing
 	- Volumetric fog
 	- Bloom
+ 	- Depth of Field
 
 ## Libraries
 
