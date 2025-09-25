@@ -15,9 +15,672 @@
 #pragma endregion
 
 #ifdef USE_IMGUI
-bool Scene::IsUndocked() const
+bool Scene::RenderEntityHierarchyUI(Entity *root, UINT depth, const std::string &search)
 {
-	return ImGuiUtils::Utils::GetWindow(_sceneName, nullptr);
+	if (!root)
+		return true;
+
+	if (!root->GetShowInHierarchy())
+		return true;
+
+	std::string entName = root->GetName();
+	UINT entIndex = _sceneHolder.GetEntityIndex(root);
+	UINT entID = root->GetID();
+
+	std::string entNameLower = entName;
+	std::transform(entNameLower.begin(), entNameLower.end(), entNameLower.begin(), ::tolower);
+	if (!search.empty() && entNameLower.find(search) == std::string::npos)
+		return true;
+
+	float frameHeight = ImGui::GetFrameHeight();
+	float arrowScale = 0.7f;
+	ImVec2 arrowSize = { frameHeight * arrowScale, frameHeight * arrowScale };
+	float indenting = depth * frameHeight * arrowScale;
+
+	bool isCollapsed = false;
+	int collapseIndex = 0;
+	for (int i = 0; i < _collapsedEntities.size(); i++)
+	{
+		if (_collapsedEntities[i].Get() == root)
+		{
+			isCollapsed = true;
+			collapseIndex = i;
+			break;
+		}
+	}
+
+	ImGui::PushID(("Ent:" + std::to_string(entID)).c_str());
+	float indentedXPos = ImGui::GetCursorPosX() + indenting;
+	ImGui::SetCursorPosX(indentedXPos);
+
+	// Collapse arrow
+	{
+		ImVec2 originalCursorPos = ImGui::GetCursorPos();
+		ImGui::Dummy({ arrowSize.x, frameHeight });
+		ImGui::SameLine(0.0f, 2.0f);
+
+		if (root->GetChildCount() > 0)
+		{
+			ImVec2 arrowCursorPos = originalCursorPos;
+			arrowCursorPos.y += 0.5f * (frameHeight - arrowSize.y);
+
+			ImVec2 afterCursorPos = ImGui::GetCursorPos();
+			ImGui::SetCursorPos(arrowCursorPos);
+			if (isCollapsed)
+			{
+				if (ImGui::ArrowButtonEx("Expand", ImGuiDir_Right, arrowSize, ImGuiButtonFlags_None))
+				{
+					isCollapsed = false;
+					_collapsedEntities.erase(_collapsedEntities.begin() + collapseIndex);
+				}
+			}
+			else
+			{
+				if (ImGui::ArrowButtonEx("Collapse", ImGuiDir_Down, arrowSize, ImGuiButtonFlags_None))
+				{
+					Ref<Entity> &entRef = _collapsedEntities.emplace_back(*root);
+					entRef.AddDestructCallback([this](Ref<Entity> *entRef) {
+						for (int i = 0; i < _collapsedEntities.size(); i++)
+						{
+							if (&_collapsedEntities[i] != entRef)
+								continue;
+							
+							_collapsedEntities.erase(_collapsedEntities.begin() + i);
+							break;
+						}
+					});
+				}
+			}
+			ImGui::SetCursorPos(afterCursorPos);
+		}
+	}
+
+	float entityButtonPosX = 0.0f;
+
+	// Entity selection button
+	{
+		bool isSelected = _debugPlayer.Get()->IsSelected(root, nullptr);
+
+		if (isSelected)
+		{
+			ImGui::PushStyleColor(ImGuiCol_Button, (ImVec4)ImColor::HSV(0.1f, 0.55f, 0.5f));
+			ImGui::PushStyleColor(ImGuiCol_ButtonHovered, (ImVec4)ImColor::HSV(0.1f, 0.65f, 0.6f));
+			ImGui::PushStyleColor(ImGuiCol_ButtonActive, (ImVec4)ImColor::HSV(0.1f, 0.75f, 0.7f));
+		}
+
+		ImGui::SameLine(0.0f, 3.0f);
+		entityButtonPosX = ImGui::GetCursorPosX();
+		if (ImGui::Button(std::format("{}", entName).c_str()))
+		{
+			// Additive select if holding shift
+			_debugPlayer.Get()->Select(root, ImGui::GetIO().KeyShift);
+		}
+
+		if (isSelected)
+		{
+			ImGui::PopStyleColor(3);
+		}
+	}
+
+	// Entity Drag & Drop field
+	{
+		const char *dragDropTag = ImGui::PayloadTags.at(ImGui::PayloadType::ENTITY);
+
+		// Our buttons are both drag sources and drag targets
+		if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_None))
+		{
+			ImGui::EntityPayload payload = { entID, GetUID()};
+			ImGui::SetDragDropPayload(dragDropTag, &payload, sizeof(ImGui::EntityPayload));
+
+			ImGui::Text(std::format("{}", entName).c_str());
+
+			// Display preview (could be anything, e.g. when dragging an image we could decide to display
+			// the filename and a small preview of the image, etc.)
+			ImGui::EndDragDropSource();
+		}
+
+		if (ImGui::BeginDragDropTarget())
+		{
+			if (const ImGuiPayload *payload = ImGui::AcceptDragDropPayload(dragDropTag))
+			{
+				IM_ASSERT(payload->DataSize == sizeof(ImGui::EntityPayload));
+				ImGui::EntityPayload entPayload = *(const ImGui::EntityPayload *)payload->Data;
+
+				Entity *payloadEnt = nullptr;
+
+				if (entPayload.sceneUID != GetUID())
+				{
+					// Dragging from another scene
+					Scene *payloadScene = _game->GetSceneByUID(entPayload.sceneUID);
+
+					if (!payloadScene)
+					{
+						ErrMsg("Failed to get scene from payload!");
+						ImGui::EndDragDropTarget();
+						ImGui::PopID();
+						return false;
+					}
+
+					Entity *payloadEnt = payloadScene->_sceneHolder.GetEntityByID(entPayload.entID);
+
+					json::Document doc;
+					json::Value entObj = json::Value(json::kObjectType);
+
+					if (!payloadScene->SerializeEntity(doc.GetAllocator(), entObj, payloadEnt, true))
+					{
+						ErrMsg("Failed to serialize entity from payload!");
+						ImGui::EndDragDropTarget();
+						ImGui::PopID();
+						return false;
+					}
+
+					if (!payloadScene->_sceneHolder.RemoveEntityImmediate(payloadEnt))
+					{
+						ErrMsg("Failed to remove entity from payload scene!");
+						ImGui::EndDragDropTarget();
+						ImGui::PopID();
+						return false;
+					}
+
+					payloadEnt = nullptr;
+					if (!DeserializeEntity(entObj, &payloadEnt))
+					{
+						ErrMsg("Failed to deserialize entity from payload!");
+						ImGui::EndDragDropTarget();
+						ImGui::PopID();
+						return false;
+					}
+
+					RunPostDeserializeCallbacks();
+
+					payloadEnt->SetParent(root, true);
+				}
+				else if (entPayload.entID != entID)
+				{
+					// Dragging from the same scene
+					payloadEnt = _sceneHolder.GetEntityByID(entPayload.entID);
+
+					if (payloadEnt)
+					{
+						if (!root->IsChildOf(payloadEnt))
+							payloadEnt->SetParent(root, true);
+					}
+				}
+
+			}
+			ImGui::EndDragDropTarget();
+		}
+	}
+
+	float rightEdgeX = ImGui::GetContentRegionAvail().x;
+
+	const ImVec2 dockButtonRect = { 28, 20 };
+	const ImVec2 removeButtonRect = { 20, 20 };
+
+	// Dock/Undock button
+	{
+		ImGui::PushID(("Dock:" + std::to_string(entID)).c_str());
+
+		ImGui::SameLine(rightEdgeX - 20.0f - frameHeight - removeButtonRect.x - dockButtonRect.x);
+		const std::string windowID = std::format("Ent#{}", entID);
+
+		// Check if entity is undocked
+		if (ImGuiUtils::Utils::GetWindow(windowID, nullptr))
+		{
+			ImGui::PushStyleColor(ImGuiCol_Button, (ImVec4)ImColor::HSV(0.05f, 0.55f, 0.5f));
+			ImGui::PushStyleColor(ImGuiCol_ButtonHovered, (ImVec4)ImColor::HSV(0.05f, 0.65f, 0.6f));
+			ImGui::PushStyleColor(ImGuiCol_ButtonActive, (ImVec4)ImColor::HSV(0.05f, 0.75f, 0.7f));
+
+			// If undocked, show dock button
+			if (ImGui::Button("[x]", dockButtonRect))
+			{
+				if (!ImGuiUtils::Utils::CloseWindow(windowID))
+				{
+					ImGui::PopStyleColor(3);
+					ImGui::PopID();
+					ErrMsg("Failed to dock entity window!");
+					return false;
+				}
+			}
+		}
+		else
+		{
+			ImGui::PushStyleColor(ImGuiCol_Button, (ImVec4)ImColor::HSV(0.6f, 0.55f, 0.5f));
+			ImGui::PushStyleColor(ImGuiCol_ButtonHovered, (ImVec4)ImColor::HSV(0.6f, 0.65f, 0.6f));
+			ImGui::PushStyleColor(ImGuiCol_ButtonActive, (ImVec4)ImColor::HSV(0.6f, 0.75f, 0.7f));
+
+			// If docked, show undock button
+			if (ImGui::Button("[ ]", dockButtonRect))
+			{
+				const std::string windowName = std::format("Entity '{}'", root->GetName());
+				if (!ImGuiUtils::Utils::OpenWindow(windowName, windowID, std::bind(&Entity::InitialRenderUI, root)))
+				{
+					ImGui::PopStyleColor(3);
+					ImGui::PopID();
+					ErrMsg("Failed to undock entity window!");
+					return false;
+				}
+			}
+		}
+
+		ImGui::PopStyleColor(3);
+		ImGui::PopID();
+	}
+
+	// Enabled checkbox
+	{
+		//ImGui::SameLine(rightEdgeX - frameHeight);
+		ImGui::SameLine(rightEdgeX - 10.0f - removeButtonRect.x - frameHeight);
+
+		bool isEnabled = root->IsEnabledSelf();
+		if (ImGui::Checkbox("##Enabled", &isEnabled))
+			root->SetEnabledSelf(isEnabled);
+	}
+
+	// Remove button
+	{
+		ImGui::SameLine(rightEdgeX - removeButtonRect.x);
+
+		ImGuiUtils::BeginButtonStyle(ImGuiUtils::StyleType::Red);
+		if (ImGui::Button("X##RemoveEnt", removeButtonRect))
+			root->Destroy();
+		ImGuiUtils::EndButtonStyle();
+	}
+
+	if (!isCollapsed)
+	{
+		const std::vector<Entity *> *currChildren = root->GetChildren();
+		std::vector<Ref<Entity>> tempChildrenVec;
+		tempChildrenVec.reserve(currChildren->size());
+
+		for (Entity *child : *currChildren)
+			tempChildrenVec.emplace_back(*child);
+
+		for (Ref<Entity> &childRef : tempChildrenVec)
+		{
+			Entity *child = nullptr;
+			if (!childRef.TryGet(child))
+				continue;
+
+			if (!child->IsChildOf(root, true))
+				continue; // Skip if no longer a child of this parent
+
+			if (!RenderEntityHierarchyUI(child, depth + 1))
+			{
+				ErrMsg("Failed to render entity hierarchy UI!");
+				return false;
+			}
+		}
+	}
+
+	ImGui::PopID();
+
+	// Sibling drop field
+	{
+		// Set vertical spacing
+		float dummyDropTargetPosY = ImGui::GetCursorPosY() - 4.0f;
+		ImGui::SetCursorPos({ entityButtonPosX, dummyDropTargetPosY });
+		ImGui::Dummy({ ImGui::GetContentRegionAvail().x, 6.0f});
+		float dummyDropTargetHeight = ImGui::GetItemRectSize().y;
+		ImVec2 nextCursorPos = ImGui::GetCursorPos();
+		nextCursorPos.y -= 3.0f;
+
+		if (ImGui::BeginDragDropTarget())
+		{
+			if (const ImGuiPayload *payload = ImGui::AcceptDragDropPayload(ImGui::PayloadTags.at(ImGui::PayloadType::ENTITY)))
+			{
+				IM_ASSERT(payload->DataSize == sizeof(ImGui::EntityPayload));
+				ImGui::EntityPayload entPayload = *(const ImGui::EntityPayload *)payload->Data;
+
+				Entity *payloadEnt = nullptr;
+
+				if (entPayload.sceneUID != GetUID())
+				{
+					// Dragging from another scene
+					Scene *payloadScene = _game->GetSceneByUID(entPayload.sceneUID);
+
+					if (!payloadScene)
+					{
+						ErrMsg("Failed to get scene from payload!");
+						ImGui::EndDragDropTarget();
+						ImGui::PopID();
+						return false;
+					}
+
+					Entity *payloadEnt = payloadScene->_sceneHolder.GetEntityByID(entPayload.entID);
+
+					json::Document doc;
+					json::Value entObj = json::Value(json::kObjectType);
+
+					if (!payloadScene->SerializeEntity(doc.GetAllocator(), entObj, payloadEnt, true))
+					{
+						ErrMsg("Failed to serialize entity from payload!");
+						ImGui::EndDragDropTarget();
+						ImGui::PopID();
+						return false;
+					}
+
+					if (!payloadScene->_sceneHolder.RemoveEntityImmediate(payloadEnt))
+					{
+						ErrMsg("Failed to remove entity from payload scene!");
+						ImGui::EndDragDropTarget();
+						ImGui::PopID();
+						return false;
+					}
+
+					payloadEnt = nullptr;
+					if (!DeserializeEntity(entObj, &payloadEnt))
+					{
+						ErrMsg("Failed to deserialize entity from payload!");
+						ImGui::EndDragDropTarget();
+						ImGui::PopID();
+						return false;
+					}
+
+					RunPostDeserializeCallbacks();
+				}
+				else if (entPayload.entID != entID)
+				{
+					// Dragging from the same scene
+					payloadEnt = _sceneHolder.GetEntityByID(entPayload.entID);
+
+				}
+
+				if (payloadEnt)
+				{
+					bool skipParenting = false;
+					Entity *rootParent = root->GetParent();
+
+					if (rootParent)
+					{
+						skipParenting = rootParent->IsChildOf(payloadEnt);
+					}
+
+					if (!skipParenting)
+					{
+						payloadEnt->SetParent(rootParent, true);
+					}
+
+					if (rootParent)
+					{
+						rootParent->ReorderChild(payloadEnt, root);
+					}
+
+					_sceneHolder.ReorderEntity(payloadEnt, root);
+				}
+			}
+			ImGui::EndDragDropTarget();
+		}
+		
+		ImGui::SameLine(entityButtonPosX, 0.0f);
+		ImGui::SetCursorPosY(dummyDropTargetPosY + (0.5f * dummyDropTargetHeight) - 1.0f);
+		ImGui::Separator();
+
+		ImGui::SetCursorPos(nextCursorPos);
+		ImGui::Dummy({ 0, 0 }); 
+		ImGui::SameLine(0.0f, 0.0f);
+	}
+
+	return true;
+}
+
+bool Scene::RenderSceneHierarchyUI()
+{
+	static std::string search = "";
+
+	float padding = ImGui::GetStyle().WindowPadding.x;
+	float inputBoxPosX = ImGui::GetCursorPosX();
+
+	ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
+	ImGui::InputText("##HierarchySearch", &search, ImGuiInputTextFlags_AutoSelectAll);
+	if (!ImGui::IsItemActive() && search.empty())
+	{
+		ImGui::SameLine(inputBoxPosX + padding);
+		ImGui::TextDisabled("Name Search");
+	}
+
+	std::string searchLower = search;
+	std::transform(searchLower.begin(), searchLower.end(), searchLower.begin(), ::tolower);
+
+	ImGui::SetNextWindowSize(ImGui::GetContentRegionAvail(), ImGuiCond_Always);
+	ImGui::BeginChild("Scene Hierarchy");
+	{
+		SceneContents::SceneIterator entIter = _sceneHolder.GetEntities();
+
+		while (Entity *entity = entIter.Step())
+		{
+			if (entity->GetParent() != nullptr) // Skip non-root entities
+				continue;
+
+			if (!RenderEntityHierarchyUI(entity, 0, searchLower))
+			{
+				ImGui::EndChild();
+				return false;
+			}
+		}
+	}
+	ImGui::EndChild();
+
+	return true;
+}
+
+bool Scene::RenderSelectionHierarchyUI()
+{
+	static std::string search = "";
+
+	float padding = ImGui::GetStyle().WindowPadding.x;
+	float inputBoxPosX = ImGui::GetCursorPosX();
+
+	ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
+	ImGui::InputText("##SelectionSearch", &search, ImGuiInputTextFlags_AutoSelectAll);
+	if (!ImGui::IsItemActive() && search.empty())
+	{
+		ImGui::SameLine(inputBoxPosX + padding);
+		ImGui::TextDisabled("Name Search");
+	}
+
+	std::string searchLower = search;
+	std::transform(searchLower.begin(), searchLower.end(), searchLower.begin(), ::tolower);
+
+	ImGui::SetNextWindowSize(ImGui::GetContentRegionAvail(), ImGuiCond_Always);
+	ImGui::BeginChild("Selection Hierarchy");
+	{
+		auto &selection = _debugPlayer.Get()->GetSelection();
+
+		for (int i = 0; i < selection.size(); i++)
+		{
+			if (Entity *ent = selection[i].Get())
+			{
+				if (!RenderEntityHierarchyUI(ent, 0, searchLower))
+				{
+					ImGui::EndChild();
+					return false;
+				}
+			}
+		}
+	}
+	ImGui::EndChild();
+
+	return true;
+}
+
+bool Scene::RenderHierarchyUI()
+{
+	if (ImGui::TreeNode("Advanced"))
+	{
+		ImGui::Text("Objects in Scene: %d", _sceneHolder.GetEntityCount());
+
+		if (!ImGuiUtils::Utils::GetWindow(_sceneName + "Hierarchy", nullptr))
+		{
+			if (ImGui::Button("Keep Open Through Scene Switch"))
+			{
+				if (!ImGuiUtils::Utils::OpenWindow(
+					std::format("'{}' Hierarchy", _sceneName),
+					_sceneName + "Hierarchy",
+					std::bind(&Scene::RenderHierarchyUI, this)))
+				{
+					ErrMsg("Failed to open scene window!");
+					return false;
+				}
+			}
+		}
+
+		ImGui::TreePop();
+	}
+
+	if (!ImGui::BeginTabBar("HierarchyTab"))
+		return true;
+
+	if (ImGui::BeginTabItem("Scene Hierarchy"))
+	{
+		ImGui::PushID("Scene Hierarchy");
+
+		const std::string windowID = std::format("Scene'{}'", GetName());
+
+		// Check if scene hierarchy is undocked
+		if (!ImGuiUtils::Utils::GetWindow(windowID, nullptr))
+		{
+			if (ImGui::Button("Undock"))
+			{
+				const std::string windowName = std::format("'{}' Scene Hierarchy", GetName());
+
+				if (!ImGuiUtils::Utils::OpenWindow(windowName, windowID, std::bind(&Scene::RenderSceneHierarchyUI, this)))
+				{
+					ImGui::PopID();
+					ImGui::EndTabItem();
+					ErrMsg("Failed to undock scene hierarchy window!");
+					return false;
+				}
+			}
+
+			ImGui::SameLine();
+		}
+
+		if (!RenderSceneHierarchyUI())
+		{
+			ImGui::PopID();
+			ImGui::EndTabItem();
+			ErrMsg("Failed to render scene hierarchy UI!");
+			return false;
+		}
+
+		ImGui::PopID();
+		ImGui::EndTabItem();
+	}
+
+	if (ImGui::BeginTabItem("Selection Hierarchy"))
+	{
+		ImGui::PushID("Selection Hierarchy");
+
+		const std::string windowID = std::format("Selection'{}'", GetName());
+
+		// Check if scene hierarchy is undocked
+		if (!ImGuiUtils::Utils::GetWindow(windowID, nullptr))
+		{
+			if (ImGui::Button("Undock"))
+			{
+				const std::string windowName = std::format("'{}' Selection Hierarchy", GetName());
+
+				if (!ImGuiUtils::Utils::OpenWindow(windowName, windowID, std::bind(&Scene::RenderSelectionHierarchyUI, this)))
+				{
+					ImGui::PopID();
+					ImGui::EndTabItem();
+					ErrMsg("Failed to undock selection hierarchy window!");
+					return false;
+				}
+			}
+
+			ImGui::SameLine();
+		}
+
+		if (!RenderSelectionHierarchyUI())
+		{
+			ImGui::PopID();
+			ImGui::EndTabItem();
+			ErrMsg("Failed to render selection hierarchy UI!");
+			return false;
+		}
+
+		ImGui::PopID();
+		ImGui::EndTabItem();
+	}
+
+	ImGui::EndTabBar();
+
+	return true;
+}
+
+bool Scene::RenderSelectionUI()
+{
+	ImGui::PushID((_sceneName + "Selection").c_str());
+
+	int selectionSize = (int)_debugPlayer.Get()->GetSelectionSize();
+	if (selectionSize > 0)
+	{
+		static int selectionIndex = 1;
+
+		if (selectionSize > 1)
+		{
+			float numWidth = ImGui::CalcTextSize(std::to_string(selectionIndex).c_str()).x;
+
+			ImGui::SetNextItemWidth(numWidth + 10);
+			ImGui::DragInt("##selectionIndex", &selectionIndex, 0.1f);
+			ImGui::SameLine();
+			ImGui::Text("/ %d", selectionSize);
+
+			ImGui::PushItemFlag(ImGuiItemFlags_ButtonRepeat, true);
+			{
+				ImGui::SameLine(0.0f, 6.0f);
+				if (ImGui::ArrowButton("##left", ImGuiDir_Left))
+					selectionIndex--;
+				ImGui::SameLine();
+				if (ImGui::ArrowButton("##right", ImGuiDir_Right))
+					selectionIndex++;
+			}
+			ImGui::PopItemFlag();
+
+			ImGui::Separator();
+		}
+
+		selectionIndex = Wrap(selectionIndex, 1, selectionSize);
+		Entity *ent = _debugPlayer.Get()->GetSelection()[(size_t)selectionIndex - 1].Get();
+
+		/*const UINT entID = ent->GetID();
+		const std::string windowID = std::format("Ent#{}", entID);
+
+		// Check if entity is undocked
+		if (ImGuiUtils::Utils::GetWindow(windowID, nullptr))
+		{
+			ImGui::Text("Selected entity is undocked!");
+
+			if (ImGui::Button("Dock"))
+			{
+				if (!ImGuiUtils::Utils::CloseWindow(windowID))
+				{
+					ImGui::PopID();
+					ErrMsg("Failed to close undocked entity window!");
+					return false;
+				}
+			}
+		}
+		else*/
+		{
+			if (!ent->InitialRenderUI())
+			{
+				ImGui::PopID();
+				ErrMsg("Failed to render selected entity UI!");
+				return false;
+			}
+		}
+	}
+	else
+	{
+		ImGui::Text("No selection.");
+	}
+
+	ImGui::PopID();
+
+	return true;
 }
 
 bool Scene::RenderEntityCreatorUI()
@@ -500,681 +1163,11 @@ bool Scene::RenderEntityCreatorUI()
 
 	return true;
 }
-bool Scene::RenderSceneHierarchyUI()
-{
-	static std::string search = "";
 
-	float padding = ImGui::GetStyle().WindowPadding.x;
-	float inputBoxPosX = ImGui::GetCursorPosX();
-
-	ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
-	ImGui::InputText("##HierarchySearch", &search, ImGuiInputTextFlags_AutoSelectAll);
-	if (!ImGui::IsItemActive() && search.empty())
-	{
-		ImGui::SameLine(inputBoxPosX + padding);
-		ImGui::TextDisabled("Name Search");
-	}
-
-	std::string searchLower = search;
-	std::transform(searchLower.begin(), searchLower.end(), searchLower.begin(), ::tolower);
-
-	ImGuiChildFlags childFlags = 0;
-	childFlags |= ImGuiChildFlags_Border;
-	childFlags |= ImGuiChildFlags_ResizeY;
-
-	ImGui::BeginChild("Scene Hierarchy", ImVec2(0, 300), childFlags);
-	{
-		SceneContents::SceneIterator entIter = _sceneHolder.GetEntities();
-
-		while (Entity *entity = entIter.Step())
-		{
-			if (entity->GetParent() != nullptr) // Skip non-root entities
-				continue;
-
-			if (!RenderEntityHierarchyUI(entity, 0, searchLower))
-			{
-				ImGui::EndChild();
-				return false;
-			}
-		}
-	}
-	ImGui::EndChild();
-
-	return true;
-}
-bool Scene::RenderSelectionHierarchyUI()
-{
-	static std::string search = "";
-
-	float padding = ImGui::GetStyle().WindowPadding.x;
-	float inputBoxPosX = ImGui::GetCursorPosX();
-
-	ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
-	ImGui::InputText("##SelectionSearch", &search, ImGuiInputTextFlags_AutoSelectAll);
-	if (!ImGui::IsItemActive() && search.empty())
-	{
-		ImGui::SameLine(inputBoxPosX + padding);
-		ImGui::TextDisabled("Name Search");
-	}
-
-	std::string searchLower = search;
-	std::transform(searchLower.begin(), searchLower.end(), searchLower.begin(), ::tolower);
-
-	ImGuiChildFlags childFlags = 0;
-	childFlags |= ImGuiChildFlags_Border;
-	childFlags |= ImGuiChildFlags_ResizeY;
-
-	ImGui::BeginChild("Selection Hierarchy", ImVec2(0, 300), childFlags);
-	{
-		auto &selection = _debugPlayer.Get()->GetSelection();
-
-		for (int i = 0; i < selection.size(); i++)
-		{
-			if (Entity *ent = selection[i].Get())
-			{
-				if (!RenderEntityHierarchyUI(ent, 0, searchLower))
-				{
-					ImGui::EndChild();
-					return false;
-				}
-			}
-		}
-	}
-	ImGui::EndChild();
-
-	return true;
-}
-bool Scene::RenderEntityHierarchyUI(Entity *root, UINT depth, const std::string &search)
-{
-	if (!root)
-		return true;
-
-	if (!root->GetShowInHierarchy())
-		return true;
-
-	std::string entName = root->GetName();
-	UINT entIndex = _sceneHolder.GetEntityIndex(root);
-	UINT entID = root->GetID();
-
-	std::string entNameLower = entName;
-	std::transform(entNameLower.begin(), entNameLower.end(), entNameLower.begin(), ::tolower);
-	if (!search.empty() && entNameLower.find(search) == std::string::npos)
-		return true;
-
-	float frameHeight = ImGui::GetFrameHeight();
-	float arrowScale = 0.7f;
-	ImVec2 arrowSize = { frameHeight * arrowScale, frameHeight * arrowScale };
-	float indenting = depth * frameHeight * arrowScale;
-
-	bool isCollapsed = false;
-	int collapseIndex = 0;
-	for (int i = 0; i < _collapsedEntities.size(); i++)
-	{
-		if (_collapsedEntities[i].Get() == root)
-		{
-			isCollapsed = true;
-			collapseIndex = i;
-			break;
-		}
-	}
-
-	ImGui::PushID(("Ent:" + std::to_string(entID)).c_str());
-	float indentedXPos = ImGui::GetCursorPosX() + indenting;
-	ImGui::SetCursorPosX(indentedXPos);
-
-	// Collapse arrow
-	{
-		ImVec2 originalCursorPos = ImGui::GetCursorPos();
-		ImGui::Dummy({ arrowSize.x, frameHeight });
-		ImGui::SameLine(0.0f, 2.0f);
-
-		if (root->GetChildCount() > 0)
-		{
-			ImVec2 arrowCursorPos = originalCursorPos;
-			arrowCursorPos.y += 0.5f * (frameHeight - arrowSize.y);
-
-			ImVec2 afterCursorPos = ImGui::GetCursorPos();
-			ImGui::SetCursorPos(arrowCursorPos);
-			if (isCollapsed)
-			{
-				if (ImGui::ArrowButtonEx("Expand", ImGuiDir_Right, arrowSize, ImGuiButtonFlags_None))
-				{
-					isCollapsed = false;
-					_collapsedEntities.erase(_collapsedEntities.begin() + collapseIndex);
-				}
-			}
-			else
-			{
-				if (ImGui::ArrowButtonEx("Collapse", ImGuiDir_Down, arrowSize, ImGuiButtonFlags_None))
-				{
-					Ref<Entity> &entRef = _collapsedEntities.emplace_back(*root);
-					entRef.AddDestructCallback([this](Ref<Entity> *entRef) {
-						for (int i = 0; i < _collapsedEntities.size(); i++)
-						{
-							if (&_collapsedEntities[i] != entRef)
-								continue;
-							
-							_collapsedEntities.erase(_collapsedEntities.begin() + i);
-							break;
-						}
-					});
-				}
-			}
-			ImGui::SetCursorPos(afterCursorPos);
-		}
-	}
-
-	float entityButtonPosX = 0.0f;
-
-	// Entity selection button
-	{
-		bool isSelected = _debugPlayer.Get()->IsSelected(root, nullptr);
-
-		if (isSelected)
-		{
-			ImGui::PushStyleColor(ImGuiCol_Button, (ImVec4)ImColor::HSV(0.1f, 0.55f, 0.5f));
-			ImGui::PushStyleColor(ImGuiCol_ButtonHovered, (ImVec4)ImColor::HSV(0.1f, 0.65f, 0.6f));
-			ImGui::PushStyleColor(ImGuiCol_ButtonActive, (ImVec4)ImColor::HSV(0.1f, 0.75f, 0.7f));
-		}
-
-		ImGui::SameLine(0.0f, 3.0f);
-		entityButtonPosX = ImGui::GetCursorPosX();
-		if (ImGui::Button(std::format("{}", entName).c_str()))
-		{
-			// Additive select if holding shift
-			_debugPlayer.Get()->Select(root, ImGui::GetIO().KeyShift);
-		}
-
-		if (isSelected)
-		{
-			ImGui::PopStyleColor(3);
-		}
-	}
-
-	// Entity Drag & Drop field
-	{
-		const char *dragDropTag = ImGui::PayloadTags.at(ImGui::PayloadType::ENTITY);
-
-		// Our buttons are both drag sources and drag targets
-		if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_None))
-		{
-			ImGui::EntityPayload payload = { entID, GetUID()};
-			ImGui::SetDragDropPayload(dragDropTag, &payload, sizeof(ImGui::EntityPayload));
-
-			ImGui::Text(std::format("{}", entName).c_str());
-
-			// Display preview (could be anything, e.g. when dragging an image we could decide to display
-			// the filename and a small preview of the image, etc.)
-			ImGui::EndDragDropSource();
-		}
-
-		if (ImGui::BeginDragDropTarget())
-		{
-			if (const ImGuiPayload *payload = ImGui::AcceptDragDropPayload(dragDropTag))
-			{
-				IM_ASSERT(payload->DataSize == sizeof(ImGui::EntityPayload));
-				ImGui::EntityPayload entPayload = *(const ImGui::EntityPayload *)payload->Data;
-
-				Entity *payloadEnt = nullptr;
-
-				if (entPayload.sceneUID != GetUID())
-				{
-					// Dragging from another scene
-					Scene *payloadScene = _game->GetSceneByUID(entPayload.sceneUID);
-
-					if (!payloadScene)
-					{
-						ErrMsg("Failed to get scene from payload!");
-						ImGui::EndDragDropTarget();
-						ImGui::PopID();
-						return false;
-					}
-
-					Entity *payloadEnt = payloadScene->_sceneHolder.GetEntityByID(entPayload.entID);
-
-					json::Document doc;
-					json::Value entObj = json::Value(json::kObjectType);
-
-					if (!payloadScene->SerializeEntity(doc.GetAllocator(), entObj, payloadEnt, true))
-					{
-						ErrMsg("Failed to serialize entity from payload!");
-						ImGui::EndDragDropTarget();
-						ImGui::PopID();
-						return false;
-					}
-
-					if (!payloadScene->_sceneHolder.RemoveEntityImmediate(payloadEnt))
-					{
-						ErrMsg("Failed to remove entity from payload scene!");
-						ImGui::EndDragDropTarget();
-						ImGui::PopID();
-						return false;
-					}
-
-					payloadEnt = nullptr;
-					if (!DeserializeEntity(entObj, &payloadEnt))
-					{
-						ErrMsg("Failed to deserialize entity from payload!");
-						ImGui::EndDragDropTarget();
-						ImGui::PopID();
-						return false;
-					}
-
-					RunPostDeserializeCallbacks();
-
-					payloadEnt->SetParent(root, true);
-				}
-				else if (entPayload.entID != entID)
-				{
-					// Dragging from the same scene
-					payloadEnt = _sceneHolder.GetEntityByID(entPayload.entID);
-
-					if (payloadEnt)
-					{
-						if (!root->IsChildOf(payloadEnt))
-							payloadEnt->SetParent(root, true);
-					}
-				}
-
-			}
-			ImGui::EndDragDropTarget();
-		}
-	}
-
-	float rightEdgeX = ImGui::GetContentRegionAvail().x;
-
-	const ImVec2 dockButtonRect = { 28, 20 };
-	const ImVec2 removeButtonRect = { 20, 20 };
-
-	// Dock/Undock button
-	{
-		ImGui::PushID(("Dock:" + std::to_string(entID)).c_str());
-
-		ImGui::SameLine(rightEdgeX - 20.0f - frameHeight - removeButtonRect.x - dockButtonRect.x);
-		const std::string windowID = std::format("Ent#{}", entID);
-
-		// Check if entity is undocked
-		if (ImGuiUtils::Utils::GetWindow(windowID, nullptr))
-		{
-			ImGui::PushStyleColor(ImGuiCol_Button, (ImVec4)ImColor::HSV(0.05f, 0.55f, 0.5f));
-			ImGui::PushStyleColor(ImGuiCol_ButtonHovered, (ImVec4)ImColor::HSV(0.05f, 0.65f, 0.6f));
-			ImGui::PushStyleColor(ImGuiCol_ButtonActive, (ImVec4)ImColor::HSV(0.05f, 0.75f, 0.7f));
-
-			// If undocked, show dock button
-			if (ImGui::Button("[x]", dockButtonRect))
-			{
-				if (!ImGuiUtils::Utils::CloseWindow(windowID))
-				{
-					ImGui::PopStyleColor(3);
-					ImGui::PopID();
-					ErrMsg("Failed to dock entity window!");
-					return false;
-				}
-			}
-		}
-		else
-		{
-			ImGui::PushStyleColor(ImGuiCol_Button, (ImVec4)ImColor::HSV(0.6f, 0.55f, 0.5f));
-			ImGui::PushStyleColor(ImGuiCol_ButtonHovered, (ImVec4)ImColor::HSV(0.6f, 0.65f, 0.6f));
-			ImGui::PushStyleColor(ImGuiCol_ButtonActive, (ImVec4)ImColor::HSV(0.6f, 0.75f, 0.7f));
-
-			// If docked, show undock button
-			if (ImGui::Button("[ ]", dockButtonRect))
-			{
-				const std::string windowName = std::format("Entity '{}'", root->GetName());
-				if (!ImGuiUtils::Utils::OpenWindow(windowName, windowID, std::bind(&Entity::InitialRenderUI, root)))
-				{
-					ImGui::PopStyleColor(3);
-					ImGui::PopID();
-					ErrMsg("Failed to undock entity window!");
-					return false;
-				}
-			}
-		}
-
-		ImGui::PopStyleColor(3);
-		ImGui::PopID();
-	}
-
-	// Enabled checkbox
-	{
-		//ImGui::SameLine(rightEdgeX - frameHeight);
-		ImGui::SameLine(rightEdgeX - 10.0f - removeButtonRect.x - frameHeight);
-
-		bool isEnabled = root->IsEnabledSelf();
-		if (ImGui::Checkbox("##Enabled", &isEnabled))
-			root->SetEnabledSelf(isEnabled);
-	}
-
-	// Remove button
-	{
-		ImGui::SameLine(rightEdgeX - removeButtonRect.x);
-
-		ImGuiUtils::BeginButtonStyle(ImGuiUtils::StyleType::Red);
-		if (ImGui::Button("X##RemoveEnt", removeButtonRect))
-			root->Destroy();
-		ImGuiUtils::EndButtonStyle();
-	}
-
-	if (!isCollapsed)
-	{
-		const std::vector<Entity *> *currChildren = root->GetChildren();
-		std::vector<Ref<Entity>> tempChildrenVec;
-		tempChildrenVec.reserve(currChildren->size());
-
-		for (Entity *child : *currChildren)
-			tempChildrenVec.emplace_back(*child);
-
-		for (Ref<Entity> &childRef : tempChildrenVec)
-		{
-			Entity *child = nullptr;
-			if (!childRef.TryGet(child))
-				continue;
-
-			if (!child->IsChildOf(root, true))
-				continue; // Skip if no longer a child of this parent
-
-			if (!RenderEntityHierarchyUI(child, depth + 1))
-			{
-				ErrMsg("Failed to render entity hierarchy UI!");
-				return false;
-			}
-		}
-	}
-
-	ImGui::PopID();
-
-	// Sibling drop field
-	{
-		// Set vertical spacing
-		float dummyDropTargetPosY = ImGui::GetCursorPosY() - 4.0f;
-		ImGui::SetCursorPos({ entityButtonPosX, dummyDropTargetPosY });
-		ImGui::Dummy({ ImGui::GetContentRegionAvail().x, 6.0f});
-		float dummyDropTargetHeight = ImGui::GetItemRectSize().y;
-		ImVec2 nextCursorPos = ImGui::GetCursorPos();
-		nextCursorPos.y -= 3.0f;
-
-		if (ImGui::BeginDragDropTarget())
-		{
-			if (const ImGuiPayload *payload = ImGui::AcceptDragDropPayload(ImGui::PayloadTags.at(ImGui::PayloadType::ENTITY)))
-			{
-				IM_ASSERT(payload->DataSize == sizeof(ImGui::EntityPayload));
-				ImGui::EntityPayload entPayload = *(const ImGui::EntityPayload *)payload->Data;
-
-				Entity *payloadEnt = nullptr;
-
-				if (entPayload.sceneUID != GetUID())
-				{
-					// Dragging from another scene
-					Scene *payloadScene = _game->GetSceneByUID(entPayload.sceneUID);
-
-					if (!payloadScene)
-					{
-						ErrMsg("Failed to get scene from payload!");
-						ImGui::EndDragDropTarget();
-						ImGui::PopID();
-						return false;
-					}
-
-					Entity *payloadEnt = payloadScene->_sceneHolder.GetEntityByID(entPayload.entID);
-
-					json::Document doc;
-					json::Value entObj = json::Value(json::kObjectType);
-
-					if (!payloadScene->SerializeEntity(doc.GetAllocator(), entObj, payloadEnt, true))
-					{
-						ErrMsg("Failed to serialize entity from payload!");
-						ImGui::EndDragDropTarget();
-						ImGui::PopID();
-						return false;
-					}
-
-					if (!payloadScene->_sceneHolder.RemoveEntityImmediate(payloadEnt))
-					{
-						ErrMsg("Failed to remove entity from payload scene!");
-						ImGui::EndDragDropTarget();
-						ImGui::PopID();
-						return false;
-					}
-
-					payloadEnt = nullptr;
-					if (!DeserializeEntity(entObj, &payloadEnt))
-					{
-						ErrMsg("Failed to deserialize entity from payload!");
-						ImGui::EndDragDropTarget();
-						ImGui::PopID();
-						return false;
-					}
-
-					RunPostDeserializeCallbacks();
-				}
-				else if (entPayload.entID != entID)
-				{
-					// Dragging from the same scene
-					payloadEnt = _sceneHolder.GetEntityByID(entPayload.entID);
-
-				}
-
-				if (payloadEnt)
-				{
-					bool skipParenting = false;
-					Entity *rootParent = root->GetParent();
-
-					if (rootParent)
-					{
-						skipParenting = rootParent->IsChildOf(payloadEnt);
-					}
-
-					if (!skipParenting)
-					{
-						payloadEnt->SetParent(rootParent, true);
-					}
-
-					if (rootParent)
-					{
-						rootParent->ReorderChild(payloadEnt, root);
-					}
-
-					_sceneHolder.ReorderEntity(payloadEnt, root);
-				}
-			}
-			ImGui::EndDragDropTarget();
-		}
-		
-		ImGui::SameLine(entityButtonPosX, 0.0f);
-		ImGui::SetCursorPosY(dummyDropTargetPosY + (0.5f * dummyDropTargetHeight) - 1.0f);
-		ImGui::Separator();
-
-		ImGui::SetCursorPos(nextCursorPos);
-		ImGui::Dummy({ 0, 0 }); 
-		ImGui::SameLine(0.0f, 0.0f);
-	}
-
-	return true;
-}
-
-bool Scene::RenderUI()
+bool Scene::RenderSceneUI()
 {
 	using namespace dx;
 	ZoneScopedC(RandomUniqueColor());
-
-	if (IsUndocked())
-	{
-		if (ImGui::Button("Dock Scene"))
-		{
-			if (!ImGuiUtils::Utils::CloseWindow(GetName()))
-			{
-				ErrMsg("Failed to close scene window!");
-				return false;
-			}
-		}
-	}
-
-	ImGui::SeparatorText("Entities");
-
-	if (ImGui::CollapsingHeader("Hierarchy"))
-	{
-		ImGui::Text("Objects in Scene: %d", _sceneHolder.GetEntityCount());
-
-		if (ImGui::BeginTabBar("HierarchyTab"))
-		{
-			if (ImGui::BeginTabItem("Scene Hierarchy"))
-			{
-				ImGui::PushID("Scene Hierarchy");
-
-				const std::string windowID = std::format("Scene'{}'", GetName());
-
-				// Check if scene hierarchy is undocked
-				if (!ImGuiUtils::Utils::GetWindow(windowID, nullptr))
-				{
-					if (ImGui::Button("Undock"))
-					{
-						const std::string windowName = std::format("'{}' Scene Hierarchy", GetName());
-
-						if (!ImGuiUtils::Utils::OpenWindow(windowName, windowID, std::bind(&Scene::RenderSceneHierarchyUI, this)))
-						{
-							ImGui::PopID();
-							ImGui::EndTabItem();
-							ErrMsg("Failed to undock scene hierarchy window!");
-							return false;
-						}
-					}
-
-					ImGui::SameLine();
-				}
-
-				if (!RenderSceneHierarchyUI())
-				{
-					ImGui::PopID();
-					ImGui::EndTabItem();
-					ErrMsg("Failed to render scene hierarchy UI!");
-					return false;
-				}
-
-				ImGui::PopID();
-				ImGui::EndTabItem();
-			}
-
-			if (ImGui::BeginTabItem("Selection Hierarchy"))
-			{
-				ImGui::PushID("Selection Hierarchy");
-
-				const std::string windowID = std::format("Selection'{}'", GetName());
-
-				// Check if scene hierarchy is undocked
-				if (!ImGuiUtils::Utils::GetWindow(windowID, nullptr))
-				{
-					if (ImGui::Button("Undock"))
-					{
-						const std::string windowName = std::format("'{}' Selection Hierarchy", GetName());
-
-						if (!ImGuiUtils::Utils::OpenWindow(windowName, windowID, std::bind(&Scene::RenderSelectionHierarchyUI, this)))
-						{
-							ImGui::PopID();
-							ImGui::EndTabItem();
-							ErrMsg("Failed to undock selection hierarchy window!");
-							return false;
-						}
-					}
-
-					ImGui::SameLine();
-				}
-
-				if (!RenderSelectionHierarchyUI())
-				{
-					ImGui::PopID();
-					ImGui::EndTabItem();
-					ErrMsg("Failed to render selection hierarchy UI!");
-					return false;
-				}
-
-				ImGui::PopID();
-				ImGui::EndTabItem();
-			}
-
-			ImGui::EndTabBar();
-		}
-
-		ImGui::Separator();
-	}
-
-	if (ImGui::CollapsingHeader("Selected Entity"))
-	{
-		ImGuiChildFlags childFlags = 0;
-		childFlags |= ImGuiChildFlags_Border;
-		childFlags |= ImGuiChildFlags_ResizeY;
-
-		ImGui::BeginChild("Selection UI", ImVec2(0, 300), childFlags);
-
-		int selectionSize = (int)_debugPlayer.Get()->GetSelectionSize();
-		if (selectionSize > 0)
-		{
-			static int selectionIndex = 1;
-
-			if (selectionSize > 1)
-			{
-				float numWidth = ImGui::CalcTextSize(std::to_string(selectionIndex).c_str()).x;
-
-				ImGui::SetNextItemWidth(numWidth + 10);
-				ImGui::DragInt("##selectionIndex", &selectionIndex, 0.1f);
-				ImGui::SameLine();
-				ImGui::Text("/ %d", selectionSize);
-
-				ImGui::PushItemFlag(ImGuiItemFlags_ButtonRepeat, true);
-				{
-					ImGui::SameLine(0.0f, 6.0f);
-					if (ImGui::ArrowButton("##left", ImGuiDir_Left))
-						selectionIndex--;
-					ImGui::SameLine();
-					if (ImGui::ArrowButton("##right", ImGuiDir_Right))
-						selectionIndex++;
-				}
-				ImGui::PopItemFlag();
-
-				ImGui::Separator();
-			}
-
-			selectionIndex = Wrap(selectionIndex, 1, selectionSize);
-			Entity *ent = _debugPlayer.Get()->GetSelection()[(size_t)selectionIndex - 1].Get();
-
-			const UINT entID = ent->GetID();
-			const std::string windowID = std::format("Ent#{}", entID);
-
-			// Check if entity is undocked
-			if (ImGuiUtils::Utils::GetWindow(windowID, nullptr))
-			{
-				ImGui::Text("Selected entity is undocked!");
-
-				if (ImGui::Button("Dock"))
-				{
-					if (!ImGuiUtils::Utils::CloseWindow(windowID))
-					{
-						ImGui::EndChild();
-						ErrMsg("Failed to close undocked entity window!");
-						return false;
-					}
-				}
-			}
-			else
-			{
-				if (!ent->InitialRenderUI())
-				{
-					ImGui::EndChild();
-					ErrMsg("Failed to render selected entity UI!");
-					return false;
-				}
-			}
-		}
-		else
-		{
-			ImGui::Text("No entity selected.");
-		}
-
-		ImGui::EndChild();
-	}
-
-	ImGui::Dummy(ImVec2(0.0f, 4.0f));
-	ImGui::SeparatorText("Tools");
 
 	if (ImGui::CollapsingHeader("Creation"))
 	{
@@ -1470,9 +1463,6 @@ bool Scene::RenderUI()
 			_debugPlayer.Get()->ClearDuplicateBinds();
 		}
 	}
-
-	ImGui::Dummy(ImVec2(0.0f, 4.0f));
-	ImGui::SeparatorText("Misc");
 
 	if (ImGui::CollapsingHeader("Other"))
 	{

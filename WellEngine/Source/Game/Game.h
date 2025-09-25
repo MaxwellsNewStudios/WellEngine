@@ -60,6 +60,10 @@ private:
 
 	[[nodiscard]] bool SetSceneInternal(const std::string &sceneName);
 
+#ifdef USE_IMGUI
+	[[nodiscard]] bool RenderInspectorUI(TimeUtils &time);
+#endif
+
 public:
 	Game();
 	~Game();

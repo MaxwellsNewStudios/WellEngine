@@ -1,7 +1,9 @@
 #pragma once
 
+
 class DebugData
 {
+#ifdef DEBUG_BUILD
 private:
 	static constexpr const char *dataFileName = ASSETS_EDITOR_PATH "\\DebugData.json";
 	float _saveInterval = 3.0f; // Continuously save with this interval
@@ -56,4 +58,5 @@ public:
 	static void LoadState();
 
 	TESTABLE()
+#endif
 };

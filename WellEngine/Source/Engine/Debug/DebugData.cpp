@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "DebugData.h"
 
-
+#ifdef DEBUG_BUILD
 void DebugData::Update(float deltaTime)
 {
 	DebugData &data = Get();
@@ -219,3 +219,4 @@ void DebugData::LoadState()
 			data.graphicsOutlineEnabled = settings[memberName.c_str()].GetBool();
 	}
 }
+#endif

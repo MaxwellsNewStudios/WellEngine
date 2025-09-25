@@ -141,6 +141,7 @@ bool ImGuiAutoWindow::Render()
 
 	ImGui::PushID(_id.c_str());
 	ImGui::Begin(_name.c_str(), &_open);
+	ImGui::SetWindowFontScale(DebugData::Get().imGuiFontScale);
 	bool result = _func();
 	ImGui::End();
 	ImGui::PopID();

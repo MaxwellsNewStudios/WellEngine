@@ -1,9 +1,7 @@
 #include "stdafx.h"
 #include "Game.h"
 #include "Source/Engine/Debug/DebugData.h"
-#ifdef USE_IMGUI
 #include "Source/Engine/UI/UILayout.h"
-#endif
 
 #ifdef LEAK_DETECTION
 #define new			DEBUG_NEW
@@ -1393,7 +1391,28 @@ bool Game::Render(TimeUtils &time, const Input& input)
 	return true;
 }
 
+
 #ifdef USE_IMGUI
+bool Game::RenderInspectorUI(TimeUtils &time)
+{
+	// TODO: 
+	//   Show selected content details here.
+	//   Global selection will need to be handelled in Game class.
+
+	if (ActiveSceneIsValid())
+	{
+		Scene *scene = _scenes[_activeSceneIndex].get();
+
+		if (!scene->RenderSelectionUI())
+		{
+			ErrMsg("Failed to render scene UI!");
+			return false;
+		}
+	}
+
+	return true;
+}
+
 bool Game::RenderUI(TimeUtils &time)
 {
 	ZoneScopedC(RandomUniqueColor());
@@ -2400,6 +2419,42 @@ bool Game::RenderUI(TimeUtils &time)
 	}
 	ImGui::End();
 
+	if (ImGui::Begin("Hierarchy", nullptr, defaultWindowFlags))
+	{
+		ImGui::SetWindowFontScale(imGuiFontScale);
+
+		if (ActiveSceneIsValid())
+		{
+			Scene *scene = _scenes[_activeSceneIndex].get();
+
+			if (!scene->RenderHierarchyUI())
+			{
+				ErrMsg("Failed to render scene UI!");
+				return false;
+			}
+		}
+	}
+	ImGui::End();
+
+	if (static char focusedOnStartup = 0; focusedOnStartup <= 1)
+	{
+		if (focusedOnStartup == 1)
+			ImGui::SetNextWindowFocus();
+		focusedOnStartup++;
+	}
+
+	if (ImGui::Begin("Inspector", nullptr, defaultWindowFlags))
+	{
+		ImGui::SetWindowFontScale(imGuiFontScale);
+
+		if (!RenderInspectorUI(time))
+		{
+			ErrMsg("Failed to render inspector UI!");
+			return false;
+		}
+	}
+	ImGui::End();
+
 	if (ImGui::Begin("Scene", nullptr, defaultWindowFlags))
 	{
 		ImGui::SetWindowFontScale(imGuiFontScale);
@@ -2408,22 +2463,7 @@ bool Game::RenderUI(TimeUtils &time)
 		{
 			Scene *scene = _scenes[_activeSceneIndex].get();
 
-			if (!scene->IsUndocked())
-			{
-				if (ImGui::Button("Undock Scene"))
-				{
-					if (!ImGuiUtils::Utils::OpenWindow(
-						std::format("Scene '{}'", scene->GetName()),
-						scene->GetName(),
-						std::bind(&Scene::RenderUI, scene)))
-					{
-						ErrMsg("Failed to open scene window!");
-						return false;
-					}
-				}
-			}
-
-			if (!scene->RenderUI())
+			if (!scene->RenderSceneUI())
 			{
 				ErrMsg("Failed to render scene UI!");
 				return false;

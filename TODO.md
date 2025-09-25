@@ -6,7 +6,6 @@
    - Add content browser. 
    - Let user dynamically add/remove/modify & load/unload content in-editor.
  - Improve UI Layout.
-   - Create separate windows similar to Unity's "Inspector" & "Hierarchy" instead of hiding them in the Scene window.
    - Improve Content window so all content types are handelled similarly to textures.
    - Implement rect selection in both hierarchy (supported by ImGui) & scene view (handle rect as frustum).
  - Generalize materials.

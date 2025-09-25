@@ -157,8 +157,9 @@ public:
 	[[nodiscard]] bool Render(TimeUtils &time, const Input &input);
 
 #ifdef USE_IMGUI
-	[[nodiscard]] bool RenderUI();
-	[[nodiscard]] bool IsUndocked() const;
+	[[nodiscard]] bool RenderSelectionUI();
+	[[nodiscard]] bool RenderHierarchyUI();
+	[[nodiscard]] bool RenderSceneUI();
 #endif
 #ifdef USE_IMGUIZMO
 	[[nodiscard]] bool RenderGizmoUI();
