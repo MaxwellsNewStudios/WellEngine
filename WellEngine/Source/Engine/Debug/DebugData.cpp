@@ -58,6 +58,7 @@ void DebugData::SaveState()
 		settingsObj.AddMember("Billboard Gizmos Size", data.billboardGizmosSize, docAlloc);
 		settingsObj.AddMember("Movement Speed", data.movementSpeed, docAlloc);
 		settingsObj.AddMember("Mouse Sensitivity", data.mouseSensitivity, docAlloc);
+		settingsObj.AddMember("Mouse Movement Mode", data.mouseMovementMode, docAlloc);
 		settingsObj.AddMember("Debug Camera Near Plane", data.debugCamNearDist, docAlloc);
 		settingsObj.AddMember("Debug Camera Far Plane", data.debugCamFarDist, docAlloc);
 		settingsObj.AddMember("Enable Fog", data.graphicsFogEnabled, docAlloc);
@@ -193,6 +194,10 @@ void DebugData::LoadState()
 		memberName = "Mouse Sensitivity";
 		if (settings.HasMember(memberName.c_str()))
 			data.mouseSensitivity = settings[memberName.c_str()].GetFloat();
+
+		memberName = "Mouse Movement Mode";
+		if (settings.HasMember(memberName.c_str()))
+			data.mouseMovementMode = settings[memberName.c_str()].GetInt();
 
 		memberName = "Debug Camera Near Plane";
 		if (settings.HasMember(memberName.c_str()))

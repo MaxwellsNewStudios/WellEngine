@@ -12,6 +12,13 @@ namespace json = rapidjson;
 
 class BillboardMeshBehaviour;
 
+enum class MouseMovementMode
+{
+	None,
+	OrbitPan,
+	FlyCam
+};
+
 class [[register_behaviour]] DebugPlayerBehaviour final : public Behaviour, public IRefTarget<DebugPlayerBehaviour>
 {
 #ifdef DEBUG_BUILD

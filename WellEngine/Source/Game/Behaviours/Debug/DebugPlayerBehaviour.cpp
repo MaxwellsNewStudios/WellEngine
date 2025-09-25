@@ -596,7 +596,7 @@ bool DebugPlayerBehaviour::Update(TimeUtils &time, const Input &input)
 				{
 					XMFLOAT3A u = camTransform->GetUp();
 					float invert = (u.y > 0 ? 1.0f : -1.0f);
-					camTransform->RotateAxis({ 0, 1, 0 }, (sensitivity * static_cast<float>(mState.delta.x) / 360.0f) * invert, World);
+					camTransform->RotateAxis({ 0, 1, 0 }, (sensitivity * mState.delta.x / 360.0f) * invert, World);
 				}
 
 				if (mState.delta.y != 0)
@@ -655,278 +655,361 @@ bool DebugPlayerBehaviour::Update(TimeUtils &time, const Input &input)
 			}
 			else if (!ImGuizmo::IsUsingAny() && input.HasKeyboardFocus())
 			{
-				// Control camera by dragging mouse
-				// Space + Left Mouse Button - Pan
-				// Left Alt + Left Mouse Button - Orbit
+				MouseMovementMode movementMode = (MouseMovementMode)DebugData::Get().mouseMovementMode;
 
-				enum class DragMode {
-					None,
-					Orbit,
-					Pan
-				};
-				static DragMode dragMode = DragMode::None;
-
-				static float fallbackDepth = 100.0f;
-				static XMFLOAT3 dragOrigin3D{};
-				static XMFLOAT2 dragOrigin2D{};
-				static XMFLOAT3 forwardOriginDiff{};
-				static XMFLOAT2 lastDragOrigin2D{};
-
-				bool pressedM1 = input.GetKey(KeyCode::M1) == KeyState::Pressed;
-				bool holdingM1 = input.GetKey(KeyCode::M1, true) == KeyState::Held;
-
-				if (pressedM1)
+				switch (movementMode)
 				{
-					bool holdingAlt = (int)input.GetKey(KeyCode::LeftAlt) & (int)KeyState::PressedHeld;
-					bool holdingSpace = (int)input.GetKey(KeyCode::Space) & (int)KeyState::PressedHeld;
+				case MouseMovementMode::OrbitPan:
+				{
+					// Control camera by dragging mouse.
+					// Space + Left Mouse Button - Pan
+					// Left Alt + Left Mouse Button - Orbit
 
-					lastDragOrigin2D = dragOrigin2D = mPos;
-					XMFLOAT3A pos, dir;
+					enum class DragMode {
+						None,
+						Orbit,
+						Pan
+					};
+					static DragMode dragMode = DragMode::None;
 
-					RaycastOut out;
-					if (RayCastFromMouse(out, pos, dir, input))
+					static float fallbackDepth = 100.0f;
+					static XMFLOAT3 dragOrigin3D{};
+					static XMFLOAT2 dragOrigin2D{};
+					static XMFLOAT3 forwardOriginDiff{};
+					static XMFLOAT2 lastDragOrigin2D{};
+
+					bool pressedM1 = input.GetKey(KeyCode::M1) == KeyState::Pressed;
+					bool holdingM1 = input.GetKey(KeyCode::M1, true) == KeyState::Held;
+
+					if (pressedM1)
 					{
-						dragOrigin3D = pos;
-						fallbackDepth = out.distance;
+						bool holdingAlt = (int)input.GetKey(KeyCode::LeftAlt) & (int)KeyState::PressedHeld;
+						bool holdingSpace = (int)input.GetKey(KeyCode::Space) & (int)KeyState::PressedHeld;
+
+						lastDragOrigin2D = dragOrigin2D = mPos;
+						XMFLOAT3A pos, dir;
+
+						RaycastOut out;
+						if (RayCastFromMouse(out, pos, dir, input))
+						{
+							dragOrigin3D = pos;
+							fallbackDepth = out.distance;
+						}
+						else
+						{
+							XMFLOAT3A camPos = camTransform->GetPosition(World);
+							dragOrigin3D = {
+								camPos.x + dir.x * fallbackDepth,
+								camPos.y + dir.y * fallbackDepth,
+								camPos.z + dir.z * fallbackDepth
+							};
+						}
+
+						dragMode = DragMode::None;
+
+						if (holdingAlt)
+						{
+							dragMode = DragMode::Orbit;
+
+							XMVECTOR camRight = Load(camTransform->GetRight(World));
+							XMVECTOR camUp = Load(camTransform->GetUp(World));
+							XMVECTOR camForward = Load(camTransform->GetForward(World));
+
+							XMVECTOR toOrigin = XMVector3Normalize(Load(dragOrigin3D) - Load(camTransform->GetPosition(World)));
+							XMVECTOR forwardDiff = toOrigin - camForward;
+
+							XMVECTOR rightComp = XMVector3Dot(forwardDiff, camRight);
+							XMVECTOR upComp = XMVector3Dot(forwardDiff, camUp);
+							XMVECTOR forwardComp = XMVector3Dot(forwardDiff, camForward);
+
+							forwardDiff = XMVectorSet(
+								XMVectorGetX(rightComp),
+								XMVectorGetX(upComp),
+								XMVectorGetX(forwardComp),
+								0.0f
+							);
+
+							Store(forwardOriginDiff, forwardDiff);
+						}
+						else if (holdingSpace)
+						{
+							dragMode = DragMode::Pan;
+						}
+					
+					}
+					else if (holdingM1 && dragMode != DragMode::None)
+					{
+						if (dragMode == DragMode::Orbit)
+						{
+							// Orbit camTransform around 3D drag origin
+							XMFLOAT2 mouseDelta = {
+								(mPos.x - lastDragOrigin2D.x),
+								-(mPos.y - lastDragOrigin2D.y)
+							};
+							lastDragOrigin2D = mPos;
+
+							float movementSqr = (mouseDelta.x * mouseDelta.x) + (mouseDelta.y * mouseDelta.y);
+							constexpr float movementDeadzone = 0.0000001f;
+							static bool skipNextDelta = false;
+
+							if (!skipNextDelta && movementSqr >= movementDeadzone)
+							{
+								float orbitSensitivity = XM_PI;
+								mouseDelta.x *= orbitSensitivity;
+								mouseDelta.y *= orbitSensitivity;
+
+								// Get current camera position and calculate orbit vector
+								XMFLOAT3A currentCamPos = camTransform->GetPosition(World);
+								XMVECTOR orbitCenter = Load(dragOrigin3D);
+								XMVECTOR orbitToCam = Load(currentCamPos) - orbitCenter;
+
+								// Calculate yaw rotation around world up axis (Y-axis)
+								XMVECTOR worldUp = g_XMIdentityR1;
+								XMMATRIX yawRotation = XMMatrixRotationAxis(worldUp, mouseDelta.x);
+
+								// Apply yaw rotation to orbit vector
+								orbitToCam = XMVector3Transform(orbitToCam, yawRotation);
+
+								// Calculate pitch rotation around a horizontal right axis
+								// Use cross product of current orbit vector and world up to get consistent right axis
+								XMVECTOR rightAxis = XMVector3Cross(worldUp, orbitToCam);
+								
+								// Handle gimbal lock case (camera directly above/below orbit center)
+								float rightAxisLength = XMVectorGetX(XMVector3Length(rightAxis));
+								if (rightAxisLength < 0.001f) 
+									rightAxis = g_XMIdentityR0; // Use world X-axis as fallback when orbit vector is parallel to world up
+								else 
+									rightAxis = XMVector3Normalize(rightAxis);
+
+								XMMATRIX pitchRotation = XMMatrixRotationAxis(rightAxis, mouseDelta.y);
+
+								// Apply pitch rotation to orbit vector
+								orbitToCam = XMVector3Transform(orbitToCam, pitchRotation);
+
+								// Calculate new camera position
+								XMVECTOR newCamPos = orbitCenter + orbitToCam;
+								XMFLOAT3A newCamPosFloat;
+								Store(newCamPosFloat, newCamPos);
+
+								// Set new camera position
+								camTransform->SetPosition(newCamPosFloat, World);
+
+								// Compensate for initial forward direction difference to avoid roll when orbiting
+								// First, convert forwardOriginDiff to world space
+								XMVECTOR forwardDiffWorld{};
+								forwardDiffWorld += forwardOriginDiff.x * Load(camTransform->GetRight());
+								forwardDiffWorld += forwardOriginDiff.y * Load(camTransform->GetUp());
+								forwardDiffWorld += forwardOriginDiff.z * Load(camTransform->GetForward());
+
+								// Then, add it to the look direction
+								XMVECTOR lookDirVec = XMVector3Normalize(orbitCenter - newCamPos) - forwardDiffWorld;
+
+								XMFLOAT3A lookDir;
+								Store(lookDir, lookDirVec);
+								camTransform->SetLookDir(lookDir, {0, 1, 0}, World);
+							}
+
+							skipNextDelta = Input::Instance().TryWrapMouse();
+						}
+						else if (dragMode == DragMode::Pan)
+						{
+							// Pan camTransform such that the 3D drag origin stays under the cursor
+							XMFLOAT3A panUpDir = camTransform->GetUp();
+							XMFLOAT3A panRightDir = camTransform->GetRight();
+
+							// Calculate mouse movement in screen space
+							XMFLOAT2 mouseDelta = {
+								mPos.x - dragOrigin2D.x,
+								mPos.y - dragOrigin2D.y
+							};
+
+							// Get camera direction for plane intersection
+							XMFLOAT3A camForward = camTransform->GetForward(World);
+							XMFLOAT3A camPos = camTransform->GetPosition(World);
+
+							// Create a plane at the drag origin with the camera's forward direction as normal
+							XMVECTOR planeNormal = XMVector3Normalize(Load(camForward));
+							XMVECTOR planePoint = Load(dragOrigin3D);
+
+							// Calculate the current mouse ray direction
+							CameraBehaviour *camBeh = _currCameraPtr.GetAs<CameraBehaviour>();
+
+							// Convert current mouse position to world ray direction
+							const XMFLOAT2 currentMPos = mPos;
+							float xNDC = (2.0f * currentMPos.x) - 1.0f;
+							float yNDC = 1.0f - (2.0f * currentMPos.y);
+							XMFLOAT3A rayClip = { xNDC, yNDC, 1.0f };
+
+							// Transform to world space direction
+							XMVECTOR rayClipVec = Load(rayClip);
+							XMMATRIX projMatrix = Load(camBeh->GetProjectionMatrix());
+							XMVECTOR rayEyeVec = XMVector4Transform(rayClipVec, XMMatrixInverse(nullptr, projMatrix));
+							rayEyeVec = XMVectorSet(XMVectorGetX(rayEyeVec), XMVectorGetY(rayEyeVec), 1, 0.0);
+
+							XMMATRIX viewMatrix = Load(camBeh->GetViewMatrix());
+							XMVECTOR rayWorldVec = XMVector4Transform(rayEyeVec, XMMatrixInverse(nullptr, viewMatrix));
+							rayWorldVec = XMVector3Normalize(rayWorldVec);
+
+							// Calculate intersection with the plane
+							XMVECTOR rayOrigin = Load(camPos);
+							XMVECTOR rayDir = rayWorldVec;
+
+							// Plane intersection
+							float denominator = XMVectorGetX(XMVector3Dot(rayDir, planeNormal));
+
+							if (std::abs(denominator) > 0.0001f) // Avoid division by zero
+							{
+								XMVECTOR toPlane = planePoint - rayOrigin;
+								float t = XMVectorGetX(XMVector3Dot(toPlane, planeNormal)) / denominator;
+
+								if (t > 0.0f) // Ray hits plane in front of camera
+								{
+									// Calculate intersection point
+									XMVECTOR intersectionPoint = rayOrigin + (rayDir * t);
+
+									// Calculate the movement needed to keep drag origin under cursor
+									XMVECTOR panMovement = planePoint - intersectionPoint;
+
+									XMFLOAT3A panMovementFloat;
+									Store(panMovementFloat, panMovement);
+
+									// Apply the pan movement to the camera
+									camTransform->Move(panMovementFloat, World);
+								}
+							}
+						}
+
+						float scroll = mState.scroll.y * -0.1f;
+						if (mState.scroll.y != 0.0f)
+						{
+							bool shiftHeld = (int)input.GetKey(KeyCode::LeftShift, true) & (int)KeyState::PressedHeld;
+							bool ctrlHeld = (int)input.GetKey(KeyCode::LeftControl, true) & (int)KeyState::PressedHeld;
+
+							if (shiftHeld)
+								scroll *= 3.0f;
+							else if (ctrlHeld)
+								scroll *= 0.333f;
+
+							if (scroll != 0.0f)
+							{
+								XMVECTOR dragOrigin = Load(dragOrigin3D);
+								XMVECTOR originToCam = Load(camTransform->GetPosition(World)) - dragOrigin;
+								originToCam *= (1.0f + scroll);
+
+								XMFLOAT3A zoomedPos;
+								Store(zoomedPos, dragOrigin + originToCam);
+
+								camTransform->SetPosition(zoomedPos, World);
+							}
+						}
 					}
 					else
 					{
-						XMFLOAT3A camPos = camTransform->GetPosition(World);
-						dragOrigin3D = {
-							camPos.x + dir.x * fallbackDepth,
-							camPos.y + dir.y * fallbackDepth,
-							camPos.z + dir.z * fallbackDepth
-						};
-					}
-
-					dragMode = DragMode::None;
-
-					if (holdingAlt)
-					{
-						dragMode = DragMode::Orbit;
-
-						XMVECTOR camRight = Load(camTransform->GetRight(World));
-						XMVECTOR camUp = Load(camTransform->GetUp(World));
-						XMVECTOR camForward = Load(camTransform->GetForward(World));
-
-						XMVECTOR toOrigin = XMVector3Normalize(Load(dragOrigin3D) - Load(camTransform->GetPosition(World)));
-						XMVECTOR forwardDiff = toOrigin - camForward;
-
-						XMVECTOR rightComp = XMVector3Dot(forwardDiff, camRight);
-						XMVECTOR upComp = XMVector3Dot(forwardDiff, camUp);
-						XMVECTOR forwardComp = XMVector3Dot(forwardDiff, camForward);
-
-						forwardDiff = XMVectorSet(
-							XMVectorGetX(rightComp),
-							XMVectorGetX(upComp),
-							XMVectorGetX(forwardComp),
-							0.0f
-						);
-
-						Store(forwardOriginDiff, forwardDiff);
-					}
-					else if (holdingSpace)
-					{
-						dragMode = DragMode::Pan;
-					}
+						dragMode = DragMode::None;
 					
-				}
-				else if (holdingM1 && dragMode != DragMode::None)
-				{
-					if (dragMode == DragMode::Orbit)
-					{
-						// Orbit camTransform around 3D drag origin
-						XMFLOAT2 mouseDelta = {
-							(mPos.x - lastDragOrigin2D.x),
-							-(mPos.y - lastDragOrigin2D.y)
-						};
-						lastDragOrigin2D = mPos;
-
-						float movementSqr = (mouseDelta.x * mouseDelta.x) + (mouseDelta.y * mouseDelta.y);
-						constexpr float movementDeadzone = 0.0000001f;
-						static bool skipNextDelta = false;
-
-						if (!skipNextDelta && movementSqr >= movementDeadzone)
+						// Mouse scroll zoom
+						if (mState.scroll.y != 0.0f && (!_cursorPositioningTarget || input.GetKey(KeyCode::LeftAlt) == KeyState::None))
 						{
-							float orbitSensitivity = XM_PI;
-							mouseDelta.x *= orbitSensitivity;
-							mouseDelta.y *= orbitSensitivity;
+							bool ctrlHeld = input.GetKey(KeyCode::LeftControl) == KeyState::Held;
 
-							// Get current camera position and calculate orbit vector
-							XMFLOAT3A currentCamPos = camTransform->GetPosition(World);
-							XMVECTOR orbitCenter = Load(dragOrigin3D);
-							XMVECTOR orbitToCam = Load(currentCamPos) - orbitCenter;
+							if (ctrlHeld)
+							{
+								CameraBehaviour *cam = _currCameraPtr.GetAs<CameraBehaviour>();
+								float scroll = mState.scroll.y;
 
-							// Calculate yaw rotation around world up axis (Y-axis)
-							XMVECTOR worldUp = g_XMIdentityR1;
-							XMMATRIX yawRotation = XMMatrixRotationAxis(worldUp, mouseDelta.x);
+								// Zoom view camera's FOV
+								if (cam->GetOrtho())
+								{
+									float currFOV = cam->GetFOV();
+									float newFOV = max(currFOV * (1.0f + 0.05f * scroll), 0.1f);
+									cam->SetFOV(newFOV);
+								}
+								else
+								{
+									float currFOV = cam->GetFOV() * RAD_TO_DEG;
+									float newFOV = std::clamp(currFOV + scroll * 2.5f, 5.0f, 170.0f);
+									cam->SetFOV(newFOV * DEG_TO_RAD);
+								}
+							}
+						}
+					}
 
-							// Apply yaw rotation to orbit vector
-							orbitToCam = XMVector3Transform(orbitToCam, yawRotation);
+					break;
+				}
 
-							// Calculate pitch rotation around a horizontal right axis
-							// Use cross product of current orbit vector and world up to get consistent right axis
-							XMVECTOR rightAxis = XMVector3Cross(worldUp, orbitToCam);
-								
-							// Handle gimbal lock case (camera directly above/below orbit center)
-							float rightAxisLength = XMVectorGetX(XMVector3Length(rightAxis));
-							if (rightAxisLength < 0.001f) 
-								rightAxis = g_XMIdentityR0; // Use world X-axis as fallback when orbit vector is parallel to world up
-							else 
-								rightAxis = XMVector3Normalize(rightAxis);
+				case MouseMovementMode::FlyCam:
+				{
+					// Control camera like a space ship, rotate around camera center & move forward/backward.
+					// Left Mouse Button - Rotate
+					// Scroll - Move Forward/Backward
+					// Middle Mouse Button + Scroll - Adjust Speed
 
-							XMMATRIX pitchRotation = XMMatrixRotationAxis(rightAxis, mouseDelta.y);
+					bool pressedM1 = input.GetKey(KeyCode::M1) == KeyState::Pressed;
+					bool holdingM1 = input.GetKey(KeyCode::M1, true) == KeyState::Held;
+					bool holdingM3 = input.GetKey(KeyCode::M3, true) == KeyState::Held;
+					int scroll = mState.scroll.y;
 
-							// Apply pitch rotation to orbit vector
-							orbitToCam = XMVector3Transform(orbitToCam, pitchRotation);
+					static bool isRotating = false;
+					static XMFLOAT2 lastMPos = { 0, 0 };
 
-							// Calculate new camera position
-							XMVECTOR newCamPos = orbitCenter + orbitToCam;
-							XMFLOAT3A newCamPosFloat;
-							Store(newCamPosFloat, newCamPos);
+					if (pressedM1)
+					{
+						lastMPos = mPos;
+						isRotating = true;
+					}
+					else if (isRotating && holdingM1)
+					{
+						XMFLOAT2 mDelta = { mPos.x - lastMPos.x, mPos.y - lastMPos.y };
+						lastMPos = mPos;
 
-							// Set new camera position
-							camTransform->SetPosition(newCamPosFloat, World);
+						static bool skipNextDelta = false;
+						if (!skipNextDelta)
+						{
+							float sensitivity = input.GetMouseSensitivity() * 1.0f;
+							if (mDelta.x != 0.0f)
+							{
+								XMFLOAT3A u = camTransform->GetUp();
+								float invert = (u.y > 0 ? 1.0f : -1.0f);
+								camTransform->RotateAxis({ 0, 1, 0 }, (sensitivity * mDelta.x * XM_PI) * invert, World);
+							}
 
-							// Compensate for initial forward direction difference to avoid roll when orbiting
-							// First, convert forwardOriginDiff to world space
-							XMVECTOR forwardDiffWorld{};
-							forwardDiffWorld += forwardOriginDiff.x * Load(camTransform->GetRight());
-							forwardDiffWorld += forwardOriginDiff.y * Load(camTransform->GetUp());
-							forwardDiffWorld += forwardOriginDiff.z * Load(camTransform->GetForward());
-
-							// Then, add it to the look direction
-							XMVECTOR lookDirVec = XMVector3Normalize(orbitCenter - newCamPos) - forwardDiffWorld;
-
-							XMFLOAT3A lookDir;
-							Store(lookDir, lookDirVec);
-							camTransform->SetLookDir(lookDir, {0, 1, 0}, World);
+							if (mDelta.y != 0)
+							{
+								camTransform->RotatePitch(sensitivity * mDelta.y * XM_PI, Local);
+							}
 						}
 
 						skipNextDelta = Input::Instance().TryWrapMouse();
 					}
-					else if (dragMode == DragMode::Pan)
+					else
 					{
-						// Pan camTransform such that the 3D drag origin stays under the cursor
-						XMFLOAT3A panUpDir = camTransform->GetUp();
-						XMFLOAT3A panRightDir = camTransform->GetRight();
-
-						// Calculate mouse movement in screen space
-						XMFLOAT2 mouseDelta = {
-							mPos.x - dragOrigin2D.x,
-							mPos.y - dragOrigin2D.y
-						};
-
-						// Get camera direction for plane intersection
-						XMFLOAT3A camForward = camTransform->GetForward(World);
-						XMFLOAT3A camPos = camTransform->GetPosition(World);
-
-						// Create a plane at the drag origin with the camera's forward direction as normal
-						XMVECTOR planeNormal = XMVector3Normalize(Load(camForward));
-						XMVECTOR planePoint = Load(dragOrigin3D);
-
-						// Calculate the current mouse ray direction
-						CameraBehaviour *camBeh = _currCameraPtr.GetAs<CameraBehaviour>();
-
-						// Convert current mouse position to world ray direction
-						const XMFLOAT2 currentMPos = mPos;
-						float xNDC = (2.0f * currentMPos.x) - 1.0f;
-						float yNDC = 1.0f - (2.0f * currentMPos.y);
-						XMFLOAT3A rayClip = { xNDC, yNDC, 1.0f };
-
-						// Transform to world space direction
-						XMVECTOR rayClipVec = Load(rayClip);
-						XMMATRIX projMatrix = Load(camBeh->GetProjectionMatrix());
-						XMVECTOR rayEyeVec = XMVector4Transform(rayClipVec, XMMatrixInverse(nullptr, projMatrix));
-						rayEyeVec = XMVectorSet(XMVectorGetX(rayEyeVec), XMVectorGetY(rayEyeVec), 1, 0.0);
-
-						XMMATRIX viewMatrix = Load(camBeh->GetViewMatrix());
-						XMVECTOR rayWorldVec = XMVector4Transform(rayEyeVec, XMMatrixInverse(nullptr, viewMatrix));
-						rayWorldVec = XMVector3Normalize(rayWorldVec);
-
-						// Calculate intersection with the plane
-						XMVECTOR rayOrigin = Load(camPos);
-						XMVECTOR rayDir = rayWorldVec;
-
-						// Plane intersection
-						float denominator = XMVectorGetX(XMVector3Dot(rayDir, planeNormal));
-
-						if (std::abs(denominator) > 0.0001f) // Avoid division by zero
-						{
-							XMVECTOR toPlane = planePoint - rayOrigin;
-							float t = XMVectorGetX(XMVector3Dot(toPlane, planeNormal)) / denominator;
-
-							if (t > 0.0f) // Ray hits plane in front of camera
-							{
-								// Calculate intersection point
-								XMVECTOR intersectionPoint = rayOrigin + (rayDir * t);
-
-								// Calculate the movement needed to keep drag origin under cursor
-								XMVECTOR panMovement = planePoint - intersectionPoint;
-
-								XMFLOAT3A panMovementFloat;
-								Store(panMovementFloat, panMovement);
-
-								// Apply the pan movement to the camera
-								camTransform->Move(panMovementFloat, World);
-							}
-						}
+						isRotating = false;
 					}
 
-					float scroll = mState.scroll.y * -0.1f;
-					if (mState.scroll.y != 0.0f)
+					if (scroll != 0.0f)
 					{
-						bool shiftHeld = (int)input.GetKey(KeyCode::LeftShift, true) & (int)KeyState::PressedHeld;
-						bool ctrlHeld = (int)input.GetKey(KeyCode::LeftControl, true) & (int)KeyState::PressedHeld;
+						float &speed = debugData.movementSpeed;
 
-						if (shiftHeld)
-							scroll *= 3.0f;
-						else if (ctrlHeld)
-							scroll *= 0.333f;
-
-						if (scroll != 0.0f)
+						if (holdingM3)
 						{
-							XMVECTOR dragOrigin = Load(dragOrigin3D);
-							XMVECTOR originToCam = Load(camTransform->GetPosition(World)) - dragOrigin;
-							originToCam *= (1.0f + scroll);
-
-							XMFLOAT3A zoomedPos;
-							Store(zoomedPos, dragOrigin + originToCam);
-
-							camTransform->SetPosition(zoomedPos, World);
+							// Adjust speed
+							speed = std::clamp(speed * (1.0f + scroll * 0.1f), 0.01f, 10.0f);
 						}
-					}
-				}
-				else
-				{
-					dragMode = DragMode::None;
-					
-					// Mouse scroll zoom
-					if (mState.scroll.y != 0.0f && (!_cursorPositioningTarget || input.GetKey(KeyCode::LeftAlt) == KeyState::None))
-					{
-						bool ctrlHeld = input.GetKey(KeyCode::LeftControl) == KeyState::Held;
-
-						if (ctrlHeld)
+						else
 						{
+							// Mouse scroll move
 							CameraBehaviour *cam = _currCameraPtr.GetAs<CameraBehaviour>();
-							float scroll = mState.scroll.y;
-
-							// Zoom view camera's FOV
-							if (cam->GetOrtho())
-							{
-								float currFOV = cam->GetFOV();
-								float newFOV = max(currFOV * (1.0f + 0.05f * scroll), 0.1f);
-								cam->SetFOV(newFOV);
-							}
-							else
-							{
-								float currFOV = cam->GetFOV() * RAD_TO_DEG;
-								float newFOV = std::clamp(currFOV + scroll * 2.5f, 5.0f, 170.0f);
-								cam->SetFOV(newFOV * DEG_TO_RAD);
-							}
+							camTransform->MoveRelative({ 0, 0, scroll * speed }, Local);
 						}
 					}
+
+					break;
 				}
+
+				default:
+					break;
+				}
+
 			}
 		}
 	}

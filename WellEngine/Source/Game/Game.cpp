@@ -1540,6 +1540,22 @@ bool Game::RenderUI(TimeUtils &time)
 					if (ImGui::Button("Select View Camera"))
 						scene->SetSelection(viewCam->GetEntity());
 				}
+
+				if (ImGui::BeginMenu("Mouse Movement Mode"))
+				{
+					int &mode = debugData.mouseMovementMode;
+
+					if (ImGui::MenuItem("None", NULL, mode == 0))
+						mode = 0;
+
+					if (ImGui::MenuItem("Orbit / Pan", NULL, mode == 1))
+						mode = 1;
+
+					if (ImGui::MenuItem("Fly Camera", NULL, mode == 2))
+						mode = 2;
+
+					ImGui::EndMenu();
+				}
 				
 				float sensitivity = input.GetMouseSensitivity();
 				if (ImGui::SliderFloat("Sensitivity", &sensitivity, 0.0f, 2.0f))

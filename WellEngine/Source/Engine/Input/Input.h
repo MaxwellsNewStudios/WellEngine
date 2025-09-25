@@ -463,6 +463,7 @@ public:
 	void SetWindowPos(Window &window, dx::XMINT2 pos);
 	void SetMouseScroll(dx::XMFLOAT2 scroll);
 	void SetMousePosition(Window &window, dx::XMFLOAT2 pos, bool teleport = false);
+	void SetMousePosition(dx::XMFLOAT2 pos, bool teleport = false);
 
 #ifdef USE_IMGUI
 	[[nodiscard]] dx::XMUINT2 GetSceneViewSize() const;
@@ -486,7 +487,7 @@ public:
 	void DisableAllInput();
 	void EnableAllInput();
 
-	bool ToggleLockCursor(Window& window);
+	bool ToggleLockCursor(Window &window);
 
 #ifdef USE_IMGUI
 	[[nodiscard]] bool RenderUI();

@@ -342,6 +342,14 @@ void Input::SetMousePosition(Window &window, dx::XMFLOAT2 pos, bool teleport)
 
 	SDL_WarpMouseInWindow(window.GetWindow(), pos.x, pos.y);
 }
+void Input::SetMousePosition(dx::XMFLOAT2 pos, bool teleport)
+{
+	_mousePos = pos;
+	if (teleport)
+		_lMousePos = pos;
+
+	SDL_WarpMouseInWindow(_window->GetWindow(), pos.x, pos.y);
+}
 
 #ifdef USE_IMGUI
 dx::XMUINT2 Input::GetSceneViewSize() const

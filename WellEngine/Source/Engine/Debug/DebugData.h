@@ -34,6 +34,7 @@ public:
 	float		billboardGizmosSize			= 0.5f;
 	float		movementSpeed				= 1.0f;
 	float		mouseSensitivity			= 1.0f;
+	int			mouseMovementMode			= 1; // MouseMovementMode enum
 	float		debugCamNearDist			= 0.1f;
 	float		debugCamFarDist				= 200.0f;
 	bool		reportComObjectsOnShutdown	= false;
