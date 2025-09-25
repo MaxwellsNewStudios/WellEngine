@@ -119,35 +119,44 @@ bool Input::Update(Window &window)
 	return true;
 }
 
-bool Input::TryWrapMouse()
+bool Input::TryWrapMouse(bool viewSpace)
 {
-	// Check if mouse is on the outermost edge of the screen.
+	// Check if mouse is on the outermost edge of the screen or scene view.
 	// If it is, warp it to the opposite side plus one pixel.
 
 	bool isOnEdge = false;
 	dx::XMFLOAT2 wrappedPos = _mousePos;
-	dx::XMINT2 relativeScreenPos = { _screenPos.x - _windowPos.x, _screenPos.y - _windowPos.y};
+	dx::XMINT2 rectPos = { _screenPos.x - _windowPos.x, _screenPos.y - _windowPos.y};
+	dx::XMINT2 rectSize = { (int)_screenSize.x, (int)_screenSize.y };
 
-	if ((int)std::floor(_mousePos.x) <= relativeScreenPos.x)
+	if (viewSpace)
 	{
-		isOnEdge = true;
-		wrappedPos.x += (int)_screenSize.x - 2.0f; // Wrap to right edge
-	}
-	else if ((int)std::ceil(_mousePos.x) >= relativeScreenPos.x + (int)_screenSize.x - 1)
-	{
-		isOnEdge = true;
-		wrappedPos.x -= (int)_screenSize.x - 2.0f; // Wrap to left edge
+		rectPos.x += _sceneViewPos.x;
+		rectPos.y += _sceneViewPos.y;
+		rectSize.x = (int)_sceneViewSize.x;
+		rectSize.y = (int)_sceneViewSize.y;
 	}
 
-	if ((int)std::floor(_mousePos.y) <= relativeScreenPos.y)
+	if ((int)std::floor(_mousePos.x) <= rectPos.x)
 	{
 		isOnEdge = true;
-		wrappedPos.y += (int)_screenSize.y - 2.0f; // Wrap to lower edge
+		wrappedPos.x += rectSize.x - 2.0f; // Wrap to right edge
 	}
-	else if ((int)std::ceil(_mousePos.y) >= relativeScreenPos.y + (int)_screenSize.y - 1)
+	else if ((int)std::ceil(_mousePos.x) >= rectPos.x + rectSize.x - 1)
 	{
 		isOnEdge = true;
-		wrappedPos.y -= (int)_screenSize.y - 2.0f; // Wrap to upper edge
+		wrappedPos.x -= rectSize.x - 2.0f; // Wrap to left edge
+	}
+
+	if ((int)std::floor(_mousePos.y) <= rectPos.y)
+	{
+		isOnEdge = true;
+		wrappedPos.y += rectSize.y - 2.0f; // Wrap to lower edge
+	}
+	else if ((int)std::ceil(_mousePos.y) >= rectPos.y + rectSize.y - 1)
+	{
+		isOnEdge = true;
+		wrappedPos.y -= rectSize.y - 2.0f; // Wrap to upper edge
 	}
 
 	if (isOnEdge)

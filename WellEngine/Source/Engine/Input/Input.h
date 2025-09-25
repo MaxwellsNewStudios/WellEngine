@@ -431,7 +431,7 @@ public:
 
 	[[nodiscard]] bool Update(Window &window);
 
-	bool TryWrapMouse();
+	bool TryWrapMouse(bool viewSpace = false);
 
 	[[nodiscard]] KeyState GetKey(KeyCode keyCode, bool ignoreAbsorb = false) const;
 	[[nodiscard]] KeyState GetKey(UCHAR keyCode, bool ignoreAbsorb = false) const;

@@ -979,7 +979,7 @@ bool DebugPlayerBehaviour::Update(TimeUtils &time, const Input &input)
 							}
 						}
 
-						skipNextDelta = Input::Instance().TryWrapMouse();
+						skipNextDelta = Input::Instance().TryWrapMouse(true);
 					}
 					else
 					{
