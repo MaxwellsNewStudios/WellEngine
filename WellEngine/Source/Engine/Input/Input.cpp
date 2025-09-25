@@ -378,6 +378,13 @@ void Input::SetSceneViewPos(dx::XMINT2 pos)
 	_sceneViewPos = pos;
 }
 
+bool Input::IsMouseWithinSceneView() const
+{
+	return 
+		_localMousePos.x >= 0.0f && _localMousePos.x <= 1.0f &&
+		_localMousePos.y >= 0.0f && _localMousePos.y <= 1.0f;
+}
+
 dx::XMUINT2 Input::GetSceneRenderSize() const
 {
 	return _sceneRenderSize;

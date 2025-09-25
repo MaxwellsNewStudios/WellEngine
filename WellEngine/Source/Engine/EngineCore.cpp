@@ -73,7 +73,11 @@ int EngineCore::Init()
 
 	DbgMsg("Window Initialization..."); LogIndentIncr();
 	Window window{};
-	if (!window.Initialize("Lurks Below", wndSize))
+	std::string windowName = "Well Engine";
+#ifdef _DEPLOY
+	windowName = GAME_TITLE;
+#endif
+	if (!window.Initialize(windowName, wndSize))
 	{
 		ErrMsg("Failed to setup window!");
 		return -1;

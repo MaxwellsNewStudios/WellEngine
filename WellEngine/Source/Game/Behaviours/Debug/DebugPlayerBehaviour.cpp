@@ -179,6 +179,21 @@ bool DebugPlayerBehaviour::Update(TimeUtils &time, const Input &input)
 		}
 	}
 
+	for (int i = 0; i < _currSelection.size(); i++)
+	{
+		if (!_currSelection[i].IsValid())
+		{
+			_currSelection.erase(_currSelection.begin() + i);
+			i--;
+		}
+
+		if (_currSelection[i].Get()->IsRemoved())
+		{
+			_currSelection.erase(_currSelection.begin() + i);
+			i--;
+		}
+	}
+
 	if (input.IsInFocus()) // Handle user input while window is in focus
 	{
 		ZoneScopedXNC("Window Focus Controls", RandomUniqueColor());
@@ -986,7 +1001,7 @@ bool DebugPlayerBehaviour::Update(TimeUtils &time, const Input &input)
 						isRotating = false;
 					}
 
-					if (scroll != 0.0f)
+					if (input.IsMouseWithinSceneView() && scroll != 0.0f)
 					{
 						float &speed = debugData.movementSpeed;
 
@@ -1053,55 +1068,6 @@ bool DebugPlayerBehaviour::Update(TimeUtils &time, const Input &input)
 			_addDuplicateBindForEntity = -1;
 		}
 	}
-
-	/*for (int i = 0; i < _duplicateBinds.size(); i++)
-	{
-		Entity *ent = sceneHolder->GetEntityByID(_duplicateBinds[i].second);
-
-		if (ent)
-			continue;
-
-		RemoveDuplicateBind(_duplicateBinds[i].second);
-		i--;
-	}
-
-	for (auto &duplicateBind : _duplicateBinds)
-	{
-		if (input.GetKey(duplicateBind.first) == KeyState::Pressed)
-		{
-			// Copy by serializing and deserializing the entity
-
-			Entity *dupeEnt = sceneHolder->GetEntityByID(duplicateBind.second);
-
-			if (dupeEnt)
-			{
-				json::Document doc;
-				json::Value entObj = json::Value(json::kObjectType);
-
-				if (!scene->SerializeEntity(doc.GetAllocator(), entObj, dupeEnt, true))
-				{
-					ErrMsg("Failed to serialize entity!");
-					return false;
-				}
-
-				Entity *ent = nullptr;
-				if (!scene->DeserializeEntity(entObj, &ent))
-				{
-					ErrMsg("Failed to deserialize entity!");
-					return false;
-				}
-
-				scene->RunPostDeserializeCallbacks();
-
-				if (ent)
-					PositionWithCursor(ent);
-			}
-			else
-			{
-				RemoveDuplicateBind(duplicateBind.second);
-			}
-		}
-	}*/
 
 	if (!_currSelection.empty())
 	{

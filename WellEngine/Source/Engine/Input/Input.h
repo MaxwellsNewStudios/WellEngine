@@ -471,6 +471,8 @@ public:
 	void SetSceneViewSize(dx::XMUINT2 size);
 	void SetSceneViewPos(dx::XMINT2 pos);
 
+	[[nodiscard]] bool IsMouseWithinSceneView() const;
+
 	[[nodiscard]] dx::XMUINT2 GetSceneRenderSize() const;
 	[[nodiscard]] bool HasResizedSceneView();
 #endif

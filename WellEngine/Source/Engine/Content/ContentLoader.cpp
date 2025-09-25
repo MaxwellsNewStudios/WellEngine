@@ -982,7 +982,7 @@ bool LoadTextureFromFile(
 		}
 	}
 
-#if !defined(_DEPLOY)
+#ifndef _DEPLOY
 	// Save processed texture to TEXTURE_BAKE_PATH
 #ifndef FORCE_BAKE_TEXTURES
 	if (bake)

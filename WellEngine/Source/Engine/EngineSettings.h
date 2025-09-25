@@ -4,6 +4,11 @@
 /// If they are both the same color for you, go to Tools -> Options -> Environment -> Fonts and Colors, find "XML Doc Comment" and change it's color.
 
 
+#pragma region General
+	#define GAME_TITLE "Game"
+#pragma endregion
+
+
 #pragma region Content
 	/// FORCE_COMPILE_CONTENT enables recompilation of the content file upon startup. Required after modifying or adding new meshes.
 	/// Disabled by default as it slightly increases load time.

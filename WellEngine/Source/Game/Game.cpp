@@ -2200,7 +2200,7 @@ bool Game::RenderUI(TimeUtils &time)
 			{
 				ImGui::BeginChild("FPS Plot", ImVec2(ImGui::GetContentRegionAvail().x, 0), ImGuiChildFlags_Borders | ImGuiChildFlags_ResizeY);
 
-				static float history = 3.0f;
+				static float history = 1.0f;
 				ImGui::SliderFloat("History", &history, 0.1f, 15.0f, "%.1f s");
 
 				static float currTimeCoverage = 0.0f;

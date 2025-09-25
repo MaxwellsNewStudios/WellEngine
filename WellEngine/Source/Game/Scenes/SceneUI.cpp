@@ -645,25 +645,7 @@ bool Scene::RenderSelectionUI()
 		selectionIndex = Wrap(selectionIndex, 1, selectionSize);
 		Entity *ent = _debugPlayer.Get()->GetSelection()[(size_t)selectionIndex - 1].Get();
 
-		/*const UINT entID = ent->GetID();
-		const std::string windowID = std::format("Ent#{}", entID);
-
-		// Check if entity is undocked
-		if (ImGuiUtils::Utils::GetWindow(windowID, nullptr))
-		{
-			ImGui::Text("Selected entity is undocked!");
-
-			if (ImGui::Button("Dock"))
-			{
-				if (!ImGuiUtils::Utils::CloseWindow(windowID))
-				{
-					ImGui::PopID();
-					ErrMsg("Failed to close undocked entity window!");
-					return false;
-				}
-			}
-		}
-		else*/
+		if (ent)
 		{
 			if (!ent->InitialRenderUI())
 			{
