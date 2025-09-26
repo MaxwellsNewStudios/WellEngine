@@ -33,7 +33,7 @@ float3 BlurGather(int2 coord, float coc, Texture2D Input, int2 inDim)
             float2 offset = float2(x, y) * texelSize;
             float2 uv = (float2(coord + int2(x,y)) + 0.5) / float2(inDim);
             uv = saturate(uv);
-            float3 sample = Input.SampleLevel(Sampler, uv, 0);
+            float3 sample = Input.SampleLevel(Sampler, uv, 0).rgb;
             
             // simple Gaussian weight
             float w = exp(-0.5 * (x*x + y*y) / (coc*coc + 1e-5));
@@ -66,7 +66,7 @@ void main(uint3 DTid : SV_DispatchThreadID)
     coc = min(coc, maxCoc);
 
     // Write CoC
-    OutputCoC[DTid.xy] = float4(coc, coc, coc, 1.0f);
+    OutputCoC[DTid.xy] = coc;
 
 
 

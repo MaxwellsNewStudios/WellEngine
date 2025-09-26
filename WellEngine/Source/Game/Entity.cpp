@@ -899,7 +899,7 @@ bool Entity::InitialRenderUI()
 			ImGui::PushStyleColor(ImGuiCol_ButtonHovered, (ImVec4)ImColor::HSV(0.6f, 0.65f, 0.6f));
 			ImGui::PushStyleColor(ImGuiCol_ButtonActive, (ImVec4)ImColor::HSV(0.6f, 0.75f, 0.7f));
 
-			const std::string windowID = std::format("Ent#{}", entID);
+			const std::string windowID = std::format("Ent#{}:{}", entID, _scene->GetUID());
 
 			// Check if entity is undocked
 			if (ImGuiUtils::Utils::GetWindow(windowID, nullptr))

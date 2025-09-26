@@ -43,6 +43,11 @@ private:
 	void DecrementDisable();
 	void SetInheritedDisableCount(UINT count);
 
+#ifdef USE_IMGUI
+	bool _visibleInHierarchy = true;
+	float _lastHeightInHierarchy = 0.0f;
+#endif
+
 protected:
 	bool _isInitialized = false;
 	bool _isEnabled = true;
@@ -169,6 +174,8 @@ public:
 	[[nodiscard]] bool InitialRender(const RenderQueuer &queuer, const RendererInfo &rendererInfo);
 #ifdef USE_IMGUI
 	[[nodiscard]] bool InitialRenderUI();
+	void SetVisibleInHierarchy(bool visible, float height) { _visibleInHierarchy = visible; _lastHeightInHierarchy = height; }
+	[[nodiscard]] bool IsVisibleInHierarchy(float &height) const { height = _lastHeightInHierarchy; return _visibleInHierarchy; }
 #endif
 	[[nodiscard]] bool InitialBindBuffers(ID3D11DeviceContext *context);
 	[[nodiscard]] bool InitialOnHover();

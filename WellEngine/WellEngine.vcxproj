@@ -210,7 +210,7 @@
       </Message>
     </PostBuildEvent>
     <ProjectReference>
-      <LinkLibraryDependencies>true</LinkLibraryDependencies>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
     </ProjectReference>
     <Lib>
       <LinkTimeCodeGeneration>true</LinkTimeCodeGeneration>
@@ -543,7 +543,10 @@
     <ClCompile Include="Source\Engine\Collision\Colliders.cpp" />
     <ClCompile Include="Source\Engine\Collision\CollisionHandler.cpp" />
     <ClCompile Include="Source\Engine\Collision\Intersections.cpp" />
-    <ClCompile Include="Source\Engine\Collision\MeshCollider.cpp" />
+    <ClCompile Include="Source\Engine\Collision\MeshCollider.cpp">
+      <Optimization Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">MaxSpeed</Optimization>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="Source\Engine\Content\Content.cpp" />
     <ClCompile Include="Source\Engine\Content\ContentLoader.cpp" />
     <ClCompile Include="Source\Engine\Content\HeightMap.cpp" />
