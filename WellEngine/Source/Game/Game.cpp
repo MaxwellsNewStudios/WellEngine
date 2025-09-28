@@ -386,8 +386,6 @@ bool Game::LoadContent(
 
 bool Game::Setup(TimeUtils &time, Window window)
 {
-	ZoneScopedC(RandomUniqueColor());
-
 	_window = std::move(window);
 	const bool fullscreen = false;
 	const UINT width = _window.GetWidth();
@@ -413,6 +411,8 @@ bool Game::Setup(TimeUtils &time, Window window)
 		ErrMsg("Failed to setup d3d11!");
 		return false;
 	}
+
+	ZoneScopedC(RandomUniqueColor());
 
 	std::string line;
 
@@ -2042,7 +2042,7 @@ bool Game::RenderUI(TimeUtils &time)
 			if (ImGui::Button("Launch Tracy Profiler"))
 			{
 				::ShellExecuteA(NULL, "open",
-					".\\WellEngine\\Dependencies\\tracy-0.11.1\\Tracy\\tracy-profiler.exe",
+					"..\\WellEngine\\Dependencies\\tracy-0.11.1\\Tracy\\tracy-profiler.exe",
 					NULL, NULL, SW_SHOWDEFAULT
 				);
 			}

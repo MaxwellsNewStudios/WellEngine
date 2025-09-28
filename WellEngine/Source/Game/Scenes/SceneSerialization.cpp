@@ -520,6 +520,8 @@ bool Scene::DeserializeEntity(const json::Value &obj, Entity **out)
 	Entity *ent = nullptr;
 	if (obj.HasMember("Prefab"))
 	{
+		ZoneNamedXNC(prefabDeserializeZone, "Deserialize Prefab", RandomUniqueColor(), true);
+
 		const std::string prefabName = obj["Prefab"].GetString();
 
 		ent = SpawnPrefab(prefabName);
@@ -539,6 +541,8 @@ bool Scene::DeserializeEntity(const json::Value &obj, Entity **out)
 	}
 	else
 	{
+		ZoneNamedXNC(entityDeserializeZone, "Deserialize Entity", RandomUniqueColor(), true);
+
 		bool isStatic = obj["Static"].GetBool();
 		bool isSelectable = obj["Select"].GetBool();
 		bool hasVolume = obj["InTree"].GetBool();
@@ -563,6 +567,8 @@ bool Scene::DeserializeEntity(const json::Value &obj, Entity **out)
 
 		if (obj.HasMember("Beh"))
 		{
+			ZoneNamedXNC(entityBehDeserializeZone, "Deserialize Behaviours", RandomUniqueColor(), true);
+
 			const auto &behArr = obj["Beh"].GetArray();
 			for (const auto &behObj : behArr)
 			{

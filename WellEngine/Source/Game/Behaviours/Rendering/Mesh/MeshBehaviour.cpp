@@ -1926,7 +1926,7 @@ void MeshBehaviour::PostDeserialize()
 	if (!SetMaterial(&mat))
 		ErrMsg("Failed to set material!");
 
-	_deserializedMesh.release();
+	_deserializedMesh = nullptr;
 }
 
 

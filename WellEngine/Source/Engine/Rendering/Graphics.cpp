@@ -24,8 +24,6 @@ bool Graphics::Setup(bool fullscreen, const UINT width, const UINT height, const
 	ID3D11Device *&device, ID3D11DeviceContext *&immediateContext, 
 	ID3D11DeviceContext **deferredContexts, Content *content)
 {
-	ZoneScopedC(RandomUniqueColor());
-
 	if (_isSetup)
 	{
 		ErrMsg("Failed to set up graphics, graphics has already been set up!");
@@ -52,6 +50,8 @@ bool Graphics::Setup(bool fullscreen, const UINT width, const UINT height, const
 #if defined(TRACY_ENABLE) && defined(TRACY_GPU)
 	_tracyD3D11Context = TracyD3D11Context(device, immediateContext);
 #endif
+
+	ZoneScopedC(RandomUniqueColor());
 
 	// Store references
 	_device = device;

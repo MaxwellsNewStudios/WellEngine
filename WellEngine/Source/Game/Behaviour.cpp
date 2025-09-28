@@ -413,6 +413,9 @@ bool Behaviour::InitialOnDebugSelect()
 
 bool Behaviour::InitialSerialize(json::Document::AllocatorType &docAlloc, json::Value &obj)
 {
+	ZoneScopedXC(RandomUniqueColor());
+	ZoneTextX(_name.c_str(), _name.size());
+
 	if (!_doSerialize)
 		return true;
 
@@ -430,6 +433,8 @@ bool Behaviour::InitialSerialize(json::Document::AllocatorType &docAlloc, json::
 }
 bool Behaviour::InitialDeserialize(const json::Value &obj, Scene *scene)
 {
+	ZoneScopedXC(RandomUniqueColor());
+
 	if (!Deserialize(obj, scene))
 	{
 		Warn("Failed to deserialize behaviour!");

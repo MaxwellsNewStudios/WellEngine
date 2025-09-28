@@ -8,6 +8,9 @@
 
 Behaviour *BehaviourFactory::CreateBehaviour(const std::string &name)
 {
+	ZoneScopedXC(RandomUniqueColor());
+	ZoneTextX(name.c_str(), name.size());
+
 	auto &map = BehaviourRegistry::Get();
 
 	if (!map.contains(name))

@@ -13,7 +13,7 @@ class MeshCollider
 private:
 	struct Node
 	{
-		static constexpr UINT MAX_TRIS = 8;
+		static constexpr UINT MAX_TRIS = MESH_COLLISION_MAX_TRIS;
 		static constexpr UINT CHILD_COUNT = 8;
 
 		const std::vector<Shape::Tri> *triBufferPtr = nullptr;
@@ -40,7 +40,7 @@ private:
 	std::vector<Shape::Tri> triBuffer;
 
 public:
-	static constexpr UINT MAX_DEPTH = 6;
+	static constexpr UINT MAX_DEPTH = MESH_COLLISION_MAX_DEPTH;
 
 	MeshCollider() = default;
 	~MeshCollider() = default;
