@@ -8,6 +8,7 @@
 #include "./Lighting/PointLightCollection.h"
 #include "Source/Engine/Content/Content.h"
 #include "Source/Engine/Timing/TimeUtils.h"
+#include "Source/Engine/Utils/RepeatTracker.h"
 #include "Source/Engine/D3D/RenderTargetD3D11.h"
 #include "Source/Engine/Window/Window.h"
 #include "Source/Engine/Debug/DebugDrawer.h"
@@ -259,6 +260,11 @@ private:
 
 	ImVec4 _overdrawBlendFactor = { 0.2f, 0.05f, 0.4f, 0.0f };
 	bool _overdrawIncludeDiscards = true;
+
+	RepeatTracker _mainDrawCallTracker, _mainTriDrawTracker;
+	RepeatTracker _overlayDrawCallTracker, _overlayTriDrawTracker;
+	RepeatTracker _transparentDrawCallTracker, _transparentTriDrawTracker;
+	RepeatTracker _lightDrawCallTracker, _lightTriDrawTracker;
 #endif
 
 #ifdef USE_IMGUI
@@ -332,6 +338,15 @@ public:
 	[[nodiscard]] bool SetPointlightCollection(PointLightCollection *pointlights);
 
 #ifdef DEBUG_BUILD
+	size_t GetMainDrawCallCount() const noexcept		{ return _mainDrawCallTracker.GetCount(); }
+	size_t GetMainTriDrawCount() const noexcept			{ return _mainTriDrawTracker.GetCount(); }
+	size_t GetOverlayDrawCallCount() const noexcept		{ return _overlayDrawCallTracker.GetCount(); }
+	size_t GetOverlayTriDrawCount() const noexcept		{ return _overlayTriDrawTracker.GetCount(); }
+	size_t GetTransparentDrawCallCount() const noexcept { return _transparentDrawCallTracker.GetCount(); }
+	size_t GetTransparentTriDrawCount() const noexcept	{ return _transparentTriDrawTracker.GetCount(); }
+	size_t GetLightDrawCallCount() const noexcept		{ return _lightDrawCallTracker.GetCount(); }
+	size_t GetLightTriDrawCount() const noexcept		{ return _lightTriDrawTracker.GetCount(); }
+
 	void AddOutlinedEntity(Entity *entity);
 #endif
 

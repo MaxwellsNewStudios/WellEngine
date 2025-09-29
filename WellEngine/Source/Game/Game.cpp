@@ -1391,7 +1391,6 @@ bool Game::Render(TimeUtils &time, const Input& input)
 	return true;
 }
 
-
 #ifdef USE_IMGUI
 bool Game::RenderInspectorUI(TimeUtils &time)
 {
@@ -2398,6 +2397,108 @@ bool Game::RenderUI(TimeUtils &time)
 			ImGui::TreePop();
 		}
 		ImGui::PopID();
+
+		if (ImGui::TreeNode("Draws"))
+		{
+			if (ImGui::BeginTable("DrawDataTable", 3, ImGuiTableFlags_Resizable | ImGuiTableFlags_BordersOuter | ImGuiTableFlags_SizingStretchSame))
+			{
+				size_t mainDrawCalls = _graphics.GetMainDrawCallCount();
+				size_t mainTriDraws = _graphics.GetMainTriDrawCount();
+				size_t overlayDrawCalls = _graphics.GetOverlayDrawCallCount();
+				size_t overlayTriDraws = _graphics.GetOverlayTriDrawCount();
+				size_t transparentDrawCalls = _graphics.GetTransparentDrawCallCount();
+				size_t transparentTriDraws = _graphics.GetTransparentTriDrawCount();
+				size_t lightDrawCalls = _graphics.GetLightDrawCallCount();
+				size_t lightTriDraws = _graphics.GetLightTriDrawCount();
+
+				size_t viewDrawCalls = mainDrawCalls + overlayDrawCalls + transparentDrawCalls;
+				size_t viewTriDraws = mainTriDraws + overlayTriDraws + transparentTriDraws;
+
+				size_t totalDrawCalls = viewDrawCalls + lightDrawCalls;
+				size_t totalTriDraws = viewTriDraws + lightTriDraws;
+
+				ImGui::TableSetupColumn("Type", ImGuiTableColumnFlags_WidthStretch);
+				ImGui::TableSetupColumn("Draw Calls", ImGuiTableColumnFlags_WidthFixed, 150);
+				ImGui::TableSetupColumn("Tri Draws", ImGuiTableColumnFlags_WidthFixed, 150);
+				ImGui::TableHeadersRow();
+
+				ImGui::TableNextRow();
+				{
+					ImGui::TableSetColumnIndex(0);
+					ImGui::Text("Main");
+
+					ImGui::TableSetColumnIndex(1);
+					ImGui::Text("%ld", mainDrawCalls);
+
+					ImGui::TableSetColumnIndex(2);
+					ImGui::Text("%ld", mainTriDraws);
+				}
+
+				ImGui::TableNextRow();
+				{
+					ImGui::TableSetColumnIndex(0);
+					ImGui::Text("Overlay");
+
+					ImGui::TableSetColumnIndex(1);
+					ImGui::Text("%ld", overlayDrawCalls);
+
+					ImGui::TableSetColumnIndex(2);
+					ImGui::Text("%ld", overlayTriDraws);
+				}
+
+				ImGui::TableNextRow();
+				{
+					ImGui::TableSetColumnIndex(0);
+					ImGui::Text("Transparent");
+
+					ImGui::TableSetColumnIndex(1);
+					ImGui::Text("%ld", transparentDrawCalls);
+
+					ImGui::TableSetColumnIndex(2);
+					ImGui::Text("%ld", transparentTriDraws);
+				}
+
+				ImGui::TableNextRow();
+				{
+					ImGui::TableSetColumnIndex(0);
+					ImGui::Text("Combined View");
+
+					ImGui::TableSetColumnIndex(1);
+					ImGui::Text("%ld", viewDrawCalls);
+
+					ImGui::TableSetColumnIndex(2);
+					ImGui::Text("%ld", viewTriDraws);
+				}
+
+				ImGui::TableNextRow();
+				{
+					ImGui::TableSetColumnIndex(0);
+					ImGui::Text("Lights");
+
+					ImGui::TableSetColumnIndex(1);
+					ImGui::Text("%ld", lightDrawCalls);
+
+					ImGui::TableSetColumnIndex(2);
+					ImGui::Text("%ld", lightTriDraws);
+				}
+
+				ImGui::TableNextRow();
+				{
+					ImGui::TableSetColumnIndex(0);
+					ImGui::Text("Total");
+
+					ImGui::TableSetColumnIndex(1);
+					ImGui::Text("%ld", totalDrawCalls);
+
+					ImGui::TableSetColumnIndex(2);
+					ImGui::Text("%ld", totalTriDraws);
+				}
+
+				ImGui::EndTable();
+			}
+
+			ImGui::TreePop();
+		}
 
 		if (ImGui::TreeNode("Collisions"))
 		{

@@ -1110,6 +1110,20 @@ bool Graphics::EndSceneRender(TimeUtils &time)
 		return false;
 	}
 
+	{
+		_mainDrawCallTracker.EndFrame();
+		_mainTriDrawTracker.EndFrame();
+
+		_overlayDrawCallTracker.EndFrame();
+		_overlayTriDrawTracker.EndFrame();
+
+		_transparentDrawCallTracker.EndFrame();
+		_transparentTriDrawTracker.EndFrame();
+
+		_lightDrawCallTracker.EndFrame();
+		_lightTriDrawTracker.EndFrame();
+	}
+
 	return true;
 }
 
@@ -1731,6 +1745,9 @@ bool Graphics::RenderSpotlights()
 					ErrMsgF("Failed to perform draw call for instance #{}, sub mesh #{}!", entity_i, lodIndex);
 					return false;
 				}
+
+				_lightDrawCallTracker.Step();
+				_lightTriDrawTracker.Step(loadedMesh->GetSubMeshIndexCount(lodIndex));
 			}
 
 			entity_i++;
@@ -1940,6 +1957,9 @@ bool Graphics::RenderPointlights()
 					ErrMsgF("Failed to perform draw call for instance #{}, sub mesh #{}!", entity_i, lodIndex);
 					return false;
 				}
+
+				_lightDrawCallTracker.Step();
+				_lightTriDrawTracker.Step(loadedMesh->GetSubMeshIndexCount(lodIndex));
 			}
 
 			entity_i++;
@@ -2670,6 +2690,17 @@ bool Graphics::RenderGeometry(bool overlayStage, bool skipPixelShader)
 				ErrMsgF("Failed to perform draw call for instance #{}, sub mesh #{}!", entity_i, lodIndex);
 				return false;
 			}
+
+			if (overlayStage)
+			{
+				_overlayDrawCallTracker.Step();
+				_overlayTriDrawTracker.Step(loadedMesh->GetSubMeshIndexCount(lodIndex));
+			}
+			else
+			{
+				_mainDrawCallTracker.Step();
+				_mainTriDrawTracker.Step(loadedMesh->GetSubMeshIndexCount(lodIndex));
+			}
 		}
 
 		entity_i++;
@@ -3259,6 +3290,9 @@ bool Graphics::RenderTransparency(
 				ErrMsgF("Failed to perform draw call for instance #{}, sub mesh #{}!", entity_i, lodIndex);
 				return false;
 			}
+
+			_transparentDrawCallTracker.Step();
+			_transparentTriDrawTracker.Step(loadedMesh->GetSubMeshIndexCount(lodIndex));
 		}
 
 		entity_i++;

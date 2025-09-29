@@ -142,6 +142,10 @@ UINT MeshD3D11::GetNrOfSubMeshes() const
 	return static_cast<UINT>(_subMeshes.size());
 }
 
+size_t MeshD3D11::GetSubMeshIndexCount(UINT subMeshIndex) const
+{
+	return _subMeshes[subMeshIndex].GetIndexCount();
+}
 
 const std::string &MeshD3D11::GetAmbientPath(const UINT subMeshIndex) const
 {

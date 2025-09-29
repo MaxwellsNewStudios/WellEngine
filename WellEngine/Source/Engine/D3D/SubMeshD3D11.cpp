@@ -10,7 +10,7 @@ using Microsoft::WRL::ComPtr;
 
 SubMeshD3D11::~SubMeshD3D11()
 {
-	delete _specularBuffer;
+	_specularBuffer = nullptr;
 	_specularBuffer = nullptr;
 }
 
@@ -23,9 +23,9 @@ SubMeshD3D11::SubMeshD3D11(SubMeshD3D11 &&other) noexcept
 	_diffuseTexturePath = std::move(other._diffuseTexturePath);
 	_specularTexturePath = std::move(other._specularTexturePath);
 
-	delete _specularBuffer;
+	_specularBuffer = nullptr;
 
-	_specularBuffer = other._specularBuffer;
+	_specularBuffer = std::move(other._specularBuffer);
 	other._specularBuffer = nullptr;
 }
 
@@ -39,8 +39,7 @@ bool SubMeshD3D11::Initialize(ID3D11Device *device, const UINT startIndexValue, 
 	_diffuseTexturePath = diffusePath;
 	_specularTexturePath = specularPath;
 
-	delete _specularBuffer;
-	_specularBuffer = new ConstantBufferD3D11();
+	_specularBuffer = std::make_unique<ConstantBufferD3D11>();
 
 	const SpecularBuffer specBuf = { exponent, { 0, 0, 0 } };
 	if (!_specularBuffer->Initialize(device, sizeof(SpecularBuffer), &specBuf))
@@ -56,6 +55,10 @@ bool SubMeshD3D11::PerformDrawCall(ID3D11DeviceContext *context) const
 	return true;
 }
 
+size_t SubMeshD3D11::GetIndexCount() const
+{
+	return _nrOfIndices;
+}
 
 const std::string &SubMeshD3D11::GetAmbientPath() const
 {
@@ -76,4 +79,3 @@ ID3D11Buffer *SubMeshD3D11::GetSpecularBuffer() const
 {
 	return _specularBuffer->GetBuffer();
 }
-

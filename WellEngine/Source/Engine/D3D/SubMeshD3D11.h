@@ -20,7 +20,7 @@ private:
 	std::string _ambientTexturePath;
 	std::string _diffuseTexturePath;
 	std::string _specularTexturePath;
-	ConstantBufferD3D11 *_specularBuffer = nullptr;
+	std::unique_ptr<ConstantBufferD3D11> _specularBuffer = nullptr;
 
 public:
 	SubMeshD3D11() = default;
@@ -35,6 +35,8 @@ public:
 
 	[[nodiscard]] bool PerformDrawCall(ID3D11DeviceContext *context) const;
 	
+	[[nodiscard]] size_t GetIndexCount() const;
+
 	[[nodiscard]] const std::string &GetAmbientPath() const;
 	[[nodiscard]] const std::string &GetDiffusePath() const;
 	[[nodiscard]] const std::string &GetSpecularPath() const;

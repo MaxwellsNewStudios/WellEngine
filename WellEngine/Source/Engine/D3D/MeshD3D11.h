@@ -196,6 +196,7 @@ public:
 	[[nodiscard]] const std::string &GetMaterialFile() const;
 
 	[[nodiscard]] UINT GetNrOfSubMeshes() const;
+	[[nodiscard]] size_t GetSubMeshIndexCount(UINT subMeshIndex) const;
 	[[nodiscard]] const std::string &GetAmbientPath(UINT subMeshIndex) const;
 	[[nodiscard]] const std::string &GetDiffusePath(UINT subMeshIndex) const;
 	[[nodiscard]] const std::string &GetSpecularPath(UINT subMeshIndex) const;

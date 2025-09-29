@@ -392,6 +392,7 @@
     <ClInclude Include="Source\Engine\Timing\TimeUtils.h" />
     <ClInclude Include="Source\Engine\UI\UIDragDropHelpers.h" />
     <ClInclude Include="Source\Engine\UI\UILayout.h" />
+    <ClInclude Include="Source\Engine\Utils\RepeatTracker.h" />
     <ClInclude Include="Source\Engine\Utils\UIDHelper.h" />
     <ClInclude Include="Source\Engine\Utils\ReferenceHelper.h" />
     <ClInclude Include="Source\Engine\Utils\SerializerUtils.h" />

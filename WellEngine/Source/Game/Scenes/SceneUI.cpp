@@ -218,7 +218,7 @@ bool Scene::RenderEntityHierarchyUI(Entity *root, UINT depth, const std::string 
 			}
 		}
 
-		float rightEdgeX = ImGui::GetContentRegionAvail().x;
+		float rightEdgeX = ImGui::GetContentRegionAvail().x - 6.0f;
 
 		const ImVec2 dockButtonRect = { 28, 20 };
 		const ImVec2 removeButtonRect = { 20, 20 };

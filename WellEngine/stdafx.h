@@ -97,6 +97,7 @@ namespace json = rapidjson;
 #include "Source/Engine/Utils/ReferenceHelper.h"
 #include "Source/Engine/Utils/StringUtils.h"
 #include "Source/Engine/Utils/SerializerUtils.h"
+#include "Source/Engine/Utils/RepeatTracker.h"
 #include "Source/Engine/Content/Material.h"
 #include "Source/Engine/Rendering/RendererInfo.h"
 #include "Source/Engine/Rendering/RenderQueuer.h"

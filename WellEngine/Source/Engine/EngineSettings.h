@@ -98,6 +98,7 @@
 	//#define DEBUG_D3D11_DEVICE
 
 	/// DEBUG_BUILD enables debug features like ImGui, gizmos, debug drawing and debug messages.
+	/// NOTE: Entirely separate from VS build contiguration (Debug/Release).
 	#define DEBUG_BUILD
 
 	#ifdef DEBUG_BUILD
