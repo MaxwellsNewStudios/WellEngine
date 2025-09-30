@@ -381,6 +381,9 @@ bool Graphics::ResizeWindowBuffers(bool fullscreen, UINT newWidth, UINT newHeigh
 {
 	ZoneScopedC(RandomUniqueColor());
 
+	newWidth = max(newWidth, 1u);
+	newHeight = max(newHeight, 1u);
+
 	if (!skipResizeD3D11)
 	{
 #ifdef TRACY_SCREEN_CAPTURE
@@ -408,8 +411,8 @@ bool Graphics::ResizeWindowBuffers(bool fullscreen, UINT newWidth, UINT newHeigh
 
 #ifdef TRACY_SCREEN_CAPTURE
 	float screenAspect = static_cast<float>(newWidth) / static_cast<float>(newHeight);
-	_tracyCaptureWidth = min(static_cast<UINT>(TRACY_CAPTURE_WIDTH), newWidth);
-	_tracyCaptureHeight = static_cast<UINT>(_tracyCaptureWidth / screenAspect);
+	_tracyCaptureWidth = min((UINT)std::ceil(TRACY_CAPTURE_WIDTH), newWidth);
+	_tracyCaptureHeight = (UINT)std::ceil(_tracyCaptureWidth / screenAspect);
 
 	// Ensure resolution is multiple of 4 for tracy capture
 	_tracyCaptureWidth = (_tracyCaptureWidth / 4u) * 4u;
@@ -448,6 +451,9 @@ bool Graphics::ResizeWindowBuffers(bool fullscreen, UINT newWidth, UINT newHeigh
 bool Graphics::ResizeSceneViewBuffers(UINT newWidth, UINT newHeight)
 {
 	ZoneScopedC(RandomUniqueColor());
+
+	newWidth = max(newWidth, 1u);
+	newHeight = max(newHeight, 1u);
 
 #ifdef USE_IMGUI
 	_intermediateRT.Reset();
@@ -527,25 +533,25 @@ bool Graphics::ResizeSceneViewBuffers(UINT newWidth, UINT newHeight)
 			return false;
 		}
 
-		if (!_blurRT.Initialize(_device, static_cast<UINT>(_viewportBlur.Width), static_cast<UINT>(_viewportBlur.Height), DXGI_FORMAT_R11G11B10_FLOAT, true, true))
+		if (!_blurRT.Initialize(_device, (UINT)std::ceil(_viewportBlur.Width), (UINT)std::ceil(_viewportBlur.Height), DXGI_FORMAT_R11G11B10_FLOAT, true, true))
 		{
 			ErrMsg("Failed to initialize blur stage two render target!");
 			return false;
 		}
 
-		if (!_intermediateBlurRT.Initialize(_device, static_cast<UINT>(_viewportBlur.Width), static_cast<UINT>(_viewportBlur.Height), DXGI_FORMAT_R11G11B10_FLOAT, true, true))
+		if (!_intermediateBlurRT.Initialize(_device, (UINT)std::ceil(_viewportBlur.Width), (UINT)std::ceil(_viewportBlur.Height), DXGI_FORMAT_R11G11B10_FLOAT, true, true))
 		{
 			ErrMsg("Failed to initialize blur stage one render target!");
 			return false;
 		}
 
-		if (!_fogRT.Initialize(_device, static_cast<UINT>(_viewportFog.Width), static_cast<UINT>(_viewportFog.Height), DXGI_FORMAT_R16G16B16A16_FLOAT, true, true))
+		if (!_fogRT.Initialize(_device, (UINT)std::ceil(_viewportFog.Width), (UINT)std::ceil(_viewportFog.Height), DXGI_FORMAT_R16G16B16A16_FLOAT, true, true))
 		{
 			ErrMsg("Failed to initialize fog stage one render target!");
 			return false;
 		}
 
-		if (!_intermediateFogRT.Initialize(_device, static_cast<UINT>(_viewportFog.Width), static_cast<UINT>(_viewportFog.Height), DXGI_FORMAT_R16G16B16A16_FLOAT, true, true))
+		if (!_intermediateFogRT.Initialize(_device, (UINT)std::ceil(_viewportFog.Width), (UINT)std::ceil(_viewportFog.Height), DXGI_FORMAT_R16G16B16A16_FLOAT, true, true))
 		{
 			ErrMsg("Failed to initialize fog stage one render target!");
 			return false;
@@ -563,13 +569,13 @@ bool Graphics::ResizeSceneViewBuffers(UINT newWidth, UINT newHeight)
 			return false;
 		}
 
-		if (!_dofHalfBlur1RT.Initialize(_device, static_cast<UINT>(_viewportDof.Width), static_cast<UINT>(_viewportDof.Height), DXGI_FORMAT_R11G11B10_FLOAT, true, true))
+		if (!_dofHalfBlur1RT.Initialize(_device, (UINT)std::ceil(_viewportDof.Width), (UINT)std::ceil(_viewportDof.Height), DXGI_FORMAT_R11G11B10_FLOAT, true, true))
 		{
 			ErrMsg("Failed to initialize dof render target!");
 			return false;
 		}
 
-		if (!_dofHalfBlur2RT.Initialize(_device, static_cast<UINT>(_viewportDof.Width), static_cast<UINT>(_viewportDof.Height), DXGI_FORMAT_R11G11B10_FLOAT, true, true))
+		if (!_dofHalfBlur2RT.Initialize(_device, (UINT)std::ceil(_viewportDof.Width), (UINT)std::ceil(_viewportDof.Height), DXGI_FORMAT_R11G11B10_FLOAT, true, true))
 		{
 			ErrMsg("Failed to initialize dof render target!");
 			return false;
@@ -582,13 +588,13 @@ bool Graphics::ResizeSceneViewBuffers(UINT newWidth, UINT newHeight)
 		}
 
 #ifdef DEBUG_BUILD
-		if (!_outlineRT.Initialize(_device, static_cast<UINT>(_viewportOutline.Width), static_cast<UINT>(_viewportOutline.Height), DXGI_FORMAT_R8_UNORM, true, true))
+		if (!_outlineRT.Initialize(_device, (UINT)std::ceil(_viewportOutline.Width), (UINT)std::ceil(_viewportOutline.Height), DXGI_FORMAT_R8_UNORM, true, true))
 		{
 			ErrMsg("Failed to initialize outline stage one render target!");
 			return false;
 		}
 
-		if (!_intermediateOutlineRT.Initialize(_device, static_cast<UINT>(_viewportOutline.Width), static_cast<UINT>(_viewportOutline.Height), DXGI_FORMAT_R8_UNORM, true, true))
+		if (!_intermediateOutlineRT.Initialize(_device, (UINT)std::ceil(_viewportOutline.Width), (UINT)std::ceil(_viewportOutline.Height), DXGI_FORMAT_R8_UNORM, true, true))
 		{
 			ErrMsg("Failed to initialize outline stage two render target!");
 			return false;
@@ -1729,7 +1735,7 @@ bool Graphics::RenderSpotlights()
 
 				// Get the LOD as a normalized float.
 				float clampedDist = std::clamp(dist, lodDistMin, lodDistMax);
-				float normalizedDist = (clampedDist - lodDistMin) * (1.0f / (lodDistMax - lodDistMin));
+				float normalizedDist = (clampedDist - lodDistMin) / (lodDistMax - lodDistMin);
 
 				// Get the LOD index.
 				lodIndex = static_cast<UINT>(normalizedDist * (subMeshCount - 1));
@@ -5609,11 +5615,6 @@ bool Graphics::RenderSceneView()
 	ImGui::SetCursorPos({0, 0});
 	ImGui::Image((ImTextureID)_intermediateRT.GetSRV(), sceneViewSize);
 
-	if (ImGui::IsWindowFocused(ImGuiHoveredFlags_None))
-		input.SetKeyboardAbsorbed(false);
-	if (ImGui::IsWindowHovered(ImGuiHoveredFlags_None))
-		input.SetMouseAbsorbed(false);
-
 	if (!notifications.empty())
 	{
 		float dTime = ImGui::GetIO().DeltaTime;
@@ -5653,6 +5654,11 @@ bool Graphics::RenderSceneView()
 #ifdef USE_IMGUIZMO
 		ImGuizmo::SetDrawlist(ImGui::GetCurrentWindow()->DrawList);
 #endif
+
+	if (ImGui::IsWindowFocused(ImGuiHoveredFlags_None))
+		input.SetKeyboardAbsorbed(false);
+	if (ImGui::IsWindowHovered(ImGuiHoveredFlags_None))
+		input.SetMouseAbsorbed(false);
 
 	ImGui::EndChild();
 

@@ -109,9 +109,9 @@ struct DepthOfFieldSettingsBuffer
 struct OutlineSettingsBuffer
 {
 	dx::XMFLOAT4 color = { 0.2f, 0.7f, 1.0f, 1.0f };
-	float strength = 3.0f;
+	float strength = 2.5f;
 	float exponent = 1.0f;
-	float smoothing = 0.6f;
+	float smoothing = 0.8f;
 
 	float _padding[1];
 };
@@ -215,7 +215,7 @@ private:
 
 	std::vector<float> _fogGaussWeights = { 0.7788081181217f, 0.2165377067336f, 0.0046541751447f };
 	std::vector<float> _emissionGaussWeights = { 0.2270270270f, 0.1945945946f, 0.1216216216f, 0.0540540541f, 0.0162162162f };
-	std::vector<float> _dofGaussWeights = { 0.02f, 0.053f, 0.122f, 0.243f, 0.562f };
+	std::vector<float> _dofGaussWeights = { 0.562f, 0.243f, 0.122f, 0.053f, 0.02f };
 
 	StructuredBufferD3D11 _fogGaussianWeightsBuffer;
 	StructuredBufferD3D11 _emissionGaussianWeightsBuffer;
@@ -251,7 +251,7 @@ private:
 	OutlineSettingsBuffer _outlineSettings = {};
 	ConstantBufferD3D11 _outlineSettingsBuffer;
 
-	int _outlineBlurIterations = 3;
+	int _outlineBlurIterations = 2;
 	std::vector<float> _outlineGaussWeights = { 0.05f, 0.165f, 0.221f };
 	StructuredBufferD3D11 _outlineGaussianWeightsBuffer;
 

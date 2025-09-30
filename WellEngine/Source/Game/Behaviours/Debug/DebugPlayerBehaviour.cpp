@@ -132,6 +132,7 @@ bool DebugPlayerBehaviour::Update(TimeUtils &time, const Input &input)
 	const float deltaTime = time.GetDeltaTime();
 	const float realDeltaTime = time.GetRealDeltaTime();
 
+	const bool acceptMouse = (input.HasMouseFocus() || !ImGui::GetIO().WantCaptureMouse) && !ImGuizmo::IsUsingAny();
 	const bool acceptInput = !ImGui::GetIO().WantCaptureKeyboard;
 	const bool additiveSelect = BindingCollection::IsTriggered(InputBindings::InputAction::AdditiveSelect);
 
@@ -145,7 +146,7 @@ bool DebugPlayerBehaviour::Update(TimeUtils &time, const Input &input)
 		float camAspect = mainCam->GetAspectRatio();
 
 		// approximate float check
-		if (std::abs(camAspect - screenAspect) > 0.001f)
+		if (std::abs(camAspect - screenAspect) > 0.0001f)
 		{
 			mainCam->SetAspectRatio(screenAspect);
 		}
@@ -587,6 +588,8 @@ bool DebugPlayerBehaviour::Update(TimeUtils &time, const Input &input)
 			const XMFLOAT2 mPos = input.GetLocalMousePos();
 			const MouseState mState = input.GetMouse();
 			Transform *camTransform = _currCameraPtr.Get()->GetTransform();
+						
+			static bool isMouseMovingCamera = false; // If interaction has already started, we don't care if ImGui wants the mouse until the interaction has ended.
 
 			if (input.IsCursorLocked())
 			{
@@ -668,7 +671,7 @@ bool DebugPlayerBehaviour::Update(TimeUtils &time, const Input &input)
 					}
 				}
 			}
-			else if (!ImGuizmo::IsUsingAny() && input.HasKeyboardFocus())
+			else if ((isMouseMovingCamera || acceptMouse) && input.HasKeyboardFocus())
 			{
 				MouseMovementMode movementMode = (MouseMovementMode)DebugData::Get().mouseMovementMode;
 
@@ -754,6 +757,8 @@ bool DebugPlayerBehaviour::Update(TimeUtils &time, const Input &input)
 					}
 					else if (holdingM1 && dragMode != DragMode::None)
 					{
+						isMouseMovingCamera = true;
+
 						if (dragMode == DragMode::Orbit)
 						{
 							// Orbit camTransform around 3D drag origin
@@ -921,6 +926,7 @@ bool DebugPlayerBehaviour::Update(TimeUtils &time, const Input &input)
 					else
 					{
 						dragMode = DragMode::None;
+						isMouseMovingCamera = false;
 					
 						// Mouse scroll zoom
 						if (mState.scroll.y != 0.0f && (!_cursorPositioningTarget || input.GetKey(KeyCode::LeftAlt) == KeyState::None))
@@ -974,6 +980,8 @@ bool DebugPlayerBehaviour::Update(TimeUtils &time, const Input &input)
 					}
 					else if (isRotating && holdingM1)
 					{
+						isMouseMovingCamera = true;
+
 						XMFLOAT2 mDelta = { mPos.x - lastMPos.x, mPos.y - lastMPos.y };
 						lastMPos = mPos;
 
@@ -999,6 +1007,7 @@ bool DebugPlayerBehaviour::Update(TimeUtils &time, const Input &input)
 					else
 					{
 						isRotating = false;
+						isMouseMovingCamera = false;
 					}
 
 					if (input.IsMouseWithinSceneView() && scroll != 0.0f)
@@ -1029,7 +1038,7 @@ bool DebugPlayerBehaviour::Update(TimeUtils &time, const Input &input)
 		}
 	}
 
-	if (!_currSelection.empty() && input.GetKey(KeyCode::Delete, true) == KeyState::Pressed && acceptInput && input.HasMouseFocus())
+	if (!_currSelection.empty() && input.GetKey(KeyCode::Delete, true) == KeyState::Pressed && acceptInput)
 	{
 		for (auto &entRef : _currSelection)
 		{

@@ -32,9 +32,9 @@
 
 
 #pragma region Performance
-	constexpr auto LOD_DIST_MIN_MULT = 10.0f;
-	constexpr auto LOD_DIST_MAX_MULT = 1.0f;
-	constexpr auto LOD_DIST_DIM_SCALE_FACTOR = 0.65f;
+	constexpr auto LOD_DIST_MIN_MULT = 10.0f; // The depth to start considering lower LODs, as multiple of near-plane.
+	constexpr auto LOD_DIST_MAX_MULT = 0.9f; // The depth that the lowest LOD is picked, as multiple of far-plane.
+	constexpr auto LOD_DIST_DIM_SCALE_FACTOR = 0.6f; // Curve LOD falloff based on mesh size. Lower value means quicker LOD falloff.
 
 	/// PARALLEL_UPDATE enables the use of the ParallelUpdate method in entities.
 	#define PARALLEL_UPDATE

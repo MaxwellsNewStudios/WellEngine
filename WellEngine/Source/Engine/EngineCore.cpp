@@ -123,27 +123,21 @@ int EngineCore::Run()
 	while (!_game.IsExiting())
 	{
 		_frameCount++;
-		ZoneNamedXNC(tracyFrameZone, "Frame", RandomUniqueColor(), true);
-		ZoneNameXVF(tracyFrameZone, "%d", _frameCount);
+		ZoneNamedNC(tracyFrameZone, "Frame", RandomUniqueColor(), true);
+		ZoneValueXV(tracyFrameZone, std::to_string(_frameCount).c_str());
 
-#ifdef TRACY_ENABLE
 #pragma omp parallel for num_threads(PARALLEL_THREADS)
 		for (int i = 0; i < PARALLEL_THREADS; i++)
 		{
-			tracy::SetThreadNameWithHint("OpenMP Thread", 983464687); // Magic number, who cares
+			TracySetThreadNameWithHint("OpenMP Thread", 983464687); // Magic number, who cares
 		}
-#endif
 
 		// Update time
 		time.Update();
 
-#ifdef TRACY_ENABLE
 		TracyPlot("Frame Time (ns)", (int64_t)(time.GetDeltaTime() * 1000000.0f));
-#endif
 
-#ifdef DEBUG_BUILD
 		DebugData::Update(time.GetDeltaTime());
-#endif
 
 		// SDL poll events
 		{

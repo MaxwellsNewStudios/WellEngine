@@ -125,6 +125,8 @@
 #define TracyFiberEnterHint(x,y)
 #define TracyFiberLeave
 
+#define TracySetThreadNameWithHint( x, y ) 
+
 #else
 
 #include <string.h>
@@ -198,6 +200,8 @@
 #define TracyPlotConfig( name, type, step, fill, color ) tracy::Profiler::ConfigurePlot( name, type, step, fill, color )
 
 #define TracyAppInfo( txt, size ) tracy::Profiler::MessageAppInfo( txt, size )
+
+#define TracySetThreadNameWithHint( name, groupHint ) tracy::SetThreadNameWithHint( name, groupHint )
 
 #if defined TRACY_HAS_CALLSTACK && defined TRACY_CALLSTACK
 #  define TracyMessage( txt, size ) tracy::Profiler::Message( txt, size, TRACY_CALLSTACK )

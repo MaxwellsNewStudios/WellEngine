@@ -131,8 +131,8 @@ bool Input::TryWrapMouse(bool viewSpace)
 
 	if (viewSpace)
 	{
-		rectPos.x += _sceneViewPos.x;
-		rectPos.y += _sceneViewPos.y;
+		rectPos.x += _sceneViewPos.x + _windowPos.x;
+		rectPos.y += _sceneViewPos.y + _windowPos.y;
 		rectSize.x = (int)_sceneViewSize.x;
 		rectSize.y = (int)_sceneViewSize.y;
 	}
@@ -392,8 +392,8 @@ dx::XMUINT2 Input::GetSceneRenderSize() const
 bool Input::HasResizedSceneView()
 {
 	auto &debugData = DebugData::Get();
-	UINT newWidth = debugData.sceneViewSizeX;
-	UINT newHeight = debugData.sceneViewSizeY;
+	UINT newWidth = max(debugData.sceneViewSizeX, 1u);
+	UINT newHeight = max(debugData.sceneViewSizeY, 1u);
 
 	if (_sceneRenderSize.x != newWidth || _sceneRenderSize.y != newHeight)
 	{
@@ -432,7 +432,7 @@ bool Input::HasKeyboardFocus() const
 }
 bool Input::HasMouseFocus() const
 {
-	return _hasMouseFocus && !_isMouseAbsorbed;
+	return _hasMouseFocus && !_mouseWasAbsorbed;
 }
 
 bool Input::IsCursorLocked() const 

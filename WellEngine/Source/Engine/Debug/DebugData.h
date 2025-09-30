@@ -1,6 +1,5 @@
 #pragma once
 
-
 class DebugData
 {
 #ifdef DEBUG_BUILD
@@ -58,6 +57,19 @@ public:
 	// Load all variables in this class from a file
 	static void LoadState();
 
-	TESTABLE()
+#else
+public:
+	[[nodiscard]] static inline DebugData &Get()
+	{
+		static DebugData instance; 
+		return instance;
+	}
+
+	static void SetDirty() {}
+	static void Update(float deltaTime) {}
+	static void SaveState() {}
+	static void LoadState() {}
 #endif
+
+	TESTABLE()
 };
