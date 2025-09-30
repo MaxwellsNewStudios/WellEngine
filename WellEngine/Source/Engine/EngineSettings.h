@@ -6,6 +6,7 @@
 
 #pragma region General
 	#define GAME_TITLE "Game"
+	#define ENGINE_VERSION "0.1.0"
 #pragma endregion
 
 

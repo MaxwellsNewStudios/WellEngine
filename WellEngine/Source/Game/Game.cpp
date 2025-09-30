@@ -2063,7 +2063,8 @@ bool Game::RenderUI(TimeUtils &time)
 
 		if (ImGui::TreeNode("Version Info"))
 		{
-			ImGui::Text("Date: %s", __DATE__);
+			ImGui::Text("Engine Version: %s", ENGINE_VERSION);
+			ImGui::Text("Build Date: %s", __DATE__);
 			ImGui::Dummy({ 0, 2 });
 
 			ImGui::Text("SDL Version: %d", SDL_GetVersion());
