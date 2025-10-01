@@ -13,7 +13,7 @@
 #include "Material.h"
 #include "HeightMap.h"
 #include "FontAtlas.h"
-#include "Tests/TestUtils.h"
+#include "../Tests/TestUtils.h"
 
 inline constexpr UINT CONTENT_NULL = 0xFFFFFFFF;
 
