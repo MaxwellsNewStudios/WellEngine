@@ -1152,14 +1152,14 @@ void SceneHolder::ReorderEntity(Entity *entity, const Entity *after)
 	_entityReorderQueue.emplace_back(*entity, newIndex);
 }
 
-bool SceneHolder::FrustumCull(const dx::BoundingFrustum &frustum, std::vector<Entity *> &containingItems) const
+bool SceneHolder::FrustumCull(const dx::BoundingFrustum &frustum, std::vector<Entity *> &containingItems, bool mustFullyContain) const
 {
 	ZoneScopedC(RandomUniqueColor());
 
 	std::vector<Entity *> containingInterfaces;
 	containingInterfaces.reserve(_entities.capacity());
 
-	if (!_volumeTree.FrustumCull(frustum, containingInterfaces))
+	if (!_volumeTree.FrustumCull(frustum, containingInterfaces, mustFullyContain))
 	{
 		ErrMsg("Failed to frustum cull volume tree!");
 		return false;
@@ -1170,7 +1170,7 @@ bool SceneHolder::FrustumCull(const dx::BoundingFrustum &frustum, std::vector<En
 
 	return true;
 }
-bool SceneHolder::BoxCull(const dx::BoundingOrientedBox &box, std::vector<Entity *> &containingItems) const
+bool SceneHolder::BoxCull(const dx::BoundingOrientedBox &box, std::vector<Entity *> &containingItems, bool mustFullyContain) const
 {
 	ZoneScopedC(RandomUniqueColor());
 
@@ -1188,7 +1188,7 @@ bool SceneHolder::BoxCull(const dx::BoundingOrientedBox &box, std::vector<Entity
 
 	return true;
 }
-bool SceneHolder::BoxCull(const dx::BoundingBox &box, std::vector<Entity *> &containingItems) const
+bool SceneHolder::BoxCull(const dx::BoundingBox &box, std::vector<Entity *> &containingItems, bool mustFullyContain) const
 {
 	ZoneScopedC(RandomUniqueColor());
 
@@ -1206,13 +1206,13 @@ bool SceneHolder::BoxCull(const dx::BoundingBox &box, std::vector<Entity *> &con
 
 	return true;
 }
+
 bool SceneHolder::RaycastScene(const dx::XMFLOAT3A &origin, const dx::XMFLOAT3A &direction, RaycastOut &result, bool cheap) const
 {
 	ZoneScopedC(RandomUniqueColor());
 
 	return _volumeTree.RaycastTree(origin, direction, result.distance, result.entity, cheap);
 }
-
 bool SceneHolder::RaycastScene(const Shape::Ray &ray, Shape::RayHit &hit, Entity *&ent) const
 {
 	ZoneScopedC(RandomUniqueColor());

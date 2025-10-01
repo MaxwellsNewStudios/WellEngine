@@ -1316,6 +1316,37 @@ void DebugDrawer::DrawBoxOBB(const BoundingOrientedBox &obb, const XMFLOAT4 &col
 	DrawTri(v3, v0, v4, color, useDepth, twoSided);
 	DrawTri(v3, v4, v7, color, useDepth, twoSided);
 }
+void DebugDrawer::DrawFrustum(const dx::BoundingFrustum &frustum, const dx::XMFLOAT4 &color, bool useDepth, bool twoSided)
+{
+#ifndef DEBUG_DRAW
+	return;
+#endif
+
+	XMFLOAT3 corners[8];
+	frustum.GetCorners(corners);
+
+	XMFLOAT3 v0 = corners[0];
+	XMFLOAT3 v1 = corners[1];
+	XMFLOAT3 v2 = corners[2];
+	XMFLOAT3 v3 = corners[3];
+	XMFLOAT3 v4 = corners[4];
+	XMFLOAT3 v5 = corners[5];
+	XMFLOAT3 v6 = corners[6];
+	XMFLOAT3 v7 = corners[7];
+
+	DrawTri(v2, v1, v0, color, useDepth, twoSided);
+	DrawTri(v3, v2, v0, color, useDepth, twoSided);
+	DrawTri(v4, v5, v6, color, useDepth, twoSided);
+	DrawTri(v4, v6, v7, color, useDepth, twoSided);
+	DrawTri(v0, v1, v5, color, useDepth, twoSided);
+	DrawTri(v0, v5, v4, color, useDepth, twoSided);
+	DrawTri(v1, v2, v6, color, useDepth, twoSided);
+	DrawTri(v1, v6, v5, color, useDepth, twoSided);
+	DrawTri(v2, v3, v7, color, useDepth, twoSided);
+	DrawTri(v2, v7, v6, color, useDepth, twoSided);
+	DrawTri(v3, v0, v4, color, useDepth, twoSided);
+	DrawTri(v3, v4, v7, color, useDepth, twoSided);
+}
 
 
 void DebugDrawer::DrawTriSS(const Tri &tri)

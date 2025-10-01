@@ -233,6 +233,8 @@ public:
 	void DrawBoxMinMax(const dx::XMFLOAT3 &min, const dx::XMFLOAT3 &max, const dx::XMFLOAT4 &color, bool useDepth = true, bool twoSided = false);
 	/// TODO: Describe
 	void DrawBoxOBB(const dx::BoundingOrientedBox &obb, const dx::XMFLOAT4 &color, bool useDepth = true, bool twoSided = false);
+	/// TODO: Describe
+	void DrawFrustum(const dx::BoundingFrustum &frustum, const dx::XMFLOAT4 &color, bool useDepth = true, bool twoSided = false);
 
 
 	/// TODO: Describe

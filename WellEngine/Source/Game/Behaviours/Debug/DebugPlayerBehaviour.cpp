@@ -136,6 +136,8 @@ bool DebugPlayerBehaviour::Update(TimeUtils &time, const Input &input)
 	const bool acceptInput = !ImGui::GetIO().WantCaptureKeyboard;
 	const bool additiveSelect = BindingCollection::IsTriggered(InputBindings::InputAction::AdditiveSelect);
 
+	MouseMovementMode movementMode = (MouseMovementMode)debugData.mouseMovementMode;
+
 	if (_mainCamera.IsValid())
 	{
 		// Check if aspect ratio needs to be updated
@@ -590,6 +592,7 @@ bool DebugPlayerBehaviour::Update(TimeUtils &time, const Input &input)
 			Transform *camTransform = _currCameraPtr.Get()->GetTransform();
 						
 			static bool isMouseMovingCamera = false; // If interaction has already started, we don't care if ImGui wants the mouse until the interaction has ended.
+			bool mousePressAbsorbed = false;
 
 			if (input.IsCursorLocked())
 			{
@@ -673,8 +676,6 @@ bool DebugPlayerBehaviour::Update(TimeUtils &time, const Input &input)
 			}
 			else if ((isMouseMovingCamera || acceptMouse) && input.HasKeyboardFocus())
 			{
-				MouseMovementMode movementMode = (MouseMovementMode)DebugData::Get().mouseMovementMode;
-
 				switch (movementMode)
 				{
 				case MouseMovementMode::OrbitPan:
@@ -728,6 +729,7 @@ bool DebugPlayerBehaviour::Update(TimeUtils &time, const Input &input)
 						if (holdingAlt)
 						{
 							dragMode = DragMode::Orbit;
+							mousePressAbsorbed = true;
 
 							XMVECTOR camRight = Load(camTransform->GetRight(World));
 							XMVECTOR camUp = Load(camTransform->GetUp(World));
@@ -752,6 +754,7 @@ bool DebugPlayerBehaviour::Update(TimeUtils &time, const Input &input)
 						else if (holdingSpace)
 						{
 							dragMode = DragMode::Pan;
+							mousePressAbsorbed = true;
 						}
 					
 					}
@@ -967,7 +970,8 @@ bool DebugPlayerBehaviour::Update(TimeUtils &time, const Input &input)
 
 					bool pressedM1 = input.GetKey(KeyCode::M1) == KeyState::Pressed;
 					bool holdingM1 = input.GetKey(KeyCode::M1, true) == KeyState::Held;
-					bool holdingM3 = input.GetKey(KeyCode::M3, true) == KeyState::Held;
+
+					bool holdingM2 = input.GetKey(KeyCode::M2, true) == KeyState::Held;
 					int scroll = mState.scroll.y;
 
 					static bool isRotating = false;
@@ -977,6 +981,7 @@ bool DebugPlayerBehaviour::Update(TimeUtils &time, const Input &input)
 					{
 						lastMPos = mPos;
 						isRotating = true;
+						mousePressAbsorbed = true;
 					}
 					else if (isRotating && holdingM1)
 					{
@@ -1014,10 +1019,25 @@ bool DebugPlayerBehaviour::Update(TimeUtils &time, const Input &input)
 					{
 						float &speed = debugData.movementSpeed;
 
-						if (holdingM3)
+						if (holdingM2)
 						{
 							// Adjust speed
 							speed = std::clamp(speed * (1.0f + scroll * 0.1f), 0.01f, 10.0f);
+
+							std::string newSpeedMsg = "Camera speed: " + std::to_string(speed);
+
+							bool graphicsMsgFound = false;
+							for (auto &notif : graphics->notifications)
+							{
+								if (!notif.message.starts_with("Camera speed: "))
+									continue;
+
+								notif.message = newSpeedMsg;
+								notif.duration = 1.0f;
+							}
+
+							if (!graphicsMsgFound)
+								graphics->notifications.push_back({ newSpeedMsg, 1, 1.0f });
 						}
 						else
 						{
@@ -1034,6 +1054,111 @@ bool DebugPlayerBehaviour::Update(TimeUtils &time, const Input &input)
 					break;
 				}
 
+				if (!mousePressAbsorbed) // Rect-selection
+				{
+					auto m1State = input.GetKey(KeyCode::M1);
+					bool containOnly = (input.GetKey(KeyCode::LeftControl) == KeyState::Held);
+
+					static XMFLOAT4 minMax = { 0, 0, 0, 0 };
+					static bool isDragging = false;
+					static int lastSelectionCount = 0;
+					static std::vector<Entity *> initialSelection;
+
+					if (m1State == KeyState::Pressed)
+					{
+						minMax.x = mPos.x;
+						minMax.y = mPos.y;
+						isDragging = true;
+						initialSelection.clear();
+
+						if (additiveSelect)
+						{
+							initialSelection.reserve(_currSelection.size());
+							for (auto &entRef : _currSelection)
+							{
+								Entity *ent;
+								if (!entRef.TryGet(ent))
+									continue;
+
+								initialSelection.push_back(ent);
+							}
+						}
+					}
+					else if (isDragging && m1State == KeyState::Held)
+					{
+						minMax.z = mPos.x;
+						minMax.w = mPos.y;
+
+						CameraBehaviour *cam = _currCameraPtr.GetAs<CameraBehaviour>();
+
+						std::vector<Entity *> containingItems;
+						containingItems.reserve(lastSelectionCount);
+
+						dx::XMFLOAT4 fixedMinMax = {
+							min(minMax.x, minMax.z),
+							min(1.0f - minMax.y, 1.0f - minMax.w),
+							max(minMax.x, minMax.z),
+							max(1.0f - minMax.y, 1.0f - minMax.w)
+						};
+
+						const float minMaxEpsilon = 0.0025f;
+						if ((fixedMinMax.x < fixedMinMax.z - minMaxEpsilon) && (fixedMinMax.y < fixedMinMax.w - minMaxEpsilon))
+						{
+							if (cam->GetOrtho())
+							{
+								dx::BoundingOrientedBox box;
+								cam->ViewRectToWorldTile(fixedMinMax, box);
+								box.Extents.z -= 0.01f; // Shrink a tiny bit to avoid z-fighting
+
+								if (!sceneHolder->BoxCull(box, containingItems, containOnly))
+								{
+									Warn("Box cull selection failed!");
+								}
+
+								debugDraw.DrawBoxOBB(box, { 0.15f, 0.7f, 0.8f, 0.2f }, false, true);
+							}
+							else
+							{
+								dx::BoundingFrustum frustum;
+								cam->ViewRectToWorldTile(fixedMinMax, frustum);
+								frustum.Near += 0.01f; // Avoid near plane being exactly at camera position
+
+								if (!sceneHolder->FrustumCull(frustum, containingItems, containOnly))
+								{
+									Warn("Frustum cull selection failed!");
+								}
+
+								debugDraw.DrawFrustum(frustum, { 0.15f, 0.7f, 0.8f, 0.2f }, false, true);
+							}
+
+							for (int i = 0; i < containingItems.size(); i++)
+							{
+								Entity *ent = containingItems[i];
+
+								if (ent->IsEnabled() && ent->IsDebugSelectable() && ent->IsRaycastTarget())
+									continue;
+								
+								containingItems.erase(containingItems.begin() + i);
+								i--;
+							}
+
+							if (!initialSelection.empty())
+							{
+								for (auto &ent : initialSelection)
+									containingItems.push_back(ent);
+							}
+
+							lastSelectionCount = (int)containingItems.size();
+							Select(containingItems.data(), containingItems.size(), false);
+						}
+					}
+					else if (isDragging)
+					{
+						isDragging = false;
+						lastSelectionCount = 0;
+						initialSelection.clear();
+					}
+				}
 			}
 		}
 	}
@@ -1081,7 +1206,7 @@ bool DebugPlayerBehaviour::Update(TimeUtils &time, const Input &input)
 	if (!_currSelection.empty())
 	{
 		if (input.GetKey(KeyCode::M) == KeyState::Pressed)
-			DebugData::Get().transformSpace = (DebugData::Get().transformSpace == (int)World) ? (int)Local : (int)World;
+			debugData.transformSpace = (debugData.transformSpace == (int)World) ? (int)Local : (int)World;
 	}
 
 	if (input.GetKey(KeyCode::M1) == KeyState::Held && (input.IsCursorLocked() || _rayCastFromMouse))

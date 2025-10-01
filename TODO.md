@@ -7,7 +7,7 @@
    - Let user dynamically add/remove/modify & load/unload content in-editor.
  - Improve UI Layout.
    - Improve Content window so all content types are handelled similarly to textures.
-   - Implement rect selection in both hierarchy (supported by ImGui) & scene view (handle rect as frustum).
+   - Implement rect selection in hierarchy (supported by ImGui).
  - Generalize materials.
    - Store files like prefabs, contains shaders & textures by name, struct data by value.
    - Make shaders & meshes track vertex formats. 

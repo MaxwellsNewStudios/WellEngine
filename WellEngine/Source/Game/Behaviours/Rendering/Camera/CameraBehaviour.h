@@ -154,6 +154,10 @@ protected:
 	// OnDirty runs when the Entity's transform is modified.
 	void OnDirty() override;
 
+	[[nodiscard]] bool Serialize(json::Document::AllocatorType &docAlloc, json::Value &obj) override;
+
+	[[nodiscard]] bool Deserialize(const json::Value &obj, Scene *scene) override;
+
 public:
 	CameraBehaviour() = default;
 	CameraBehaviour(const ProjectionInfo &projectionInfo, bool isOrtho = false, bool invertDepth = true);
@@ -181,6 +185,9 @@ public:
 
 	[[nodiscard]] bool StoreBounds(dx::BoundingFrustum &bounds, bool includeScale);
 	[[nodiscard]] bool StoreBounds(dx::BoundingOrientedBox &bounds, bool includeScale);
+
+	void ViewRectToWorldTile(const dx::XMFLOAT4 &minMax, dx::BoundingFrustum &outFrustum) const;
+	void ViewRectToWorldTile(const dx::XMFLOAT4 &minMax, dx::BoundingOrientedBox &outBox) const;
 
 	[[nodiscard]] const CamBounds *GetLightGridBounds();
 
@@ -230,11 +237,4 @@ public:
 	void SetScreenFadeManual(float amount);
 	[[nodiscard]] float GetScreenFadeAmount() const;
 	[[nodiscard]] float GetScreenFadeRate() const;
-
-	// Serializes the behaviour to a string.
-	[[nodiscard]] bool Serialize(json::Document::AllocatorType &docAlloc, json::Value &obj) override;
-
-	// Deserializes the behaviour from a string.
-	[[nodiscard]] bool Deserialize(const json::Value &obj, Scene *scene) override;
-
 };

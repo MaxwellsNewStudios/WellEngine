@@ -844,6 +844,95 @@ bool CameraBehaviour::StoreBounds(BoundingOrientedBox &bounds, bool includeScale
 	return true;
 }
 
+void CameraBehaviour::ViewRectToWorldTile(const dx::XMFLOAT4 &minMax, dx::BoundingFrustum &outFrustum) const
+{
+	XMMATRIX projMatrix = Load(GetProjectionMatrix());
+
+	float nearZ = _currProjInfo.planes.nearZ;
+	float farZ = _currProjInfo.planes.farZ;
+
+	// Extract frustum planes at near plane (assuming symmetric perspective projection)
+	float m11 = XMVectorGetX(projMatrix.r[0]);
+	float m22 = XMVectorGetY(projMatrix.r[1]);
+
+	float r = nearZ / m11;	// Right plane at nearZ
+	float t = nearZ / m22;	// Top plane
+	float l = -r;			// Left plane
+	float b = -t;			// Bottom plane
+
+	// Calculate NDC boundaries for this tile
+	float xMinNDC = -1.0f + minMax.x * 2.0f;
+	float xMaxNDC = -1.0f + minMax.z * 2.0f;
+	float yMinNDC = -1.0f + minMax.y * 2.0f;
+	float yMaxNDC = -1.0f + minMax.w * 2.0f;
+
+	// Convert NDC to parametric space [0, 1]
+	float txMin = (xMinNDC + 1.0f) * 0.5f;
+	float txMax = (xMaxNDC + 1.0f) * 0.5f;
+	float tyMin = (yMinNDC + 1.0f) * 0.5f;
+	float tyMax = (yMaxNDC + 1.0f) * 0.5f;
+
+	// Calculate tile frustum planes in view space
+	float tileL = l + (r - l) * txMin;
+	float tileR = l + (r - l) * txMax;
+	float tileB = b + (t - b) * tyMin;
+	float tileT = b + (t - b) * tyMax;
+
+	// Create tile projection matrix
+	XMMATRIX projTile = XMMatrixPerspectiveOffCenterLH(tileL, tileR, tileB, tileT, nearZ, farZ);
+
+	// Store bounding frustum
+	BoundingFrustum::CreateFromMatrix(outFrustum, projTile);
+
+	// Convert to world space
+	XMMATRIX worldMatrix = Load(GetTransform()->GetUnscaledWorldMatrix());
+	outFrustum.Transform(outFrustum, worldMatrix);
+}
+void CameraBehaviour::ViewRectToWorldTile(const dx::XMFLOAT4 &minMax, dx::BoundingOrientedBox &outBox) const
+{
+	XMMATRIX projMatrix = Load(GetProjectionMatrix());
+
+	float nearZ = _currProjInfo.planes.nearZ;
+	float farZ = _currProjInfo.planes.farZ;
+
+	// Extract frustum planes at near plane (assuming symmetric perspective projection)
+	float m11 = XMVectorGetX(projMatrix.r[0]);
+	float m22 = XMVectorGetY(projMatrix.r[1]);
+
+	float r = nearZ / m11;	// Right plane at nearZ
+	float t = nearZ / m22;	// Top plane
+	float l = -r;			// Left plane
+	float b = -t;			// Bottom plane
+
+	// Calculate NDC boundaries for this tile
+	float xMinNDC = -1.0f + minMax.x * 2.0f;
+	float xMaxNDC = -1.0f + minMax.z * 2.0f;
+	float yMinNDC = -1.0f + minMax.y * 2.0f;
+	float yMaxNDC = -1.0f + minMax.w * 2.0f;
+
+	// Convert NDC to parametric space [0, 1]
+	float txMin = (xMinNDC + 1.0f) * 0.5f;
+	float txMax = (xMaxNDC + 1.0f) * 0.5f;
+	float tyMin = (yMinNDC + 1.0f) * 0.5f;
+	float tyMax = (yMaxNDC + 1.0f) * 0.5f;
+
+	// Calculate tile box planes in view space
+	float tileL = l + (r - l) * txMin;
+	float tileR = l + (r - l) * txMax;
+	float tileB = b + (t - b) * tyMin;
+	float tileT = b + (t - b) * tyMax;
+
+	// Create tile projection matrix
+	XMMATRIX projTile = XMMatrixOrthographicOffCenterLH(tileL, tileR, tileB, tileT, nearZ, farZ);
+
+	// Store bounding frustum
+	BoundingOrientedBox().Transform(outBox, projTile);
+
+	// Convert to world space
+	XMMATRIX worldMatrix = Load(GetTransform()->GetUnscaledWorldMatrix());
+	outBox.Transform(outBox, worldMatrix);
+}
+
 const CamBounds *CameraBehaviour::GetLightGridBounds()
 {
 	ZoneScopedXC(RandomUniqueColor());

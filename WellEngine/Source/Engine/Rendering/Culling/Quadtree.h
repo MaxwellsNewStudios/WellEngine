@@ -384,7 +384,7 @@ private:
 			}
 		}
 
-		void FrustumCull(const dx::BoundingFrustum &frustum, std::vector<Entity *> &containingItems, const UINT depth = 0) const
+		void FrustumCull(const dx::BoundingFrustum &frustum, std::vector<Entity *> &containingItems, bool mustFullyContain = false, const UINT depth = 0) const
 		{
 			if (isEmpty)
 				return;
@@ -413,15 +413,19 @@ private:
 
 						if (std::ranges::find(containingItems, item) == containingItems.end())
 						{
-#ifdef EXTRA_CULL_CHECK
 							dx::BoundingOrientedBox itemBounds;
 							item->StoreEntityBounds(itemBounds);
 
-							if (frustum.Intersects(itemBounds))
-								containingItems.emplace_back(item);
-#else
-							containingItems.emplace_back(item);
-#endif
+							if (mustFullyContain)
+							{
+								if (frustum.Contains(itemBounds) == dx::CONTAINS)
+									containingItems.emplace_back(item);
+							}
+							else 
+							{
+								if (frustum.Intersects(itemBounds))
+									containingItems.emplace_back(item);
+							}
 						}
 					}
 
@@ -433,13 +437,13 @@ private:
 					if (children[i] == nullptr)
 						continue;
 
-					children[i]->FrustumCull(frustum, containingItems, depth + 1);
+					children[i]->FrustumCull(frustum, containingItems, mustFullyContain, depth + 1);
 				}
 				break;
 			}
 		}
 
-		void BoxCull(const dx::BoundingOrientedBox &box, std::vector<Entity *> &containingItems, const UINT depth = 0) const
+		void BoxCull(const dx::BoundingOrientedBox &box, std::vector<Entity *> &containingItems, bool mustFullyContain = false, const UINT depth = 0) const
 		{
 			if (isEmpty)
 				return;
@@ -468,15 +472,16 @@ private:
 
 						if (std::ranges::find(containingItems, item) == containingItems.end())
 						{
-#ifdef EXTRA_CULL_CHECK
 							dx::BoundingOrientedBox itemBounds;
 							item->StoreEntityBounds(itemBounds);
 
-							if (box.Intersects(itemBounds))
+							if (mustFullyContain)
+							{
+								if (box.Contains(itemBounds) == dx::CONTAINS)
+									containingItems.emplace_back(item);
+							}
+							else if (box.Intersects(itemBounds))
 								containingItems.emplace_back(item);
-#else
-							containingItems.emplace_back(item);
-#endif
 						}
 					}
 
@@ -488,13 +493,13 @@ private:
 					if (children[i] == nullptr)
 						continue;
 
-					children[i]->BoxCull(box, containingItems, depth + 1);
+					children[i]->BoxCull(box, containingItems, mustFullyContain, depth + 1);
 				}
 				break;
 			}
 		}
 		
-		void BoxCull(const dx::BoundingBox &box, std::vector<Entity *> &containingItems, const UINT depth = 0) const
+		void BoxCull(const dx::BoundingBox &box, std::vector<Entity *> &containingItems, bool mustFullyContain = false, const UINT depth = 0) const
 		{
 			if (isEmpty)
 				return;
@@ -523,15 +528,16 @@ private:
 						
 						if (std::ranges::find(containingItems, item) == containingItems.end())
 						{
-#ifdef EXTRA_CULL_CHECK
 							dx::BoundingOrientedBox itemBounds;
 							item->StoreEntityBounds(itemBounds);
 
-							if (box.Intersects(itemBounds))
+							if (mustFullyContain)
+							{
+								if (box.Contains(itemBounds) == dx::CONTAINS)
+									containingItems.emplace_back(item);
+							}
+							else if (box.Intersects(itemBounds))
 								containingItems.emplace_back(item);
-#else
-							containingItems.emplace_back(item);
-#endif
 						}
 					}
 
@@ -543,7 +549,7 @@ private:
 					if (children[i] == nullptr)
 						continue;
 
-					children[i]->BoxCull(box, containingItems, depth + 1);
+					children[i]->BoxCull(box, containingItems, mustFullyContain, depth + 1);
 				}
 				break;
 			}
@@ -705,30 +711,30 @@ public:
 		return _maxItemsInNode;
 	}
 
-	[[nodiscard]] bool FrustumCull(const dx::BoundingFrustum &frustum, std::vector<Entity *> &containingItems) const
+	[[nodiscard]] bool FrustumCull(const dx::BoundingFrustum &frustum, std::vector<Entity *> &containingItems, bool mustFullyContain = false) const
 	{
 		if (_root == nullptr)
 			return false;
 
-		_root->FrustumCull(frustum, containingItems);
+		_root->FrustumCull(frustum, containingItems, mustFullyContain);
 		return true;
 	}
 
-	[[nodiscard]] bool BoxCull(const dx::BoundingOrientedBox &box, std::vector<Entity *> &containingItems) const
+	[[nodiscard]] bool BoxCull(const dx::BoundingOrientedBox &box, std::vector<Entity *> &containingItems, bool mustFullyContain = false) const
 	{
 		if (_root == nullptr)
 			return false;
 
-		_root->BoxCull(box, containingItems);
+		_root->BoxCull(box, containingItems, mustFullyContain);
 		return true;
 	}
 
-	[[nodiscard]] bool BoxCull(const dx::BoundingBox &box, std::vector<Entity *> &containingItems) const
+	[[nodiscard]] bool BoxCull(const dx::BoundingBox &box, std::vector<Entity *> &containingItems, bool mustFullyContain = false) const
 	{
 		if (_root == nullptr)
 			return false;
 
-		_root->BoxCull(box, containingItems);
+		_root->BoxCull(box, containingItems, mustFullyContain);
 		return true;
 	}
 

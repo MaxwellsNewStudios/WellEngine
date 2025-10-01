@@ -49,9 +49,6 @@
 		//#define DEFERRED_CONTEXTS
 	#endif
 
-	/// EXTRA_CULL_CHECK makes culling perform an extra intersection test between the entity's bounds and the frustum before being queued
-	#define EXTRA_CULL_CHECK
-
 	/// Makes meshes generate colliders using lower LODs when available, or skip it entirely.
 	/// This option exists as it drastically increases load times with compiler optimizations turned off.
 	/// 0: Use highest LOD.  1: Use middle LOD (default).  2: Use lowest LOD.  3: Raycast with bounding boxes only.

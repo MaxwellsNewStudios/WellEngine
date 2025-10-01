@@ -178,9 +178,9 @@ public:
 	void ReorderEntity(Entity *entity, UINT newIndex);
 	void ReorderEntity(Entity *entity, const Entity *after);
 
-	[[nodiscard]] bool FrustumCull(const dx::BoundingFrustum &frustum, std::vector<Entity *> &containingItems) const;
-	[[nodiscard]] bool BoxCull(const dx::BoundingOrientedBox &box, std::vector<Entity *> &containingItems) const;
-	[[nodiscard]] bool BoxCull(const dx::BoundingBox &box, std::vector<Entity *> &containingItems) const;
+	[[nodiscard]] bool FrustumCull(const dx::BoundingFrustum &frustum, std::vector<Entity *> &containingItems, bool mustFullyContain = false) const;
+	[[nodiscard]] bool BoxCull(const dx::BoundingOrientedBox &box, std::vector<Entity *> &containingItems, bool mustFullyContain = false) const;
+	[[nodiscard]] bool BoxCull(const dx::BoundingBox &box, std::vector<Entity *> &containingItems, bool mustFullyContain = false) const;
 
 	bool RaycastScene(const dx::XMFLOAT3A &origin, const dx::XMFLOAT3A &direction, RaycastOut &result, bool cheap = true) const;
 	bool RaycastScene(const Shape::Ray &ray, Shape::RayHit &hit, Entity *&ent) const;
