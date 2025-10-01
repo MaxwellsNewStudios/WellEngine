@@ -1,14 +1,16 @@
 #pragma once
 
+typedef size_t UID;
+
 class Identifiable
 {
 private:
-	static const size_t GetNextUID() noexcept
+	static const UID GetNextUID() noexcept
 	{
-		static size_t _topUID = 0ull;
+		static UID _topUID = 0ull;
 		return _topUID++;
 	}
-	const size_t _uid = GetNextUID();
+	const UID _uid = GetNextUID();
 
 public:
 	Identifiable() = default;
@@ -18,7 +20,7 @@ public:
 	Identifiable(Identifiable &&) noexcept = delete;
 	Identifiable &operator=(Identifiable &&) noexcept = delete;
 
-	[[nodiscard]] const size_t &GetUID() const noexcept
+	[[nodiscard]] const UID &GetUID() const noexcept
 	{
 		return _uid;
 	}

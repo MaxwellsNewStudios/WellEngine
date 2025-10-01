@@ -352,9 +352,11 @@
     <ClInclude Include="Source\Engine\Collision\MeshCollider.h" />
     <ClInclude Include="Source\Engine\Collision\Raycast.h" />
     <ClInclude Include="Source\Engine\Content\Asset.h" />
+    <ClInclude Include="Source\Engine\Content\AssetDirectory.h" />
     <ClInclude Include="Source\Engine\Content\AssetTypes\MeshAsset.h" />
     <ClInclude Include="Source\Engine\Content\Content.h" />
     <ClInclude Include="Source\Engine\Content\ContentLoader.h" />
+    <ClInclude Include="Source\Engine\Content\ExtensionMapping.h" />
     <ClInclude Include="Source\Engine\Content\HeightMap.h" />
     <ClInclude Include="Source\Engine\Content\Material.h" />
     <ClInclude Include="Source\Engine\Content\Shaders\ShaderDefinition.h" />
