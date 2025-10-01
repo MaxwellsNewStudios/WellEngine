@@ -1207,6 +1207,12 @@ bool Game::Update(TimeUtils &time, const Input& input)
 {
 	ZoneScopedC(RandomUniqueColor());
 
+	if (!_content.Update(time))
+	{
+		ErrMsg("Failed to update Content!");
+		return false;
+	}
+
 	for (const std::string &sceneName : _pendingSceneRemovals)
 	{
 		UINT sceneIndex = GetSceneIndex(sceneName);

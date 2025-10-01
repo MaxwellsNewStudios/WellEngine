@@ -229,6 +229,7 @@ class Content
 private:
 	std::vector<Material *> _materialVec;
 	std::set<Material *, decltype(matPtrCmp)> _materialSet;
+	std::unique_ptr<efsw::FileWatcher> _fileWatcher;
 
 	bool _hasShutDown = false;
 
@@ -244,6 +245,8 @@ public:
 	Content &operator=(Content &&other) = delete;
 
 	void Shutdown();
+
+	[[nodiscard]] bool Update(TimeUtils &time);
 
 	const Material *GetOrAddMaterial(Material mat);
 	[[nodiscard]] const Material *GetDefaultMaterial();

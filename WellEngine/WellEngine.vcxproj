@@ -278,6 +278,7 @@
   <ItemGroup>
     <ClInclude Include="..\Tests\TestUtils.h" />
     <ClInclude Include="AppMain.h" />
+    <ClInclude Include="Dependencies\efsw\include\efsw\efsw.hpp" />
     <ClInclude Include="Dependencies\ImGui\GraphEditor.h" />
     <ClInclude Include="Dependencies\ImGui\imconfig.h" />
     <ClInclude Include="Dependencies\ImGui\ImCurveEdit.h" />

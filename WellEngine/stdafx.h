@@ -96,6 +96,8 @@ using Microsoft::WRL::ComPtr;
 #include "rapidjson/filewritestream.h"
 namespace json = rapidjson;
 
+#include "Dependencies/efsw/include/efsw/efsw.hpp"
+
 
 // Math
 #include "Source/Math/GameMath.h"

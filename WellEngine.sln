@@ -26,7 +26,10 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "WellEngine", "WellEngine\WellEngine.vcxproj", "{7F156B4B-4453-4B20-8765-7898D274BF6E}"
 	ProjectSection(ProjectDependencies) = postProject
 		{6619979A-F867-46BF-BE5C-A0F13B2BEFCB} = {6619979A-F867-46BF-BE5C-A0F13B2BEFCB}
+		{73408775-DFCB-F439-E8DC-772E54E7503A} = {73408775-DFCB-F439-E8DC-772E54E7503A}
 	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "efsw-static-lib", "WellEngine\Dependencies\efsw\make\windows\efsw-static-lib.vcxproj", "{73408775-DFCB-F439-E8DC-772E54E7503A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -35,18 +38,18 @@ Global
 		Release|x64 = Release|x64
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{81CE8DAF-EBB2-4761-8E45-B71ABCCA8C68}.Debug|x64.ActiveCfg = Debug|x64
-		{81CE8DAF-EBB2-4761-8E45-B71ABCCA8C68}.Debug|x64.Build.0 = Debug|x64
-		{81CE8DAF-EBB2-4761-8E45-B71ABCCA8C68}.Deploy|x64.ActiveCfg = Deploy|x64
-		{81CE8DAF-EBB2-4761-8E45-B71ABCCA8C68}.Deploy|x64.Build.0 = Deploy|x64
-		{81CE8DAF-EBB2-4761-8E45-B71ABCCA8C68}.Release|x64.ActiveCfg = Release|x64
-		{81CE8DAF-EBB2-4761-8E45-B71ABCCA8C68}.Release|x64.Build.0 = Release|x64
 		{8B6CE8D3-6657-482B-B083-247362383978}.Debug|x64.ActiveCfg = Debug|x64
 		{8B6CE8D3-6657-482B-B083-247362383978}.Debug|x64.Build.0 = Debug|x64
 		{8B6CE8D3-6657-482B-B083-247362383978}.Deploy|x64.ActiveCfg = Deploy|x64
 		{8B6CE8D3-6657-482B-B083-247362383978}.Deploy|x64.Build.0 = Deploy|x64
 		{8B6CE8D3-6657-482B-B083-247362383978}.Release|x64.ActiveCfg = Release|x64
 		{8B6CE8D3-6657-482B-B083-247362383978}.Release|x64.Build.0 = Release|x64
+		{81CE8DAF-EBB2-4761-8E45-B71ABCCA8C68}.Debug|x64.ActiveCfg = Debug|x64
+		{81CE8DAF-EBB2-4761-8E45-B71ABCCA8C68}.Debug|x64.Build.0 = Debug|x64
+		{81CE8DAF-EBB2-4761-8E45-B71ABCCA8C68}.Deploy|x64.ActiveCfg = Deploy|x64
+		{81CE8DAF-EBB2-4761-8E45-B71ABCCA8C68}.Deploy|x64.Build.0 = Deploy|x64
+		{81CE8DAF-EBB2-4761-8E45-B71ABCCA8C68}.Release|x64.ActiveCfg = Release|x64
+		{81CE8DAF-EBB2-4761-8E45-B71ABCCA8C68}.Release|x64.Build.0 = Release|x64
 		{6619979A-F867-46BF-BE5C-A0F13B2BEFCB}.Debug|x64.ActiveCfg = Debug|x64
 		{6619979A-F867-46BF-BE5C-A0F13B2BEFCB}.Debug|x64.Build.0 = Debug|x64
 		{6619979A-F867-46BF-BE5C-A0F13B2BEFCB}.Deploy|x64.ActiveCfg = Deploy|x64
@@ -71,6 +74,12 @@ Global
 		{7F156B4B-4453-4B20-8765-7898D274BF6E}.Deploy|x64.Build.0 = Deploy|x64
 		{7F156B4B-4453-4B20-8765-7898D274BF6E}.Release|x64.ActiveCfg = Release|x64
 		{7F156B4B-4453-4B20-8765-7898D274BF6E}.Release|x64.Build.0 = Release|x64
+		{73408775-DFCB-F439-E8DC-772E54E7503A}.Debug|x64.ActiveCfg = debug|x64
+		{73408775-DFCB-F439-E8DC-772E54E7503A}.Debug|x64.Build.0 = debug|x64
+		{73408775-DFCB-F439-E8DC-772E54E7503A}.Deploy|x64.ActiveCfg = release|x64
+		{73408775-DFCB-F439-E8DC-772E54E7503A}.Deploy|x64.Build.0 = release|x64
+		{73408775-DFCB-F439-E8DC-772E54E7503A}.Release|x64.ActiveCfg = relwithdbginfo|x64
+		{73408775-DFCB-F439-E8DC-772E54E7503A}.Release|x64.Build.0 = relwithdbginfo|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -79,6 +88,7 @@ Global
 		{81CE8DAF-EBB2-4761-8E45-B71ABCCA8C68} = {BBB3A8AD-E57C-4420-B0F2-32F08493298B}
 		{6619979A-F867-46BF-BE5C-A0F13B2BEFCB} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
 		{EE03BB25-FFFC-4238-A41F-849E4179D81C} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+		{73408775-DFCB-F439-E8DC-772E54E7503A} = {BBB3A8AD-E57C-4420-B0F2-32F08493298B}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {7FE63A67-8E9B-48FD-A12F-93D54B499E91}

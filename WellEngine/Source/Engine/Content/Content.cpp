@@ -9,6 +9,7 @@
 Content::Content()
 {
 	_materialVec.reserve(512);
+	_fileWatcher = std::make_unique<efsw::FileWatcher>();
 }
 Content::~Content()
 {
@@ -48,6 +49,18 @@ void Content::Shutdown()
 		delete item;
 
 	_hasShutDown = true;
+}
+
+bool Content::Update(TimeUtils &time)
+{
+	ZoneScopedXC(RandomUniqueColor());
+
+	if (_hasShutDown)
+		return true;
+
+	// TODO: Handle file watching events
+
+	return true;
 }
 
 #ifdef USE_IMGUI
