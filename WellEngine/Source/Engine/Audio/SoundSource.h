@@ -113,7 +113,7 @@ public:
 	void PauseAudio();
 	void ResumeAudio();
 
-	size_t GetSoundLength(); // Sound lenght in milliseconds
+	size_t GetSoundLength(); // Sound length in milliseconds
 	dx::SoundState GetSoundState();
 
 	void SetListenerPosition(dx::XMFLOAT3 position);
