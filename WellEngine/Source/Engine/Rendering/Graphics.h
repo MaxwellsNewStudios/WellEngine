@@ -397,14 +397,44 @@ public:
 #ifdef USE_IMGUI
 	struct NotificationMessage
 	{
-		std::string_view message;
-		int severity = 0;
-		float duration = -1.0f;
+		enum class SeverityColor
+		{
+			White = 0, // Default
+			Green,	   // Info
+			Yellow,	   // Notice
+			Orange,	   // Warning
+			Red,	   // Problem
 
-		NotificationMessage(std::string_view message, int severity = 0, float duration = -1.0f) 
-			: message(message), severity(severity), duration(duration) {}
+			// Misc
+			Blue,
+			Magenta,
+			Cyan,
+			Black,
+			Gray,
+		};
+
+		std::string message, id = "";
+		SeverityColor severity;
+		float duration;
+		float fontSize;
+
+		NotificationMessage(std::string message, SeverityColor severity = SeverityColor::White, float duration = -1.0f, float fontSize = 16.0f)
+			: message(std::move(message)), severity(severity), duration(duration), fontSize(fontSize) { }
+
+		NotificationMessage(std::string message, int severity = 0, float duration = -1.0f, float fontSize = 16.0f)
+			: message(std::move(message)), severity((SeverityColor)severity), duration(duration), fontSize(fontSize) { }
 	};
 	std::vector<NotificationMessage> notifications;
+
+	NotificationMessage *GetNotification(const std::string &id)
+	{
+		for (auto &notification : notifications)
+		{
+			if (notification.id.compare(id) == 0)
+				return &notification;
+		}
+		return nullptr;
+	}
 
 	[[nodiscard]] bool BeginUIRender();
 	[[nodiscard]] bool EndUIRender() const;

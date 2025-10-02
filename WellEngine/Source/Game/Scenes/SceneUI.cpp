@@ -294,6 +294,7 @@ bool Scene::RenderEntityHierarchyUI(Entity *root, UINT depth, const std::string 
 			ImGuiUtils::EndButtonStyle();
 		}
 
+		// Recurse Children
 		if (!isCollapsed)
 		{
 			const std::vector<Entity *> *currChildren = root->GetChildren();
@@ -302,6 +303,103 @@ bool Scene::RenderEntityHierarchyUI(Entity *root, UINT depth, const std::string 
 
 			for (Entity *child : *currChildren)
 				tempChildrenVec.emplace_back(*child);
+
+			// Child drop field
+			if (!currChildren->empty())
+			{
+				float innerIndenting = (depth + 1) * frameHeight * arrowScale;
+				float addedIndenting = innerIndenting - indenting;
+
+				// Set vertical spacing
+				float dummyDropTargetPosY = ImGui::GetCursorPosY() - 3.0f;
+				ImGui::SetCursorPos({ entityButtonPosX + addedIndenting, dummyDropTargetPosY });
+				ImGui::Dummy({ ImGui::GetContentRegionAvail().x, 5.0f });
+				float dummyDropTargetHeight = ImGui::GetItemRectSize().y;
+				ImVec2 nextCursorPos = ImGui::GetCursorPos();
+				nextCursorPos.y -= 5.0f;
+
+				if (ImGui::BeginDragDropTarget())
+				{
+					if (const ImGuiPayload *payload = ImGui::AcceptDragDropPayload(ImGui::PayloadTags.at(ImGui::PayloadType::ENTITY)))
+					{
+						IM_ASSERT(payload->DataSize == sizeof(ImGui::EntityPayload));
+						ImGui::EntityPayload entPayload = *(const ImGui::EntityPayload *)payload->Data;
+
+						Entity *payloadEnt = nullptr;
+
+						if (entPayload.sceneUID != GetUID())
+						{
+							// Dragging from another scene
+							Scene *payloadScene = _game->GetSceneByUID(entPayload.sceneUID);
+
+							if (!payloadScene)
+							{
+								ErrMsg("Failed to get scene from payload!");
+								ImGui::EndDragDropTarget();
+								ImGui::PopID();
+								return false;
+							}
+
+							Entity *payloadEnt = payloadScene->_sceneHolder.GetEntityByID(entPayload.entID);
+
+							json::Document doc;
+							json::Value entObj = json::Value(json::kObjectType);
+
+							if (!payloadScene->SerializeEntity(doc.GetAllocator(), entObj, payloadEnt, true))
+							{
+								ErrMsg("Failed to serialize entity from payload!");
+								ImGui::EndDragDropTarget();
+								ImGui::PopID();
+								return false;
+							}
+
+							if (!payloadScene->_sceneHolder.RemoveEntityImmediate(payloadEnt))
+							{
+								ErrMsg("Failed to remove entity from payload scene!");
+								ImGui::EndDragDropTarget();
+								ImGui::PopID();
+								return false;
+							}
+
+							payloadEnt = nullptr;
+							if (!DeserializeEntity(entObj, &payloadEnt))
+							{
+								ErrMsg("Failed to deserialize entity from payload!");
+								ImGui::EndDragDropTarget();
+								ImGui::PopID();
+								return false;
+							}
+
+							RunPostDeserializeCallbacks();
+						}
+						else if (entPayload.entID != entID)
+						{
+							// Dragging from the same scene
+							payloadEnt = _sceneHolder.GetEntityByID(entPayload.entID);
+						}
+
+						if (payloadEnt)
+						{
+							if (!root->IsChildOf(payloadEnt))
+							{
+								payloadEnt->SetParent(root, true);
+							}
+
+							root->ReorderChild(payloadEnt, 0u);
+							_sceneHolder.ReorderEntity(payloadEnt, root);
+						}
+					}
+					ImGui::EndDragDropTarget();
+				}
+
+				ImGui::SameLine(entityButtonPosX + addedIndenting, 0.0f);
+				ImGui::SetCursorPosY(dummyDropTargetPosY + (0.5f * dummyDropTargetHeight) - 1.0f);
+				ImGui::Separator();
+
+				ImGui::SetCursorPos(nextCursorPos);
+				ImGui::Dummy({ 0, 0 });
+				ImGui::SameLine(0.0f, 0.0f);
+			}
 
 			for (Ref<Entity> &childRef : tempChildrenVec)
 			{
@@ -325,12 +423,12 @@ bool Scene::RenderEntityHierarchyUI(Entity *root, UINT depth, const std::string 
 		// Sibling drop field
 		{
 			// Set vertical spacing
-			float dummyDropTargetPosY = ImGui::GetCursorPosY() - 4.0f;
+			float dummyDropTargetPosY = ImGui::GetCursorPosY() - 3.0f;
 			ImGui::SetCursorPos({ entityButtonPosX, dummyDropTargetPosY });
-			ImGui::Dummy({ ImGui::GetContentRegionAvail().x, 6.0f });
+			ImGui::Dummy({ ImGui::GetContentRegionAvail().x, 5.0f });
 			float dummyDropTargetHeight = ImGui::GetItemRectSize().y;
 			ImVec2 nextCursorPos = ImGui::GetCursorPos();
-			nextCursorPos.y -= 3.0f;
+			nextCursorPos.y -= 5.0f;
 
 			if (ImGui::BeginDragDropTarget())
 			{
@@ -638,23 +736,23 @@ bool Scene::RenderSelectionUI()
 
 		if (selectionSize > 1)
 		{
+			ImGui::PushItemFlag(ImGuiItemFlags_ButtonRepeat, true);
+			{
+				if (ImGui::ArrowButton("##left", ImGuiDir_Left))
+					selectionIndex--;
+				ImGui::SameLine(0.0f, 4.0f);
+				if (ImGui::ArrowButton("##right", ImGuiDir_Right))
+					selectionIndex++;
+				ImGui::SameLine(0.0f, 8.0f);
+			}
+			ImGui::PopItemFlag();
+
 			float numWidth = ImGui::CalcTextSize(std::to_string(selectionIndex).c_str()).x;
 
 			ImGui::SetNextItemWidth(numWidth + 10);
 			ImGui::DragInt("##selectionIndex", &selectionIndex, 0.1f);
 			ImGui::SameLine();
 			ImGui::Text("/ %d", selectionSize);
-
-			ImGui::PushItemFlag(ImGuiItemFlags_ButtonRepeat, true);
-			{
-				ImGui::SameLine(0.0f, 6.0f);
-				if (ImGui::ArrowButton("##left", ImGuiDir_Left))
-					selectionIndex--;
-				ImGui::SameLine();
-				if (ImGui::ArrowButton("##right", ImGuiDir_Right))
-					selectionIndex++;
-			}
-			ImGui::PopItemFlag();
 
 			ImGui::Separator();
 		}

@@ -5628,16 +5628,25 @@ bool Graphics::RenderSceneView()
 			ImVec4 severityColor;
 			switch (notification.severity)
 			{
-			case 0:  severityColor = { 1.0f, 1.0f, 1.0f, 1 }; break; // Default	- White
-			case 1:	 severityColor = { 0.0f, 1.0f, 0.0f, 1 }; break; // Info	- Green
-			case 2:	 severityColor = { 1.0f, 1.0f, 0.0f, 1 }; break; // Notice	- Yellow
-			case 3:	 severityColor = { 1.0f, 0.5f, 0.0f, 1 }; break; // Warning	- Orange
-			case 4:	 severityColor = { 1.0f, 0.0f, 0.0f, 1 }; break; // Problem	- Red
-			default: severityColor = { 1.0f, 0.0f, 1.0f, 1 }; break; // Other	- Magenta
+			default:
+			case NotificationMessage::SeverityColor::White:		severityColor = { 1.0f, 1.0f, 1.0f, 1 }; break;
+			case NotificationMessage::SeverityColor::Green:		severityColor = { 0.0f, 1.0f, 0.0f, 1 }; break;
+			case NotificationMessage::SeverityColor::Yellow:	severityColor = { 1.0f, 1.0f, 0.0f, 1 }; break;
+			case NotificationMessage::SeverityColor::Orange:	severityColor = { 1.0f, 0.5f, 0.0f, 1 }; break;
+			case NotificationMessage::SeverityColor::Red:		severityColor = { 1.0f, 0.0f, 0.0f, 1 }; break;
+			case NotificationMessage::SeverityColor::Blue:		severityColor = { 0.0f, 0.0f, 1.0f, 1 }; break;
+			case NotificationMessage::SeverityColor::Magenta:	severityColor = { 1.0f, 0.0f, 1.0f, 1 }; break;
+			case NotificationMessage::SeverityColor::Cyan:		severityColor = { 0.0f, 1.0f, 1.0f, 1 }; break;
+			case NotificationMessage::SeverityColor::Black:		severityColor = { 0.0f, 0.0f, 0.0f, 1 }; break;
+			case NotificationMessage::SeverityColor::Gray:		severityColor = { 0.5f, 0.5f, 0.5f, 1 }; break;
 			}
 
+			ImGuiUtils::BeginFont("DroidSans", notification.fontSize);
+
 			ImGui::SetCursorPosX(offset);
-			ImGui::TextColored(severityColor, notification.message.data());
+			ImGui::TextColored(severityColor, notification.message.c_str());
+
+			ImGuiUtils::EndFont();
 
 			if (notification.duration >= 0.0f)
 			{

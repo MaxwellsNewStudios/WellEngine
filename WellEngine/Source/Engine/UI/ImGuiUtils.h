@@ -18,9 +18,10 @@ namespace ImGuiUtils
 	void BeginButtonStyle(StyleType style);
 	void EndButtonStyle();
 
-	[[nodiscard]] bool BeginFont(const std::string &name, float scale = 0.0f);
+	bool BeginFont(const std::string &name, float scale = 0.0f);
 	void EndFont();
-	[[nodiscard]] bool SetDefaultFont(const std::string &name);
+
+	bool SetDefaultFont(const std::string &name);
 
 	// ImGui window, rendered at top level.
 	class ImGuiAutoWindow

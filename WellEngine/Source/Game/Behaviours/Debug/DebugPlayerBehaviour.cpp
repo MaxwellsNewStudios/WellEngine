@@ -1024,20 +1024,19 @@ bool DebugPlayerBehaviour::Update(TimeUtils &time, const Input &input)
 							// Adjust speed
 							speed = std::clamp(speed * (1.0f + scroll * 0.1f), 0.01f, 10.0f);
 
-							std::string newSpeedMsg = "Camera speed: " + std::to_string(speed);
+							std::string newSpeedMsg = "Camera speed set to " + std::to_string(speed);
 
-							bool graphicsMsgFound = false;
-							for (auto &notif : graphics->notifications)
+							auto notif = graphics->GetNotification("CAM_SPEED_CHANGE");
+							if (notif)
 							{
-								if (!notif.message.starts_with("Camera speed: "))
-									continue;
-
-								notif.message = newSpeedMsg;
-								notif.duration = 1.0f;
+								notif->message = std::move(newSpeedMsg);
+								notif->duration = 1.5f;
 							}
-
-							if (!graphicsMsgFound)
-								graphics->notifications.push_back({ newSpeedMsg, 1, 1.0f });
+							else
+							{
+								graphics->notifications.emplace_back(std::move(newSpeedMsg), 0, 1.5f, 18.0f);
+								graphics->notifications.back().id = "CAM_SPEED_CHANGE";
+							}
 						}
 						else
 						{
