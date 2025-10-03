@@ -1180,6 +1180,7 @@ bool Transform::RenderUI(ReferenceSpace space)
 		XMFLOAT3A entPos = GetPosition(space);
 
 		ImGui::Text("Position: "); ImGui::SameLine();
+		ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
 		if (ImGui::DragFloat3("##Position", &entPos.x, 0.01f, 0.0f, 0.0f, "%.4f", floatInputFlags))
 			isChanged = true;
 		ImGuiUtils::LockMouseOnActive();
@@ -1200,6 +1201,7 @@ bool Transform::RenderUI(ReferenceSpace space)
 		};
 
 		ImGui::Text("Rotation: "); ImGui::SameLine();
+		ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
 		if (ImGui::DragFloat3("##Rotation", &entRotDeg.x, 0.01f, 0.0f, 0.0f, "%.4f", floatInputFlags))
 			isChanged = true;
 		ImGuiUtils::LockMouseOnActive();
@@ -1221,6 +1223,7 @@ bool Transform::RenderUI(ReferenceSpace space)
 		XMFLOAT3A entScale = GetScale(space);
 
 		ImGui::Text("Scale:    "); ImGui::SameLine();
+		ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
 		if (ImGui::DragFloat3("##Scale", &entScale.x, 0.01f, 0.0f, 0.0f, "%.4f", floatInputFlags))
 			isChanged = true;
 		ImGuiUtils::LockMouseOnActive();
@@ -1232,7 +1235,7 @@ bool Transform::RenderUI(ReferenceSpace space)
 		}
 	}
 
-	ImGui::Separator();
+	ImGui::Dummy(ImVec2(0, 4));
 
 	if (ImGui::TreeNode("Matrix##ShowMatrix"))
 	{
@@ -1269,16 +1272,18 @@ bool Transform::RenderUI(ReferenceSpace space)
 	ImGui::Dummy(ImVec2(0, 4));
 
 	ImGui::PushID("Transform Catalogue");
-	if (ImGui::CollapsingHeader("Transform Catalogue"))
+	if (ImGui::TreeNode("Transform Catalogue"))
 	{
 		ImGuiChildFlags childFlags = 0;
 		childFlags |= ImGuiChildFlags_Border;
 		childFlags |= ImGuiChildFlags_ResizeY;
 
 		ImGui::BeginChild("Transform Catalogue", ImVec2(0, 150), childFlags);
-		ImGui::Text("Note: Getters write to input. Setters read from input.");
-		ImGui::Text("Methods with an additional float parameter use the w-value.");
-		ImGui::Text("The reference space selected above is used for all methods.");
+		ImGui::Text(
+			"Note: Getters write to input. Setters read from input.\n"
+			"Methods with an additional float parameter use the w-value.\n"
+			"The reference space selected above is used for all methods."
+		);
 
 		static XMFLOAT4A parameter = { 0, 0, 0, 0 };
 		ImGui::Text("Input: "); ImGui::SameLine();
@@ -1410,11 +1415,11 @@ bool Transform::RenderUI(ReferenceSpace space)
 		}
 
 		ImGui::EndChild();
+		ImGui::TreePop();
 	}
 	ImGui::PopID();
 
-	ImGui::Separator();
-
+	ImGui::Dummy(ImVec2(0, 2));
 	return true;
 }
 #endif

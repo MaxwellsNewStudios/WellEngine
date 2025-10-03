@@ -35,7 +35,8 @@ private:
 	bool _isEnabledSelf = true;
 	bool _doSerialize = true;
 #ifdef USE_IMGUI
-	int _uiOpen = -1; // -1 = uninitialized, 0 = close, 1 = open
+	int _uiOpen = 1; // -1 = uninitialized, 0 = close, 1 = open
+	float _uiMaxSize = -1.0f;
 #endif
 
 	Entity *_entity = nullptr;
@@ -133,9 +134,14 @@ public:
 	[[nodiscard]] bool InitialFixedUpdate(float deltaTime, const Input &input);
 	[[nodiscard]] bool InitialBeforeRender();
 	[[nodiscard]] bool InitialRender(const RenderQueuer &queuer, const RendererInfo &rendererInfo);
+
 #ifdef USE_IMGUI
 	[[nodiscard]] int PopUIOpenState();
 	void SetUIOpen(bool state);
+
+	[[nodiscard]] float GetUISize() const;
+	void SetUISize(float maxSize);
+
 	[[nodiscard]] bool InitialRenderUI();
 #endif
 	[[nodiscard]] bool InitialBindBuffers(ID3D11DeviceContext *context);

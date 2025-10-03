@@ -337,6 +337,14 @@ void Behaviour::SetUIOpen(bool state)
 {
 	_uiOpen = state ? 1 : 0;
 }
+float Behaviour::GetUISize() const
+{
+	return _uiMaxSize;
+}
+void Behaviour::SetUISize(float maxSize)
+{
+	_uiMaxSize = maxSize;
+}
 bool Behaviour::InitialRenderUI()
 {
 	ImGuiUtils::BeginButtonStyle(ImGuiUtils::StyleType::Red);
@@ -347,7 +355,8 @@ bool Behaviour::InitialRenderUI()
 		return true;
 	}
 	ImGuiUtils::EndButtonStyle();
-	
+
+	ImGui::SameLine(0.0f, 10.0f);
 	bool behEnabled = IsEnabledSelf();
 	if (ImGui::Checkbox("Active##behActive", &behEnabled))
 	{
@@ -357,13 +366,23 @@ bool Behaviour::InitialRenderUI()
 			SetEnabled(false);
 	}
 
-	ImGui::Checkbox("Serialize##behSerialize", &_doSerialize);
+	ImGui::SameLine(0.0f, 10.0f);
+	ImGui::Checkbox("Serialized##behSerialize", &_doSerialize);
 
-	ImGui::Text("References: %d", GetRefs().size());
+	ImGui::SameLine();
+	std::string refText = std::format("References: {}", GetRefs().size());
+	float refTextWidth = ImGui::CalcTextSize(refText.c_str()).x + 4.0f;
+	float availWidth = ImGui::GetContentRegionAvail().x;
+	ImGui::NewLine();
+	float refTextoffset = max(2.0f, availWidth - refTextWidth);
 
+	ImGui::SameLine(0.0f, refTextoffset);
+	ImGui::Text(refText.c_str());
+
+	ImGui::Dummy({ 0, 2 });
 	ImGui::Separator();
+	ImGui::Dummy({0, 2});
 
-	ImGui::Dummy({0, 6});
 	return RenderUI();
 }
 #endif

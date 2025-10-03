@@ -869,10 +869,13 @@ bool Entity::InitialRenderUI()
 		}
 		ImGui::SetItemTooltip("Enable/Disable Entity");
 
-		std::string entName = GetName();
 		ImGui::SameLine();
-		if (ImGui::InputText("##EntName", &entName))
+		ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
+
+		std::string entName = GetName();
+		if (ImGui::InputText("##EntName", &entName, ImGuiInputTextFlags_AutoSelectAll))
 			SetName(entName);
+
 		ImGui::SetItemTooltip("Entity Name");
 
 		if (IsPrefab())
@@ -1257,7 +1260,7 @@ bool Entity::InitialRenderUI()
 
 		ImGui::Checkbox("Static", &_isStatic);
 		ImGui::Checkbox("Selectable", &_isDebugSelectable);
-		ImGui::Checkbox("Serialize##EntSerialize", &_doSerialize);
+		ImGui::Checkbox("Serialized##EntSerialize", &_doSerialize);
 
 		ImGui::TreePop();
 	}
@@ -1277,40 +1280,44 @@ bool Entity::InitialRenderUI()
 	ImGui::PopID();
 
 	ImGui::PushID("Behaviour List");
-	if (ImGui::CollapsingHeader("Behaviours"))
 	{
-		ImGuiChildFlags childFlags = 0;
-		childFlags |= ImGuiChildFlags_Border;
-		childFlags |= ImGuiChildFlags_ResizeY;
-
 		for (int i = 0; i < _behaviours.size(); i++)
 		{
+			ImGui::PushID(("Behaviour " + std::to_string(i)).c_str());
 			auto &behaviour = _behaviours[i];
 
 			int openState = behaviour->PopUIOpenState();
 			if (openState >= 0)
 				ImGui::SetNextItemOpen(openState == 1);
 
-			ImGui::PushID(("Behaviour " + std::to_string(i)).c_str());
-			if (ImGui::TreeNode(behaviour.get()->GetName().c_str()))
+			if (ImGui::CollapsingHeader(behaviour.get()->GetName().c_str()))
 			{
-				ImGui::BeginChild("Behaviour", ImVec2(0, 0), childFlags);
+				float size = behaviour->GetUISize();
+				if (size > 0.0f)
+					ImGui::SetNextWindowSizeConstraints(ImVec2(-1.0f, 1.0f), ImVec2(-1.0f, size));
+
+				ImGui::BeginChild("Behaviour", ImVec2(0, 800.0f), ImGuiChildFlags_Border | ImGuiChildFlags_ResizeY);
+
 				if (!behaviour.get()->InitialRenderUI())
 				{
 					ErrMsg("Failed to render behaviour UI!");
 					ImGui::EndChild();
-					ImGui::TreePop();
 					ImGui::PopID();
 					return false;
 				}
+
+				float newMaxSize = ImGui::GetCursorPosY() + ImGui::GetStyle().WindowPadding.y;
 				ImGui::EndChild();
-				ImGui::TreePop();
+
+				if (!ImGui::IsItemVisible())
+					newMaxSize = -1.0f;
+
+				behaviour->SetUISize(newMaxSize);
 			}
 			ImGui::PopID();
 		}
 
-		ImGui::Separator();
-		ImGui::Dummy({ 0.0f, 2.0f });
+		ImGui::Dummy({ 0.0f, 3.0f });
 
 		// Add behaviour
 		{
@@ -1326,24 +1333,30 @@ bool Entity::InitialRenderUI()
 			// Sort the behaviour names
 			std::sort(behaviourNames.begin(), behaviourNames.end());
 
-			if (ImGui::Button("Add Behaviour"))
+			float addBehRegion = ImGui::GetContentRegionAvail().x;
+			float addBehPadding = 60.0f;
+
+			// Ensure button is always at least 50% of region
+			if (addBehRegion < addBehPadding * 4.0f)
+				addBehPadding = addBehRegion * 0.25f;
+
+			ImGui::SetCursorPosX(addBehPadding);
+			if (ImGui::Button("Add Behaviour", ImVec2(addBehRegion - addBehPadding * 2.0f, 25.0f)))
 				ImGui::OpenPopup("Add Behaviour Popup");
 
 			if (ImGui::BeginPopup("Add Behaviour Popup", ImGuiWindowFlags_NoMove))
 			{
+				static std::string filter = "";
+
 				ImVec2 currSize = ImGui::GetWindowSize();
 				const float popupMinWidth = 300.0f;
 				float padding = ImGui::GetStyle().WindowPadding.x;
 				float popupWidth = max(currSize.x - padding, popupMinWidth);
-				
-				ImGui::SetWindowSize({ popupWidth, currSize.y }, ImGuiCond_Always);
-
-				static std::string filter = "";
+				float inputBoxPosX = ImGui::GetCursorPosX();
 
 				if (ImGui::IsWindowAppearing())
 					ImGui::SetKeyboardFocusHere(0);
 
-				float inputBoxPosX = ImGui::GetCursorPosX();
 				ImGui::SetNextItemWidth(popupWidth - padding);
 				ImGui::InputText("##Filter", &filter, ImGuiInputTextFlags_AutoSelectAll);
 				if (!ImGui::IsItemActive() && filter.empty())
@@ -1356,6 +1369,9 @@ bool Entity::InitialRenderUI()
 					std::transform(filter.begin(), filter.end(), filter.begin(), ::tolower);
 
 				ImGui::Separator();
+
+				ImGui::SetNextWindowSizeConstraints({ 50.0f, 50.0f }, { 500.0f, FLT_MAX });
+				ImGui::SetWindowSize({ popupWidth, currSize.y }, ImGuiCond_Always);
 
 				std::string selectedBehaviourName = "";
 				ImGui::BeginChild("BehaviourList", ImVec2(popupWidth - padding, 350.0f), ImGuiChildFlags_ResizeY);
