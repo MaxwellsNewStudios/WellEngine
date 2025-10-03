@@ -1519,6 +1519,9 @@ bool Game::RenderUI(TimeUtils &time)
 					SceneHolder *sceneHolder = scene->GetSceneHolder();
 					CameraBehaviour *viewCam = scene->GetViewCamera();
 
+					if (ImGui::Button("Select View Camera"))
+						scene->SetSelection(viewCam->GetEntity());
+
 					if (ImGui::BeginMenu("Camera View"))
 					{
 						SceneContents::SceneIterator entIter = sceneHolder->GetEntities();
@@ -1535,9 +1538,6 @@ bool Game::RenderUI(TimeUtils &time)
 
 						ImGui::EndMenu();
 					}
-
-					if (ImGui::Button("Select View Camera"))
-						scene->SetSelection(viewCam->GetEntity());
 				}
 
 				if (ImGui::BeginMenu("Mouse Movement Mode"))
