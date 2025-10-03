@@ -394,36 +394,14 @@ bool DebugPlayerBehaviour::Update(TimeUtils &time, const Input &input)
 
 		if (!input.IsCursorLocked() && !_currSelection.empty() && BindingCollection::IsTriggered(InputBindings::InputAction::CopySelected))
 		{
-			// Copy selected entities by serializing and deserializing them
 			std::vector<Entity *> newEnts;
 			newEnts.reserve(_currSelection.size());
 
 			for (auto &entRef : _currSelection)
 			{
-				Entity *toCopy = entRef.Get();
-
-				json::Document doc;
-				json::Value entObj = json::Value(json::kObjectType);
-
-				if (!scene->SerializeEntity(doc.GetAllocator(), entObj, toCopy, true))
-				{
-					ErrMsg("Failed to serialize entity!");
-					return false;
-				}
-
-				Entity *ent = nullptr;
-				if (!scene->DeserializeEntity(entObj, &ent))
-				{
-					ErrMsg("Failed to deserialize entity!");
-					return false;
-				}
-
-				scene->RunPostDeserializeCallbacks();
-
-				ent->SetParent(toCopy->GetParent(), false);
-				ent->GetTransform()->SetMatrix(toCopy->GetTransform()->GetMatrix(Local), Local);
-
-				newEnts.push_back(ent);
+				Entity *copy = DuplicateEntity(entRef.Get());
+				if (copy)
+					newEnts.push_back(copy);
 			}
 
 			Select(newEnts.data(), newEnts.size());
@@ -444,31 +422,11 @@ bool DebugPlayerBehaviour::Update(TimeUtils &time, const Input &input)
 		{
 			if (input.GetKey(duplicateBind.first, true) == KeyState::Pressed && acceptInput)
 			{
-				ZoneNamedXNC(performDuplicateBindZone, "Perform Duplicate Bind", RandomUniqueColor(), true);
-
-				// Copy by serializing and deserializing the entity
 				Entity *dupeEnt = sceneHolder->GetEntityByID(duplicateBind.second);
 
 				if (dupeEnt)
 				{
-					json::Document doc;
-					json::Value entObj = json::Value(json::kObjectType);
-
-					if (!scene->SerializeEntity(doc.GetAllocator(), entObj, dupeEnt, true))
-					{
-						ErrMsg("Failed to serialize entity!");
-						return false;
-					}
-
-					Entity *ent = nullptr;
-					if (!scene->DeserializeEntity(entObj, &ent))
-					{
-						ErrMsg("Failed to deserialize entity!");
-						return false;
-					}
-
-					scene->RunPostDeserializeCallbacks();
-
+					Entity *ent = DuplicateEntity(dupeEnt);
 					if (ent)
 						PositionWithCursor(ent);
 				}
@@ -1680,6 +1638,42 @@ bool DebugPlayerBehaviour::IsValidDuplicateBind(KeyCode key) const
 		&& (key != KeyCode::Q)
 		&& (key != KeyCode::C)
 		&& (key != KeyCode::F5);
+}
+
+Entity *DebugPlayerBehaviour::DuplicateEntity(Entity *entity)
+{
+	ZoneScopedX(RandomUniqueColor());
+
+	// Copy entitiy by serializing and deserializing it
+	Scene *scene = GetScene();
+
+	json::Document doc;
+	json::Value entObj = json::Value(json::kObjectType);
+
+	if (!scene->SerializeEntity(doc.GetAllocator(), entObj, entity, true))
+	{
+		Warn("Failed to serialize entity!");
+		return nullptr;
+	}
+
+	Entity *copy = nullptr;
+	if (!scene->DeserializeEntity(entObj, &copy))
+	{
+		Warn("Failed to deserialize entity!");
+		return nullptr;
+	}
+
+	scene->RunPostDeserializeCallbacks();
+
+	copy->SetParent(entity->GetParent(), false);
+	copy->GetTransform()->SetMatrix(entity->GetTransform()->GetMatrix(Local), Local);
+
+	Entity *parent = entity->GetParent();
+	if (parent != nullptr)
+		parent->ReorderChild(copy, entity);
+
+	scene->GetSceneHolder()->ReorderEntity(copy, entity);
+	return copy;
 }
 
 void DebugPlayerBehaviour::PositionWithCursor(Entity *ent)

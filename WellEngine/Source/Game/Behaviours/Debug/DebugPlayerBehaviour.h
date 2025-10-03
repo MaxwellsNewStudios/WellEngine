@@ -110,6 +110,7 @@ public:
 	KeyCode GetDuplicateBind(UINT id);
 	void ClearDuplicateBinds();
 
+	Entity *DuplicateEntity(Entity *entity);
 	void PositionWithCursor(Entity *ent);
 
 	void AddGizmoBillboard(BillboardMeshBehaviour *gizmo);

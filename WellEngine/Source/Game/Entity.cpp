@@ -942,27 +942,7 @@ bool Entity::InitialRenderUI()
 			ImGui::PushStyleColor(ImGuiCol_ButtonActive, (ImVec4)ImColor::HSV(0.3f, 0.75f, 0.7f));
 			if (ImGui::Button("Copy", { 60, 20 }))
 			{
-				// Copy by serializing and deserializing the entity
-				json::Document doc;
-				json::Value entObj = json::Value(json::kObjectType);
-
-				if (!_scene->SerializeEntity(doc.GetAllocator(), entObj, this, true))
-				{
-					ErrMsg("Failed to serialize entity!");
-					ImGui::PopStyleColor(3);
-					return false;
-				}
-
-				Entity *ent = nullptr;
-				if (!_scene->DeserializeEntity(entObj, &ent))
-				{
-					ErrMsg("Failed to deserialize entity!");
-					ImGui::PopStyleColor(3);
-					return false;
-				}
-
-				_scene->RunPostDeserializeCallbacks();
-
+				Entity *ent = debugPlayer->DuplicateEntity(this);
 				debugPlayer->Select(ent, ImGui::GetIO().KeyShift);
 			}
 			ImGui::PopStyleColor(3);
@@ -1200,6 +1180,11 @@ bool Entity::InitialRenderUI()
 						// Copy transform from this entity to the new prefab instance
 						const dx::XMFLOAT4X4A &localMatrix = _transform.GetMatrix(Local);
 						ent->GetTransform()->SetMatrix(localMatrix, Local);
+
+						if (_parent != nullptr)
+							_parent->ReorderChild(ent, this);
+
+						_scene->GetSceneHolder()->ReorderEntity(ent, this);
 
 						// Transfer references from this entity to the new prefab instance
 						ent->ReplaceTarget(*this);
