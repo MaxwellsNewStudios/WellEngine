@@ -73,9 +73,9 @@ int EngineCore::Init()
 
 	DbgMsg("Window Initialization..."); LogIndentIncr();
 	Window window{};
-	std::string windowName = "Well Engine";
-#ifdef _DEPLOY
-	windowName = GAME_TITLE;
+	std::string windowName = GAME_TITLE;
+#ifndef _DEPLOY
+	windowName = "Well Engine " ENGINE_VERSION;
 #endif
 	if (!window.Initialize(windowName, wndSize))
 	{
