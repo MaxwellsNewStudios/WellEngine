@@ -84,11 +84,16 @@ void Behaviour::Destroy()
 	if (!_entity)
 		return;
 
+	MarkDestroyed();
 	_entity->RemoveBehaviour(this);
 }
 bool Behaviour::IsDestroyed() const
 {
 	return _isDestroyed;
+}
+void Behaviour::MarkDestroyed()
+{
+	_isDestroyed = true;
 }
 
 void Behaviour::QueueUpdate()

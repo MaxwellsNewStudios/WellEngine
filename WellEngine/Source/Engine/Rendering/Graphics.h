@@ -149,7 +149,6 @@ private:
 
 	D3D11_VIEWPORT _viewport = { };
 	D3D11_VIEWPORT _viewportSceneView = { };
-	D3D11_VIEWPORT _viewportEmission = { };
 	D3D11_VIEWPORT _viewportBlur = { };
 	D3D11_VIEWPORT _viewportFog = { };
 	D3D11_VIEWPORT _viewportDof = { };

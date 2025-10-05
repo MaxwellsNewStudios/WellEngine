@@ -116,6 +116,7 @@ public:
 
 	void Destroy();
 	[[nodiscard]] bool IsDestroyed() const;
+	void MarkDestroyed();
 
 	void SetSerialization(bool state);
 	[[nodiscard]] bool IsSerializable() const;

@@ -128,11 +128,6 @@ bool Window::SetFullscreen(bool fullscreen)
 
 bool Window::SetWindowSize(dx::XMINT2 size)
 {
-/*#ifdef DEBUG_BUILD
-	DebugData &debugData = DebugData::Get();
-	debugData.windowSizeX = size.x;
-	debugData.windowSizeY = size.y;
-#endif*/
 	_physicalSize = ToUint(size);
 	_isDirty = true;
 	return SDL_SetWindowSize(_window, size.x, size.y);
@@ -142,6 +137,26 @@ bool Window::UpdateWindowSize()
 {
 	int x = 0, y = 0;
 	bool result = SDL_GetWindowSize(_window, &x, &y);
+
+#ifdef _DEPLOY
+	bool mustCorrect = false;
+	if (x % 4 != 0)
+	{
+		x -= x % 4;
+		mustCorrect = true;
+	}
+	if (y % 4 != 0)
+	{
+		y -= y % 4;
+		mustCorrect = true;
+	}
+
+	if (mustCorrect)
+	{
+		SDL_SetWindowSize(_window, x, y);
+		result = SDL_GetWindowSize(_window, &x, &y);
+	}
+#endif
 
 	_physicalSize = { (UINT)x, (UINT)y };
 	_isDirty = true;

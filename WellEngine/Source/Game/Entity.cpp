@@ -1284,21 +1284,21 @@ bool Entity::InitialRenderUI()
 		for (int i = 0; i < _behaviours.size(); i++)
 		{
 			ImGui::PushID(("Behaviour " + std::to_string(i)).c_str());
-			auto &behaviour = _behaviours[i];
+			auto behaviour = _behaviours[i]->AsRef();
 
-			int openState = behaviour->PopUIOpenState();
+			int openState = behaviour.Get()->PopUIOpenState();
 			if (openState >= 0)
 				ImGui::SetNextItemOpen(openState == 1);
 
-			if (ImGui::CollapsingHeader(behaviour.get()->GetName().c_str()))
+			if (ImGui::CollapsingHeader(behaviour.Get()->GetName().c_str()))
 			{
-				float size = behaviour->GetUISize();
+				float size = behaviour.Get()->GetUISize();
 				if (size > 0.0f)
 					ImGui::SetNextWindowSizeConstraints(ImVec2(-1.0f, 1.0f), ImVec2(-1.0f, size));
 
 				ImGui::BeginChild("Behaviour", ImVec2(0, 800.0f), ImGuiChildFlags_Border | ImGuiChildFlags_ResizeY);
 
-				if (!behaviour.get()->InitialRenderUI())
+				if (!behaviour.Get()->InitialRenderUI())
 				{
 					ErrMsg("Failed to render behaviour UI!");
 					ImGui::EndChild();
@@ -1311,8 +1311,9 @@ bool Entity::InitialRenderUI()
 
 				if (!ImGui::IsItemVisible())
 					newMaxSize = -1.0f;
-
-				behaviour->SetUISize(newMaxSize);
+				
+				if (behaviour.IsValid())
+					behaviour.Get()->SetUISize(newMaxSize);
 			}
 			ImGui::PopID();
 		}

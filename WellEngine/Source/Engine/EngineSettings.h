@@ -6,7 +6,7 @@
 
 #pragma region General
 	#define GAME_TITLE "Game"
-	#define ENGINE_VERSION "0.1.0.1"
+	#define ENGINE_VERSION "0.1.0.2"
 #pragma endregion
 
 
@@ -171,6 +171,8 @@
 #pragma region Graphics Settings
 	constexpr auto WINDOW_WIDTH =			/*1280*/	1600	/*1920*/;
 	constexpr auto WINDOW_HEIGHT =			/*720 */	900 	/*1080*/;
+
+	constexpr unsigned int DIM_FORCED_MULTIPLE = 16u;
 
 	/// 3 increases FPS, 2 reduces latency but increases stuttering
 	constexpr auto SWAPCHAIN_BUFFER_COUNT = 2; 

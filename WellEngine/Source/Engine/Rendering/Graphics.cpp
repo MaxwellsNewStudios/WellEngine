@@ -381,8 +381,13 @@ bool Graphics::ResizeWindowBuffers(bool fullscreen, UINT newWidth, UINT newHeigh
 {
 	ZoneScopedC(RandomUniqueColor());
 
-	newWidth = max(newWidth, 1u);
-	newHeight = max(newHeight, 1u);
+	newWidth = max(newWidth, 4u);
+	newHeight = max(newHeight, 4u);
+
+	if (newWidth % 4 != 0)
+		newWidth -= newWidth % 4;
+	if (newHeight % 4 != 0)
+		newHeight -= newHeight % 4;
 
 	if (!skipResizeD3D11)
 	{
@@ -452,8 +457,13 @@ bool Graphics::ResizeSceneViewBuffers(UINT newWidth, UINT newHeight)
 {
 	ZoneScopedC(RandomUniqueColor());
 
-	newWidth = max(newWidth, 1u);
-	newHeight = max(newHeight, 1u);
+	newWidth = max(newWidth, DIM_FORCED_MULTIPLE);
+	newHeight = max(newHeight, DIM_FORCED_MULTIPLE);
+
+	if (newWidth % DIM_FORCED_MULTIPLE != 0)
+		newWidth -= newWidth % DIM_FORCED_MULTIPLE;
+	if (newHeight % DIM_FORCED_MULTIPLE != 0)
+		newHeight -= newHeight % DIM_FORCED_MULTIPLE;
 
 #ifdef USE_IMGUI
 	_intermediateRT.Reset();
@@ -3663,7 +3673,7 @@ bool Graphics::RenderPostFX()
 
 
 			// Send execution command
-			_context->Dispatch(static_cast<UINT>(ceil(_viewportBlur.Width / 8.0f)), static_cast<UINT>(ceil(_viewportBlur.Height / 8.0f)), 1);
+			_context->Dispatch((UINT)std::ceil(_viewportBlur.Width / 8.0f), (UINT)std::ceil(_viewportBlur.Height / 8.0f), 1);
 
 
 			// Unbind compute shader resources
@@ -3820,7 +3830,7 @@ bool Graphics::RenderPostFX()
 
 
 					// Send execution command
-					_context->Dispatch(static_cast<UINT>(ceil(_viewportSceneView.Width / 8.0f)), static_cast<UINT>(ceil(_viewportSceneView.Height / 8.0f)), 1);
+					_context->Dispatch(static_cast<UINT>(ceil(_viewportOutline.Width / 8.0f)), static_cast<UINT>(ceil(_viewportOutline.Height / 8.0f)), 1);
 
 
 					// Unbind compute shader resources
@@ -3855,7 +3865,7 @@ bool Graphics::RenderPostFX()
 
 
 					// Send execution command
-					_context->Dispatch(static_cast<UINT>(ceil(_viewportSceneView.Width / 8.0f)), static_cast<UINT>(ceil(_viewportSceneView.Height / 8.0f)), 1);
+					_context->Dispatch(static_cast<UINT>(ceil(_viewportOutline.Width / 8.0f)), static_cast<UINT>(ceil(_viewportOutline.Height / 8.0f)), 1);
 
 
 					// Unbind compute shader resources
@@ -4271,8 +4281,8 @@ bool Graphics::RenderUI(TimeUtils &time)
 	ZoneScopedXC(RandomUniqueColor());
 
 	ImGui::SeparatorText("Info");
-	dx::XMUINT2 resolution = Input::Instance().GetRealWindowSize();
-	ImGui::Text(std::format("Resolution: {}x{}", resolution.x, resolution.y).c_str());
+	ImGui::Text(std::format("Window Resolution: {}x{}", (int)_viewport.Width, (int)_viewport.Height).c_str());
+	ImGui::Text(std::format("Scene Resolution: {}x{}", (int)_viewportSceneView.Width, (int)_viewportSceneView.Height).c_str());
 
 	ImGui::Dummy(ImVec2(0.0f, 6.0f));
 	ImGui::SeparatorText("Settings");
@@ -4517,6 +4527,8 @@ bool Graphics::RenderUI(TimeUtils &time)
 		{
 			if (ImGui::TreeNode("Volumetric Fog"))
 			{
+				ImGui::Text(std::format("Fog Resolution: {}x{}", (int)_viewportFog.Width, (int)_viewportFog.Height).c_str());
+
 				if (ImGui::Checkbox("Render Fog", &_renderFogFX))
 				{
 					if (!_renderFogFX)
@@ -4683,6 +4695,8 @@ bool Graphics::RenderUI(TimeUtils &time)
 
 			if (ImGui::TreeNode("Emission"))
 			{
+				ImGui::Text(std::format("Emission Resolution: {}x{}", (int)_viewportBlur.Width, (int)_viewportBlur.Height).c_str());
+
 				if (ImGui::Checkbox("Render Emission", &_renderEmissionFX))
 				{
 					if (!_renderEmissionFX)
@@ -4842,6 +4856,8 @@ bool Graphics::RenderUI(TimeUtils &time)
 
 			if (ImGui::TreeNode("Depth of Field"))
 			{
+				ImGui::Text(std::format("DoF Resolution: {}x{}", (int)_viewportDof.Width, (int)_viewportDof.Height).c_str());
+
 				if (ImGui::Checkbox("Render Depth of Field", &_renderDepthOfFieldFX))
 				{
 					if (!_renderDepthOfFieldFX)
@@ -4995,11 +5011,12 @@ bool Graphics::RenderUI(TimeUtils &time)
 					ImGui::PopID();
 				}
 				ImGui::TreePop();
-
 			}
 
 			if (ImGui::TreeNode("Outline"))
 			{
+				ImGui::Text(std::format("Outline Resolution: {}x{}", (int)_viewportOutline.Width, (int)_viewportOutline.Height).c_str());
+
 				if (ImGui::Checkbox("Render Outline", &_renderOutlineFX))
 				{
 					if (!_renderOutlineFX)
