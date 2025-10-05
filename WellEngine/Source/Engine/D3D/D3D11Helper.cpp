@@ -41,18 +41,22 @@ static bool CreateInterfaces(
 	swapChainDesc.Flags |= DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING;
 
 #ifdef DEBUG_D3D11_DEVICE
-	std::ifstream file("DebugInfoFlag");
-	UINT fileFlag;
-	file >> fileFlag;
+	UINT flags = D3D11_CREATE_DEVICE_DEBUG;
 
-	UINT flags = fileFlag; // 0 or D3D11_CREATE_DEVICE_DEBUG 
+	std::ifstream file("DebugInfoFlag");
+	if (file.is_open())
+	{
+		UINT fileFlag;
+		file >> fileFlag;
+
+		UINT flags = fileFlag; // 0 or D3D11_CREATE_DEVICE_DEBUG 
+	}
 #else
 	UINT flags = 0;
 #endif
 
 	constexpr D3D_FEATURE_LEVEL featureLevels[] = { D3D_FEATURE_LEVEL_11_0 };
 
-#if(1)
 	if (FAILED(D3D11CreateDeviceAndSwapChain(
 			nullptr, D3D_DRIVER_TYPE_HARDWARE,
 			nullptr, flags, featureLevels,
@@ -62,46 +66,6 @@ static bool CreateInterfaces(
 		ErrMsg("Failed to create device and swap chain!");
 		return false;
 	}
-#else
-	// Create device
-	if (FAILED(D3D11CreateDevice(
-		nullptr, D3D_DRIVER_TYPE_HARDWARE, 
-		nullptr, flags, featureLevels, 
-		1, D3D11_SDK_VERSION, &device, 
-		nullptr, &immediateContext)))
-	{
-		ErrMsg("Failed to create device!");
-		return false;
-	}
-
-	// Create swap chain
-	ComPtr<IDXGIDevice> dxgiDevice;
-	if (FAILED(device->QueryInterface(__uuidof(IDXGIDevice), reinterpret_cast<void**>(dxgiDevice.GetAddressOf()))))
-	{
-		ErrMsg("Failed to get IDXGIDevice!");
-		return false;
-	}
-
-	ComPtr<IDXGIAdapter> dxgiAdapter;
-	if (FAILED(dxgiDevice->GetAdapter(dxgiAdapter.GetAddressOf())))
-	{
-		ErrMsg("Failed to get IDXGIAdapter!");
-		return false;
-	}
-
-	ComPtr<IDXGIFactory> dxgiFactory;
-	if (FAILED(dxgiAdapter->GetParent(__uuidof(IDXGIFactory), reinterpret_cast<void**>(dxgiFactory.GetAddressOf()))))
-	{
-		ErrMsg("Failed to get IDXGIFactory!");
-		return false;
-	}
-
-	if (FAILED(dxgiFactory->CreateSwapChain(device, &swapChainDesc, &swapChain)))
-	{
-		ErrMsg("Failed to create swap chain!");
-		return false;
-	}
-#endif
 
 	if (deferredContexts)
 	{

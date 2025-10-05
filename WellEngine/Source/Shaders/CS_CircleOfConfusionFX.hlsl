@@ -6,8 +6,8 @@
 #include "Headers/BlurParams.hlsli"
 #endif
 
-RWTexture2D<unorm float> OutputCoC : register(u0);
-RWTexture2D<unorm float4> OutputSharp : register(u1);
+RWTexture2D<float> OutputCoC : register(u0);
+RWTexture2D<float4> OutputSharp : register(u1);
 
 cbuffer DepthOfFiledSettings : register(b6)
 {

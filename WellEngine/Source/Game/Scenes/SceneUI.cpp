@@ -104,7 +104,9 @@ bool Scene::RenderEntityHierarchyUI(Entity *root, UINT depth, const std::string 
 
 		// Entity selection button
 		{
-			bool isSelected = _debugPlayer.Get()->IsSelected(root, nullptr);
+			bool isSelected = false;
+			if (_debugPlayer.IsValid())
+				isSelected = _debugPlayer.Get()->IsSelected(root, nullptr);
 
 			if (isSelected)
 			{
@@ -118,7 +120,8 @@ bool Scene::RenderEntityHierarchyUI(Entity *root, UINT depth, const std::string 
 			if (ImGui::Button(std::format("{}", entName).c_str()))
 			{
 				// Additive select if holding shift
-				_debugPlayer.Get()->Select(root, ImGui::GetIO().KeyShift);
+				if (_debugPlayer.IsValid())
+					_debugPlayer.Get()->Select(root, ImGui::GetIO().KeyShift);
 			}
 
 			if (isSelected)
@@ -729,7 +732,10 @@ bool Scene::RenderSelectionUI()
 {
 	ImGui::PushID((_sceneName + "Selection").c_str());
 
-	int selectionSize = (int)_debugPlayer.Get()->GetSelectionSize();
+	int selectionSize = 0;
+	if (_debugPlayer.IsValid())
+		selectionSize = (int)_debugPlayer.Get()->GetSelectionSize();
+
 	if (selectionSize > 0)
 	{
 		static int selectionIndex = 1;

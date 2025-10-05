@@ -350,6 +350,31 @@ void Behaviour::SetUISize(float maxSize)
 {
 	_uiMaxSize = maxSize;
 }
+bool Behaviour::GetUIMaximized() const
+{
+	return _uiMaximized;
+}
+void Behaviour::SetUIMaximized(bool state)
+{
+	_uiMaximized = state;
+}
+bool Behaviour::IsResizingUI() const
+{
+	return _uiIsResizing;
+}
+void Behaviour::SetResizingUI(bool state)
+{
+	_uiIsResizing = state;
+}
+bool Behaviour::IsUIDirty() const
+{
+	return _uiSizeDirty;
+}
+void Behaviour::SetUIDirty(bool state)
+{
+	_uiSizeDirty = state;
+}
+
 bool Behaviour::InitialRenderUI()
 {
 	ImGuiUtils::BeginButtonStyle(ImGuiUtils::StyleType::Red);

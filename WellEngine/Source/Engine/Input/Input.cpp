@@ -129,6 +129,7 @@ bool Input::TryWrapMouse(bool viewSpace)
 	dx::XMINT2 rectPos = { _screenPos.x - _windowPos.x, _screenPos.y - _windowPos.y};
 	dx::XMINT2 rectSize = { (int)_screenSize.x, (int)_screenSize.y };
 
+#ifdef DEBUG_BUILD
 	if (viewSpace)
 	{
 		rectPos.x += _sceneViewPos.x + _windowPos.x;
@@ -136,6 +137,7 @@ bool Input::TryWrapMouse(bool viewSpace)
 		rectSize.x = (int)_sceneViewSize.x;
 		rectSize.y = (int)_sceneViewSize.y;
 	}
+#endif
 
 	if ((int)std::floor(_mousePos.x) <= rectPos.x)
 	{

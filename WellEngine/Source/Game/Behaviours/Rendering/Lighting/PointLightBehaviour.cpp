@@ -165,9 +165,9 @@ bool PointLightBehaviour::RenderUI()
 		newColor = true;
 
 	bool newStrength = false;
-	if (ImGui::DragFloat("Intensity", &colorStrength, 0.01f, 0.1f))
+	if (ImGui::DragFloat("Intensity", &colorStrength, 0.01f, LIGHT_MIN_INTENSITY))
 	{
-		colorStrength = max(colorStrength, 0.1f);
+		colorStrength = max(colorStrength, LIGHT_MIN_INTENSITY);
 		newStrength = true;
 	}
 	ImGuiUtils::LockMouseOnActive();
@@ -177,7 +177,7 @@ bool PointLightBehaviour::RenderUI()
 		recalculateReach = true;
 		float inputStr = max(color[0], max(color[1], color[2]));
 
-		if (inputStr > 0.1f)
+		if (inputStr > LIGHT_MIN_INTENSITY)
 		{
 			_color.x = color[0] * colorStrength / inputStr;
 			_color.y = color[1] * colorStrength / inputStr;

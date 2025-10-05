@@ -172,7 +172,9 @@
 	constexpr auto WINDOW_WIDTH =			/*1280*/	1600	/*1920*/;
 	constexpr auto WINDOW_HEIGHT =			/*720 */	900 	/*1080*/;
 
-	constexpr unsigned int DIM_FORCED_MULTIPLE = 16u;
+	/// DIM_FORCED_MULTIPLE forces the scene render target dimensions to be a multiple of this value.
+	/// This is to ensure that post-processing effects that rely on downsampling work correctly.
+	constexpr unsigned int DIM_FORCED_MULTIPLE = 4u;
 
 	/// 3 increases FPS, 2 reduces latency but increases stuttering
 	constexpr auto SWAPCHAIN_BUFFER_COUNT = 2; 
@@ -195,6 +197,8 @@
 
 	/// Resolution of the light tile grid. Total amount of light tiles is LIGHT_GRID_RES^2.
 	constexpr unsigned int LIGHT_GRID_RES = 8u;
+
+	constexpr float LIGHT_MIN_INTENSITY = 0.05f;
 #pragma endregion
 
 

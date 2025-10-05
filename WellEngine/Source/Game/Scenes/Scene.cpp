@@ -2902,8 +2902,8 @@ bool Scene::CreatePlayerEntity(Entity **out)
 		return false;
 	}
 	
-	float ambLightStr = 0.045f;
-	SimplePointLightBehaviour *lightBehaviour = new SimplePointLightBehaviour({ 0.8f * ambLightStr, 0.85f * ambLightStr, 1.0f * ambLightStr }, 0.35f, 0.0f);
+	float ambLightStr = 0.055f;
+	SimplePointLightBehaviour *lightBehaviour = new SimplePointLightBehaviour({ 0.8f * ambLightStr, 0.85f * ambLightStr, 1.0f * ambLightStr }, 0.2f, 0.0f);
 	if (!lightBehaviour->Initialize(cam))
 	{
 		ErrMsg("Failed to initialize player darkness light behaviour!");

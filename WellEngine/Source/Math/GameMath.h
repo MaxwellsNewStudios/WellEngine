@@ -376,7 +376,7 @@ template<typename T>
 {
 	// The intensity at which the light is considered to have no effect.
 	// Must match the value of the same name in CutoffLight().
-	float intensityCutoff = 0.05f;
+	float intensityCutoff = LIGHT_MIN_INTENSITY;
 
 	float value = max(color.x, max(color.y, color.z));
 

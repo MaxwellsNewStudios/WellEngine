@@ -12,6 +12,7 @@
 #include "Source/Engine/Audio/SoundSource.h"
 #include "Material.h"
 #include "HeightMap.h"
+#include "Tests/TestUtils.h"
 
 inline constexpr UINT CONTENT_NULL = 0xFFFFFFFF;
 

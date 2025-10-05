@@ -381,13 +381,13 @@ bool Graphics::ResizeWindowBuffers(bool fullscreen, UINT newWidth, UINT newHeigh
 {
 	ZoneScopedC(RandomUniqueColor());
 
-	newWidth = max(newWidth, 4u);
-	newHeight = max(newHeight, 4u);
+	newWidth = max(newWidth, DIM_FORCED_MULTIPLE);
+	newHeight = max(newHeight, DIM_FORCED_MULTIPLE);
 
-	if (newWidth % 4 != 0)
-		newWidth -= newWidth % 4;
-	if (newHeight % 4 != 0)
-		newHeight -= newHeight % 4;
+	if (newWidth % DIM_FORCED_MULTIPLE != 0)
+		newWidth -= newWidth % DIM_FORCED_MULTIPLE;
+	if (newHeight % DIM_FORCED_MULTIPLE != 0)
+		newHeight -= newHeight % DIM_FORCED_MULTIPLE;
 
 	if (!skipResizeD3D11)
 	{
@@ -1126,6 +1126,7 @@ bool Graphics::EndSceneRender(TimeUtils &time)
 		return false;
 	}
 
+#ifdef DEBUG_BUILD
 	{
 		_mainDrawCallTracker.EndFrame();
 		_mainTriDrawTracker.EndFrame();
@@ -1139,6 +1140,7 @@ bool Graphics::EndSceneRender(TimeUtils &time)
 		_lightDrawCallTracker.EndFrame();
 		_lightTriDrawTracker.EndFrame();
 	}
+#endif
 
 	return true;
 }
@@ -1204,6 +1206,7 @@ bool Graphics::RenderToTarget(
 		}
 		break;
 
+#ifdef DEBUG_BUILD
 	case RenderType::POSITION:
 		if (!RenderCustom(targetRTV, targetDepthRTV, targetDSV, targetViewport, "PS_DebugViewPosition"))
 		{
@@ -1554,6 +1557,7 @@ bool Graphics::RenderToTarget(
 
 		break;
 	}
+#endif
 
 	default:
 		ErrMsg("Invalid render type!");
@@ -1762,8 +1766,10 @@ bool Graphics::RenderSpotlights()
 					return false;
 				}
 
+#ifdef DEBUG_BUILD
 				_lightDrawCallTracker.Step();
 				_lightTriDrawTracker.Step(loadedMesh->GetSubMeshIndexCount(lodIndex));
+#endif
 			}
 
 			entity_i++;
@@ -1974,8 +1980,10 @@ bool Graphics::RenderPointlights()
 					return false;
 				}
 
+#ifdef DEBUG_BUILD
 				_lightDrawCallTracker.Step();
 				_lightTriDrawTracker.Step(loadedMesh->GetSubMeshIndexCount(lodIndex));
+#endif
 			}
 
 			entity_i++;
@@ -2707,6 +2715,7 @@ bool Graphics::RenderGeometry(bool overlayStage, bool skipPixelShader)
 				return false;
 			}
 
+#ifdef DEBUG_BUILD
 			if (overlayStage)
 			{
 				_overlayDrawCallTracker.Step();
@@ -2717,6 +2726,7 @@ bool Graphics::RenderGeometry(bool overlayStage, bool skipPixelShader)
 				_mainDrawCallTracker.Step();
 				_mainTriDrawTracker.Step(loadedMesh->GetSubMeshIndexCount(lodIndex));
 			}
+#endif
 		}
 
 		entity_i++;
@@ -3307,8 +3317,10 @@ bool Graphics::RenderTransparency(
 				return false;
 			}
 
+#ifdef DEBUG_BUILD
 			_transparentDrawCallTracker.Step();
 			_transparentTriDrawTracker.Step(loadedMesh->GetSubMeshIndexCount(lodIndex));
+#endif
 		}
 
 		entity_i++;
@@ -3979,7 +3991,11 @@ bool Graphics::RenderPostFX()
 		_context->CSSetUnorderedAccessViews(0, 1, &nullUAV, nullptr);
 	}
 
+#ifdef USE_IMGUI
 	if (_renderDepthOfFieldFX)
+#else
+	if (false) // TODO: DoF disabled without ImGui for now
+#endif
 	{
 		ZoneNamedXNC(depthOfFieldZone, "Depth of Field", RandomUniqueColor(), true);
 		TracyD3D11NamedZoneC(_tracyD3D11Context, depthOfFieldD3D11Zone, "Depth of Field", RandomUniqueColor(), true);

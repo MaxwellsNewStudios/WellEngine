@@ -16,7 +16,7 @@ cbuffer EmissionSettings : register(b6)
 	float emission_exponent;
 	float emission_threshold;
 	
-	float padding;
+	float _emission_padding;
 };
 
 [numthreads(8, 8, 1)]
@@ -30,7 +30,7 @@ void main(uint3 DTid : SV_DispatchThreadID)
 	float3 emission = (pow(abs(Emission.SampleLevel(Sampler, uv, 0) + 1.0), emission_exponent) - emission_threshold) * emission_strength;
 	float4 fog = Fog.SampleLevel(Sampler, uv, 0);
 	
-	float3 result = sceneCol.xyz + max(emission, float3(0,0,0));
+	float3 result = sceneCol.xyz + max(emission, float3(0, 0, 0));
 	result = ACESFilm(result + fog.xyz * fog.w);
 	result = lerp(result, float3(0.0, 0.0, 0.0), ambient_light.w);
 	

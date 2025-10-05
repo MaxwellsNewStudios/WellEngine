@@ -219,15 +219,22 @@ bool MeshBehaviour::RenderUI()
 			ImGui::Text("Mesh:"); ImGui::SameLine(); ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
 			if (ImGui::BeginCombo("", content->GetMeshName((UINT)inputMeshID).c_str(), comboFlags))
 			{
+				static std::string filter = "";
+
+				ImVec2 currSize = ImGui::GetContentRegionMax();
+				const float popupMinWidth = 100.0f;
+				float padding = ImGui::GetStyle().WindowPadding.x;
+				float popupWidth = max(currSize.x - padding, popupMinWidth);
+				float inputBoxPosX = ImGui::GetCursorPosX();
+
 				if (ImGui::IsWindowAppearing())
 					ImGui::SetKeyboardFocusHere(0);
 
-				static std::string filter = "";
-				ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
+				ImGui::SetNextItemWidth(popupWidth - padding);
 				ImGui::InputText("##Filter", &filter, ImGuiInputTextFlags_AutoSelectAll);
 				if (!ImGui::IsItemActive() && filter.empty())
 				{
-					ImGui::SameLine(8.0f);
+					ImGui::SameLine(inputBoxPosX + padding);
 					ImGui::TextDisabled("Search");
 				}
 
@@ -236,6 +243,10 @@ bool MeshBehaviour::RenderUI()
 
 				ImGui::Separator();
 
+				ImGui::SetNextWindowSizeConstraints({ 50.0f, 50.0f }, { 500.0f, 300.0f });
+				ImGui::SetWindowSize({ popupWidth, currSize.y }, ImGuiCond_Always);
+
+				ImGui::BeginChild("ContentList", ImVec2(popupWidth - padding, 300.0f), ImGuiChildFlags_ResizeY);
 				for (UINT i = 0; i < meshNames.size(); i++)
 				{
 					if (!filter.empty())
@@ -255,8 +266,13 @@ bool MeshBehaviour::RenderUI()
 					}
 
 					if (isSelected)
+					{
 						ImGui::SetItemDefaultFocus();
+						if (ImGui::IsWindowAppearing())
+							ImGui::SetScrollHereY();
+					}
 				}
+				ImGui::EndChild();
 				ImGui::EndCombo();
 			}
 
@@ -285,15 +301,22 @@ bool MeshBehaviour::RenderUI()
 			ImGui::Text("Texture:"); ImGui::SameLine(); ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
 			if (ImGui::BeginCombo("", content->GetTextureName((UINT)inputTexID).c_str(), comboFlags))
 			{
+				static std::string filter = "";
+
+				ImVec2 currSize = ImGui::GetContentRegionMax();
+				const float popupMinWidth = 100.0f;
+				float padding = ImGui::GetStyle().WindowPadding.x;
+				float popupWidth = max(currSize.x - padding, popupMinWidth);
+				float inputBoxPosX = ImGui::GetCursorPosX();
+
 				if (ImGui::IsWindowAppearing())
 					ImGui::SetKeyboardFocusHere(0);
 
-				static std::string filter = "";
-				ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
+				ImGui::SetNextItemWidth(popupWidth - padding);
 				ImGui::InputText("##Filter", &filter, ImGuiInputTextFlags_AutoSelectAll);
 				if (!ImGui::IsItemActive() && filter.empty())
 				{
-					ImGui::SameLine(8.0f);
+					ImGui::SameLine(inputBoxPosX + padding);
 					ImGui::TextDisabled("Search");
 				}
 
@@ -302,6 +325,10 @@ bool MeshBehaviour::RenderUI()
 
 				ImGui::Separator();
 
+				ImGui::SetNextWindowSizeConstraints({ 50.0f, 50.0f }, { 500.0f, 300.0f });
+				ImGui::SetWindowSize({ popupWidth, currSize.y }, ImGuiCond_Always);
+
+				ImGui::BeginChild("ContentList", ImVec2(popupWidth - padding, 300.0f), ImGuiChildFlags_ResizeY);
 				{
 					bool isSelected = (inputTexID == -1);
 					if (ImGui::Selectable("None", isSelected))
@@ -311,7 +338,11 @@ bool MeshBehaviour::RenderUI()
 					}
 
 					if (isSelected)
+					{
 						ImGui::SetItemDefaultFocus();
+						if (ImGui::IsWindowAppearing())
+							ImGui::SetScrollHereY();
+					}
 				}
 
 				for (UINT i = 0; i < textureNames.size(); i++)
@@ -333,8 +364,13 @@ bool MeshBehaviour::RenderUI()
 					}
 
 					if (isSelected)
+					{
 						ImGui::SetItemDefaultFocus();
+						if (ImGui::IsWindowAppearing())
+							ImGui::SetScrollHereY();
+					}
 				}
+				ImGui::EndChild();
 				ImGui::EndCombo();
 			}
 
@@ -369,15 +405,22 @@ bool MeshBehaviour::RenderUI()
 			ImGui::Text("Normal:"); ImGui::SameLine(); ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x - ImGui::GetFrameHeight() - 6.0f);
 			if (ImGui::BeginCombo("", content->GetTextureName((UINT)inputNormID).c_str(), comboFlags))
 			{
+				static std::string filter = "";
+
+				ImVec2 currSize = ImGui::GetContentRegionMax();
+				const float popupMinWidth = 100.0f;
+				float padding = ImGui::GetStyle().WindowPadding.x;
+				float popupWidth = max(currSize.x - padding, popupMinWidth);
+				float inputBoxPosX = ImGui::GetCursorPosX();
+
 				if (ImGui::IsWindowAppearing())
 					ImGui::SetKeyboardFocusHere(0);
 
-				static std::string filter = "";
-				ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
+				ImGui::SetNextItemWidth(popupWidth - padding);
 				ImGui::InputText("##Filter", &filter, ImGuiInputTextFlags_AutoSelectAll);
 				if (!ImGui::IsItemActive() && filter.empty())
 				{
-					ImGui::SameLine(8.0f);
+					ImGui::SameLine(inputBoxPosX + padding);
 					ImGui::TextDisabled("Search");
 				}
 
@@ -386,6 +429,10 @@ bool MeshBehaviour::RenderUI()
 
 				ImGui::Separator();
 
+				ImGui::SetNextWindowSizeConstraints({ 50.0f, 50.0f }, { 500.0f, 300.0f });
+				ImGui::SetWindowSize({ popupWidth, currSize.y }, ImGuiCond_Always);
+
+				ImGui::BeginChild("ContentList", ImVec2(popupWidth - padding, 300.0f), ImGuiChildFlags_ResizeY);
 				{
 					bool isSelected = (inputNormID == -1);
 					if (ImGui::Selectable("None", isSelected))
@@ -395,7 +442,11 @@ bool MeshBehaviour::RenderUI()
 					}
 
 					if (isSelected)
+					{
 						ImGui::SetItemDefaultFocus();
+						if (ImGui::IsWindowAppearing())
+							ImGui::SetScrollHereY();
+					}
 				}
 
 				for (UINT i = 0; i < textureNames.size(); i++)
@@ -420,8 +471,13 @@ bool MeshBehaviour::RenderUI()
 					}
 
 					if (isSelected)
+					{
 						ImGui::SetItemDefaultFocus();
+						if (ImGui::IsWindowAppearing())
+							ImGui::SetScrollHereY();
+					}
 				}
+				ImGui::EndChild();
 				ImGui::EndCombo();
 			}
 
@@ -465,15 +521,22 @@ bool MeshBehaviour::RenderUI()
 			ImGui::Text("Specular:"); ImGui::SameLine(); ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x - ImGui::GetFrameHeight() - 6.0f);
 			if (ImGui::BeginCombo("", content->GetTextureName((UINT)inputSpecID).c_str(), comboFlags))
 			{
+				static std::string filter = "";
+
+				ImVec2 currSize = ImGui::GetContentRegionMax();
+				const float popupMinWidth = 100.0f;
+				float padding = ImGui::GetStyle().WindowPadding.x;
+				float popupWidth = max(currSize.x - padding, popupMinWidth);
+				float inputBoxPosX = ImGui::GetCursorPosX();
+
 				if (ImGui::IsWindowAppearing())
 					ImGui::SetKeyboardFocusHere(0);
 
-				static std::string filter = "";
-				ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
+				ImGui::SetNextItemWidth(popupWidth - padding);
 				ImGui::InputText("##Filter", &filter, ImGuiInputTextFlags_AutoSelectAll);
 				if (!ImGui::IsItemActive() && filter.empty())
 				{
-					ImGui::SameLine(8.0f);
+					ImGui::SameLine(inputBoxPosX + padding);
 					ImGui::TextDisabled("Search");
 				}
 
@@ -481,6 +544,11 @@ bool MeshBehaviour::RenderUI()
 					std::transform(filter.begin(), filter.end(), filter.begin(), ::tolower);
 
 				ImGui::Separator();
+
+				ImGui::SetNextWindowSizeConstraints({ 50.0f, 50.0f }, { 500.0f, 300.0f });
+				ImGui::SetWindowSize({ popupWidth, currSize.y }, ImGuiCond_Always);
+
+				ImGui::BeginChild("ContentList", ImVec2(popupWidth - padding, 300.0f), ImGuiChildFlags_ResizeY);
 				{
 					bool isSelected = (inputSpecID == -1);
 					if (ImGui::Selectable("None", isSelected))
@@ -490,7 +558,11 @@ bool MeshBehaviour::RenderUI()
 					}
 
 					if (isSelected)
+					{
 						ImGui::SetItemDefaultFocus();
+						if (ImGui::IsWindowAppearing())
+							ImGui::SetScrollHereY();
+					}
 				}
 
 				for (UINT i = 0; i < textureNames.size(); i++)
@@ -515,8 +587,13 @@ bool MeshBehaviour::RenderUI()
 					}
 
 					if (isSelected)
+					{
 						ImGui::SetItemDefaultFocus();
+						if (ImGui::IsWindowAppearing())
+							ImGui::SetScrollHereY();
+					}
 				}
+				ImGui::EndChild();
 				ImGui::EndCombo();
 			}
 
@@ -560,15 +637,22 @@ bool MeshBehaviour::RenderUI()
 			ImGui::Text("Glossiness:"); ImGui::SameLine(); ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x - ImGui::GetFrameHeight() - 6.0f);
 			if (ImGui::BeginCombo("", content->GetTextureName((UINT)inputGlossID).c_str(), comboFlags))
 			{
+				static std::string filter = "";
+
+				ImVec2 currSize = ImGui::GetContentRegionMax();
+				const float popupMinWidth = 100.0f;
+				float padding = ImGui::GetStyle().WindowPadding.x;
+				float popupWidth = max(currSize.x - padding, popupMinWidth);
+				float inputBoxPosX = ImGui::GetCursorPosX();
+
 				if (ImGui::IsWindowAppearing())
 					ImGui::SetKeyboardFocusHere(0);
 
-				static std::string filter = "";
-				ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
+				ImGui::SetNextItemWidth(popupWidth - padding);
 				ImGui::InputText("##Filter", &filter, ImGuiInputTextFlags_AutoSelectAll);
 				if (!ImGui::IsItemActive() && filter.empty())
 				{
-					ImGui::SameLine(8.0f);
+					ImGui::SameLine(inputBoxPosX + padding);
 					ImGui::TextDisabled("Search");
 				}
 
@@ -577,6 +661,10 @@ bool MeshBehaviour::RenderUI()
 
 				ImGui::Separator();
 
+				ImGui::SetNextWindowSizeConstraints({ 50.0f, 50.0f }, { 500.0f, 300.0f });
+				ImGui::SetWindowSize({ popupWidth, currSize.y }, ImGuiCond_Always);
+
+				ImGui::BeginChild("ContentList", ImVec2(popupWidth - padding, 300.0f), ImGuiChildFlags_ResizeY);
 				{
 					bool isSelected = (inputGlossID == -1);
 					if (ImGui::Selectable("None", isSelected))
@@ -586,7 +674,11 @@ bool MeshBehaviour::RenderUI()
 					}
 
 					if (isSelected)
+					{
 						ImGui::SetItemDefaultFocus();
+						if (ImGui::IsWindowAppearing())
+							ImGui::SetScrollHereY();
+					}
 				}
 
 				for (UINT i = 0; i < textureNames.size(); i++)
@@ -611,8 +703,13 @@ bool MeshBehaviour::RenderUI()
 					}
 
 					if (isSelected)
+					{
 						ImGui::SetItemDefaultFocus();
+						if (ImGui::IsWindowAppearing())
+							ImGui::SetScrollHereY();
+					}
 				}
+				ImGui::EndChild();
 				ImGui::EndCombo();
 			}
 
@@ -656,15 +753,22 @@ bool MeshBehaviour::RenderUI()
 			ImGui::Text("Ambient:"); ImGui::SameLine(); ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x - ImGui::GetFrameHeight() - 6.0f);
 			if (ImGui::BeginCombo("", content->GetTextureName((UINT)inputAmbID).c_str(), comboFlags))
 			{
+				static std::string filter = "";
+
+				ImVec2 currSize = ImGui::GetContentRegionMax();
+				const float popupMinWidth = 100.0f;
+				float padding = ImGui::GetStyle().WindowPadding.x;
+				float popupWidth = max(currSize.x - padding, popupMinWidth);
+				float inputBoxPosX = ImGui::GetCursorPosX();
+
 				if (ImGui::IsWindowAppearing())
 					ImGui::SetKeyboardFocusHere(0);
 
-				static std::string filter = "";
-				ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
+				ImGui::SetNextItemWidth(popupWidth - padding);
 				ImGui::InputText("##Filter", &filter, ImGuiInputTextFlags_AutoSelectAll);
 				if (!ImGui::IsItemActive() && filter.empty())
 				{
-					ImGui::SameLine(8.0f);
+					ImGui::SameLine(inputBoxPosX + padding);
 					ImGui::TextDisabled("Search");
 				}
 
@@ -673,6 +777,10 @@ bool MeshBehaviour::RenderUI()
 
 				ImGui::Separator();
 
+				ImGui::SetNextWindowSizeConstraints({ 50.0f, 50.0f }, { 500.0f, 300.0f });
+				ImGui::SetWindowSize({ popupWidth, currSize.y }, ImGuiCond_Always);
+
+				ImGui::BeginChild("ContentList", ImVec2(popupWidth - padding, 300.0f), ImGuiChildFlags_ResizeY);
 				{
 					bool isSelected = (inputAmbID == -1);
 					if (ImGui::Selectable("None", isSelected))
@@ -682,7 +790,11 @@ bool MeshBehaviour::RenderUI()
 					}
 
 					if (isSelected)
+					{
 						ImGui::SetItemDefaultFocus();
+						if (ImGui::IsWindowAppearing())
+							ImGui::SetScrollHereY();
+					}
 				}
 
 				for (UINT i = 0; i < textureNames.size(); i++)
@@ -704,8 +816,13 @@ bool MeshBehaviour::RenderUI()
 					}
 
 					if (isSelected)
+					{
 						ImGui::SetItemDefaultFocus();
+						if (ImGui::IsWindowAppearing())
+							ImGui::SetScrollHereY();
+					}
 				}
+				ImGui::EndChild();
 				ImGui::EndCombo();
 			}
 
@@ -748,15 +865,22 @@ bool MeshBehaviour::RenderUI()
 			ImGui::Text("Reflection:"); ImGui::SameLine(); ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x - ImGui::GetFrameHeight() - 6.0f);
 			if (ImGui::BeginCombo("", content->GetTextureName((UINT)inputReflectID).c_str(), comboFlags))
 			{
+				static std::string filter = "";
+
+				ImVec2 currSize = ImGui::GetContentRegionMax();
+				const float popupMinWidth = 100.0f;
+				float padding = ImGui::GetStyle().WindowPadding.x;
+				float popupWidth = max(currSize.x - padding, popupMinWidth);
+				float inputBoxPosX = ImGui::GetCursorPosX();
+
 				if (ImGui::IsWindowAppearing())
 					ImGui::SetKeyboardFocusHere(0);
 
-				static std::string filter = "";
-				ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
+				ImGui::SetNextItemWidth(popupWidth - padding);
 				ImGui::InputText("##Filter", &filter, ImGuiInputTextFlags_AutoSelectAll);
 				if (!ImGui::IsItemActive() && filter.empty())
 				{
-					ImGui::SameLine(8.0f);
+					ImGui::SameLine(inputBoxPosX + padding);
 					ImGui::TextDisabled("Search");
 				}
 
@@ -765,6 +889,10 @@ bool MeshBehaviour::RenderUI()
 
 				ImGui::Separator();
 
+				ImGui::SetNextWindowSizeConstraints({ 50.0f, 50.0f }, { 500.0f, 300.0f });
+				ImGui::SetWindowSize({ popupWidth, currSize.y }, ImGuiCond_Always);
+
+				ImGui::BeginChild("ContentList", ImVec2(popupWidth - padding, 300.0f), ImGuiChildFlags_ResizeY);
 				{
 					bool isSelected = (inputReflectID == -1);
 					if (ImGui::Selectable("None", isSelected))
@@ -774,7 +902,11 @@ bool MeshBehaviour::RenderUI()
 					}
 
 					if (isSelected)
+					{
 						ImGui::SetItemDefaultFocus();
+						if (ImGui::IsWindowAppearing())
+							ImGui::SetScrollHereY();
+					}
 				}
 
 				for (UINT i = 0; i < textureNames.size(); i++)
@@ -796,8 +928,13 @@ bool MeshBehaviour::RenderUI()
 					}
 
 					if (isSelected)
+					{
 						ImGui::SetItemDefaultFocus();
+						if (ImGui::IsWindowAppearing())
+							ImGui::SetScrollHereY();
+					}
 				}
+				ImGui::EndChild();
 				ImGui::EndCombo();
 			}
 
@@ -841,15 +978,22 @@ bool MeshBehaviour::RenderUI()
 			ImGui::Text("Ambient Occlusion:"); ImGui::SameLine(); ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x - ImGui::GetFrameHeight() - 6.0f);
 			if (ImGui::BeginCombo("", content->GetTextureName((UINT)inputOcclusionID).c_str(), comboFlags))
 			{
+				static std::string filter = "";
+
+				ImVec2 currSize = ImGui::GetContentRegionMax();
+				const float popupMinWidth = 100.0f;
+				float padding = ImGui::GetStyle().WindowPadding.x;
+				float popupWidth = max(currSize.x - padding, popupMinWidth);
+				float inputBoxPosX = ImGui::GetCursorPosX();
+
 				if (ImGui::IsWindowAppearing())
 					ImGui::SetKeyboardFocusHere(0);
 
-				static std::string filter = "";
-				ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
+				ImGui::SetNextItemWidth(popupWidth - padding);
 				ImGui::InputText("##Filter", &filter, ImGuiInputTextFlags_AutoSelectAll);
 				if (!ImGui::IsItemActive() && filter.empty())
 				{
-					ImGui::SameLine(8.0f);
+					ImGui::SameLine(inputBoxPosX + padding);
 					ImGui::TextDisabled("Search");
 				}
 
@@ -858,6 +1002,10 @@ bool MeshBehaviour::RenderUI()
 
 				ImGui::Separator();
 
+				ImGui::SetNextWindowSizeConstraints({ 50.0f, 50.0f }, { 500.0f, 300.0f });
+				ImGui::SetWindowSize({ popupWidth, currSize.y }, ImGuiCond_Always);
+
+				ImGui::BeginChild("ContentList", ImVec2(popupWidth - padding, 300.0f), ImGuiChildFlags_ResizeY);
 				{
 					bool isSelected = (inputOcclusionID == -1);
 					if (ImGui::Selectable("None", isSelected))
@@ -867,7 +1015,11 @@ bool MeshBehaviour::RenderUI()
 					}
 
 					if (isSelected)
+					{
 						ImGui::SetItemDefaultFocus();
+						if (ImGui::IsWindowAppearing())
+							ImGui::SetScrollHereY();
+					}
 				}
 
 				for (UINT i = 0; i < textureNames.size(); i++)
@@ -892,8 +1044,13 @@ bool MeshBehaviour::RenderUI()
 					}
 
 					if (isSelected)
+					{
 						ImGui::SetItemDefaultFocus();
+						if (ImGui::IsWindowAppearing())
+							ImGui::SetScrollHereY();
+					}
 				}
+				ImGui::EndChild();
 				ImGui::EndCombo();
 			}
 
@@ -937,15 +1094,22 @@ bool MeshBehaviour::RenderUI()
 			ImGui::Text("Sampler:"); ImGui::SameLine(); ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x - ImGui::GetFrameHeight() - 6.0f);
 			if (ImGui::BeginCombo("", content->GetSamplerName((UINT)inputSampID).c_str(), comboFlags))
 			{
+				static std::string filter = "";
+
+				ImVec2 currSize = ImGui::GetContentRegionMax();
+				const float popupMinWidth = 100.0f;
+				float padding = ImGui::GetStyle().WindowPadding.x;
+				float popupWidth = max(currSize.x - padding, popupMinWidth);
+				float inputBoxPosX = ImGui::GetCursorPosX();
+
 				if (ImGui::IsWindowAppearing())
 					ImGui::SetKeyboardFocusHere(0);
 
-				static std::string filter = "";
-				ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
+				ImGui::SetNextItemWidth(popupWidth - padding);
 				ImGui::InputText("##Filter", &filter, ImGuiInputTextFlags_AutoSelectAll);
 				if (!ImGui::IsItemActive() && filter.empty())
 				{
-					ImGui::SameLine(8.0f);
+					ImGui::SameLine(inputBoxPosX + padding);
 					ImGui::TextDisabled("Search");
 				}
 
@@ -954,6 +1118,10 @@ bool MeshBehaviour::RenderUI()
 
 				ImGui::Separator();
 
+				ImGui::SetNextWindowSizeConstraints({ 50.0f, 50.0f }, { 500.0f, 300.0f });
+				ImGui::SetWindowSize({ popupWidth, currSize.y }, ImGuiCond_Always);
+
+				ImGui::BeginChild("ContentList", ImVec2(popupWidth - padding, 300.0f), ImGuiChildFlags_ResizeY);
 				{
 					bool isSelected = (inputSampID == -1);
 					if (ImGui::Selectable("None", isSelected))
@@ -963,7 +1131,11 @@ bool MeshBehaviour::RenderUI()
 					}
 
 					if (isSelected)
+					{
 						ImGui::SetItemDefaultFocus();
+						if (ImGui::IsWindowAppearing())
+							ImGui::SetScrollHereY();
+					}
 				}
 
 				for (UINT i = 0; i < samplerNames.size(); i++)
@@ -985,8 +1157,13 @@ bool MeshBehaviour::RenderUI()
 					}
 
 					if (isSelected)
+					{
 						ImGui::SetItemDefaultFocus();
+						if (ImGui::IsWindowAppearing())
+							ImGui::SetScrollHereY();
+					}
 				}
+				ImGui::EndChild();
 				ImGui::EndCombo();
 			}
 
@@ -1026,15 +1203,22 @@ bool MeshBehaviour::RenderUI()
 			ImGui::Text("Blend State:"); ImGui::SameLine(); ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x - ImGui::GetFrameHeight() - 6.0f);
 			if (ImGui::BeginCombo("", content->GetBlendStateName((UINT)inputBlendID).c_str(), comboFlags))
 			{
+				static std::string filter = "";
+
+				ImVec2 currSize = ImGui::GetContentRegionMax();
+				const float popupMinWidth = 100.0f;
+				float padding = ImGui::GetStyle().WindowPadding.x;
+				float popupWidth = max(currSize.x - padding, popupMinWidth);
+				float inputBoxPosX = ImGui::GetCursorPosX();
+
 				if (ImGui::IsWindowAppearing())
 					ImGui::SetKeyboardFocusHere(0);
 
-				static std::string filter = "";
-				ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
+				ImGui::SetNextItemWidth(popupWidth - padding);
 				ImGui::InputText("##Filter", &filter, ImGuiInputTextFlags_AutoSelectAll);
 				if (!ImGui::IsItemActive() && filter.empty())
 				{
-					ImGui::SameLine(8.0f);
+					ImGui::SameLine(inputBoxPosX + padding);
 					ImGui::TextDisabled("Search");
 				}
 
@@ -1043,6 +1227,10 @@ bool MeshBehaviour::RenderUI()
 
 				ImGui::Separator();
 
+				ImGui::SetNextWindowSizeConstraints({ 50.0f, 50.0f }, { 500.0f, 300.0f });
+				ImGui::SetWindowSize({ popupWidth, currSize.y }, ImGuiCond_Always);
+
+				ImGui::BeginChild("ContentList", ImVec2(popupWidth - padding, 300.0f), ImGuiChildFlags_ResizeY);
 				{
 					bool isSelected = (inputBlendID == -1);
 					if (ImGui::Selectable("None", isSelected))
@@ -1052,7 +1240,11 @@ bool MeshBehaviour::RenderUI()
 					}
 
 					if (isSelected)
+					{
 						ImGui::SetItemDefaultFocus();
+						if (ImGui::IsWindowAppearing())
+							ImGui::SetScrollHereY();
+					}
 				}
 
 				for (UINT i = 0; i < blendStateNames.size(); i++)
@@ -1074,8 +1266,13 @@ bool MeshBehaviour::RenderUI()
 					}
 
 					if (isSelected)
+					{
 						ImGui::SetItemDefaultFocus();
+						if (ImGui::IsWindowAppearing())
+							ImGui::SetScrollHereY();
+					}
 				}
+				ImGui::EndChild();
 				ImGui::EndCombo();
 			}
 
@@ -1115,15 +1312,22 @@ bool MeshBehaviour::RenderUI()
 			ImGui::Text("Vertex Shader:"); ImGui::SameLine(); ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x - ImGui::GetFrameHeight() - 6.0f);
 			if (ImGui::BeginCombo("", content->GetShaderName((UINT)inputVSID).c_str(), comboFlags))
 			{
+				static std::string filter = "";
+
+				ImVec2 currSize = ImGui::GetContentRegionMax();
+				const float popupMinWidth = 100.0f;
+				float padding = ImGui::GetStyle().WindowPadding.x;
+				float popupWidth = max(currSize.x - padding, popupMinWidth);
+				float inputBoxPosX = ImGui::GetCursorPosX();
+
 				if (ImGui::IsWindowAppearing())
 					ImGui::SetKeyboardFocusHere(0);
 
-				static std::string filter = "";
-				ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
+				ImGui::SetNextItemWidth(popupWidth - padding);
 				ImGui::InputText("##Filter", &filter, ImGuiInputTextFlags_AutoSelectAll);
 				if (!ImGui::IsItemActive() && filter.empty())
 				{
-					ImGui::SameLine(8.0f);
+					ImGui::SameLine(inputBoxPosX + padding);
 					ImGui::TextDisabled("Search");
 				}
 
@@ -1132,6 +1336,10 @@ bool MeshBehaviour::RenderUI()
 
 				ImGui::Separator();
 
+				ImGui::SetNextWindowSizeConstraints({ 50.0f, 50.0f }, { 500.0f, 300.0f });
+				ImGui::SetWindowSize({ popupWidth, currSize.y }, ImGuiCond_Always);
+
+				ImGui::BeginChild("ContentList", ImVec2(popupWidth - padding, 300.0f), ImGuiChildFlags_ResizeY);
 				{
 					bool isSelected = (inputVSID == -1);
 					if (ImGui::Selectable("None", isSelected))
@@ -1141,7 +1349,11 @@ bool MeshBehaviour::RenderUI()
 					}
 
 					if (isSelected)
+					{
 						ImGui::SetItemDefaultFocus();
+						if (ImGui::IsWindowAppearing())
+							ImGui::SetScrollHereY();
+					}
 				}
 
 				for (UINT i = 0; i < shaderNames.size(); i++)
@@ -1166,8 +1378,13 @@ bool MeshBehaviour::RenderUI()
 					}
 
 					if (isSelected)
+					{
 						ImGui::SetItemDefaultFocus();
+						if (ImGui::IsWindowAppearing())
+							ImGui::SetScrollHereY();
+					}
 				}
+				ImGui::EndChild();
 				ImGui::EndCombo();
 			}
 
@@ -1207,15 +1424,22 @@ bool MeshBehaviour::RenderUI()
 			ImGui::Text("Pixel Shader:"); ImGui::SameLine(); ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x - ImGui::GetFrameHeight() - 6.0f);
 			if (ImGui::BeginCombo("", content->GetShaderName((UINT)inputPSID).c_str(), comboFlags))
 			{
+				static std::string filter = "";
+
+				ImVec2 currSize = ImGui::GetContentRegionMax();
+				const float popupMinWidth = 100.0f;
+				float padding = ImGui::GetStyle().WindowPadding.x;
+				float popupWidth = max(currSize.x - padding, popupMinWidth);
+				float inputBoxPosX = ImGui::GetCursorPosX();
+
 				if (ImGui::IsWindowAppearing())
 					ImGui::SetKeyboardFocusHere(0);
 
-				static std::string filter = "";
-				ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
+				ImGui::SetNextItemWidth(popupWidth - padding);
 				ImGui::InputText("##Filter", &filter, ImGuiInputTextFlags_AutoSelectAll);
 				if (!ImGui::IsItemActive() && filter.empty())
 				{
-					ImGui::SameLine(8.0f);
+					ImGui::SameLine(inputBoxPosX + padding);
 					ImGui::TextDisabled("Search");
 				}
 
@@ -1224,6 +1448,10 @@ bool MeshBehaviour::RenderUI()
 
 				ImGui::Separator();
 
+				ImGui::SetNextWindowSizeConstraints({ 50.0f, 50.0f }, { 500.0f, 300.0f });
+				ImGui::SetWindowSize({ popupWidth, currSize.y }, ImGuiCond_Always);
+
+				ImGui::BeginChild("ContentList", ImVec2(popupWidth - padding, 300.0f), ImGuiChildFlags_ResizeY);
 				{
 					bool isSelected = (inputPSID == -1);
 					if (ImGui::Selectable("None", isSelected))
@@ -1233,7 +1461,11 @@ bool MeshBehaviour::RenderUI()
 					}
 
 					if (isSelected)
+					{
 						ImGui::SetItemDefaultFocus();
+						if (ImGui::IsWindowAppearing())
+							ImGui::SetScrollHereY();
+					}
 				}
 
 				for (UINT i = 0; i < shaderNames.size(); i++)
@@ -1258,8 +1490,13 @@ bool MeshBehaviour::RenderUI()
 					}
 
 					if (isSelected)
+					{
 						ImGui::SetItemDefaultFocus();
+						if (ImGui::IsWindowAppearing())
+							ImGui::SetScrollHereY();
+					}
 				}
+				ImGui::EndChild();
 				ImGui::EndCombo();
 			}
 

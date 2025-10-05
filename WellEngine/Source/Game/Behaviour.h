@@ -37,6 +37,9 @@ private:
 #ifdef USE_IMGUI
 	int _uiOpen = 1; // -1 = uninitialized, 0 = close, 1 = open
 	float _uiMaxSize = -1.0f;
+	bool _uiMaximized = true;
+	bool _uiSizeDirty = true;
+	bool _uiIsResizing = false;
 #endif
 
 	Entity *_entity = nullptr;
@@ -142,6 +145,15 @@ public:
 
 	[[nodiscard]] float GetUISize() const;
 	void SetUISize(float maxSize);
+
+	[[nodiscard]] bool GetUIMaximized() const;
+	void SetUIMaximized(bool state);
+
+	[[nodiscard]] bool IsResizingUI() const;
+	void SetResizingUI(bool state);
+
+	[[nodiscard]] bool IsUIDirty() const;
+	void SetUIDirty(bool state);
 
 	[[nodiscard]] bool InitialRenderUI();
 #endif

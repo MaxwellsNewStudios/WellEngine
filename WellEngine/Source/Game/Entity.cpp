@@ -1292,9 +1292,22 @@ bool Entity::InitialRenderUI()
 
 			if (ImGui::CollapsingHeader(behaviour.Get()->GetName().c_str()))
 			{
-				float size = behaviour.Get()->GetUISize();
-				if (size > 0.0f)
-					ImGui::SetNextWindowSizeConstraints(ImVec2(-1.0f, 1.0f), ImVec2(-1.0f, size));
+				float maxSize = behaviour.Get()->GetUISize();
+				bool maximized = behaviour.Get()->GetUIMaximized();
+
+				if (maxSize > 0.0f)
+				{
+					if (!behaviour.Get()->IsResizingUI() && behaviour.Get()->IsUIDirty() && maximized)
+					{
+						ImGui::SetNextWindowSize(ImVec2(-1.0f, maxSize), ImGuiCond_Always);
+					}
+					else
+					{
+						ImGui::SetNextWindowSizeConstraints(ImVec2(-1.0f, 1.0f), ImVec2(-1.0f, maxSize));
+					}
+
+					behaviour.Get()->SetUIDirty(false);
+				}
 
 				ImGui::BeginChild("Behaviour", ImVec2(0, 800.0f), ImGuiChildFlags_Border | ImGuiChildFlags_ResizeY);
 
@@ -1306,14 +1319,34 @@ bool Entity::InitialRenderUI()
 					return false;
 				}
 
+				float windowSize = ImGui::GetWindowSize().y;
 				float newMaxSize = ImGui::GetCursorPosY() + ImGui::GetStyle().WindowPadding.y;
-				ImGui::EndChild();
+				ImGuiID resizeBorderID = ImGui::GetWindowResizeBorderID(ImGui::GetCurrentWindow(), ImGuiDir_Down);
 
-				if (!ImGui::IsItemVisible())
-					newMaxSize = -1.0f;
+				ImGui::EndChild();
 				
 				if (behaviour.IsValid())
+				{
+					bool resizing = ImGui::GetActiveID() == resizeBorderID;
+					behaviour.Get()->SetResizingUI(resizing);
+
+					if (resizing)
+					{
+						behaviour.Get()->SetUIDirty(true);
+						behaviour.Get()->SetUIMaximized(windowSize >= newMaxSize);
+					}
+					else if (maximized && maxSize != newMaxSize)
+					{
+						behaviour.Get()->SetUIDirty(true);
+					}
+
+					if (!ImGui::IsItemVisible())
+					{
+						newMaxSize = -1.0f;
+					}
+
 					behaviour.Get()->SetUISize(newMaxSize);
+				}
 			}
 			ImGui::PopID();
 		}

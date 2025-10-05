@@ -40,7 +40,7 @@ Game::~Game()
 	_immediateContext.Reset();
 	_window = {};
 
-#ifdef _DEBUG
+#if defined(_DEBUG) && defined(DEBUG_BUILD)
 	if (DebugData::Get().reportComObjectsOnShutdown)
 	{
 		ID3D11Device *devicePtr = _device.Get();
@@ -907,6 +907,7 @@ bool Game::Setup(TimeUtils &time, Window window)
 		_pendingSceneChange.clear();
 	}
 
+#ifdef DEBUG_BUILD
 #ifdef _DEBUG
 	_graphics.notifications.emplace_back("Debug", 0);
 #endif
@@ -915,6 +916,7 @@ bool Game::Setup(TimeUtils &time, Window window)
 #endif
 #if (MESH_COLLISION_DETAIL_REDUCTION == 3)
 	_graphics.notifications.emplace_back("Mesh Collision Disabled", 2, 15.0f);
+#endif
 #endif
 
 	// Create worker thread
