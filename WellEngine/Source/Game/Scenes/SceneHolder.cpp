@@ -100,6 +100,40 @@ namespace SceneContents
 
 		return ent;
 	}
+	Entity *SceneIterator::RootStep(bool skipInvalid, bool skipDisabled)
+	{
+		Entity *ent = nullptr;
+
+		// Repeat until we find a valid root entity or reach the end.
+		while (true)
+		{
+			if (_current == _end)
+				return nullptr;
+
+			ent = (*_current)->entity;
+			++_current;
+
+			if (!skipInvalid)
+			{
+				if (!ent)
+					continue;
+
+				if (ent->IsRemoved())
+					continue;
+			}
+
+			if (skipDisabled)
+				if (!ent->IsEnabled())
+					continue;
+
+			if (ent->GetParent() != nullptr)
+				continue;
+
+			break;
+		}
+
+		return ent;
+	}
 	[[nodiscard]] Entity *SceneIterator::Peek() const
 	{
 		if (_current == _end)

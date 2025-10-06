@@ -5687,17 +5687,39 @@ bool Graphics::RenderSceneView()
 			ImVec4 severityColor;
 			switch (notification.severity)
 			{
-			default:
-			case NotificationMessage::SeverityColor::White:		severityColor = { 1.0f, 1.0f, 1.0f, 1 }; break;
-			case NotificationMessage::SeverityColor::Green:		severityColor = { 0.0f, 1.0f, 0.0f, 1 }; break;
-			case NotificationMessage::SeverityColor::Yellow:	severityColor = { 1.0f, 1.0f, 0.0f, 1 }; break;
-			case NotificationMessage::SeverityColor::Orange:	severityColor = { 1.0f, 0.5f, 0.0f, 1 }; break;
-			case NotificationMessage::SeverityColor::Red:		severityColor = { 1.0f, 0.0f, 0.0f, 1 }; break;
-			case NotificationMessage::SeverityColor::Blue:		severityColor = { 0.0f, 0.0f, 1.0f, 1 }; break;
-			case NotificationMessage::SeverityColor::Magenta:	severityColor = { 1.0f, 0.0f, 1.0f, 1 }; break;
-			case NotificationMessage::SeverityColor::Cyan:		severityColor = { 0.0f, 1.0f, 1.0f, 1 }; break;
-			case NotificationMessage::SeverityColor::Black:		severityColor = { 0.0f, 0.0f, 0.0f, 1 }; break;
-			case NotificationMessage::SeverityColor::Gray:		severityColor = { 0.5f, 0.5f, 0.5f, 1 }; break;
+				default:
+				case NotificationMessage::SeverityColor::White:		severityColor = { 1.0f, 1.0f, 1.0f, 1 }; break;
+				case NotificationMessage::SeverityColor::Green:		severityColor = { 0.0f, 1.0f, 0.0f, 1 }; break;
+				case NotificationMessage::SeverityColor::Yellow:	severityColor = { 1.0f, 1.0f, 0.0f, 1 }; break;
+				case NotificationMessage::SeverityColor::Orange:	severityColor = { 1.0f, 0.5f, 0.0f, 1 }; break;
+				case NotificationMessage::SeverityColor::Red:		severityColor = { 1.0f, 0.0f, 0.0f, 1 }; break;
+				case NotificationMessage::SeverityColor::Blue:		severityColor = { 0.0f, 0.0f, 1.0f, 1 }; break;
+				case NotificationMessage::SeverityColor::Magenta:	severityColor = { 1.0f, 0.0f, 1.0f, 1 }; break;
+				case NotificationMessage::SeverityColor::Cyan:		severityColor = { 0.0f, 1.0f, 1.0f, 1 }; break;
+				case NotificationMessage::SeverityColor::Black:		severityColor = { 0.0f, 0.0f, 0.0f, 1 }; break;
+				case NotificationMessage::SeverityColor::Gray:		severityColor = { 0.5f, 0.5f, 0.5f, 1 }; break;
+
+				case NotificationMessage::SeverityColor::Rainbow: 
+				{
+					ImGui::ColorConvertHSVtoRGB(
+						std::fmodf(ImGui::GetTime() * 0.3f, 1.0f),	// hue
+						0.9f,										// saturation
+						0.9f,										// value
+						severityColor.x, 
+						severityColor.y, 
+						severityColor.z
+					);
+					severityColor.w = 1.0f;
+					break;
+				}
+			}
+
+			if (notification.blinkFrequency > 0.0f)
+			{
+				// binary blink
+				float phase = fmodf(notification.blinkFrequency * ImGui::GetTime(), 1.0f);
+				if (phase > 0.6f)
+					severityColor.w = 0.0f;
 			}
 
 			ImGuiUtils::BeginFont("DroidSans", notification.fontSize);

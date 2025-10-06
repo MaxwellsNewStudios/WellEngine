@@ -51,6 +51,7 @@ void DebugData::SaveState()
 		settingsObj.AddMember("Window Size Y", data.windowSizeY, docAlloc);
 		settingsObj.AddMember("Scene View Size X", data.sceneViewSizeX, docAlloc);
 		settingsObj.AddMember("Scene View Size Y", data.sceneViewSizeY, docAlloc);
+		settingsObj.AddMember("Hierarchy Show Hidden", data.hierarchyShowHidden, docAlloc);
 		settingsObj.AddMember("UI Layout", SerializerUtils::SerializeString(data.layoutName, docAlloc), docAlloc);
 		settingsObj.AddMember("Active Scene", SerializerUtils::SerializeString(data.activeScene, docAlloc), docAlloc);
 		settingsObj.AddMember("Billboard Gizmos Draw", data.billboardGizmosDraw, docAlloc);
@@ -167,6 +168,10 @@ void DebugData::LoadState()
 		memberName = "Scene View Size Y";
 		if (settings.HasMember(memberName.c_str()))
 			data.sceneViewSizeY = settings[memberName.c_str()].GetInt();
+
+		memberName = "Hierarchy Show Hidden";
+		if (settings.HasMember(memberName.c_str()))
+			data.hierarchyShowHidden = settings[memberName.c_str()].GetBool();
 
 		memberName = "UI Layout";
 		if (settings.HasMember(memberName.c_str()))

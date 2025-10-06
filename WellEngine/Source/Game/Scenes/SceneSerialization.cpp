@@ -216,6 +216,15 @@ bool Scene::Serialize(bool asSaveFile)
 	}
 #endif
 
+#ifdef USE_IMGUI
+	auto &n = _graphics->notifications.emplace_back(
+		std::format("Scene '{}' saved!", _sceneName), 
+		NotificationMessage::SeverityColor::Blue,
+		5.0f, 
+		24.0f
+	);
+#endif
+
 	return true;
 }
 bool Scene::SerializeEntity(json::Document::AllocatorType &docAlloc, json::Value &obj, Entity *entity, bool forceSerialize)
@@ -266,6 +275,7 @@ bool Scene::SerializeEntity(json::Document::AllocatorType &docAlloc, json::Value
 		obj.AddMember("Static", entity->IsStatic(), docAlloc);
 		obj.AddMember("Select", entity->IsDebugSelectable(), docAlloc);
 		obj.AddMember("InTree", _sceneHolder.IsEntityIncludedInTree(entity), docAlloc);
+		obj.AddMember("Hidden", entity->GetShowInHierarchy(true), docAlloc);
 
 		json::Value behArr(json::kArrayType);
 		UINT count = entity->GetBehaviourCount();
@@ -533,7 +543,7 @@ bool Scene::DeserializeEntity(const json::Value &obj, Entity **out)
 			entTrans->SetScale(To3(scale));
 
 			ent->SetName(name);
-			ent->SetDeserializedID(deserializedID); // HACK: Doesnt work if prefab children reference the prefab root
+			ent->SetDeserializedID(deserializedID); // HACK: Doesn't work if prefab children reference the prefab root
 			ent->SetEnabledSelf(enabled);
 		}
 		else
@@ -547,6 +557,10 @@ bool Scene::DeserializeEntity(const json::Value &obj, Entity **out)
 		bool isSelectable = obj["Select"].GetBool();
 		bool hasVolume = obj["InTree"].GetBool();
 
+		bool showInHierarchy = true;
+		if (obj.HasMember("Hidden"))
+			showInHierarchy = !obj["Hidden"].GetBool();
+
 		// Create the entity
 		constexpr dx::BoundingOrientedBox bounds = dx::BoundingOrientedBox({}, { .1f,.1f,.1f }, { 0,0,0,1 });
 		if (!CreateEntity(&ent, name, bounds, hasVolume))
@@ -559,6 +573,7 @@ bool Scene::DeserializeEntity(const json::Value &obj, Entity **out)
 		ent->SetEnabledSelf(enabled);
 		ent->SetStatic(isStatic);
 		ent->SetDebugSelectable(isSelectable);
+		ent->SetShowInHierarchy(showInHierarchy);
 
 		auto entTrans = ent->GetTransform();
 		entTrans->SetPosition(To3(pos));

@@ -116,6 +116,42 @@ struct OutlineSettingsBuffer
 	float _padding[1];
 };
 
+#ifdef USE_IMGUI
+struct NotificationMessage
+{
+	enum class SeverityColor
+	{
+		White = 0, // Default
+		Green,	   // Info
+		Yellow,	   // Notice
+		Orange,	   // Warning
+		Red,	   // Problem
+
+		// Misc
+		Blue,
+		Magenta,
+		Cyan,
+		Black,
+		Gray,
+
+		// Special
+		Rainbow,
+	};
+
+	std::string message, id = "";
+	SeverityColor severity;
+	float duration;
+	float fontSize;
+	float blinkFrequency = -1.0f;
+
+	NotificationMessage(std::string message, SeverityColor severity = SeverityColor::White, float duration = -1.0f, float fontSize = 16.0f, float blinkFrequency = -1.0f)
+		: message(std::move(message)), severity(severity), duration(duration), fontSize(fontSize), blinkFrequency(blinkFrequency) {	}
+
+	NotificationMessage(std::string message, int severity = 0, float duration = -1.0f, float fontSize = 16.0f, float blinkFrequency = -1.0f)
+		: message(std::move(message)), severity((SeverityColor)severity), duration(duration), fontSize(fontSize), blinkFrequency(blinkFrequency) { }
+};
+#endif
+
 /// Handles rendering of the scene and the GUI.
 class Graphics
 {
@@ -396,35 +432,6 @@ public:
 	[[nodiscard]] bool EndSceneRender(TimeUtils &time);
 
 #ifdef USE_IMGUI
-	struct NotificationMessage
-	{
-		enum class SeverityColor
-		{
-			White = 0, // Default
-			Green,	   // Info
-			Yellow,	   // Notice
-			Orange,	   // Warning
-			Red,	   // Problem
-
-			// Misc
-			Blue,
-			Magenta,
-			Cyan,
-			Black,
-			Gray,
-		};
-
-		std::string message, id = "";
-		SeverityColor severity;
-		float duration;
-		float fontSize;
-
-		NotificationMessage(std::string message, SeverityColor severity = SeverityColor::White, float duration = -1.0f, float fontSize = 16.0f)
-			: message(std::move(message)), severity(severity), duration(duration), fontSize(fontSize) { }
-
-		NotificationMessage(std::string message, int severity = 0, float duration = -1.0f, float fontSize = 16.0f)
-			: message(std::move(message)), severity((SeverityColor)severity), duration(duration), fontSize(fontSize) { }
-	};
 	std::vector<NotificationMessage> notifications;
 
 	NotificationMessage *GetNotification(const std::string &id)

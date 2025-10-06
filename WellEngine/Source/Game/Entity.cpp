@@ -4,6 +4,7 @@
 #include "Behaviours/Debug/DebugPlayerBehaviour.h"
 #include "Behaviours/Rendering/Mesh/MeshBehaviour.h"
 #include "BehaviourFactory.h"
+#include "Source/Engine/Debug/DebugData.h"
 
 #ifdef LEAK_DETECTION
 #define new			DEBUG_NEW
@@ -653,9 +654,12 @@ void Entity::SetDeserializedID(UINT id)
 	_deserializedID = id;
 }
 
-bool Entity::GetShowInHierarchy() const
+bool Entity::GetShowInHierarchy(bool ignoreShowHidden) const
 {
-	return _showInHierarchy;
+	if (_showInHierarchy || ignoreShowHidden)
+		return _showInHierarchy;
+
+	return DebugData::Get().hierarchyShowHidden;
 }
 void Entity::SetShowInHierarchy(bool show)
 {
@@ -854,12 +858,40 @@ bool Entity::InitialRender(const RenderQueuer &queuer, const RendererInfo &rende
 #ifdef USE_IMGUI
 bool Entity::UIContextMenu()
 {
-	if (ImGui::MenuItem("Select Siblings"))
+	DebugPlayerBehaviour *debugPlayer = _scene->GetDebugPlayer();
+
+	if (ImGui::MenuItem("Select Siblings") && debugPlayer)
 	{
-		// TODO
+		std::vector<Entity *> siblings;
+
+		if (_parent)
+		{
+			siblings.reserve(_parent->_children.size());
+
+			for (auto &child : _parent->_children)
+			{
+				if (!child->GetShowInHierarchy())
+					continue;
+				siblings.emplace_back(child);
+			}
+		}
+		else if (SceneHolder *sceneHolder = _scene->GetSceneHolder()) // No parent, select all root entities
+		{
+			auto entIter = sceneHolder->GetEntities();
+			siblings.reserve(sceneHolder->GetEntityCount());
+
+			while (Entity *ent = entIter.RootStep(true))
+			{
+				if (!ent->GetShowInHierarchy())
+					continue;
+				siblings.emplace_back(ent);
+			}
+		}
+		
+		debugPlayer->Select(siblings.data(), siblings.size(), true);
 	}
 
-	if (ImGui::MenuItem("Select Children"))
+	if (ImGui::MenuItem("Select Children") && debugPlayer)
 	{
 		// TODO
 	}
@@ -1348,6 +1380,10 @@ bool Entity::InitialRenderUI()
 		ImGui::Text("References: %d", GetRefs().size());
 
 		ImGui::Separator();
+
+		bool hidden = !_showInHierarchy;
+		ImGui::Checkbox("Hidden", &hidden);
+		_showInHierarchy = !hidden;
 
 		ImGui::Checkbox("Static", &_isStatic);
 		ImGui::Checkbox("Selectable", &_isDebugSelectable);

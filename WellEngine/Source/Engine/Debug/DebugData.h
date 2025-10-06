@@ -26,6 +26,7 @@ public:
 	int			windowSizeY					= WINDOW_HEIGHT;
 	int			sceneViewSizeX				= WINDOW_WIDTH;
 	int			sceneViewSizeY				= WINDOW_HEIGHT;
+	bool		hierarchyShowHidden			= false;
 	std::string layoutName					= "Default";
 	std::string activeScene					= "Cave";
 	bool		billboardGizmosDraw			= false;

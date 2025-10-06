@@ -156,7 +156,7 @@ public:
 	[[nodiscard]] UINT GetDeserializedID() const;
 	void SetDeserializedID(UINT id);
 
-	[[nodiscard]] bool GetShowInHierarchy() const;
+	[[nodiscard]] bool GetShowInHierarchy(bool ignoreShowHidden = false) const;
 	void SetShowInHierarchy(bool show);
 
 	[[nodiscard]] bool HasBounds(bool includeTriggers, dx::BoundingOrientedBox &out);

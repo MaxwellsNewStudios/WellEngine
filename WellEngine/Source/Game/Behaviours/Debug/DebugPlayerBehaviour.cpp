@@ -39,6 +39,8 @@ bool DebugPlayerBehaviour::Start()
 		}
 	}
 
+	GetEntity()->SetShowInHierarchy(false);
+
 	// Create main camera
 	{
 		Entity *ent = nullptr;
@@ -48,6 +50,7 @@ bool DebugPlayerBehaviour::Start()
 			return false;
 		}
 		ent->GetTransform()->SetPosition({ 0.0f, 2.0f, -3.0f });
+		ent->SetParent(GetEntity(), true);
 
 		ProjectionInfo projInfo = ProjectionInfo(
 			65.0f * (XM_PI / 180.0f), 
@@ -78,6 +81,7 @@ bool DebugPlayerBehaviour::Start()
 			ErrMsg("Failed to create OrthoCamera entity!");
 			return false;
 		}
+		ent->SetParent(GetEntity(), true);
 
 		Transform &camTrans = *ent->GetTransform();
 		const BoundingBox &sceneBounds = scene->GetSceneHolder()->GetBounds();

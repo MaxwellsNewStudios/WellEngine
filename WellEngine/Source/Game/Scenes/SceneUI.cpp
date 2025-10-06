@@ -659,7 +659,9 @@ bool Scene::RenderHierarchyUI()
 {
 	if (ImGui::TreeNode("Advanced"))
 	{
-		ImGui::Text("Objects in Scene: %d", _sceneHolder.GetEntityCount());
+		ImGui::Text("Objects: %d", _sceneHolder.GetEntityCount());
+
+		ImGui::Checkbox("Show Hidden", &DebugData::Get().hierarchyShowHidden);
 
 		if (!ImGuiUtils::Utils::GetWindow(_sceneName + "Hierarchy", nullptr))
 		{
@@ -1302,8 +1304,8 @@ bool Scene::RenderEntityCreatorUI()
 
 bool Scene::RenderSceneUI()
 {
-	using namespace dx;
 	ZoneScopedC(RandomUniqueColor());
+	using namespace dx;
 
 	if (ImGui::CollapsingHeader("Creation"))
 	{
@@ -2165,8 +2167,8 @@ bool Scene::RenderSceneUI()
 #ifdef USE_IMGUIZMO
 bool Scene::RenderGizmoUI()
 {
+	ZoneScopedXC(RandomUniqueColor());
 	using namespace dx;
-	ZoneScopedX;
 
 	if (!_viewCamera)
 		return true;

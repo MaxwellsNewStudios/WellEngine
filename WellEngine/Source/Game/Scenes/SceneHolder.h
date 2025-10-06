@@ -78,6 +78,7 @@ namespace SceneContents
 		}
 
 		Entity *Step(bool skipInvalid = true, bool skipDisabled = false);
+		Entity *RootStep(bool skipInvalid = true, bool skipDisabled = false);
 		[[nodiscard]] Entity *Peek() const;
 
 		TESTABLE()
