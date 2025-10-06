@@ -41,6 +41,7 @@ public:
 	bool		graphicsEmissionEnabled		= true;
 	bool		graphicsDofEnabled			= false;
 	bool		graphicsOutlineEnabled		= true;
+	bool		graphicsScenePointFiltering	= false;
 
 
 	[[nodiscard]] static inline DebugData &Get()

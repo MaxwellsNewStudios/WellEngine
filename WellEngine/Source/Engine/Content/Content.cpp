@@ -73,6 +73,8 @@ bool Content::RenderUI(ID3D11Device *device)
 
 		if (ImGui::BeginTabBar("HierarchyTab"))
 		{
+			SamplerD3D11 *pointSampler = GetSampler("Point");
+
 			ImGuiChildFlags texViewChildFlags = 0;
 			texViewChildFlags |= ImGuiChildFlags_Borders;
 			texViewChildFlags |= ImGuiChildFlags_ResizeY;
@@ -351,11 +353,17 @@ bool Content::RenderUI(ID3D11Device *device)
 						{
 							if (ImGui::BeginTooltip())
 							{
+								if (pointSampler)
+									ImGui::GetWindowDrawList()->AddCallback(ImDrawCallback_ImplDX11_SetSampler, pointSampler->GetSamplerState());
+
 								ImGui::Image(
 									(ImTextureID)texData.GetSRV(),
 									ImVec2(imageHeight * aspectRatio, imageHeight),
 									ImVec2(1, 1), ImVec2(0, 0)
 								);
+
+								if (pointSampler)
+									ImGui::GetWindowDrawList()->AddCallback(ImDrawCallback_ImplDX11_SetSampler, NULL);
 
 								std::string dimName;
 								switch (texture->data.GetDim())

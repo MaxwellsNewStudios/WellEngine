@@ -1447,6 +1447,7 @@ bool Game::RenderUI(TimeUtils &time)
 			{
 				bool sceneValid = ActiveSceneIsValid();
 
+				// Layout Save / Load
 				{
 					static std::string selectedLoadout = "";
 					static std::string styleName = "";
@@ -1626,6 +1627,9 @@ bool Game::RenderUI(TimeUtils &time)
 				}
 
 				ImGui::MenuItem("Stretch to Fit", NULL, &debugData.stretchToFitView);
+
+				if (ImGui::MenuItem("Point Filtering", NULL, &debugData.graphicsScenePointFiltering))
+					_graphics.SetScenePointFiltering(debugData.graphicsScenePointFiltering);
 
 				ImGui::SeparatorText("Gizmos");
 

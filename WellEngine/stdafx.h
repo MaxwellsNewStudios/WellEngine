@@ -67,6 +67,7 @@ using Microsoft::WRL::ComPtr;
 #include "Dependencies/ImGui/imgui_stdlib.h"
 #include "Dependencies/ImPlot/implot.h"
 
+#include "Source/Engine/UI/ImGuiExtensions.h"
 #include "Source/Engine/UI/Fonts/IconsCodicons.h"
 #include "Source/Engine/UI/Fonts/IconsFontAwesome6.h"
 #include "Source/Engine/UI/Fonts/IconsForkAwesome.h"

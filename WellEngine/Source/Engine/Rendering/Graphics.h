@@ -267,6 +267,8 @@ private:
 #endif
 
 #ifdef USE_IMGUI
+	ComPtr<ID3D11SamplerState> _sceneSampler = nullptr;
+
 	D3D11_RASTERIZER_DESC _shadowRasterizerDesc = { };
 	D3D11_BLEND_DESC _transparentBlendDesc = { };
 #endif
@@ -434,6 +436,8 @@ public:
 		}
 		return nullptr;
 	}
+
+	void SetScenePointFiltering(bool state);
 
 	[[nodiscard]] bool BeginUIRender();
 	[[nodiscard]] bool EndUIRender() const;

@@ -76,4 +76,4 @@
 #define ZoneTransientXN( varname, name, active ) 		
 #define ZoneTransientXNC( varname, name, color, active )
 #define max(a, b)
-#define TESTABLE() friend class TestUtility;
+#define TESTABLE() friend class TestUtility;#define IMGUI_IMPL_API

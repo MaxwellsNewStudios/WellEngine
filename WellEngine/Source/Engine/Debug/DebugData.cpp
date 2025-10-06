@@ -65,6 +65,7 @@ void DebugData::SaveState()
 		settingsObj.AddMember("Enable Emission", data.graphicsEmissionEnabled, docAlloc);
 		settingsObj.AddMember("Enable Depth of Field", data.graphicsDofEnabled, docAlloc);
 		settingsObj.AddMember("Enable Outline", data.graphicsOutlineEnabled, docAlloc);
+		settingsObj.AddMember("Scene Point Filtering", data.graphicsScenePointFiltering, docAlloc);
 	}
 	doc.SetObject().AddMember("Settings", settingsObj, docAlloc);
 
@@ -222,6 +223,10 @@ void DebugData::LoadState()
 		memberName = "Enable Outline";
 		if (settings.HasMember(memberName.c_str()))
 			data.graphicsOutlineEnabled = settings[memberName.c_str()].GetBool();
+
+		memberName = "Scene Point Filtering";
+		if (settings.HasMember(memberName.c_str()))
+			data.graphicsScenePointFiltering = settings[memberName.c_str()].GetBool();
 	}
 }
 #endif

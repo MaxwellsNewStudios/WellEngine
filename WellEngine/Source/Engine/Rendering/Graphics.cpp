@@ -296,10 +296,15 @@ bool Graphics::Setup(bool fullscreen, const UINT width, const UINT height, const
 #endif
 
 #ifdef DEBUG_BUILD
-	_renderFogFX = DebugData::Get().graphicsFogEnabled;
-	_renderEmissionFX = DebugData::Get().graphicsEmissionEnabled;
-	_renderDepthOfFieldFX = DebugData::Get().graphicsDofEnabled;
-	_renderOutlineFX = DebugData::Get().graphicsOutlineEnabled;
+	auto &debugData = DebugData::Get();
+
+	_renderFogFX = debugData.graphicsFogEnabled;
+	_renderEmissionFX = debugData.graphicsEmissionEnabled;
+	_renderDepthOfFieldFX = debugData.graphicsDofEnabled;
+	_renderOutlineFX = debugData.graphicsOutlineEnabled;
+
+	if (!_sceneSampler)
+		SetScenePointFiltering(DebugData::Get().graphicsScenePointFiltering);
 #endif
 
 	_isSetup = true;
@@ -4237,6 +4242,21 @@ bool Graphics::RenderPostFX()
 }
 
 #ifdef USE_IMGUI
+void Graphics::SetScenePointFiltering(bool state)
+{
+	D3D11_SAMPLER_DESC desc{};
+	desc.Filter = state ? D3D11_FILTER_MIN_MAG_MIP_POINT : D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+	desc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+	desc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+	desc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+	desc.MipLODBias = 0.f;
+	desc.ComparisonFunc = D3D11_COMPARISON_ALWAYS;
+	desc.MinLOD = 0.f;
+	desc.MaxLOD = 0.f;
+
+	_device->CreateSamplerState(&desc, _sceneSampler.ReleaseAndGetAddressOf());
+}
+
 bool Graphics::BeginUIRender()
 {
 	ZoneScopedXC(RandomUniqueColor());
@@ -5644,9 +5664,15 @@ bool Graphics::RenderSceneView()
 
 	ImGui::SetCursorPos(sceneViewPos);
 	ImGui::BeginChild("SceneViewChild", sceneViewSize, ImGuiChildFlags_None, windowFlags);
-
 	ImGui::SetCursorPos({0, 0});
+
+	if (_sceneSampler)
+		ImGui::GetWindowDrawList()->AddCallback(ImDrawCallback_ImplDX11_SetSampler, _sceneSampler.Get());
+
 	ImGui::Image((ImTextureID)_intermediateRT.GetSRV(), sceneViewSize);
+
+	if (_sceneSampler)
+		ImGui::GetWindowDrawList()->AddCallback(ImDrawCallback_ImplDX11_SetSampler, NULL);
 
 	if (!notifications.empty())
 	{
@@ -5711,7 +5737,6 @@ ImGuiID Graphics::GetBackgroundDockID() const
 {
 	return _backgroundDockID;
 }
-
 #endif
 
 bool Graphics::ScreenSpaceRender()
