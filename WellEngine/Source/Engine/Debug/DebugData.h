@@ -39,7 +39,7 @@ public:
 	bool		reportComObjectsOnShutdown	= false;
 	bool		graphicsFogEnabled			= true;
 	bool		graphicsEmissionEnabled		= true;
-	bool		graphicsDofEnabled			= true;
+	bool		graphicsDofEnabled			= false;
 	bool		graphicsOutlineEnabled		= true;
 
 

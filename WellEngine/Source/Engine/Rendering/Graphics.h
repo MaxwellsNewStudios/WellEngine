@@ -163,7 +163,7 @@ private:
 	bool _renderPostFX = true;
 	bool _renderFogFX = true;
 	bool _renderEmissionFX = true;
-	bool _renderDepthOfFieldFX = true;
+	bool _renderDepthOfFieldFX = false;
 	bool _renderOutlineFX = true;
 	bool _wireframe = false;
 	uint8_t _vSync = 1;
