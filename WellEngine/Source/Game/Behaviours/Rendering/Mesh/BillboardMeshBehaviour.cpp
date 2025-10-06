@@ -22,6 +22,7 @@ BillboardMeshBehaviour::BillboardMeshBehaviour(const Material &material,
 	_keepUpright = keepUpright;
 	_gizmo = isGizmo;
 }
+
 BillboardMeshBehaviour::~BillboardMeshBehaviour()
 {
 #ifdef DEBUG_BUILD
@@ -82,6 +83,7 @@ bool BillboardMeshBehaviour::Start()
 			debugPlayer->AddGizmoBillboard(this);
 
 		_meshBehaviour.Get()->SetAlphaCutoff(0.5f);
+		_meshBehaviour.Get()->GetEntity()->SetShowInHierarchy(false);
 	}
 #endif
 

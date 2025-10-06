@@ -58,13 +58,26 @@ bool Scene::RenderEntityHierarchyUI(Entity *root, UINT depth, const std::string 
 		ImGui::SetCursorPosX(indentedXPos);
 		ImGui::PushID(("Ent:" + std::to_string(entID)).c_str());
 
+		bool hasVisibleChild = false;
+		if (root->GetChildCount() > 0)
+		{
+			for (const Entity *const &child : *root->GetChildren())
+			{
+				if (!child->GetShowInHierarchy())
+					continue;
+
+				hasVisibleChild = true;
+				break;
+			}
+		}
+
 		// Collapse arrow
 		{
 			ImVec2 originalCursorPos = ImGui::GetCursorPos();
 			ImGui::Dummy({ arrowSize.x, frameHeight });
 			ImGui::SameLine(0.0f, 2.0f);
 
-			if (root->GetChildCount() > 0)
+			if (hasVisibleChild)
 			{
 				ImVec2 arrowCursorPos = originalCursorPos;
 				arrowCursorPos.y += 0.5f * (frameHeight - arrowSize.y);
@@ -254,6 +267,17 @@ bool Scene::RenderEntityHierarchyUI(Entity *root, UINT depth, const std::string 
 				ImGui::SetTooltip("Prefab Instance '%s'", root->GetPrefabName().c_str());
 		}
 
+		if (!root->GetShowInHierarchy(true))
+		{
+			ImGui::SameLine();
+			ImGuiUtils::BeginFont(FONT_ICON_FILE_NAME_FAR, 12.0f);
+			ImGui::Text(ICON_FA_EYE_SLASH);
+			ImGuiUtils::EndFont();
+
+			if (ImGui::IsItemHovered())
+				ImGui::SetTooltip("Hidden Entity");
+		}
+
 		float rightEdgeX = ImGui::GetContentRegionAvail().x - 6.0f;
 
 		const ImVec2 dockButtonRect = { 28, 20 };
@@ -331,7 +355,7 @@ bool Scene::RenderEntityHierarchyUI(Entity *root, UINT depth, const std::string 
 		}
 
 		// Recurse Children
-		if (!isCollapsed)
+		if (hasVisibleChild && !isCollapsed)
 		{
 			const std::vector<Entity *> *currChildren = root->GetChildren();
 			std::vector<Ref<Entity>> tempChildrenVec;
