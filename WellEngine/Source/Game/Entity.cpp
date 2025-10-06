@@ -852,6 +852,97 @@ bool Entity::InitialRender(const RenderQueuer &queuer, const RendererInfo &rende
 }
 
 #ifdef USE_IMGUI
+bool Entity::UIContextMenu()
+{
+	if (ImGui::MenuItem("Select Siblings"))
+	{
+		// TODO
+	}
+
+	if (ImGui::MenuItem("Select Children"))
+	{
+		// TODO
+	}
+
+	ImGui::Separator();
+
+	if (ImGui::MenuItem("New Sibling"))
+	{
+		// TODO
+	}
+
+	if (ImGui::MenuItem("New Child"))
+	{
+		// TODO
+	}
+
+	ImGui::Separator();
+
+	if (ImGui::MenuItem("Align View With"))
+	{
+		// TODO
+	}
+
+	if (ImGui::MenuItem("Align With View"))
+	{
+		// TODO
+	}
+
+	if (ImGui::MenuItem("Move View Focus To"))
+	{
+		// TODO
+	}
+
+	if (ImGui::MenuItem("Move To View Focus"))
+	{
+		// TODO
+	}
+
+	ImGui::Separator();
+
+	if (ImGui::MenuItem("New Prefab"))
+	{
+		// TODO
+	}
+
+	if (IsPrefab())
+	{
+		if (ImGui::MenuItem("Overwrite Prefab"))
+		{
+			// TODO
+		}
+
+		if (ImGui::MenuItem("Reset Prefab"))
+		{
+			// TODO
+		}
+
+		if (ImGui::MenuItem("Unlink from Prefab"))
+		{
+			// TODO
+		}
+	}
+
+	if (ImGui::MenuItem("Replace with Prefab"))
+	{
+		// TODO
+	}
+
+	ImGui::Separator();
+
+	if (ImGui::MenuItem("Copy"))
+	{
+		// TODO
+	}
+
+	if (ImGui::MenuItem("Remove"))
+	{
+		// TODO
+	}
+
+	return true;
+}
+
 bool Entity::InitialRenderUI()
 {
 	DebugPlayerBehaviour *debugPlayer = _scene->GetDebugPlayer();

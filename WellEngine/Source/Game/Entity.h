@@ -173,6 +173,7 @@ public:
 	[[nodiscard]] bool InitialBeforeRender();
 	[[nodiscard]] bool InitialRender(const RenderQueuer &queuer, const RendererInfo &rendererInfo);
 #ifdef USE_IMGUI
+	[[nodiscard]] bool UIContextMenu();
 	[[nodiscard]] bool InitialRenderUI();
 	void SetVisibleInHierarchy(bool visible, float height) { _visibleInHierarchy = visible; _lastHeightInHierarchy = height; }
 	[[nodiscard]] bool IsVisibleInHierarchy(float &height) const { height = _lastHeightInHierarchy; return _visibleInHierarchy; }

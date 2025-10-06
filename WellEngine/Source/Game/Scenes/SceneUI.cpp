@@ -221,6 +221,39 @@ bool Scene::RenderEntityHierarchyUI(Entity *root, UINT depth, const std::string 
 			}
 		}
 
+		// Right-click Context Menu
+		{
+			std::string ctxID = std::format("EntCtxMenu:{}:{}", entID, GetUID());
+
+			if (ImGui::IsMouseReleased(ImGuiMouseButton_Right) && ImGui::IsItemHovered())
+				ImGui::OpenPopup(ctxID.c_str());
+
+			if (ImGui::BeginPopupContextItem(ctxID.c_str()))
+			{
+				if (!root->UIContextMenu())
+				{
+					ImGui::EndPopup();
+					ImGui::PopID();
+					ImGui::EndGroup();
+					ErrMsg("Entity context menu failed!");
+					return false;
+				}
+
+				ImGui::EndPopup();
+			}			
+		}
+
+		if (root->IsPrefab())
+		{
+			ImGui::SameLine();
+			ImGuiUtils::BeginFont(FONT_ICON_FILE_NAME_FAR, 12.0f);
+			ImGui::Text(ICON_FA_FILE_POWERPOINT);
+			ImGuiUtils::EndFont();
+
+			if (ImGui::IsItemHovered())
+				ImGui::SetTooltip("Prefab Instance '%s'", root->GetPrefabName().c_str());
+		}
+
 		float rightEdgeX = ImGui::GetContentRegionAvail().x - 6.0f;
 
 		const ImVec2 dockButtonRect = { 28, 20 };
