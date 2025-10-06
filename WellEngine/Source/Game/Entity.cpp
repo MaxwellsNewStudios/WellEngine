@@ -891,85 +891,85 @@ bool Entity::UIContextMenu()
 		debugPlayer->Select(siblings.data(), siblings.size(), true);
 	}
 
-	if (ImGui::MenuItem("Select Children") && debugPlayer)
+	if (ImGui::MenuItem("[TODO] Select Children") && debugPlayer)
 	{
-		// TODO
+
 	}
 
 	ImGui::Separator();
 
-	if (ImGui::MenuItem("New Sibling"))
+	if (ImGui::MenuItem("[TODO] New Sibling"))
 	{
-		// TODO
+		
 	}
 
-	if (ImGui::MenuItem("New Child"))
+	if (ImGui::MenuItem("[TODO] New Child"))
 	{
-		// TODO
-	}
-
-	ImGui::Separator();
-
-	if (ImGui::MenuItem("Align View With"))
-	{
-		// TODO
-	}
-
-	if (ImGui::MenuItem("Align With View"))
-	{
-		// TODO
-	}
-
-	if (ImGui::MenuItem("Move View Focus To"))
-	{
-		// TODO
-	}
-
-	if (ImGui::MenuItem("Move To View Focus"))
-	{
-		// TODO
+		
 	}
 
 	ImGui::Separator();
 
-	if (ImGui::MenuItem("New Prefab"))
+	if (ImGui::MenuItem("[TODO] Align View With"))
 	{
-		// TODO
+		
+	}
+
+	if (ImGui::MenuItem("[TODO] Align With View"))
+	{
+		
+	}
+
+	if (ImGui::MenuItem("[TODO] Move View Focus To"))
+	{
+		
+	}
+
+	if (ImGui::MenuItem("[TODO] Move To View Focus"))
+	{
+		
+	}
+
+	ImGui::Separator();
+
+	if (ImGui::MenuItem("[TODO] New Prefab"))
+	{
+		
 	}
 
 	if (IsPrefab())
 	{
-		if (ImGui::MenuItem("Overwrite Prefab"))
+		if (ImGui::MenuItem("[TODO] Overwrite Prefab"))
 		{
-			// TODO
+			
 		}
 
-		if (ImGui::MenuItem("Reset Prefab"))
+		if (ImGui::MenuItem("[TODO] Reset Prefab"))
 		{
-			// TODO
+			
 		}
 
-		if (ImGui::MenuItem("Unlink from Prefab"))
+		if (ImGui::MenuItem("[TODO] Unlink from Prefab"))
 		{
-			// TODO
+			
 		}
 	}
 
-	if (ImGui::MenuItem("Replace with Prefab"))
+	if (ImGui::MenuItem("[TODO] Replace with Prefab"))
 	{
-		// TODO
+		
 	}
 
 	ImGui::Separator();
 
-	if (ImGui::MenuItem("Copy"))
+	if (ImGui::MenuItem("[TODO] Copy"))
 	{
-		// TODO
+		
 	}
 
-	if (ImGui::MenuItem("Remove"))
+	if (ImGui::MenuItem("[TODO] Remove"))
 	{
-		// TODO
+		
 	}
 
 	return true;
