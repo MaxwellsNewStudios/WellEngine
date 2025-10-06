@@ -66,6 +66,13 @@ using Microsoft::WRL::ComPtr;
 #include "Dependencies/ImGui/imgui_impl_dx11.h"
 #include "Dependencies/ImGui/imgui_stdlib.h"
 #include "Dependencies/ImPlot/implot.h"
+
+#include "Source/Engine/UI/Fonts/IconsCodicons.h"
+#include "Source/Engine/UI/Fonts/IconsFontAwesome6.h"
+#include "Source/Engine/UI/Fonts/IconsForkAwesome.h"
+#include "Source/Engine/UI/Fonts/IconsLucide.h"
+#include "Source/Engine/UI/Fonts/IconsMaterialDesignIcons.h"
+#include "Source/Engine/UI/Fonts/IconsMaterialSymbols.h"
 #endif
 
 #ifdef USE_IMGUIZMO

@@ -161,6 +161,8 @@
 #ifdef USE_IMGUI
 #define ASSETS_EDITOR_PATH				ASSET_PATH "\\Editor"
 #define ASSETS_EDITOR_PATH_LAYOUTS		ASSETS_EDITOR_PATH "\\Layouts"
+
+#define BEHAVIOURS_PATH					"../WellEngine/Source/Game/Behaviours"
 #endif
 
 #define PATH_FILE(path, file)			std::format("{}\\{}", path, file)

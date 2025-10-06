@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "Behaviour.h"
+#include "BehaviourRegistry.h"
 #include "Behaviours/Rendering/Camera/CameraBehaviour.h"
 #include "Source/Engine/Rendering/RenderQueuer.h"
 #include "Scenes/Scene.h"
@@ -377,6 +378,27 @@ void Behaviour::SetUIDirty(bool state)
 
 bool Behaviour::InitialRenderUI()
 {
+	ImGuiUtils::BeginButtonStyle(ImGuiUtils::StyleType::Yellow);
+	ImGuiUtils::BeginFont(FONT_ICON_FILE_NAME_LC, 14.0f);
+	if (ImGui::Button(ICON_LC_WRENCH))
+	{
+		// Get path from Behaviour Registry
+		const std::string &behCategory = BehaviourRegistry::GetCategories().at(_name);
+		std::string scriptPath = std::format(BEHAVIOURS_PATH "/{}{}.cpp", behCategory, _name);
+
+		// Replace all / with \ for Windows
+		std::replace(scriptPath.begin(), scriptPath.end(), '/', '\\');
+
+		DbgMsgF("Opening '{}'", scriptPath);
+
+		// Open script with default program
+		ShellExecuteA(nullptr, "open", scriptPath.c_str(), nullptr, nullptr, SW_SHOW);
+	}
+	ImGuiUtils::EndFont();
+	ImGuiUtils::EndButtonStyle();
+	ImGui::SetItemTooltip("Open Script");
+
+	ImGui::SameLine(0.0f, 10.0f);
 	ImGuiUtils::BeginButtonStyle(ImGuiUtils::StyleType::Red);
 	if (ImGui::Button("Delete", { 60, 20 }))
 	{

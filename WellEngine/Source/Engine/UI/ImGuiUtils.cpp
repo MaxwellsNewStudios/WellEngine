@@ -82,10 +82,29 @@ void ImGuiUtils::BeginButtonStyle(StyleType style)
 		activeCol = ImColor::HSV(0.0f, 0.75f, 0.7f);
 		break;
 
+	case ImGuiUtils::StyleType::Green:
+		buttonCol = ImColor::HSV(0.33f, 0.55f, 0.5f);
+		hoveredCol = ImColor::HSV(0.33f, 0.65f, 0.6f);
+		activeCol = ImColor::HSV(0.33f, 0.75f, 0.7f);
+		break;
+
+	case ImGuiUtils::StyleType::Yellow:
+		buttonCol = ImColor::HSV(0.16f, 0.55f, 0.5f);
+		hoveredCol = ImColor::HSV(0.16f, 0.65f, 0.6f);
+		activeCol = ImColor::HSV(0.16f, 0.75f, 0.7f);
+		break;
+
+	case ImGuiUtils::StyleType::Cornflower:
+		buttonCol = ImColor::HSV(0.60694f, 0.578f, 0.929f);
+		hoveredCol = ImColor::HSV(0.60694f, 0.678f, 1.0f);
+		activeCol = ImColor::HSV(0.60694f, 0.778f, 1.0f);
+		break;
+
 	default:
 		ErrMsg("Style not implemented!");
 		break;
 	}
+
 	ImGui::PushStyleColor(ImGuiCol_Button, (ImVec4)buttonCol);
 	ImGui::PushStyleColor(ImGuiCol_ButtonHovered, (ImVec4)hoveredCol);
 	ImGui::PushStyleColor(ImGuiCol_ButtonActive, (ImVec4)activeCol);

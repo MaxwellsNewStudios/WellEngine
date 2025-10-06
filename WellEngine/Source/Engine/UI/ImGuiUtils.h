@@ -14,6 +14,8 @@ namespace ImGuiUtils
 	{
 		Green,
 		Red,
+		Yellow,
+		Cornflower,
 	};
 	void BeginButtonStyle(StyleType style);
 	void EndButtonStyle();
