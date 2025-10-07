@@ -373,6 +373,7 @@
     <ClInclude Include="Source\Engine\Debug\DebugNew.h" />
     <ClInclude Include="Source\Engine\Debug\ErrMsg.h" />
     <ClInclude Include="Source\Engine\UI\Fonts\IconsCodicons.h" />
+    <ClInclude Include="Source\Engine\UI\Fonts\IconsFontaudio.h" />
     <ClInclude Include="Source\Engine\UI\Fonts\IconsFontAwesome6.h" />
     <ClInclude Include="Source\Engine\UI\Fonts\IconsForkAwesome.h" />
     <ClInclude Include="Source\Engine\UI\Fonts\IconsLucide.h" />

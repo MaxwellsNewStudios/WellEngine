@@ -2,6 +2,7 @@
 #include "stdafx.h"
 #include "ImGuiUtils.h"
 #include "Source/Engine/Debug/DebugData.h"
+#include <stack>
 
 using namespace ImGuiUtils;
 
@@ -70,48 +71,75 @@ void ImGuiUtils::LockMouseOnActive()
 	}
 }
 
+static std::stack<StyleType> &GetStyleStack()
+{
+	static std::stack<StyleType> styleStack;
+	return styleStack;
+}
 void ImGuiUtils::BeginButtonStyle(StyleType style)
 {
-	ImColor buttonCol, hoveredCol, activeCol;
+	std::stack<StyleType> &styleStack = GetStyleStack();
+	styleStack.push(style);
 
 	switch (style)
 	{
 	case ImGuiUtils::StyleType::Red:
-		buttonCol = ImColor::HSV(0.0f, 0.55f, 0.5f);
-		hoveredCol = ImColor::HSV(0.0f, 0.65f, 0.6f);
-		activeCol = ImColor::HSV(0.0f, 0.75f, 0.7f);
+		ImGui::PushStyleColor(ImGuiCol_Button, (ImVec4)ImColor::HSV(0.0f, 0.55f, 0.5f));
+		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, (ImVec4)ImColor::HSV(0.0f, 0.65f, 0.6f));
+		ImGui::PushStyleColor(ImGuiCol_ButtonActive, (ImVec4)ImColor::HSV(0.0f, 0.75f, 0.7f));
 		break;
 
 	case ImGuiUtils::StyleType::Green:
-		buttonCol = ImColor::HSV(0.33f, 0.55f, 0.5f);
-		hoveredCol = ImColor::HSV(0.33f, 0.65f, 0.6f);
-		activeCol = ImColor::HSV(0.33f, 0.75f, 0.7f);
+		ImGui::PushStyleColor(ImGuiCol_Button, (ImVec4)ImColor::HSV(0.33f, 0.55f, 0.5f));
+		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, (ImVec4)ImColor::HSV(0.33f, 0.65f, 0.6f));
+		ImGui::PushStyleColor(ImGuiCol_ButtonActive, (ImVec4)ImColor::HSV(0.33f, 0.75f, 0.7f));
 		break;
 
 	case ImGuiUtils::StyleType::Yellow:
-		buttonCol = ImColor::HSV(0.16f, 0.55f, 0.5f);
-		hoveredCol = ImColor::HSV(0.16f, 0.65f, 0.6f);
-		activeCol = ImColor::HSV(0.16f, 0.75f, 0.7f);
+		ImGui::PushStyleColor(ImGuiCol_Button, (ImVec4)ImColor::HSV(0.16f, 0.7f, 0.6f));
+		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, (ImVec4)ImColor::HSV(0.16f, 0.8f, 0.7f));
+		ImGui::PushStyleColor(ImGuiCol_ButtonActive, (ImVec4)ImColor::HSV(0.16f, 0.9f, 0.8f));
+		ImGui::PushStyleColor(ImGuiCol_Text, (ImVec4)ImColor::HSV(0.0f, 0.0f, 1.0f));
 		break;
-
+		
 	case ImGuiUtils::StyleType::Cornflower:
-		buttonCol = ImColor::HSV(0.60694f, 0.578f, 0.929f);
-		hoveredCol = ImColor::HSV(0.60694f, 0.678f, 1.0f);
-		activeCol = ImColor::HSV(0.60694f, 0.778f, 1.0f);
+		ImGui::PushStyleColor(ImGuiCol_Button, (ImVec4)ImColor::HSV(0.60694f, 0.578f, 0.929f));
+		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, (ImVec4)ImColor::HSV(0.60694f, 0.678f, 1.0f));
+		ImGui::PushStyleColor(ImGuiCol_ButtonActive, (ImVec4)ImColor::HSV(0.60694f, 0.778f, 1.0f));
+		ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0,0,0,1));
 		break;
-
+		
 	default:
-		ErrMsg("Style not implemented!");
+		Warn("Style not implemented!");
 		break;
 	}
-
-	ImGui::PushStyleColor(ImGuiCol_Button, (ImVec4)buttonCol);
-	ImGui::PushStyleColor(ImGuiCol_ButtonHovered, (ImVec4)hoveredCol);
-	ImGui::PushStyleColor(ImGuiCol_ButtonActive, (ImVec4)activeCol);
 }
 void ImGuiUtils::EndButtonStyle()
 {
-	ImGui::PopStyleColor(3);
+	std::stack<StyleType> &styleStack = GetStyleStack();
+	if (styleStack.empty())
+	{
+		ErrMsg("Style stack underflow!");
+		return;
+	}
+
+	switch (styleStack.top())
+	{
+	case ImGuiUtils::StyleType::Red:
+	case ImGuiUtils::StyleType::Green:
+		ImGui::PopStyleColor(3);
+		break;
+
+	case ImGuiUtils::StyleType::Yellow:
+	case ImGuiUtils::StyleType::Cornflower:
+		ImGui::PopStyleColor(4);
+		break;
+
+	default:
+		Warn("Style not implemented!");
+		break;
+	}
+	styleStack.pop();
 }
 
 bool ImGuiUtils::BeginFont(const std::string &name, float scale)

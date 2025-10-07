@@ -4597,7 +4597,7 @@ bool Graphics::RenderUI(TimeUtils &time)
 						_currFogSettings.maxSteps = max(maxSteps, 0);
 					ImGuiUtils::LockMouseOnActive();
 
-					if (ImGui::DragInt("Blur Iterations", &_fogBlurIterations, 1, 0, 16))
+					if (ImGui::DragInt("Blur Iterations", &_fogBlurIterations, 0.1f, 0, 16))
 					{
 						constexpr float clearFog[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
 						_context->ClearRenderTargetView(_fogRT.GetRTV(), clearFog);
@@ -4758,7 +4758,7 @@ bool Graphics::RenderUI(TimeUtils &time)
 					ImGui::DragFloat("Threshold", &_currEmissionSettings.threshold, 0.01f);
 					ImGuiUtils::LockMouseOnActive();
 
-					if (ImGui::DragInt("Blur Iterations", &_emissionBlurIterations, 1, 0, 16))
+					if (ImGui::DragInt("Blur Iterations", &_emissionBlurIterations, 0.1f, 0, 16))
 					{
 						constexpr float clearBlur[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
 						_context->ClearRenderTargetView(_blurRT.GetRTV(), clearBlur);
@@ -5079,7 +5079,7 @@ bool Graphics::RenderUI(TimeUtils &time)
 
 					ImGui::SliderFloat("Smoothing", &_outlineSettings.smoothing, 0.0f, 1.0f);
 
-					if (ImGui::DragInt("Blur Iterations", &_outlineBlurIterations, 1, 0, 16))
+					if (ImGui::DragInt("Blur Iterations", &_outlineBlurIterations, 0.1f, 0, 16))
 					{
 						constexpr float clearOutline[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
 						_context->ClearRenderTargetView(_outlineRT.GetRTV(), clearOutline);

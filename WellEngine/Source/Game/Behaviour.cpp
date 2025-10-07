@@ -379,8 +379,9 @@ void Behaviour::SetUIDirty(bool state)
 bool Behaviour::InitialRenderUI()
 {
 	ImGuiUtils::BeginButtonStyle(ImGuiUtils::StyleType::Yellow);
-	ImGuiUtils::BeginFont(FONT_ICON_FILE_NAME_LC, 14.0f);
-	if (ImGui::Button(ICON_LC_WRENCH))
+	ImGuiUtils::BeginFont(FONT_ICON_FILE_NAME_FAS, 18.0f);
+	float codeButtonWidth = ImGui::CalcTextSize(ICON_FA_FILE_CODE).x + ImGui::GetStyle().FramePadding.x * 2.0f + 4.0f;
+	if (ImGui::Button(ICON_FA_FILE_CODE, ImVec2(codeButtonWidth, 25.0f)))
 	{
 		// Get path from Behaviour Registry
 		const std::string &behCategory = BehaviourRegistry::GetCategories().at(_name);
@@ -396,11 +397,11 @@ bool Behaviour::InitialRenderUI()
 	}
 	ImGuiUtils::EndFont();
 	ImGuiUtils::EndButtonStyle();
-	ImGui::SetItemTooltip("Open Script");
+	ImGui::SetItemTooltip("Open Script in Default Editor");
 
 	ImGui::SameLine(0.0f, 10.0f);
 	ImGuiUtils::BeginButtonStyle(ImGuiUtils::StyleType::Red);
-	if (ImGui::Button("Delete", { 60, 20 }))
+	if (ImGui::Button("Delete", { 60.0f, 25.0f }))
 	{
 		_entity->RemoveBehaviour(this);
 		ImGuiUtils::EndButtonStyle();
@@ -431,9 +432,9 @@ bool Behaviour::InitialRenderUI()
 	ImGui::SameLine(0.0f, refTextoffset);
 	ImGui::Text(refText.c_str());
 
-	ImGui::Dummy({ 0, 2 });
+	ImGui::Dummy({ 0.0f, 0.0f });
 	ImGui::Separator();
-	ImGui::Dummy({0, 2});
+	ImGui::Dummy({ 0.0f, 2.0f });
 
 	return RenderUI();
 }
