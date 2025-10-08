@@ -907,7 +907,7 @@ void Graphics::SetSkyboxShaderID(UINT shaderID)
 
 	if (!shaderName.starts_with("PS_Skybox"))
 	{
-		Warn(std::format("Failed to set skybox shader ID, shader '{}' is not a skybox pixel shader!", shaderName));
+		WarnF("Failed to set skybox shader ID, shader '{}' is not a skybox pixel shader!", shaderName.c_str());
 		return;
 	}
 
@@ -2313,8 +2313,7 @@ bool Graphics::RenderOutlinedGeometry()
 				// Get the LOD index.
 				lodIndex = static_cast<UINT>(normalizedDist * (subMeshCount - 1));
 
-				//DbgMsg(std::format("Mesh '{}', LOD [{} / {}] at dist ({})!", _content->GetMeshName(resources.meshID), lodIndex + 1, subMeshCount, dist));
-				Assert(lodIndex < subMeshCount, std::format("The chosen LOD level ({}) exceeds the meshes LOD count ({})!", lodIndex, subMeshCount));
+				AssertF(lodIndex < subMeshCount, "The chosen LOD level ({}) exceeds the meshes LOD count ({})!", lodIndex, subMeshCount);
 
 				meshBehaviour->SetLastUsedLOD(lodIndex, normalizedDist);
 			}
@@ -2453,7 +2452,7 @@ bool Graphics::RenderGeometry(bool overlayStage, bool skipPixelShader)
 
 		if (!meshBehaviour)
 		{
-			Warn(std::format("Skipping rendering for non-mesh #{}!", entity_i));
+			WarnF("Skipping rendering for non-mesh #{}!", entity_i);
 			continue;
 		}
 
@@ -2701,8 +2700,7 @@ bool Graphics::RenderGeometry(bool overlayStage, bool skipPixelShader)
 			// Get the LOD index.
 			lodIndex = static_cast<UINT>(normalizedDist * (subMeshCount - 1));
 
-			//DbgMsg(std::format("Mesh '{}', LOD [{} / {}] at dist ({})!", _content->GetMeshName(resources.meshID), lodIndex + 1, subMeshCount, dist));
-			Assert(lodIndex < subMeshCount, std::format("The chosen LOD level ({}) exceeds the meshes LOD count ({})!", lodIndex, subMeshCount));
+			AssertF(lodIndex < subMeshCount, "The chosen LOD level ({}) exceeds the meshes LOD count ({})!", lodIndex, subMeshCount);
 
 			meshBehaviour->SetLastUsedLOD(lodIndex, normalizedDist);
 		}
@@ -3303,8 +3301,7 @@ bool Graphics::RenderTransparency(
 			// Get the LOD index.
 			lodIndex = static_cast<UINT>(normalizedDist * (subMeshCount - 1));
 
-			//DbgMsg(std::format("Mesh '{}', LOD [{} / {}] at dist ({})!", _content->GetMeshName(resources.meshID), lodIndex + 1, subMeshCount, dist));
-			Assert(lodIndex < subMeshCount, std::format("The chosen LOD level ({}) exceeds the meshes LOD count ({})!", lodIndex, subMeshCount));
+			AssertF(lodIndex < subMeshCount, "The chosen LOD level ({}) exceeds the meshes LOD count ({})!", lodIndex, subMeshCount);
 
 			meshBehaviour->SetLastUsedLOD(lodIndex, normalizedDist);
 		}

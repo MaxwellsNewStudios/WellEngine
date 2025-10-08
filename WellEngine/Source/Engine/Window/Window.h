@@ -5,7 +5,6 @@
 #include <d3d11.h>
 #include <wrl/client.h>
 
-
 enum class WindowType
 {
 	MAIN,

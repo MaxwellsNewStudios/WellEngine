@@ -259,7 +259,8 @@ bool Scene::RenderEntityHierarchyUI(Entity *root, UINT depth, const std::string 
 		if (root->IsPrefab())
 		{
 			ImGui::SameLine();
-			ImGuiUtils::BeginFont(FONT_ICON_FILE_NAME_FAR, 12.0f);
+			ImGui::SetCursorPosY(ImGui::GetCursorPosY() - 2.0f);
+			ImGuiUtils::BeginFont(FONT_ICON_FILE_NAME_FAR, 14.0f);
 			ImGui::Text(ICON_FA_FILE_POWERPOINT);
 			ImGuiUtils::EndFont();
 
@@ -376,7 +377,6 @@ bool Scene::RenderEntityHierarchyUI(Entity *root, UINT depth, const std::string 
 				ImGui::Dummy({ ImGui::GetContentRegionAvail().x, 5.0f });
 				float dummyDropTargetHeight = ImGui::GetItemRectSize().y;
 				ImVec2 nextCursorPos = ImGui::GetCursorPos();
-				nextCursorPos.y -= 5.0f;
 
 				if (ImGui::BeginDragDropTarget())
 				{
@@ -453,7 +453,7 @@ bool Scene::RenderEntityHierarchyUI(Entity *root, UINT depth, const std::string 
 				}
 
 				ImGui::SameLine(entityButtonPosX + addedIndenting, 0.0f);
-				ImGui::SetCursorPosY(dummyDropTargetPosY + (0.5f * dummyDropTargetHeight) - 1.0f);
+				ImGui::SetCursorPosY(dummyDropTargetPosY + (0.5f * dummyDropTargetHeight));
 				ImGui::Separator();
 
 				ImGui::SetCursorPos(nextCursorPos);
@@ -578,7 +578,7 @@ bool Scene::RenderEntityHierarchyUI(Entity *root, UINT depth, const std::string 
 			}
 
 			ImGui::SameLine(entityButtonPosX, 0.0f);
-			ImGui::SetCursorPosY(dummyDropTargetPosY + (0.5f * dummyDropTargetHeight) - 1.0f);
+			ImGui::SetCursorPosY(dummyDropTargetPosY + (0.5f * dummyDropTargetHeight));
 			ImGui::Separator();
 
 			ImGui::SetCursorPos(nextCursorPos);

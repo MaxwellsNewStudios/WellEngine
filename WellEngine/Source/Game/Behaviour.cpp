@@ -25,7 +25,7 @@ Behaviour::~Behaviour()
 
 bool Behaviour::Initialize(Entity *entity, const std::string &behaviourName)
 {
-	ZoneScopedXC(RandomUniqueColor());
+	ZoneScopedC(RandomUniqueColor());
 
 	if (_isInitialized)
 	{
@@ -54,15 +54,15 @@ bool Behaviour::Initialize(Entity *entity, const std::string &behaviourName)
 		return false;
 	}
 
-#ifdef TRACY_DETAILED
-	std::string zoneName = std::format("Behaviour Initialize '{}'", GetName());
-	ZoneTextX(zoneName.c_str(), zoneName.size());
-#endif
+	if (_isDestroyed)
+		return true;
 
 #ifdef DEBUG_BUILD
 	if (_name.empty())
 		Warn("Behaviour name is empty! Did you forget to assign a name in Start?");
 #endif
+
+	ZoneTextX(_name, _name.size());
 
 	_isInitialized = true;
 	return true;
@@ -75,11 +75,10 @@ bool Behaviour::IsInitialized() const
 void Behaviour::Destroy()
 {
 	ZoneScopedC(RandomUniqueColor());
+	std::string zoneName = std::format("Destroy '{}'", GetName());
+	ZoneTextX(zoneName.c_str(), zoneName.size());
 
 	if (_isDestroyed)
-		return;
-
-	if (!_isInitialized)
 		return;
 
 	if (!_entity)

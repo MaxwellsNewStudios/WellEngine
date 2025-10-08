@@ -10,7 +10,7 @@ SequenceStatus TimelineManager::RunSequence(const std::string &sequenceName, Tra
 	auto it = _sequences.find(sequenceName);
 	if (it == _sequences.end())
 	{
-		Warn("Sequence not found: " + sequenceName);
+		WarnF("Sequence not found: {}", sequenceName);
 		return SequenceStatus::INVALID_SEQUENCE;
 	}
 
@@ -18,7 +18,6 @@ SequenceStatus TimelineManager::RunSequence(const std::string &sequenceName, Tra
 		return SequenceStatus::ALREADY_RUNNING;
 
 	_runningSequences.emplace_back(sequenceName);
-	DbgMsg("Running sequence " + sequenceName);
 	return it->second.Run(transform, loop, lerpToStart);
 }
 
@@ -27,7 +26,7 @@ SequenceStatus TimelineManager::StopSequence(const std::string &sequenceName)
 	auto it = _sequences.find(sequenceName);
 	if (it == _sequences.end())
 	{
-		Warn("Sequence not found: " + sequenceName);
+		WarnF("Sequence not found: {}", sequenceName);
 		return SequenceStatus::INVALID_SEQUENCE;
 	}
 
@@ -56,14 +55,14 @@ bool TimelineManager::AddSequence(const std::string &sequenceName, TimelineSeque
 {
 	if (!sequence.Validate())
 	{
-		Warn("Sequence is invalid: " + sequence.GetError());
+		WarnF("Sequence is invalid: {}", sequence.GetError());
 		return true;
 	}
 
 	auto it = _sequences.find(sequenceName);
 	if (it != _sequences.end())
 	{
-		Warn("Sequence already exists: " + sequenceName);
+		WarnF("Sequence already exists: {}", sequenceName);
 		return true;
 	}
 
@@ -76,13 +75,13 @@ bool TimelineManager::RemoveSequence(const std::string &sequenceName)
 	auto it = _sequences.find(sequenceName);
 	if (it == _sequences.end())
 	{
-		Warn("Sequence not found: " + sequenceName);
+		WarnF("Sequence not found: {}", sequenceName);
 		return true;
 	}
 	
 	if (it->second.GetStatus() == SequenceStatus::RUNNING)
 	{
-		Warn("Cannot remove running sequence: " + sequenceName);
+		WarnF("Cannot remove running sequence: {}", sequenceName);
 		return true;
 	}
 
@@ -104,7 +103,7 @@ bool TimelineManager::Serialize(std::string *code)
 
 		// Serialize the sequence
 		if (!sequence.second.Serialize(code))
-			Warn("Failed to serialize sequence: " + sequence.first);
+			WarnF("Failed to serialize sequence: {}", sequence.first);
 
 		*code += "\n";
 	}
@@ -143,7 +142,7 @@ bool TimelineManager::Deserialize()
 		TimelineSequence sequence = TimelineSequence();
 		sequence.SetType(sequenceType);
 		if (!sequence.Deserialize(line))
-			Warn("Failed to deserialize sequence: " + sequenceName);
+			WarnF("Failed to deserialize sequence: {}", sequenceName);
 		
 		// Insert sequence into map
 		_sequences.try_emplace(sequenceName, sequence);
@@ -372,7 +371,7 @@ bool TimelineManager::RenderUI(Transform *transform)
 					if (!newSequence.Validate())
 					{
 						error = newSequence.GetError();
-						Warn("Sequence is invalid: " + error);
+						WarnF("Sequence is invalid: {}", error);
 						ImGui::OpenPopup("Error");
 					}
 					else
@@ -552,7 +551,7 @@ TimelineSequence TimelineManager::GetSequence(const std::string &sequenceName) c
 	auto it = _sequences.find(sequenceName);
 	if (it == _sequences.end())
 	{
-		Warn("Sequence not found: " + sequenceName);
+		WarnF("Sequence not found: {}", sequenceName);
 		return TimelineSequence();
 	}
 	return it->second;

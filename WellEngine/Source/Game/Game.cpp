@@ -590,7 +590,7 @@ bool Game::Setup(TimeUtils &time, Window window)
 				}
 				else
 				{
-					Warn(std::format("Invalid command: '{}'", line));
+					WarnF("Invalid command: '{}'", line);
 					continue;
 				}
 
@@ -610,7 +610,7 @@ bool Game::Setup(TimeUtils &time, Window window)
 						auto equalPos = param.find('=');
 						if (equalPos == std::string::npos)
 						{
-							Warn(std::format("Invalid parameter format: '{}'", param));
+							WarnF("Invalid parameter format: '{}'", param.c_str());
 							continue;
 						}
 
@@ -655,7 +655,7 @@ bool Game::Setup(TimeUtils &time, Window window)
 					}
 					else
 					{
-						Warn(std::format("Unknown texture parameter: '{}'", key));
+						WarnF("Unknown texture parameter: '{}'", key.c_str());
 					}
 				}
 

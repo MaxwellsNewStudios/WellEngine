@@ -667,6 +667,7 @@
     <None Include="Source\Shaders\Headers\BlurParams.hlsli" />
     <None Include="Source\Shaders\Headers\Common.hlsli" />
     <None Include="Source\Shaders\Headers\DefaultMaterial.hlsli" />
+    <None Include="Source\Shaders\Headers\Helpers.hlsli" />
     <None Include="Source\Shaders\Headers\LightData.hlsli" />
     <None Include="Source\Shaders\Headers\LightSampling.hlsli" />
   </ItemGroup>

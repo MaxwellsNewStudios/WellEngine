@@ -385,7 +385,7 @@ bool TimelineSequence::Deserialize(const std::string &code)
 	{
 		TimelineWaypoint waypoint;
 		if (!waypoint.Deserialize(waypoints[i]))
-			Warn("Failed to deserialize waypoint " + std::to_string(i));
+			WarnF("Failed to deserialize waypoint {}", i);
 
 		AddWaypoint(waypoint);
 	}
@@ -402,7 +402,7 @@ const TimelineWaypoint *TimelineSequence::GetWaypoint(int index)
 {
 	if (index < 0 || index >= _waypoints.size())
 	{
-		Warn("Invalid waypoint index: " + std::to_string(index));
+		WarnF("Invalid waypoint index: {}", index);
 		return nullptr;
 	}
 	return &_waypoints[index];

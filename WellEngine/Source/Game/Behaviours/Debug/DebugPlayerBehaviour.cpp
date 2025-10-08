@@ -29,12 +29,8 @@ bool DebugPlayerBehaviour::Start()
 	{
 		if (scene->GetDebugPlayer() != this)
 		{
-			if (!sceneHolder->RemoveEntity(GetEntity()))
-			{
-				ErrMsg("Failed to remove second DebugPlayerBehaviour entity!");
-				return false;
-			}
-
+			Warn("Scene already has a DebugPlayerBehaviour, destroying this one.");
+			Destroy();
 			return true;
 		}
 	}

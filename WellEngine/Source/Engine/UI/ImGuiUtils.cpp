@@ -71,14 +71,14 @@ void ImGuiUtils::LockMouseOnActive()
 	}
 }
 
-static std::stack<StyleType> &GetStyleStack()
+static std::stack<StyleType> &GetStyleStackEx()
 {
 	static std::stack<StyleType> styleStack;
 	return styleStack;
 }
 void ImGuiUtils::BeginButtonStyle(StyleType style)
 {
-	std::stack<StyleType> &styleStack = GetStyleStack();
+	std::stack<StyleType> &styleStack = GetStyleStackEx();
 	styleStack.push(style);
 
 	switch (style)
@@ -116,7 +116,7 @@ void ImGuiUtils::BeginButtonStyle(StyleType style)
 }
 void ImGuiUtils::EndButtonStyle()
 {
-	std::stack<StyleType> &styleStack = GetStyleStack();
+	std::stack<StyleType> &styleStack = GetStyleStackEx();
 	if (styleStack.empty())
 	{
 		ErrMsg("Style stack underflow!");

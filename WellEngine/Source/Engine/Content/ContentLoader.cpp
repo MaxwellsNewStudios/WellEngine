@@ -1081,7 +1081,7 @@ bool LoadTextureFromFile(const std::string &path, UINT &width, UINT &height, std
 	unsigned char *imgData = stbi_load(path.c_str(), &w, &h, &comp, STBI_rgb_alpha);
 	if (imgData == nullptr)
 	{
-		Warn(std::format("Failed to load texture from file at path \"{}\"!", path));
+		WarnF("Failed to load texture from file at path \"{}\"!", path);
 		return false;
 	}
 

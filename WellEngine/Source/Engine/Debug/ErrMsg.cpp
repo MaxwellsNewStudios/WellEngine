@@ -1,10 +1,16 @@
 #include "stdafx.h"
 #include "ErrMsg.h"
 #include "Source/Engine/Utils/StringUtils.h"
+#include <windows.h>
 
 #ifdef LEAK_DETECTION
 #define new			DEBUG_NEW
 #endif
+
+int OpenWinMessageBox(HWND hWnd, LPCSTR lpText, LPCSTR lpCaption, UINT uType)
+{
+    return MessageBoxA(hWnd, lpText, lpCaption, uType);
+}
 
 void MsgLogger::ErrorMessage(const char *msg, const std::string &filePath, int line)
 {

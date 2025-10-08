@@ -100,4 +100,3 @@ void CutoffLight(float3 color, inout float invSquare)
 	
 	invSquare = intensity / strength;
 }
-

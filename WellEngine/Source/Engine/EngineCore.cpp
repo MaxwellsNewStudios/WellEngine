@@ -84,6 +84,11 @@ int EngineCore::Init()
 	}
 	LogIndentDecr();
 
+#ifdef DEBUG_BUILD
+	// Register window handle for message boxes
+	MsgLogger::SetHWnd(window.GetHWND());
+#endif
+
 	DbgMsg("Game Setup..."); LogIndentIncr();
 	// Setup of game. Loads all assets into memory like meshes, textures, shaders etc. Also creates the graphics manager.
 	if (!_game.Setup(time, std::move(window)))
