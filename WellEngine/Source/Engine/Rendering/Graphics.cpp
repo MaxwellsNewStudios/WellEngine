@@ -702,10 +702,11 @@ void Graphics::AddOutlinedEntity(Entity *entity)
 
 	for (int i = 0; i < entities.size(); i++)
 	{
+		Entity *ent = entities[i];
 		// Check if entity is already in the list
 		for (const auto &e : _outlinedEntities)
 		{
-			if (e.Get() != entity)
+			if (e.Get() != ent)
 				continue;
 
 			// Already added

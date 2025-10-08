@@ -43,6 +43,8 @@ private:
 	void DecrementDisable();
 	void SetInheritedDisableCount(UINT count);
 
+	void GetFullBoundsPoints(bool includeTriggers, std::vector<dx::XMFLOAT3> &points);
+
 #ifdef USE_IMGUI
 	bool _visibleInHierarchy = true;
 	float _lastHeightInHierarchy = 0.0f;
@@ -159,7 +161,8 @@ public:
 	[[nodiscard]] bool GetShowInHierarchy(bool ignoreShowHidden = false) const;
 	void SetShowInHierarchy(bool show);
 
-	[[nodiscard]] bool HasBounds(bool includeTriggers, dx::BoundingOrientedBox &out);
+	bool HasBounds(bool includeTriggers, dx::BoundingOrientedBox &out);
+	bool GetFullBounds(bool includeTriggers, dx::BoundingOrientedBox &bounds);
 	void SetEntityBounds(dx::BoundingOrientedBox &bounds);
 	void StoreEntityBounds(dx::BoundingOrientedBox &bounds, ReferenceSpace space = ReferenceSpace::World);
 

@@ -15,7 +15,7 @@
 #pragma endregion
 
 #ifdef USE_IMGUI
-bool Scene::RenderEntityHierarchyUI(Entity *root, UINT depth, const std::string &search)
+bool Scene::RenderEntityHierarchyUI(Entity *root, UINT depth, bool skipCulling, const std::string &search)
 {
 	if (!root)
 		return true;
@@ -52,7 +52,7 @@ bool Scene::RenderEntityHierarchyUI(Entity *root, UINT depth, const std::string 
 	ImGui::BeginGroup();
 
 	float lastHeight = 0.0f;
-	if (root->IsVisibleInHierarchy(lastHeight))
+	if (root->IsVisibleInHierarchy(lastHeight) || skipCulling)
 	{
 		float indentedXPos = ImGui::GetCursorPosX() + indenting;
 		ImGui::SetCursorPosX(indentedXPos);
@@ -110,6 +110,9 @@ bool Scene::RenderEntityHierarchyUI(Entity *root, UINT depth, const std::string 
 					}
 				}
 				ImGui::SetCursorPos(afterCursorPos);
+
+				if (!_isHoveringHierarchyItem)
+					_isHoveringHierarchyItem = ImGui::IsItemHovered();
 			}
 		}
 
@@ -133,14 +136,26 @@ bool Scene::RenderEntityHierarchyUI(Entity *root, UINT depth, const std::string 
 			if (ImGui::Button(std::format("{}", entName).c_str()))
 			{
 				// Additive select if holding shift
+				// Deselect if already selected or holding ctrl
 				if (_debugPlayer.IsValid())
-					_debugPlayer.Get()->Select(root, ImGui::GetIO().KeyShift);
+				{
+					bool shiftHeld = ImGui::GetIO().KeyShift;
+					bool ctrlHeld = ImGui::GetIO().KeyCtrl;
+
+					if (!isSelected && !ctrlHeld)
+						_debugPlayer.Get()->Select(root, shiftHeld);
+					else if (isSelected && !shiftHeld)
+						_debugPlayer.Get()->Deselect(root);
+				}
 			}
 
 			if (isSelected)
 			{
 				ImGui::PopStyleColor(3);
 			}
+
+			if (!_isHoveringHierarchyItem)
+				_isHoveringHierarchyItem = ImGui::IsItemHovered();
 		}
 
 		// Entity Drag & Drop field
@@ -265,7 +280,10 @@ bool Scene::RenderEntityHierarchyUI(Entity *root, UINT depth, const std::string 
 			ImGuiUtils::EndFont();
 
 			if (ImGui::IsItemHovered())
+			{
 				ImGui::SetTooltip("Prefab Instance '%s'", root->GetPrefabName().c_str());
+				_isHoveringHierarchyItem = true;
+			}
 		}
 
 		if (!root->GetShowInHierarchy(true))
@@ -276,7 +294,10 @@ bool Scene::RenderEntityHierarchyUI(Entity *root, UINT depth, const std::string 
 			ImGuiUtils::EndFont();
 
 			if (ImGui::IsItemHovered())
+			{
 				ImGui::SetTooltip("Hidden Entity");
+				_isHoveringHierarchyItem = true;
+			}
 		}
 
 		float rightEdgeX = ImGui::GetContentRegionAvail().x - 6.0f;
@@ -306,6 +327,7 @@ bool Scene::RenderEntityHierarchyUI(Entity *root, UINT depth, const std::string 
 						ImGui::PopStyleColor(3);
 						ImGui::PopID();
 						ImGui::EndGroup();
+						ImGui::EndGroup();
 						ErrMsg("Failed to dock entity window!");
 						return false;
 					}
@@ -331,6 +353,9 @@ bool Scene::RenderEntityHierarchyUI(Entity *root, UINT depth, const std::string 
 				}
 			}
 
+			if (!_isHoveringHierarchyItem)
+				_isHoveringHierarchyItem = ImGui::IsItemHovered();
+
 			ImGui::PopStyleColor(3);
 			ImGui::PopID();
 		}
@@ -343,6 +368,9 @@ bool Scene::RenderEntityHierarchyUI(Entity *root, UINT depth, const std::string 
 			bool isEnabled = root->IsEnabledSelf();
 			if (ImGui::Checkbox("##Enabled", &isEnabled))
 				root->SetEnabledSelf(isEnabled);
+
+			if (!_isHoveringHierarchyItem)
+				_isHoveringHierarchyItem = ImGui::IsItemHovered();
 		}
 
 		// Remove button
@@ -353,6 +381,9 @@ bool Scene::RenderEntityHierarchyUI(Entity *root, UINT depth, const std::string 
 			if (ImGui::Button("X##RemoveEnt", removeButtonRect))
 				root->Destroy();
 			ImGuiUtils::EndButtonStyle();
+
+			if (!_isHoveringHierarchyItem)
+				_isHoveringHierarchyItem = ImGui::IsItemHovered();
 		}
 
 		// Recurse Children
@@ -470,7 +501,7 @@ bool Scene::RenderEntityHierarchyUI(Entity *root, UINT depth, const std::string 
 				if (!child->IsChildOf(root, true))
 					continue; // Skip if no longer a child of this parent
 
-				if (!RenderEntityHierarchyUI(child, depth + 1))
+				if (!RenderEntityHierarchyUI(child, depth + 1, skipCulling))
 				{
 					ErrMsg("Failed to render entity hierarchy UI!");
 					return false;
@@ -594,7 +625,8 @@ bool Scene::RenderEntityHierarchyUI(Entity *root, UINT depth, const std::string 
 
 	ImGui::EndGroup();
 
-	root->SetVisibleInHierarchy(ImGui::IsItemVisible(), ImGui::GetItemRectSize().y);
+	if (!skipCulling)
+		root->SetVisibleInHierarchy(ImGui::IsItemVisible(), ImGui::GetItemRectSize().y);
 
 	return true;
 }
@@ -620,6 +652,9 @@ bool Scene::RenderSceneHierarchyUI()
 	ImGui::SetNextWindowSize(ImGui::GetContentRegionAvail(), ImGuiCond_Always);
 	ImGui::BeginChild("Scene Hierarchy");
 	{
+		if (!_isHoveringHierarchy)
+			_isHoveringHierarchy = ImGui::IsWindowHovered();
+
 		SceneContents::SceneIterator entIter = _sceneHolder.GetEntities();
 
 		while (Entity *entity = entIter.Step())
@@ -627,7 +662,7 @@ bool Scene::RenderSceneHierarchyUI()
 			if (entity->GetParent() != nullptr) // Skip non-root entities
 				continue;
 
-			if (!RenderEntityHierarchyUI(entity, 0, searchLower))
+			if (!RenderEntityHierarchyUI(entity, 0, false, searchLower))
 			{
 				ImGui::EndChild();
 				return false;
@@ -660,13 +695,16 @@ bool Scene::RenderSelectionHierarchyUI()
 	ImGui::SetNextWindowSize(ImGui::GetContentRegionAvail(), ImGuiCond_Always);
 	ImGui::BeginChild("Selection Hierarchy");
 	{
+		if (!_isHoveringHierarchy)
+			_isHoveringHierarchy= ImGui::IsWindowHovered();
+
 		auto &selection = _debugPlayer.Get()->GetSelection();
 
 		for (int i = 0; i < selection.size(); i++)
 		{
 			if (Entity *ent = selection[i].Get())
 			{
-				if (!RenderEntityHierarchyUI(ent, 0, searchLower))
+				if (!RenderEntityHierarchyUI(ent, 0, true, searchLower))
 				{
 					ImGui::EndChild();
 					return false;
@@ -702,11 +740,17 @@ bool Scene::RenderHierarchyUI()
 			}
 		}
 
+		ImGui::RadioButton("Hovering Window", _isHoveringHierarchy);
+		ImGui::RadioButton("Hovering Item", _isHoveringHierarchyItem);
+
 		ImGui::TreePop();
 	}
 
 	if (!ImGui::BeginTabBar("HierarchyTab"))
 		return true;
+
+	_isHoveringHierarchyItem = false;
+	_isHoveringHierarchy = false;
 
 	if (ImGui::BeginTabItem("Scene"))
 	{
@@ -784,6 +828,35 @@ bool Scene::RenderHierarchyUI()
 
 	ImGui::EndTabBar();
 
+	if (_debugPlayer.IsValid())
+	{
+		// Clear selection if user pressed and released left mouse button while hovering empty area of hierarchy.
+		// Holding shift will prevent this, to prevent accidental deselection when trying to multi-select.
+		static bool wasPressed = false;
+
+		if (_isHoveringHierarchy && !_isHoveringHierarchyItem && !ImGui::GetIO().KeyShift)
+		{
+			if (wasPressed)
+			{
+				if (ImGui::IsMouseReleased(ImGuiMouseButton_Left))
+				{
+					wasPressed = false;
+					_debugPlayer.Get()->ClearSelection();
+				}
+			}
+			else
+			{
+				wasPressed = ImGui::IsMouseClicked(ImGuiMouseButton_Left);
+			}
+		}
+
+		if (wasPressed)
+		{
+			if (!ImGui::IsMouseDown(ImGuiMouseButton_Left))
+				wasPressed = false;
+		}
+	}
+
 	return true;
 }
 
@@ -812,9 +885,9 @@ bool Scene::RenderSelectionUI()
 			}
 			ImGui::PopItemFlag();
 
-			float numWidth = ImGui::CalcTextSize(std::to_string(selectionIndex).c_str()).x;
+			float numWidth = ImGui::CalcTextSize(std::to_string(selectionSize).c_str()).x;
 
-			ImGui::SetNextItemWidth(numWidth + 10);
+			ImGui::SetNextItemWidth(numWidth + 10.0f);
 			ImGui::DragInt("##selectionIndex", &selectionIndex, 0.1f);
 			ImGui::SameLine();
 			ImGui::Text("/ %d", selectionSize);

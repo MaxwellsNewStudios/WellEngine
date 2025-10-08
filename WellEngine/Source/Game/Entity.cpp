@@ -671,7 +671,6 @@ bool Entity::HasBounds(bool includeTriggers, BoundingOrientedBox &out)
 	for (auto &behaviour : _behaviours)
 	{
 		MeshBehaviour *meshBehaviour = dynamic_cast<MeshBehaviour *>(behaviour.get());
-
 		if (meshBehaviour)
 		{
 			meshBehaviour->StoreBounds(out);
@@ -680,6 +679,37 @@ bool Entity::HasBounds(bool includeTriggers, BoundingOrientedBox &out)
 	}
 
 	return false;
+}
+void Entity::GetFullBoundsPoints(bool includeTriggers, std::vector<dx::XMFLOAT3> &points)
+{
+	if (!_isInitialized)
+		return;
+	if (!IsEnabled())
+		return;
+
+	dx::XMFLOAT3 corners[8];
+
+	dx::BoundingOrientedBox combinedBounds;
+	if (HasBounds(includeTriggers, combinedBounds))
+	{
+		combinedBounds.GetCorners(corners);
+		points.insert(points.end(), std::begin(corners), std::end(corners));
+	}
+
+	for (auto &child : _children)
+		child->GetFullBoundsPoints(includeTriggers, points);
+}
+bool Entity::GetFullBounds(bool includeTriggers, dx::BoundingOrientedBox &bounds)
+{
+	// Get bounds recursively, merging all children's bounds
+	std::vector<dx::XMFLOAT3> points;
+	GetFullBoundsPoints(includeTriggers, points);
+
+	if (points.empty())
+		return false;
+
+	dx::BoundingOrientedBox::CreateFromPoints(bounds, points.size(), points.data(), sizeof(dx::XMFLOAT3));
+	return true;
 }
 void Entity::SetEntityBounds(dx::BoundingOrientedBox &bounds)
 {
@@ -891,24 +921,110 @@ bool Entity::UIContextMenu()
 		debugPlayer->Select(siblings.data(), siblings.size(), true);
 	}
 
-	if (ImGui::MenuItem("[TODO] Select Children") && debugPlayer)
+	if (ImGui::MenuItem("Select Children") && debugPlayer)
 	{
+		// Select all immediate children
+		std::vector<Entity *> visibleChildren;
+		visibleChildren.reserve(_children.size());
 
+		for (auto &child : _children)
+		{
+			if (!child->GetShowInHierarchy())
+				continue;
+			visibleChildren.emplace_back(child);
+		}
+
+		debugPlayer->Select(visibleChildren.data(), visibleChildren.size(), true);
 	}
 
 	ImGui::Separator();
 
-	if (ImGui::MenuItem("[TODO] New Sibling"))
+	if (ImGui::MenuItem("New Sibling"))
 	{
-		
+		// Create new empty entity
+		Entity *ent;
+		dx::BoundingOrientedBox defaultBounds = dx::BoundingOrientedBox();
+
+		if (!_scene->CreateEntity(&ent, "New Entity", defaultBounds, true))
+		{
+			ErrMsg("Failed to create new entity!");
+			return false;
+		}
+
+		// Parent to same parent as this entity
+		if (_parent)
+			_parent->AddChild(ent);
+
+		// Set order to be after this entity
+		if (_parent)
+			_parent->ReorderChild(ent, this);
+		if (SceneHolder *sceneHolder = _scene->GetSceneHolder())
+			sceneHolder->ReorderEntity(ent, this);
+
+		// Select new entity
+		if (debugPlayer)
+			debugPlayer->Select(ent);
 	}
 
-	if (ImGui::MenuItem("[TODO] New Child"))
+	if (ImGui::MenuItem("New Child"))
 	{
-		
+		// Create new empty entity
+		Entity *ent;
+		dx::BoundingOrientedBox defaultBounds = dx::BoundingOrientedBox();
+
+		if (!_scene->CreateEntity(&ent, "New Entity", defaultBounds, true))
+		{
+			ErrMsg("Failed to create new entity!");
+			return false;
+		}
+
+		// Parent to this entity
+		AddChild(ent);
+
+		// Select new entity
+		if (debugPlayer)
+			debugPlayer->Select(ent);
 	}
 
 	ImGui::Separator();
+
+	if (ImGui::MenuItem("Move View To"))
+	{
+		// Translate camera to entity position subtracted by camera forward vector multiplied by some distance
+		// If entity has bounds, use bounds center, otherwise use transform position
+
+		XMFLOAT3 targetPos{};
+		float distance = 5.0f;
+
+		BoundingOrientedBox bounds{};
+		if (GetFullBounds(false, bounds))
+		{
+			targetPos = bounds.Center;
+			// Increase distance based on bounds size
+			distance = max(distance, max(bounds.Extents.x, max(bounds.Extents.y, bounds.Extents.z)) * 2.0f);
+		}
+		else
+		{
+			targetPos = _transform.GetPosition(World);
+		}
+
+		CameraBehaviour *camera = _scene->GetViewCamera();
+		if (camera)
+		{
+			Transform *cameraTrans = camera->GetTransform();
+			XMFLOAT3 camForward = cameraTrans->GetForward(World);
+
+			XMFLOAT3A newCamPos;
+			Store(newCamPos, Load(targetPos) - (Load(camForward) * distance));
+			
+			cameraTrans->SetPosition(newCamPos, World);
+		}
+	}
+
+	if (ImGui::MenuItem("[TODO] Move To View"))
+	{
+		
+	}
 
 	if (ImGui::MenuItem("[TODO] Align View With"))
 	{
@@ -916,16 +1032,6 @@ bool Entity::UIContextMenu()
 	}
 
 	if (ImGui::MenuItem("[TODO] Align With View"))
-	{
-		
-	}
-
-	if (ImGui::MenuItem("[TODO] Move View Focus To"))
-	{
-		
-	}
-
-	if (ImGui::MenuItem("[TODO] Move To View Focus"))
 	{
 		
 	}
@@ -984,12 +1090,9 @@ bool Entity::InitialRenderUI()
 
 	// Entity Header
 	{
-		bool entEnabled = IsEnabled();
+		bool entEnabled = IsEnabledSelf();
 		if (ImGui::Checkbox("##EntEnabled", &entEnabled))
-		{
-			if (entEnabled) Enable();
-			else			Disable();
-		}
+			SetEnabledSelf(entEnabled);
 		ImGui::SetItemTooltip("Enable/Disable Entity");
 
 		ImGui::SameLine();

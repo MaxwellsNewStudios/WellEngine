@@ -86,6 +86,8 @@ private:
 #ifdef USE_IMGUI
 	bool _undockSceneHierarchy = false;
 	bool _undockEntityHierarchy = false;
+	bool _isHoveringHierarchyItem = false;
+	bool _isHoveringHierarchy = false;
 
 	std::vector<Ref<Entity>> _collapsedEntities = {};
 #endif
@@ -106,7 +108,7 @@ private:
 	[[nodiscard]] bool RenderEntityCreatorUI();
 	[[nodiscard]] bool RenderSceneHierarchyUI();
 	[[nodiscard]] bool RenderSelectionHierarchyUI();
-	[[nodiscard]] bool RenderEntityHierarchyUI(Entity *root, UINT depth, const std::string &search = "");
+	[[nodiscard]] bool RenderEntityHierarchyUI(Entity *root, UINT depth, bool skipCulling, const std::string &search = "");
 #endif
 
 public:

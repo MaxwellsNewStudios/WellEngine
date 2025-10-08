@@ -2678,7 +2678,7 @@ bool Scene::CreateEntity(Entity **out, const std::string &name, const dx::Boundi
 	*out = _sceneHolder.AddEntity(bounds, hasVolume);
 	if (!(*out)->Initialize(_device, this, name))
 	{
-		ErrMsg("Failed to initialize entity '" + name + "'!");
+		ErrMsgF("Failed to initialize entity '{}'!", name);
 		return false;
 	}
 
