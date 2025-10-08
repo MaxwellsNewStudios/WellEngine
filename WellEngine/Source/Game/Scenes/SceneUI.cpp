@@ -302,14 +302,15 @@ bool Scene::RenderEntityHierarchyUI(Entity *root, UINT depth, bool skipCulling, 
 
 		float rightEdgeX = ImGui::GetContentRegionAvail().x - 6.0f;
 
-		const ImVec2 dockButtonRect = { 28, 20 };
-		const ImVec2 removeButtonRect = { 20, 20 };
+		static float dockButtonWidth = 20;
+		static float enableCheckmarkWidth = 20;
+		static float removeButtonWidth = 20;
 
 		// Dock/Undock button
 		{
 			ImGui::PushID(("Dock:" + std::to_string(entID)).c_str());
 
-			ImGui::SameLine(rightEdgeX - 20.0f - frameHeight - removeButtonRect.x - dockButtonRect.x);
+			ImGui::SameLine(rightEdgeX - 20.0f - frameHeight - removeButtonWidth - dockButtonWidth);
 			const std::string windowID = std::format("Ent#{}:{}", entID, GetUID());
 
 			// Check if entity is undocked
@@ -320,10 +321,13 @@ bool Scene::RenderEntityHierarchyUI(Entity *root, UINT depth, bool skipCulling, 
 				ImGui::PushStyleColor(ImGuiCol_ButtonActive, (ImVec4)ImColor::HSV(0.05f, 0.75f, 0.7f));
 
 				// If undocked, show dock button
-				if (ImGui::Button("[x]", dockButtonRect))
+				ImGui::SetCursorPosY(ImGui::GetCursorPosY() - 2.0f);
+				ImGuiUtils::BeginFont(FONT_ICON_FILE_NAME_LC, 14.0f);
+				if (ImGui::Button(ICON_LC_EXTERNAL_LINK))
 				{
 					if (!ImGuiUtils::Utils::CloseWindow(windowID))
 					{
+						ImGuiUtils::EndFont();
 						ImGui::PopStyleColor(3);
 						ImGui::PopID();
 						ImGui::EndGroup();
@@ -331,6 +335,13 @@ bool Scene::RenderEntityHierarchyUI(Entity *root, UINT depth, bool skipCulling, 
 						ErrMsg("Failed to dock entity window!");
 						return false;
 					}
+				}
+				ImGuiUtils::EndFont();
+
+				if (ImGui::IsItemHovered())
+				{
+					ImGui::SetTooltip("Dock Entity Window");
+					_isHoveringHierarchyItem = true;
 				}
 			}
 			else
@@ -340,21 +351,30 @@ bool Scene::RenderEntityHierarchyUI(Entity *root, UINT depth, bool skipCulling, 
 				ImGui::PushStyleColor(ImGuiCol_ButtonActive, (ImVec4)ImColor::HSV(0.6f, 0.75f, 0.7f));
 
 				// If docked, show undock button
-				if (ImGui::Button("[ ]", dockButtonRect))
+				ImGui::SetCursorPosY(ImGui::GetCursorPosY() - 2.0f);
+				ImGuiUtils::BeginFont(FONT_ICON_FILE_NAME_LC, 14.0f);
+				if (ImGui::Button(ICON_LC_EXTERNAL_LINK))
 				{
 					const std::string windowName = std::format("Entity '{}'", root->GetName());
 					if (!ImGuiUtils::Utils::OpenWindow(windowName, windowID, std::bind(&Entity::InitialRenderUI, root)))
 					{
+						ImGuiUtils::EndFont();
 						ImGui::PopStyleColor(3);
 						ImGui::PopID();
 						ErrMsg("Failed to undock entity window!");
 						return false;
 					}
 				}
-			}
+				ImGuiUtils::EndFont();
 
-			if (!_isHoveringHierarchyItem)
-				_isHoveringHierarchyItem = ImGui::IsItemHovered();
+				if (ImGui::IsItemHovered())
+				{
+					ImGui::SetTooltip("Undock Entity Window");
+					_isHoveringHierarchyItem = true;
+				}
+			}
+			
+			dockButtonWidth = ImGui::GetItemRectSize().x;
 
 			ImGui::PopStyleColor(3);
 			ImGui::PopID();
@@ -363,11 +383,13 @@ bool Scene::RenderEntityHierarchyUI(Entity *root, UINT depth, bool skipCulling, 
 		// Enabled checkbox
 		{
 			//ImGui::SameLine(rightEdgeX - frameHeight);
-			ImGui::SameLine(rightEdgeX - 10.0f - removeButtonRect.x - frameHeight);
+			ImGui::SameLine(rightEdgeX - 10.0f - removeButtonWidth - frameHeight);
 
 			bool isEnabled = root->IsEnabledSelf();
 			if (ImGui::Checkbox("##Enabled", &isEnabled))
 				root->SetEnabledSelf(isEnabled);
+
+			enableCheckmarkWidth = ImGui::GetItemRectSize().x;
 
 			if (!_isHoveringHierarchyItem)
 				_isHoveringHierarchyItem = ImGui::IsItemHovered();
@@ -375,12 +397,17 @@ bool Scene::RenderEntityHierarchyUI(Entity *root, UINT depth, bool skipCulling, 
 
 		// Remove button
 		{
-			ImGui::SameLine(rightEdgeX - removeButtonRect.x);
+			ImGui::SameLine(rightEdgeX - removeButtonWidth);
 
+			ImGui::SetCursorPosY(ImGui::GetCursorPosY() - 2.0f);
 			ImGuiUtils::BeginButtonStyle(ImGuiUtils::StyleType::Red);
-			if (ImGui::Button("X##RemoveEnt", removeButtonRect))
+			ImGuiUtils::BeginFont(FONT_ICON_FILE_NAME_LC, 14.0f);
+			if (ImGui::Button(ICON_LC_X "##RemoveEnt"))
 				root->Destroy();
+			ImGuiUtils::EndFont();
 			ImGuiUtils::EndButtonStyle();
+
+			removeButtonWidth = ImGui::GetItemRectSize().x;
 
 			if (!_isHoveringHierarchyItem)
 				_isHoveringHierarchyItem = ImGui::IsItemHovered();

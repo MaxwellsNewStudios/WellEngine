@@ -890,6 +890,8 @@ bool Entity::UIContextMenu()
 {
 	DebugPlayerBehaviour *debugPlayer = _scene->GetDebugPlayer();
 
+	// Select
+
 	if (ImGui::MenuItem("Select Siblings") && debugPlayer)
 	{
 		std::vector<Entity *> siblings;
@@ -937,7 +939,7 @@ bool Entity::UIContextMenu()
 		debugPlayer->Select(visibleChildren.data(), visibleChildren.size(), true);
 	}
 
-	ImGui::Separator();
+	ImGui::Separator(); // Create Entity
 
 	if (ImGui::MenuItem("New Sibling"))
 	{
@@ -986,7 +988,7 @@ bool Entity::UIContextMenu()
 			debugPlayer->Select(ent);
 	}
 
-	ImGui::Separator();
+	ImGui::Separator(); // View Align / Move
 
 	if (CameraBehaviour *camera = _scene->GetViewCamera())
 	{
@@ -1064,7 +1066,7 @@ bool Entity::UIContextMenu()
 		}
 	}
 
-	ImGui::Separator();
+	ImGui::Separator(); // Prefab
 
 	if (ImGui::MenuItem("New Prefab"))
 	{
@@ -1079,7 +1081,7 @@ bool Entity::UIContextMenu()
 		{
 			if (!ImGuiUtils::Utils::CloseWindow(window))
 			{
-				ErrMsg("Failed to dock entity window!");
+				ErrMsg("Failed to close existing SaveAsPrefab window!");
 				return false;
 			}
 		}
@@ -1209,10 +1211,13 @@ bool Entity::UIContextMenu()
 
 				_scene->GetSceneHolder()->ReorderEntity(ent, this);
 
+				// Check if this entity is selected
+				bool isSelected = false;
+				if (debugPlayer)
+					isSelected = debugPlayer->IsSelected(this);
+
 				// Transfer references from this entity to the new prefab instance
 				ent->ReplaceTarget(*this);
-
-				bool isSelected = debugPlayer->IsSelected(this);
 
 				// Delete this entity
 				if (!_scene->GetSceneHolder()->RemoveEntity(this))
@@ -1234,12 +1239,146 @@ bool Entity::UIContextMenu()
 		}
 	}
 
-	if (ImGui::MenuItem("[TODO] Replace with Prefab"))
+	if (ImGui::MenuItem("Replace with Prefab"))
 	{
+		static const std::string windowID = "ReplaceWithPrefabWindow";
+		ImGuiUtils::ImGuiAutoWindow *window;
 
+		// Close any existing window with the same ID
+		if (ImGuiUtils::Utils::GetWindow(windowID, &window))
+		{
+			if (!ImGuiUtils::Utils::CloseWindow(window))
+			{
+				ErrMsg("Failed to close existing ReplaceWithPrefab window!");
+				return false;
+			}
+		}
+
+		std::function<bool()> replaceWithPrefabFunc = [&]() -> bool {
+
+			ImGui::Text("Currently non-functional");
+			return true;
+
+			std::vector<std::string> prefabs;
+			_scene->GetPrefabNames(prefabs);
+
+			static std::string selectedPrefab = "";
+
+			ImGui::Text("Selected: '%s'", selectedPrefab.c_str());
+			ImGui::Separator();
+
+			// Search filter
+			{
+				static std::string search = "";
+				if (ImGui::Button("Clear"))
+					search.clear();
+				ImGui::SameLine();
+
+				if (ImGui::InputText("##PrefabSearch", &search))
+					std::transform(search.begin(), search.end(), search.begin(), ::tolower);
+
+				for (int i = 0; i < prefabs.size(); i++)
+				{
+					std::string prefabLower = prefabs[i];
+					std::transform(prefabLower.begin(), prefabLower.end(), prefabLower.begin(), ::tolower);
+
+					if (prefabLower.find(search) == std::string::npos)
+					{
+						prefabs.erase(prefabs.begin() + i);
+						i--;
+					}
+				}
+			}
+
+			ImGuiChildFlags childFlags = ImGuiChildFlags_None;
+			childFlags |= ImGuiChildFlags_Borders;
+			childFlags |= ImGuiChildFlags_ResizeY;
+
+			ImGuiWindowFlags windowFlags = ImGuiWindowFlags_None;
+			windowFlags |= ImGuiWindowFlags_AlwaysVerticalScrollbar;
+
+			if (ImGui::BeginChild("Prefab List", ImVec2(0, 300), childFlags, windowFlags))
+			{
+				for (int i = 0; i < prefabs.size(); i++)
+				{
+					std::string &prefab = prefabs[i];
+
+					if (ImGui::Selectable(prefab.c_str(), selectedPrefab == prefab))
+						selectedPrefab = std::move(prefab);
+				}
+			}
+			ImGui::EndChild();
+			ImGui::Separator();
+
+			if (ImGui::Button("Confirm") && !selectedPrefab.empty())
+			{
+				Entity *ent = _scene->SpawnPrefab(selectedPrefab);
+
+				if (ent)
+				{
+					// Set parent to this entity's parent
+					ent->SetParent(_parent);
+
+					// Copy transform from this entity to the new prefab instance
+					const dx::XMFLOAT4X4A &localMatrix = _transform.GetMatrix(Local);
+					ent->GetTransform()->SetMatrix(localMatrix, Local);
+
+					// Set order in hierarchy to be after this entity
+					if (_parent != nullptr)
+						_parent->ReorderChild(ent, this);
+
+					_scene->GetSceneHolder()->ReorderEntity(ent, this);
+
+					// Check if this entity is selected
+					bool isSelected = false;
+					if (debugPlayer)
+						isSelected = debugPlayer->IsSelected(this);
+
+					// Transfer references from this entity to the new prefab instance
+					ent->ReplaceTarget(*this);
+
+					// Delete this entity
+					if (!_scene->GetSceneHolder()->RemoveEntity(this))
+					{
+						ErrMsg("Failed to remove entity!");
+						return false;
+					}
+
+					if (isSelected)
+						debugPlayer->Select(ent, true);
+				}
+				else
+					WarnF("Failed to spawn prefab '{}'", selectedPrefab);
+
+				if (!ImGuiUtils::Utils::CloseWindow(windowID))
+				{
+					ErrMsg("Failed to close ReplaceWithPrefab window!");
+					return false;
+				}
+			}
+
+			static float cancelButtonWidth = 30.0f;
+			ImGui::SameLine(ImGui::GetWindowContentRegionMax().x - cancelButtonWidth);
+
+			if (ImGui::Button("Cancel"))
+			{
+				ErrMsg("Failed to close ReplaceWithPrefab window!");
+				return false;
+			}
+			cancelButtonWidth = ImGui::GetItemRectSize().x;
+
+			return true;
+		};
+
+		const std::string windowName = std::format("Replace '{}' with Prefab", GetName());
+		if (!ImGuiUtils::Utils::OpenWindow(windowName, windowID, replaceWithPrefabFunc, ImRect(ImGui::GetCursorScreenPos(), ImVec2(0, 0))))
+		{
+			ErrMsg("Failed to open ReplaceWithPrefab window!");
+			return false;
+		}
 	}
 
-	ImGui::Separator();
+	ImGui::Separator(); // Copy / Remove
 
 	if (ImGui::MenuItem("Copy"))
 	{
