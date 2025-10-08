@@ -1673,6 +1673,7 @@ Entity *DebugPlayerBehaviour::DuplicateEntity(Entity *entity)
 		parent->ReorderChild(copy, entity);
 
 	scene->GetSceneHolder()->ReorderEntity(copy, entity);
+
 	return copy;
 }
 

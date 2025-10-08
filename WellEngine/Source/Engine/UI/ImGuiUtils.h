@@ -32,19 +32,21 @@ namespace ImGuiUtils
 		std::function<bool(void)> _func = nullptr;
 		std::string _name = "";
 		std::string _id = "";
+		ImRect _initialRect = ImRect(0,0,0,0);
 
 		bool _open = true;
 
 	public:
 		ImGuiAutoWindow() = default;
 		~ImGuiAutoWindow() = default;
-		ImGuiAutoWindow(const std::string &name, const std::string &id, std::function<bool(void)> &func) : _name(name), _id(id), _func(func) {};
+		ImGuiAutoWindow(const std::string &name, const std::string &id, std::function<bool(void)> &func, ImRect rect = ImRect(0,0,0,0)) : _name(name), _id(id), _func(func), _initialRect(rect) {};
 
-		void Create(const std::string &name, const std::string &id, std::function<bool(void)> &func)
+		void Create(const std::string &name, const std::string &id, std::function<bool(void)> &func, ImRect rect = ImRect(0,0,0,0))
 		{
 			this->_name = name;
 			this->_id = id;
 			this->_func = func;
+			this->_initialRect = rect;
 		};
 
 		[[nodiscard]] const std::string &GetID() const;
@@ -121,7 +123,8 @@ namespace ImGuiUtils
 		[[nodiscard]] static bool GetWindow(const std::string &id, ImGuiAutoWindow **window);
 		[[nodiscard]] static const std::string *GetWindowID(UINT index);
 		[[nodiscard]] static bool OpenWindow(const ImGuiAutoWindow &window);
-		[[nodiscard]] static bool OpenWindow(const std::string &name, const std::string &id, std::function<bool(void)> func);
+		[[nodiscard]] static bool OpenWindow(const std::string &name, const std::string &id, std::function<bool(void)> func, ImRect rect = ImRect(0, 0, 0, 0));
+		[[nodiscard]] static bool CloseWindow(const ImGuiAutoWindow *window);
 		[[nodiscard]] static bool CloseWindow(const std::string &id);
 
 		[[nodiscard]] static bool Render();

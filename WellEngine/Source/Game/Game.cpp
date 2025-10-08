@@ -1421,11 +1421,14 @@ bool Game::RenderUI(TimeUtils &time)
 	Input &input = Input::Instance();
 	DebugData &debugData = DebugData::Get();
 
+
 	int mainDockID = ImGui::GetID("Main");
 	ImGuiWindowFlags_ defaultWindowFlags = (ImGuiWindowFlags_)((ImGuiWindowFlags_NoNavFocus | ImGuiWindowFlags_NoNavInputs) & ~ImGuiWindowFlags_NoCollapse);
 	ImGuiWindowFlags viewWindowFlags = defaultWindowFlags | ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoScrollbar;
 	float &imGuiFontScale = debugData.imGuiFontScale;
 	int stylesPushed = 0;
+
+	ImGui::GetStyle().FontScaleMain = imGuiFontScale;
 
 	// Set input to be absorbed by default, it may be set back to false from the scene view window.
 	input.SetKeyboardAbsorbed(true);
@@ -1438,8 +1441,6 @@ bool Game::RenderUI(TimeUtils &time)
 	if (ImGui::Begin("View", nullptr, viewWindowFlags))
 	{
 		ImGui::PopStyleVar(stylesPushed);
-
-		ImGui::SetWindowFontScale(imGuiFontScale);
 
 		if (ImGui::BeginMenuBar())
 		{
@@ -1903,8 +1904,6 @@ bool Game::RenderUI(TimeUtils &time)
 
 	if (ImGui::Begin("General", nullptr, defaultWindowFlags))
 	{
-		ImGui::SetWindowFontScale(imGuiFontScale);
-
 #if defined(_DEBUG) && defined(DEBUG_D3D11_DEVICE)
 		ImGui::Checkbox("[D3D11] Report Live Device Objects on Shutdown", &DebugData::Get().reportComObjectsOnShutdown);
 #endif
@@ -1989,7 +1988,6 @@ bool Game::RenderUI(TimeUtils &time)
 			ImGui::EndChild();
 		}
 
-		ImGui::SetWindowFontScale(imGuiFontScale);
 		ImGui::Dummy({ 0, 2 });
 
 		if (ImGui::TreeNode("Fonts"))
@@ -2151,8 +2149,6 @@ bool Game::RenderUI(TimeUtils &time)
 
 	if (ImGui::Begin("Performance", nullptr, defaultWindowFlags))
 	{
-		ImGui::SetWindowFontScale(imGuiFontScale);
-
 		if (ImGui::TreeNode("FPS"))
 		{
 			constexpr size_t FPS_BUF_SIZE = 256;
@@ -2521,8 +2517,6 @@ bool Game::RenderUI(TimeUtils &time)
 
 	if (ImGui::Begin("Content", nullptr, defaultWindowFlags))
 	{
-		ImGui::SetWindowFontScale(imGuiFontScale);
-
 		if (!_content.RenderUI(_device.Get()))
 		{
 			ErrMsg("Failed to render content UI!");
@@ -2533,8 +2527,6 @@ bool Game::RenderUI(TimeUtils &time)
 
 	if (ImGui::Begin("Graphics", nullptr, defaultWindowFlags))
 	{
-		ImGui::SetWindowFontScale(imGuiFontScale);
-
 		if (!_graphics.RenderUI(time))
 		{
 			ErrMsg("Failed to render graphics UI!");
@@ -2545,8 +2537,6 @@ bool Game::RenderUI(TimeUtils &time)
 
 	if (ImGui::Begin("Hierarchy", nullptr, defaultWindowFlags))
 	{
-		ImGui::SetWindowFontScale(imGuiFontScale);
-
 		if (ActiveSceneIsValid())
 		{
 			Scene *scene = _scenes[_activeSceneIndex].get();
@@ -2569,8 +2559,6 @@ bool Game::RenderUI(TimeUtils &time)
 
 	if (ImGui::Begin("Inspector", nullptr, defaultWindowFlags))
 	{
-		ImGui::SetWindowFontScale(imGuiFontScale);
-
 		if (!RenderInspectorUI(time))
 		{
 			ErrMsg("Failed to render inspector UI!");
@@ -2581,8 +2569,6 @@ bool Game::RenderUI(TimeUtils &time)
 
 	if (ImGui::Begin("Scene", nullptr, defaultWindowFlags))
 	{
-		ImGui::SetWindowFontScale(imGuiFontScale);
-
 		if (ActiveSceneIsValid())
 		{
 			Scene *scene = _scenes[_activeSceneIndex].get();
@@ -2604,8 +2590,6 @@ bool Game::RenderUI(TimeUtils &time)
 
 	if (ImGui::Begin("Input", nullptr, defaultWindowFlags))
 	{
-		ImGui::SetWindowFontScale(imGuiFontScale);
-
 		if (!input.RenderUI())
 		{
 			ErrMsg("Failed to render input UI!");

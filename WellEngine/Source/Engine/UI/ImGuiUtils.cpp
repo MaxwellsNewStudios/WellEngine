@@ -187,8 +187,13 @@ bool ImGuiAutoWindow::Render()
 		return false;
 
 	ImGui::PushID(_id.c_str());
+
+	if (_initialRect.Min.x > 0 || _initialRect.Min.y > 0)
+		ImGui::SetNextWindowPos(_initialRect.Min, ImGuiCond_Once);
+	if (_initialRect.Max.x > 0 || _initialRect.Max.y > 0)
+		ImGui::SetNextWindowSize(_initialRect.GetSize(), ImGuiCond_Once);
+
 	ImGui::Begin(_name.c_str(), &_open);
-	ImGui::SetWindowFontScale(DebugData::Get().imGuiFontScale);
 	bool result = _func();
 	ImGui::End();
 	ImGui::PopID();
@@ -245,10 +250,23 @@ bool Utils::OpenWindow(const ImGuiAutoWindow &window)
 	instance->_windows.push_back(window);
 	return true;
 }
-bool Utils::OpenWindow(const std::string &name, const std::string &id, std::function<bool(void)> func)
+bool Utils::OpenWindow(const std::string &name, const std::string &id, std::function<bool(void)> func, ImRect rect)
 {
-	ImGuiAutoWindow window(name, id, func);
+	ImGuiAutoWindow window(name, id, func, rect);
 	return OpenWindow(window);
+}
+bool Utils::CloseWindow(const ImGuiAutoWindow *window)
+{
+	Utils *instance = GetInstance();
+	for (int i = 0; i < instance->_windows.size(); i++)
+	{
+		if (&instance->_windows[i] == window)
+		{
+			instance->_windows.erase(instance->_windows.begin() + i);
+			return true;
+		}
+	}
+	return false;
 }
 bool Utils::CloseWindow(const std::string &id)
 {

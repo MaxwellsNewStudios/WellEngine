@@ -988,94 +988,268 @@ bool Entity::UIContextMenu()
 
 	ImGui::Separator();
 
-	if (ImGui::MenuItem("Move View To"))
+	if (CameraBehaviour *camera = _scene->GetViewCamera())
 	{
-		// Translate camera to entity position subtracted by camera forward vector multiplied by some distance
-		// If entity has bounds, use bounds center, otherwise use transform position
-
-		XMFLOAT3 targetPos{};
-		float distance = 5.0f;
-
-		BoundingOrientedBox bounds{};
-		if (GetFullBounds(false, bounds))
+		if (ImGui::MenuItem("Move View To Entity"))
 		{
-			targetPos = bounds.Center;
-			// Increase distance based on bounds size
-			distance = max(distance, max(bounds.Extents.x, max(bounds.Extents.y, bounds.Extents.z)) * 2.0f);
-		}
-		else
-		{
-			targetPos = _transform.GetPosition(World);
-		}
+			// Translate camera to entity position subtracted by camera forward vector multiplied by some distance.
+			// If entity has bounds, use bounds center & size, otherwise use transform position.
 
-		CameraBehaviour *camera = _scene->GetViewCamera();
-		if (camera)
-		{
+			XMFLOAT3 targetPos{};
+			float distance = 5.0f;
+
+			if (BoundingOrientedBox bounds; GetFullBounds(false, bounds))
+			{
+				targetPos = bounds.Center;
+				// Increase distance based on bounds size
+				distance = max(distance, max(bounds.Extents.x, max(bounds.Extents.y, bounds.Extents.z)) * 2.0f);
+			}
+			else
+			{
+				targetPos = _transform.GetPosition(World);
+			}
+
 			Transform *cameraTrans = camera->GetTransform();
 			XMFLOAT3 camForward = cameraTrans->GetForward(World);
 
 			XMFLOAT3A newCamPos;
 			Store(newCamPos, Load(targetPos) - (Load(camForward) * distance));
-			
+
 			cameraTrans->SetPosition(newCamPos, World);
 		}
-	}
 
-	if (ImGui::MenuItem("[TODO] Move To View"))
-	{
-		
-	}
+		if (ImGui::MenuItem("Move Entity To View"))
+		{
+			// Translate entity to camera position plus camera forward vector multiplied by some distance.
+			// If entity has bounds, use bounds center & size, otherwise use transform position.
 
-	if (ImGui::MenuItem("[TODO] Align View With"))
-	{
-		
-	}
+			XMFLOAT3 originPos{};
+			float distance = 5.0f;
 
-	if (ImGui::MenuItem("[TODO] Align With View"))
-	{
-		
+			if (BoundingOrientedBox bounds; GetFullBounds(false, bounds))
+			{
+				originPos = bounds.Center;
+				// Increase distance based on bounds size
+				distance = max(distance, max(bounds.Extents.x, max(bounds.Extents.y, bounds.Extents.z)) * 2.0f);
+			}
+			else
+			{
+				originPos = _transform.GetPosition(World);
+			}
+
+			Transform *cameraTrans = camera->GetTransform();
+			XMFLOAT3 camPos = cameraTrans->GetPosition(World);
+			XMFLOAT3 camForward = cameraTrans->GetForward(World);
+
+			XMFLOAT3A entMovement;
+			Store(entMovement, (Load(camPos) + (Load(camForward) * distance)) - Load(originPos));
+
+			_transform.Move(entMovement, World);
+		}
+
+		if (ImGui::MenuItem("Align View With Entity"))
+		{
+			// Copy entity position & rotation to camera.
+			Transform *cameraTrans = camera->GetTransform();
+			cameraTrans->SetPosition(_transform.GetPosition(World), World);
+			cameraTrans->SetRotation(_transform.GetRotation(World), World);
+		}
+
+		if (ImGui::MenuItem("Align Entity With View"))
+		{
+			// Copy camera position & rotation to entity.
+			Transform *cameraTrans = camera->GetTransform();
+			_transform.SetPosition(cameraTrans->GetPosition(World), World);
+			_transform.SetRotation(cameraTrans->GetRotation(World), World);
+		}
 	}
 
 	ImGui::Separator();
 
-	if (ImGui::MenuItem("[TODO] New Prefab"))
+	if (ImGui::MenuItem("New Prefab"))
 	{
-		
+		static std::string prefabSaveName = "";
+		prefabSaveName = _name;
+
+		static const std::string windowID = "SaveAsPrefabWindow";
+		ImGuiUtils::ImGuiAutoWindow *window;
+
+		// Close any existing window with the same ID
+		if (ImGuiUtils::Utils::GetWindow(windowID, &window))
+		{
+			if (!ImGuiUtils::Utils::CloseWindow(window))
+			{
+				ErrMsg("Failed to dock entity window!");
+				return false;
+			}
+		}
+
+		std::function<bool()> saveAsPrefabFunc = [&]() -> bool {
+			bool doSavePrefab = false;
+
+			ImGui::Text("Prefab Name:");
+			ImGui::SameLine();
+			ImGui::InputText("##PrefabName", &prefabSaveName);
+
+			if (ImGui::Button("Save"))
+			{
+				if (!prefabSaveName.empty())
+				{
+					std::vector<std::string> prefabs;
+					_scene->GetPrefabNames(prefabs);
+
+					bool nameCollision = false;
+					for (const auto &name : prefabs)
+					{
+						if (name != prefabSaveName)
+							continue;
+
+						nameCollision = true;
+					}
+
+					if (nameCollision)
+					{
+						ImGui::OpenPopup("Confirm Overwrite Prefab");
+					}
+					else
+					{
+						doSavePrefab = true;
+					}
+				}
+			}
+			ImGui::SameLine();
+
+			if (ImGui::Button("Cancel"))
+			{
+				if (!ImGuiUtils::Utils::CloseWindow(windowID))
+				{
+					ErrMsg("Failed to close SaveAsPrefab window!");
+					return false;
+				}
+				return true;
+			}
+
+			bool closeSavePrefabPopup = false;
+			if (ImGui::BeginPopup("Confirm Overwrite Prefab"))
+			{
+				ImGui::Text("This prefab already exists.\nOverwrite it?", prefabSaveName.c_str());
+				ImGui::Separator();
+
+				if (ImGui::Button("Yes"))
+				{
+					doSavePrefab = true;
+					closeSavePrefabPopup = true;
+					ImGui::CloseCurrentPopup();
+				}
+
+				static float noButtonWidth = 30.0f;
+				ImGui::SameLine(ImGui::GetWindowContentRegionMax().x - noButtonWidth);
+
+				if (ImGui::Button("No"))
+					ImGui::CloseCurrentPopup();
+				noButtonWidth = ImGui::GetItemRectSize().x;
+
+				ImGui::EndPopup();
+			}
+
+			if (doSavePrefab)
+			{
+				if (!_scene->SaveAsPrefab(prefabSaveName, this))
+					WarnF("Failed to save entity '{}' as prefab '{}'!", _name, prefabSaveName);
+
+				closeSavePrefabPopup = true;
+			}
+
+			if (closeSavePrefabPopup)
+			{
+				if (!ImGuiUtils::Utils::CloseWindow(windowID))
+				{
+					ErrMsg("Failed to close SaveAsPrefab window!");
+					return false;
+				}
+			}
+
+			return true;
+		};
+
+		const std::string windowName = std::format("Save '{}' as Prefab", GetName());
+		if (!ImGuiUtils::Utils::OpenWindow(windowName, windowID, saveAsPrefabFunc, ImRect(ImGui::GetCursorScreenPos(), ImVec2(0, 0))))
+		{
+			ErrMsg("Failed to open SaveAsPrefab window!");
+			return false;
+		}
 	}
 
 	if (IsPrefab())
 	{
-		if (ImGui::MenuItem("[TODO] Overwrite Prefab"))
+		if (ImGui::MenuItem("Overwrite Prefab"))
 		{
-			
+			std::string prefabSaveName = GetPrefabName();
+
+			if (!_scene->SaveAsPrefab(prefabSaveName, this))
+				WarnF("Failed to save entity '{}' as prefab '{}'!", _name, prefabSaveName);
 		}
 
-		if (ImGui::MenuItem("[TODO] Reset Prefab"))
+		if (ImGui::MenuItem("Reset Prefab"))
 		{
-			
+			Entity *ent = _scene->SpawnPrefab(GetPrefabName());
+
+			if (ent)
+			{
+				// Set parent to this entity's parent
+				ent->SetParent(_parent);
+
+				// Copy transform from this entity to the new prefab instance
+				const dx::XMFLOAT4X4A &localMatrix = _transform.GetMatrix(Local);
+				ent->GetTransform()->SetMatrix(localMatrix, Local);
+
+				// Set order in hierarchy to be after this entity
+				if (_parent != nullptr)
+					_parent->ReorderChild(ent, this);
+
+				_scene->GetSceneHolder()->ReorderEntity(ent, this);
+
+				// Transfer references from this entity to the new prefab instance
+				ent->ReplaceTarget(*this);
+
+				bool isSelected = debugPlayer->IsSelected(this);
+
+				// Delete this entity
+				if (!_scene->GetSceneHolder()->RemoveEntity(this))
+				{
+					ErrMsg("Failed to remove entity!");
+					return false;
+				}
+
+				if (isSelected)
+					debugPlayer->Select(ent, true);
+			}
+			else
+				WarnF("Failed to spawn prefab '{}'", GetPrefabName());
 		}
 
-		if (ImGui::MenuItem("[TODO] Unlink from Prefab"))
+		if (ImGui::MenuItem("Unlink Prefab"))
 		{
-			
+			UnlinkFromPrefab();
 		}
 	}
 
 	if (ImGui::MenuItem("[TODO] Replace with Prefab"))
 	{
-		
+
 	}
 
 	ImGui::Separator();
 
-	if (ImGui::MenuItem("[TODO] Copy"))
+	if (ImGui::MenuItem("Copy"))
 	{
-		
+		Entity *ent = debugPlayer->DuplicateEntity(this);
+		debugPlayer->Select(ent, ImGui::GetIO().KeyShift);
 	}
 
-	if (ImGui::MenuItem("[TODO] Remove"))
+	if (ImGui::MenuItem("Remove"))
 	{
-		
+		Destroy();
 	}
 
 	return true;
@@ -1278,7 +1452,7 @@ bool Entity::InitialRenderUI()
 						for (const auto &name : prefabs)
 						{
 							if (name != prefabName)
-								break;
+								continue;
 
 							nameCollision = true;
 						}

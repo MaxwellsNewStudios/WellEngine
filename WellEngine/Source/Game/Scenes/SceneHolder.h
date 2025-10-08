@@ -123,8 +123,8 @@ public:
 	void DebugGetTreeStructure(std::vector<dx::BoundingBox> &boxCollection, const dx::BoundingFrustum &frustum, bool full = false, bool culling = false) const;
 
 	bool _unsavedChanges = false;
-	UINT _newMaxDepth, _newMaxItemsInNode;
-	dx::BoundingBox _newBounds;
+	UINT _newMaxDepth = 0, _newMaxItemsInNode = 0;
+	dx::BoundingBox _newBounds{};
 
 	[[nodiscard]] bool RenderUI(Scene *scene);
 #endif

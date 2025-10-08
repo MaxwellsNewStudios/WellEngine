@@ -35,7 +35,7 @@ private:
 	bool _isEnabledSelf = true;
 	bool _doSerialize = true;
 #ifdef USE_IMGUI
-	int _uiOpen = 1; // -1 = uninitialized, 0 = close, 1 = open
+	int _uiOpen = 0; // -1 = uninitialized, 0 = close, 1 = open
 	float _uiMaxSize = -1.0f;
 	bool _uiMaximized = true;
 	bool _uiSizeDirty = true;
