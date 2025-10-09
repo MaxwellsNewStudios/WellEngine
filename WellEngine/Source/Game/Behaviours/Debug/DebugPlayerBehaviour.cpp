@@ -1642,7 +1642,7 @@ bool DebugPlayerBehaviour::IsValidDuplicateBind(KeyCode key) const
 
 Entity *DebugPlayerBehaviour::DuplicateEntity(Entity *entity)
 {
-	ZoneScopedX(RandomUniqueColor());
+	ZoneScopedXC(RandomUniqueColor());
 
 	// Copy entitiy by serializing and deserializing it
 	Scene *scene = GetScene();

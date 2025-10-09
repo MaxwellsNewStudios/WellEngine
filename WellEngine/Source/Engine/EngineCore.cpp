@@ -129,7 +129,7 @@ int EngineCore::Run()
 	{
 		_frameCount++;
 		ZoneNamedNC(tracyFrameZone, "Frame", RandomUniqueColor(), true);
-		ZoneValueXV(tracyFrameZone, std::to_string(_frameCount).c_str());
+		ZoneValueXV(tracyFrameZone, _frameCount);
 
 #pragma omp parallel for num_threads(PARALLEL_THREADS)
 		for (int i = 0; i < PARALLEL_THREADS; i++)

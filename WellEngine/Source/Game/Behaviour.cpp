@@ -62,7 +62,7 @@ bool Behaviour::Initialize(Entity *entity, const std::string &behaviourName)
 		Warn("Behaviour name is empty! Did you forget to assign a name in Start?");
 #endif
 
-	ZoneTextX(_name, _name.size());
+	ZoneTextX(_name.c_str(), _name.size());
 
 	_isInitialized = true;
 	return true;
