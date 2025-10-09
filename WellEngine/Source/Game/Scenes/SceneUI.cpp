@@ -355,8 +355,20 @@ bool Scene::RenderEntityHierarchyUI(Entity *root, UINT depth, bool skipCulling, 
 				ImGuiUtils::BeginFont(FONT_ICON_FILE_NAME_LC, 14.0f);
 				if (ImGui::Button(ICON_LC_EXTERNAL_LINK))
 				{
+					ImGui::SameLine();
+					ImRect rect = {
+						ImGui::GetCursorScreenPos(), 
+						ImGui::GetWindowSize()
+					};
+					ImGui::NewLine();
+
+					rect.Max.x = max(100.0f, rect.Max.x * 0.75f - 50.0f);
+					rect.Max.y = max(150.0f, rect.Max.y * 0.75f - 50.0f);
+
+					rect.Min.x -= rect.Max.x;
+
 					const std::string windowName = std::format("Entity '{}'", root->GetName());
-					if (!ImGuiUtils::Utils::OpenWindow(windowName, windowID, std::bind(&Entity::InitialRenderUI, root)))
+					if (!ImGuiUtils::Utils::OpenWindow(windowName, windowID, std::bind(&Entity::InitialRenderUI, root), rect))
 					{
 						ImGuiUtils::EndFont();
 						ImGui::PopStyleColor(3);
@@ -382,7 +394,6 @@ bool Scene::RenderEntityHierarchyUI(Entity *root, UINT depth, bool skipCulling, 
 
 		// Enabled checkbox
 		{
-			//ImGui::SameLine(rightEdgeX - frameHeight);
 			ImGui::SameLine(rightEdgeX - 10.0f - removeButtonWidth - frameHeight);
 
 			bool isEnabled = root->IsEnabledSelf();
@@ -658,7 +669,7 @@ bool Scene::RenderEntityHierarchyUI(Entity *root, UINT depth, bool skipCulling, 
 	return true;
 }
 
-bool Scene::RenderSceneHierarchyUI()
+bool Scene::RenderSceneHierarchyUI(bool skipCulling)
 {
 	static std::string search = "";
 
@@ -689,7 +700,7 @@ bool Scene::RenderSceneHierarchyUI()
 			if (entity->GetParent() != nullptr) // Skip non-root entities
 				continue;
 
-			if (!RenderEntityHierarchyUI(entity, 0, false, searchLower))
+			if (!RenderEntityHierarchyUI(entity, 0, skipCulling, searchLower))
 			{
 				ImGui::EndChild();
 				return false;
@@ -701,7 +712,7 @@ bool Scene::RenderSceneHierarchyUI()
 	return true;
 }
 
-bool Scene::RenderSelectionHierarchyUI()
+bool Scene::RenderSelectionHierarchyUI(bool skipCulling)
 {
 	static std::string search = "";
 
@@ -723,7 +734,7 @@ bool Scene::RenderSelectionHierarchyUI()
 	ImGui::BeginChild("Selection Hierarchy");
 	{
 		if (!_isHoveringHierarchy)
-			_isHoveringHierarchy= ImGui::IsWindowHovered();
+			_isHoveringHierarchy = ImGui::IsWindowHovered();
 
 		auto &selection = _debugPlayer.Get()->GetSelection();
 
@@ -731,7 +742,7 @@ bool Scene::RenderSelectionHierarchyUI()
 		{
 			if (Entity *ent = selection[i].Get())
 			{
-				if (!RenderEntityHierarchyUI(ent, 0, true, searchLower))
+				if (!RenderEntityHierarchyUI(ent, 0, skipCulling, searchLower))
 				{
 					ImGui::EndChild();
 					return false;
@@ -792,7 +803,11 @@ bool Scene::RenderHierarchyUI()
 			{
 				const std::string windowName = std::format("'{}' Scene Hierarchy", GetName());
 
-				if (!ImGuiUtils::Utils::OpenWindow(windowName, windowID, std::bind(&Scene::RenderSceneHierarchyUI, this)))
+				std::function<bool()> renderFunc = [this]() -> bool { 
+					return RenderSceneHierarchyUI(true); 
+				};
+
+				if (!ImGuiUtils::Utils::OpenWindow(windowName, windowID, renderFunc))
 				{
 					ImGui::PopID();
 					ImGui::EndTabItem();
@@ -804,7 +819,7 @@ bool Scene::RenderHierarchyUI()
 			ImGui::SameLine();
 		}
 
-		if (!RenderSceneHierarchyUI())
+		if (!RenderSceneHierarchyUI(false))
 		{
 			ImGui::PopID();
 			ImGui::EndTabItem();
@@ -815,7 +830,7 @@ bool Scene::RenderHierarchyUI()
 		ImGui::PopID();
 		ImGui::EndTabItem();
 	}
-
+	
 	if (ImGui::BeginTabItem("Selection"))
 	{
 		ImGui::PushID("Selection Hierarchy");
@@ -829,7 +844,11 @@ bool Scene::RenderHierarchyUI()
 			{
 				const std::string windowName = std::format("'{}' Selection Hierarchy", GetName());
 
-				if (!ImGuiUtils::Utils::OpenWindow(windowName, windowID, std::bind(&Scene::RenderSelectionHierarchyUI, this)))
+				std::function<bool()> renderFunc = [this]() -> bool {
+					return RenderSelectionHierarchyUI(true);
+				};
+
+				if (!ImGuiUtils::Utils::OpenWindow(windowName, windowID, renderFunc))
 				{
 					ImGui::PopID();
 					ImGui::EndTabItem();
@@ -841,7 +860,7 @@ bool Scene::RenderHierarchyUI()
 			ImGui::SameLine();
 		}
 
-		if (!RenderSelectionHierarchyUI())
+		if (!RenderSelectionHierarchyUI(true))
 		{
 			ImGui::PopID();
 			ImGui::EndTabItem();

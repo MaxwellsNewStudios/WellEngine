@@ -1421,7 +1421,6 @@ bool Game::RenderUI(TimeUtils &time)
 	Input &input = Input::Instance();
 	DebugData &debugData = DebugData::Get();
 
-
 	int mainDockID = ImGui::GetID("Main");
 	ImGuiWindowFlags_ defaultWindowFlags = (ImGuiWindowFlags_)((ImGuiWindowFlags_NoNavFocus | ImGuiWindowFlags_NoNavInputs) & ~ImGuiWindowFlags_NoCollapse);
 	ImGuiWindowFlags viewWindowFlags = defaultWindowFlags | ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoScrollbar;
@@ -1429,6 +1428,7 @@ bool Game::RenderUI(TimeUtils &time)
 	int stylesPushed = 0;
 
 	ImGui::GetStyle().FontScaleMain = imGuiFontScale;
+	float defWindowPadding = ImGui::GetStyle().WindowPadding.y;
 
 	// Set input to be absorbed by default, it may be set back to false from the scene view window.
 	input.SetKeyboardAbsorbed(true);
@@ -2535,8 +2535,13 @@ bool Game::RenderUI(TimeUtils &time)
 	}
 	ImGui::End();
 
+	stylesPushed = 0;
+	stylesPushed++; ImGui::PushStyleVarY(ImGuiStyleVar_WindowPadding, 0);
 	if (ImGui::Begin("Hierarchy", nullptr, defaultWindowFlags))
 	{
+		ImGui::PopStyleVar(stylesPushed);
+		ImGui::SetCursorPosY(ImGui::GetCursorPosY() + defWindowPadding);
+
 		if (ActiveSceneIsValid())
 		{
 			Scene *scene = _scenes[_activeSceneIndex].get();
@@ -2548,6 +2553,8 @@ bool Game::RenderUI(TimeUtils &time)
 			}
 		}
 	}
+	else
+		ImGui::PopStyleVar(stylesPushed);
 	ImGui::End();
 
 	if (static char focusedOnStartup = 0; focusedOnStartup <= 1)

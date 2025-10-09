@@ -106,8 +106,8 @@ private:
 
 #ifdef USE_IMGUI
 	[[nodiscard]] bool RenderEntityCreatorUI();
-	[[nodiscard]] bool RenderSceneHierarchyUI();
-	[[nodiscard]] bool RenderSelectionHierarchyUI();
+	[[nodiscard]] bool RenderSceneHierarchyUI(bool skipCulling);
+	[[nodiscard]] bool RenderSelectionHierarchyUI(bool skipCulling);
 	[[nodiscard]] bool RenderEntityHierarchyUI(Entity *root, UINT depth, bool skipCulling, const std::string &search = "");
 #endif
 

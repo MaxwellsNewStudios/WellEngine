@@ -33,7 +33,6 @@
  - Perform light tile culling in compute shader.
 
 ### Known Issues:
- - Docked & undocked hierarchy views share culling results, causing both to cull entities based on the undocked view rect.
  - Scaling gizmo in ImGuizmo fully broken. Until fixed, either use bounds gizmo for scale or scale manually using the Inspector view.
  - Orbiting with "Orbit / Pan" mouse movement mode breaks at steep vertical angles.
  

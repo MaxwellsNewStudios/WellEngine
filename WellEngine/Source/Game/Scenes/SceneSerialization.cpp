@@ -745,6 +745,7 @@ bool Scene::SaveAsPrefab(const std::string &name, Entity *entity)
 	file << buffer.GetString();
 	file.close();
 
+	DbgMsgF("Saved entity '{}' as prefab '{}'.", entity->GetName(), name);
 	entity->SetPrefabName(name);
 	return true;
 }

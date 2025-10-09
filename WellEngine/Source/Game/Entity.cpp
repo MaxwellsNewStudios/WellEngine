@@ -939,7 +939,7 @@ bool Entity::UIContextMenu()
 		debugPlayer->Select(visibleChildren.data(), visibleChildren.size(), true);
 	}
 
-	ImGui::Separator(); // Create Entity
+	ImGui::Dummy({1,0}); ImGui::Separator(); ImGui::Dummy({1,0}); // Create Entity
 
 	if (ImGui::MenuItem("New Sibling"))
 	{
@@ -988,7 +988,7 @@ bool Entity::UIContextMenu()
 			debugPlayer->Select(ent);
 	}
 
-	ImGui::Separator(); // View Align / Move
+	ImGui::Dummy({1,0}); ImGui::Separator(); ImGui::Dummy({1,0}); // View Align / Move
 
 	if (CameraBehaviour *camera = _scene->GetViewCamera())
 	{
@@ -1064,10 +1064,15 @@ bool Entity::UIContextMenu()
 			_transform.SetPosition(cameraTrans->GetPosition(World), World);
 			_transform.SetRotation(cameraTrans->GetRotation(World), World);
 		}
+
+		if (ImGui::MenuItem("Position With Cursor") && debugPlayer)
+		{
+			debugPlayer->PositionWithCursor(this);
+		}
 	}
 
-	ImGui::Separator(); // Prefab
-
+	ImGui::Dummy({1,0}); ImGui::Separator(); ImGui::Dummy({1,0}); // Prefab
+	
 	if (ImGui::MenuItem("New Prefab"))
 	{
 		static std::string prefabSaveName = "";
@@ -1089,11 +1094,12 @@ bool Entity::UIContextMenu()
 		std::function<bool()> saveAsPrefabFunc = [&]() -> bool {
 			bool doSavePrefab = false;
 
-			ImGui::Text("Prefab Name:");
-			ImGui::SameLine();
+			ImGui::Text("Name:"); ImGui::SameLine();
+			ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
 			ImGui::InputText("##PrefabName", &prefabSaveName);
 
-			if (ImGui::Button("Save"))
+			static bool listenForEnter = true;
+			if (ImGui::Button("Save") || (ImGui::IsWindowFocused() && Input::Instance().GetKey(KeyCode::Enter, true) == KeyState::Pressed))
 			{
 				if (!prefabSaveName.empty())
 				{
@@ -1112,6 +1118,7 @@ bool Entity::UIContextMenu()
 					if (nameCollision)
 					{
 						ImGui::OpenPopup("Confirm Overwrite Prefab");
+						listenForEnter = false;
 					}
 					else
 					{
@@ -1119,35 +1126,42 @@ bool Entity::UIContextMenu()
 					}
 				}
 			}
-			ImGui::SameLine();
 
-			if (ImGui::Button("Cancel"))
+			static float cancelButtonWidth = 30.0f;
+			ImGui::SameLine(ImGui::GetWindowContentRegionMax().x - cancelButtonWidth);
+
+			if (ImGui::Button("Cancel") || (ImGui::IsWindowFocused() && Input::Instance().GetKey(KeyCode::Escape, true) == KeyState::Pressed))
 			{
 				if (!ImGuiUtils::Utils::CloseWindow(windowID))
 				{
 					ErrMsg("Failed to close SaveAsPrefab window!");
 					return false;
 				}
+
 				return true;
 			}
+			cancelButtonWidth = ImGui::GetItemRectSize().x;
 
 			bool closeSavePrefabPopup = false;
 			if (ImGui::BeginPopup("Confirm Overwrite Prefab"))
 			{
 				ImGui::Text("This prefab already exists.\nOverwrite it?", prefabSaveName.c_str());
 				ImGui::Separator();
+				
+				KeyState enter = Input::Instance().GetKey(KeyCode::Enter, true);
+				if (!listenForEnter && enter == KeyState::None)
+					listenForEnter = true;
 
-				if (ImGui::Button("Yes"))
+				if (ImGui::Button("Yes") || (listenForEnter && enter == KeyState::Pressed))
 				{
 					doSavePrefab = true;
-					closeSavePrefabPopup = true;
 					ImGui::CloseCurrentPopup();
 				}
 
 				static float noButtonWidth = 30.0f;
 				ImGui::SameLine(ImGui::GetWindowContentRegionMax().x - noButtonWidth);
 
-				if (ImGui::Button("No"))
+				if (ImGui::Button("No") || Input::Instance().GetKey(KeyCode::Escape, true) == KeyState::Pressed)
 					ImGui::CloseCurrentPopup();
 				noButtonWidth = ImGui::GetItemRectSize().x;
 
@@ -1162,7 +1176,7 @@ bool Entity::UIContextMenu()
 				closeSavePrefabPopup = true;
 			}
 
-			if (closeSavePrefabPopup)
+			if (closeSavePrefabPopup || !ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows))
 			{
 				if (!ImGuiUtils::Utils::CloseWindow(windowID))
 				{
@@ -1175,7 +1189,7 @@ bool Entity::UIContextMenu()
 		};
 
 		const std::string windowName = std::format("Save '{}' as Prefab", GetName());
-		if (!ImGuiUtils::Utils::OpenWindow(windowName, windowID, saveAsPrefabFunc, ImRect(ImGui::GetCursorScreenPos(), ImVec2(0, 0))))
+		if (!ImGuiUtils::Utils::OpenWindow(windowName, windowID, saveAsPrefabFunc, ImRect(ImGui::GetCursorScreenPos(), ImVec2(350, 80))))
 		{
 			ErrMsg("Failed to open SaveAsPrefab window!");
 			return false;
@@ -1253,12 +1267,8 @@ bool Entity::UIContextMenu()
 				return false;
 			}
 		}
-
+		
 		std::function<bool()> replaceWithPrefabFunc = [&]() -> bool {
-
-			ImGui::Text("Currently non-functional");
-			return true;
-
 			std::vector<std::string> prefabs;
 			_scene->GetPrefabNames(prefabs);
 
@@ -1310,7 +1320,8 @@ bool Entity::UIContextMenu()
 			ImGui::EndChild();
 			ImGui::Separator();
 
-			if (ImGui::Button("Confirm") && !selectedPrefab.empty())
+			if ((ImGui::Button("Confirm") || Input::Instance().GetKey(KeyCode::Enter, true) == KeyState::Pressed) 
+				&& !selectedPrefab.empty())
 			{
 				Entity *ent = _scene->SpawnPrefab(selectedPrefab);
 
@@ -1360,10 +1371,14 @@ bool Entity::UIContextMenu()
 			static float cancelButtonWidth = 30.0f;
 			ImGui::SameLine(ImGui::GetWindowContentRegionMax().x - cancelButtonWidth);
 
-			if (ImGui::Button("Cancel"))
+			if (ImGui::Button("Cancel") || (Input::Instance().GetKey(KeyCode::Escape, true) == KeyState::Pressed) 
+				|| !ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows))
 			{
-				ErrMsg("Failed to close ReplaceWithPrefab window!");
-				return false;
+				if (!ImGuiUtils::Utils::CloseWindow(windowID))
+				{
+					ErrMsg("Failed to close ReplaceWithPrefab window!");
+					return false;
+				}
 			}
 			cancelButtonWidth = ImGui::GetItemRectSize().x;
 
@@ -1378,7 +1393,7 @@ bool Entity::UIContextMenu()
 		}
 	}
 
-	ImGui::Separator(); // Copy / Remove
+	ImGui::Dummy({1,0}); ImGui::Separator(); ImGui::Dummy({1,0}); // Copy / Remove
 
 	if (ImGui::MenuItem("Copy"))
 	{

@@ -189,9 +189,9 @@ bool ImGuiAutoWindow::Render()
 	ImGui::PushID(_id.c_str());
 
 	if (_initialRect.Min.x > 0 || _initialRect.Min.y > 0)
-		ImGui::SetNextWindowPos(_initialRect.Min, ImGuiCond_Once);
+		ImGui::SetNextWindowPos(_initialRect.Min, ImGuiCond_Appearing);
 	if (_initialRect.Max.x > 0 || _initialRect.Max.y > 0)
-		ImGui::SetNextWindowSize(_initialRect.GetSize(), ImGuiCond_Once);
+		ImGui::SetNextWindowSize(_initialRect.Max, ImGuiCond_Appearing);
 
 	ImGui::Begin(_name.c_str(), &_open);
 	bool result = _func();
