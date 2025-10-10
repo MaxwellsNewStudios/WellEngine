@@ -189,6 +189,10 @@ private:
 	D3D11_VIEWPORT _viewportFog = { };
 	D3D11_VIEWPORT _viewportDof = { };
 
+	float _emissionResolutionScale = 0.25f;
+	float _fogResolutionScale = 0.25f;
+	float _dofResolutionScale = 0.5f;
+
 	ComPtr<ID3D11RasterizerState> _defaultRasterizer = nullptr;
 	ComPtr<ID3D11RasterizerState> _wireframeRasterizer = nullptr;
 	ComPtr<ID3D11RasterizerState> _shadowRasterizer = nullptr;
@@ -280,6 +284,7 @@ private:
 
 #ifdef DEBUG_BUILD
 	D3D11_VIEWPORT _viewportOutline = { };
+	float _outlineResolutionScale = 0.5f;
 
 	std::vector<Ref<Entity>> _outlinedEntities;
 
@@ -358,6 +363,12 @@ private:
 
 	[[nodiscard]] bool ResizeWindowBuffers(bool fullscreen, UINT newWidth, UINT newHeight, bool skipResizeD3D11 = false);
 	[[nodiscard]] bool ResizeSceneViewBuffers(UINT newWidth, UINT newHeight);
+	[[nodiscard]] bool RefreshEmissionBuffers();
+	[[nodiscard]] bool RefreshFogBuffers();
+	[[nodiscard]] bool RefreshDofBuffers();
+#ifdef DEBUG_BUILD
+	[[nodiscard]] bool RefreshOutlineBuffers();
+#endif
 
 	void SetGaussianWeightsBuffer(StructuredBufferD3D11 *buffer, float *const weights, UINT count);
 

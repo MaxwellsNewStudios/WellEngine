@@ -67,6 +67,10 @@ void DebugData::SaveState()
 		settingsObj.AddMember("Enable Depth of Field", data.graphicsDofEnabled, docAlloc);
 		settingsObj.AddMember("Enable Outline", data.graphicsOutlineEnabled, docAlloc);
 		settingsObj.AddMember("Scene Point Filtering", data.graphicsScenePointFiltering, docAlloc);
+		settingsObj.AddMember("Emission Resolution Scale", data.graphicsEmissionScale, docAlloc);
+		settingsObj.AddMember("Fog Resolution Scale", data.graphicsFogScale, docAlloc);
+		settingsObj.AddMember("DoF Resolution Scale", data.graphicsDofScale, docAlloc);
+		settingsObj.AddMember("Outline Resolution Scale", data.graphicsOutlineScale, docAlloc);
 	}
 	doc.SetObject().AddMember("Settings", settingsObj, docAlloc);
 
@@ -232,6 +236,22 @@ void DebugData::LoadState()
 		memberName = "Scene Point Filtering";
 		if (settings.HasMember(memberName.c_str()))
 			data.graphicsScenePointFiltering = settings[memberName.c_str()].GetBool();
+		
+		memberName = "Emission Resolution Scale";
+		if (settings.HasMember(memberName.c_str()))
+			data.graphicsEmissionScale = settings[memberName.c_str()].GetFloat();
+
+		memberName = "Fog Resolution Scale";
+		if (settings.HasMember(memberName.c_str()))
+			data.graphicsFogScale = settings[memberName.c_str()].GetFloat();
+
+		memberName = "DoF Resolution Scale";
+		if (settings.HasMember(memberName.c_str()))
+			data.graphicsDofScale = settings[memberName.c_str()].GetFloat();
+
+		memberName = "Outline Resolution Scale";
+		if (settings.HasMember(memberName.c_str()))
+			data.graphicsOutlineScale = settings[memberName.c_str()].GetFloat();
 	}
 }
 #endif

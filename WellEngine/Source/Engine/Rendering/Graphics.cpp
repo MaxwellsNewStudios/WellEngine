@@ -61,6 +61,16 @@ bool Graphics::Setup(bool fullscreen, const UINT width, const UINT height, const
 #endif
 	_content = content;
 
+
+#ifdef DEBUG_BUILD
+	auto &debugData = DebugData::Get();
+
+	_emissionResolutionScale = debugData.graphicsEmissionScale;
+	_fogResolutionScale = debugData.graphicsFogScale;
+	_dofResolutionScale = debugData.graphicsDofScale;
+	_outlineResolutionScale = debugData.graphicsOutlineScale;
+#endif
+
 	dx::XMUINT2 screenSize, sceneSize;
 	screenSize = sceneSize = { width, height };
 
@@ -71,8 +81,8 @@ bool Graphics::Setup(bool fullscreen, const UINT width, const UINT height, const
 	}
 
 #ifdef USE_IMGUI
-	UINT sceneWidth = DebugData::Get().sceneViewSizeX;
-	UINT sceneHeight = DebugData::Get().sceneViewSizeY;
+	UINT sceneWidth = debugData.sceneViewSizeX;
+	UINT sceneHeight = debugData.sceneViewSizeY;
 	sceneSize = { sceneWidth, sceneHeight };
 
 	if (!ResizeSceneViewBuffers(sceneWidth, sceneHeight))
@@ -296,15 +306,13 @@ bool Graphics::Setup(bool fullscreen, const UINT width, const UINT height, const
 #endif
 
 #ifdef DEBUG_BUILD
-	auto &debugData = DebugData::Get();
-
 	_renderFogFX = debugData.graphicsFogEnabled;
 	_renderEmissionFX = debugData.graphicsEmissionEnabled;
 	_renderDepthOfFieldFX = debugData.graphicsDofEnabled;
 	_renderOutlineFX = debugData.graphicsOutlineEnabled;
 
 	if (!_sceneSampler)
-		SetScenePointFiltering(DebugData::Get().graphicsScenePointFiltering);
+		SetScenePointFiltering(debugData.graphicsScenePointFiltering);
 #endif
 
 	_isSetup = true;
@@ -494,28 +502,10 @@ bool Graphics::ResizeSceneViewBuffers(UINT newWidth, UINT newHeight)
 	_viewportSceneView.Width = (float)newWidth;
 	_viewportSceneView.Height = (float)newHeight;
 
-	_viewportBlur = _viewportSceneView;
-	_viewportBlur.Width *= 0.25f;
-	_viewportBlur.Height *= 0.25f;
-
-	_viewportFog = _viewportSceneView;
-	_viewportFog.Width *= 0.25f;
-	_viewportFog.Height *= 0.25f;
-
-	_viewportDof = _viewportSceneView;
-	_viewportDof.Width *= 0.5f;
-	_viewportDof.Height *= 0.5f;
-
-#ifdef DEBUG_BUILD
-	_viewportOutline = _viewportSceneView;
-	_viewportOutline.Width *= 0.5f;
-	_viewportOutline.Height *= 0.5f;
-#endif
-
 	// Render Targets
 	{
 #ifdef USE_IMGUI
-		if (!_intermediateRT.Initialize(_device, newWidth, newHeight, SWAPCHAIN_BUFFER_FORMAT, true, true))
+		if (!_intermediateRT.Initialize(_device, (UINT)_viewportSceneView.Width, (UINT)_viewportSceneView.Height, SWAPCHAIN_BUFFER_FORMAT, true, true))
 		{
 			ErrMsg("Failed to initialize intermediate render target!");
 			return false;
@@ -530,88 +520,46 @@ bool Graphics::ResizeSceneViewBuffers(UINT newWidth, UINT newHeight)
 		default: break;
 		}
 
-		if (!_sceneRT.Initialize(_device, newWidth, newHeight, VIEW_BUFFER_FORMAT, true))
+		if (!_sceneRT.Initialize(_device, (UINT)_viewportSceneView.Width, (UINT)_viewportSceneView.Height, VIEW_BUFFER_FORMAT, true))
 		{
 			ErrMsg("Failed to initialize scene render target!");
 			return false;
 		}
 
-		if (!_depthRT.Initialize(_device, newWidth, newHeight, depthFormat, true))
+		if (!_depthRT.Initialize(_device, (UINT)_viewportSceneView.Width, (UINT)_viewportSceneView.Height, depthFormat, true))
 		{
 			ErrMsg("Failed to initialize depth render target!");
 			return false;
 		}
 
-		if (!_emissionRT.Initialize(_device, newWidth, newHeight, DXGI_FORMAT_R11G11B10_FLOAT, true, true))
+		if (!_emissionRT.Initialize(_device, (UINT)_viewportSceneView.Width, (UINT)_viewportSceneView.Height, DXGI_FORMAT_R11G11B10_FLOAT, true, true))
 		{
 			ErrMsg("Failed to initialize emission render target!");
 			return false;
 		}
 
-		if (!_blurRT.Initialize(_device, (UINT)std::ceil(_viewportBlur.Width), (UINT)std::ceil(_viewportBlur.Height), DXGI_FORMAT_R11G11B10_FLOAT, true, true))
+		if (!RefreshEmissionBuffers())
 		{
-			ErrMsg("Failed to initialize blur stage two render target!");
+			ErrMsg("Failed to refresh emission buffers!");
 			return false;
 		}
 
-		if (!_intermediateBlurRT.Initialize(_device, (UINT)std::ceil(_viewportBlur.Width), (UINT)std::ceil(_viewportBlur.Height), DXGI_FORMAT_R11G11B10_FLOAT, true, true))
+		if (!RefreshFogBuffers())
 		{
-			ErrMsg("Failed to initialize blur stage one render target!");
+			ErrMsg("Failed to refresh fog buffers!");
 			return false;
 		}
 
-		if (!_fogRT.Initialize(_device, (UINT)std::ceil(_viewportFog.Width), (UINT)std::ceil(_viewportFog.Height), DXGI_FORMAT_R16G16B16A16_FLOAT, true, true))
+		if (!RefreshDofBuffers())
 		{
-			ErrMsg("Failed to initialize fog stage one render target!");
-			return false;
-		}
-
-		if (!_intermediateFogRT.Initialize(_device, (UINT)std::ceil(_viewportFog.Width), (UINT)std::ceil(_viewportFog.Height), DXGI_FORMAT_R16G16B16A16_FLOAT, true, true))
-		{
-			ErrMsg("Failed to initialize fog stage one render target!");
-			return false;
-		}
-
-		if (!_cocRT.Initialize(_device, newWidth, newHeight, DXGI_FORMAT_R16_FLOAT, true, true))
-		{
-			ErrMsg("Failed to initialize dof render target!");
-			return false;
-		}
-
-		if (!_dofSharpRT.Initialize(_device, newWidth, newHeight, SWAPCHAIN_BUFFER_FORMAT, true, true))
-		{
-			ErrMsg("Failed to initialize dof render target!");
-			return false;
-		}
-
-		if (!_dofHalfBlur1RT.Initialize(_device, (UINT)std::ceil(_viewportDof.Width), (UINT)std::ceil(_viewportDof.Height), DXGI_FORMAT_R11G11B10_FLOAT, true, true))
-		{
-			ErrMsg("Failed to initialize dof render target!");
-			return false;
-		}
-
-		if (!_dofHalfBlur2RT.Initialize(_device, (UINT)std::ceil(_viewportDof.Width), (UINT)std::ceil(_viewportDof.Height), DXGI_FORMAT_R11G11B10_FLOAT, true, true))
-		{
-			ErrMsg("Failed to initialize dof render target!");
-			return false;
-		}
-
-		if (!_dofFullBlurRT.Initialize(_device, newWidth, newHeight, DXGI_FORMAT_R16G16B16A16_FLOAT, true, true))
-		{
-			ErrMsg("Failed to initialize dof render target!");
+			ErrMsg("Failed to refresh dof buffers!");
 			return false;
 		}
 
 #ifdef DEBUG_BUILD
-		if (!_outlineRT.Initialize(_device, (UINT)std::ceil(_viewportOutline.Width), (UINT)std::ceil(_viewportOutline.Height), DXGI_FORMAT_R8_UNORM, true, true))
+		if (!RefreshOutlineBuffers())
 		{
-			ErrMsg("Failed to initialize outline stage one render target!");
-			return false;
-		}
-
-		if (!_intermediateOutlineRT.Initialize(_device, (UINT)std::ceil(_viewportOutline.Width), (UINT)std::ceil(_viewportOutline.Height), DXGI_FORMAT_R8_UNORM, true, true))
-		{
-			ErrMsg("Failed to initialize outline stage two render target!");
+			ErrMsg("Failed to refresh outline buffers!");
 			return false;
 		}
 #endif
@@ -655,6 +603,107 @@ bool Graphics::ResizeSceneViewBuffers(UINT newWidth, UINT newHeight)
 
 	return true;
 }
+bool Graphics::RefreshEmissionBuffers()
+{
+	_viewportBlur = _viewportSceneView;
+	_viewportBlur.Width = std::ceil(_viewportBlur.Width * _emissionResolutionScale);
+	_viewportBlur.Height = std::ceil(_viewportBlur.Height * _emissionResolutionScale);
+
+	if (!_blurRT.Initialize(_device, (UINT)_viewportBlur.Width, (UINT)_viewportBlur.Height, DXGI_FORMAT_R11G11B10_FLOAT, true, true))
+	{
+		ErrMsg("Failed to initialize blur stage two render target!");
+		return false;
+	}
+
+	if (!_intermediateBlurRT.Initialize(_device, (UINT)_viewportBlur.Width, (UINT)_viewportBlur.Height, DXGI_FORMAT_R11G11B10_FLOAT, true, true))
+	{
+		ErrMsg("Failed to initialize blur stage one render target!");
+		return false;
+	}
+
+	return true;
+}
+bool Graphics::RefreshFogBuffers()
+{
+	_viewportFog = _viewportSceneView;
+	_viewportFog.Width = std::ceil(_viewportFog.Width * _fogResolutionScale);
+	_viewportFog.Height = std::ceil(_viewportFog.Height * _fogResolutionScale);
+
+	if (!_fogRT.Initialize(_device, (UINT)_viewportFog.Width, (UINT)_viewportFog.Height, DXGI_FORMAT_R16G16B16A16_FLOAT, true, true))
+	{
+		ErrMsg("Failed to initialize fog stage one render target!");
+		return false;
+	}
+
+	if (!_intermediateFogRT.Initialize(_device, (UINT)_viewportFog.Width, (UINT)_viewportFog.Height, DXGI_FORMAT_R16G16B16A16_FLOAT, true, true))
+	{
+		ErrMsg("Failed to initialize fog stage one render target!");
+		return false;
+	}
+
+	return true;
+}
+bool Graphics::RefreshDofBuffers()
+{
+	_viewportDof = _viewportSceneView;
+	_viewportDof.Width = std::ceil(_viewportDof.Width * _dofResolutionScale);
+	_viewportDof.Height = std::ceil(_viewportDof.Height * _dofResolutionScale);
+
+	if (!_cocRT.Initialize(_device, (UINT)_viewportSceneView.Width, (UINT)_viewportSceneView.Height, DXGI_FORMAT_R16_FLOAT, true, true))
+	{
+		ErrMsg("Failed to initialize dof render target!");
+		return false;
+	}
+
+	if (!_dofSharpRT.Initialize(_device, (UINT)_viewportSceneView.Width, (UINT)_viewportSceneView.Height, SWAPCHAIN_BUFFER_FORMAT, true, true))
+	{
+		ErrMsg("Failed to initialize dof render target!");
+		return false;
+	}
+
+	if (!_dofHalfBlur1RT.Initialize(_device, (UINT)_viewportDof.Width, (UINT)_viewportDof.Height, DXGI_FORMAT_R11G11B10_FLOAT, true, true))
+	{
+		ErrMsg("Failed to initialize dof render target!");
+		return false;
+	}
+
+	if (!_dofHalfBlur2RT.Initialize(_device, (UINT)_viewportDof.Width, (UINT)_viewportDof.Height, DXGI_FORMAT_R11G11B10_FLOAT, true, true))
+	{
+		ErrMsg("Failed to initialize dof render target!");
+		return false;
+	}
+
+	if (!_dofFullBlurRT.Initialize(_device, (UINT)_viewportSceneView.Width, (UINT)_viewportSceneView.Height, DXGI_FORMAT_R16G16B16A16_FLOAT, true, true))
+	{
+		ErrMsg("Failed to initialize dof render target!");
+		return false;
+	}
+
+	return true;
+}
+#ifdef DEBUG_BUILD
+bool Graphics::RefreshOutlineBuffers()
+{
+	_viewportOutline = _viewportSceneView;
+	_viewportOutline.Width = std::ceil(_viewportOutline.Width * _outlineResolutionScale);
+	_viewportOutline.Height = std::ceil(_viewportOutline.Height * _outlineResolutionScale);
+
+
+	if (!_outlineRT.Initialize(_device, (UINT)_viewportOutline.Width, (UINT)_viewportOutline.Height, DXGI_FORMAT_R8_UNORM, true, true))
+	{
+		ErrMsg("Failed to initialize outline stage one render target!");
+		return false;
+	}
+
+	if (!_intermediateOutlineRT.Initialize(_device, (UINT)_viewportOutline.Width, (UINT)_viewportOutline.Height, DXGI_FORMAT_R8_UNORM, true, true))
+	{
+		ErrMsg("Failed to initialize outline stage two render target!");
+		return false;
+	}
+
+	return true;
+}
+#endif
 
 bool Graphics::SetCamera(CameraBehaviour *viewCamera)
 {
@@ -3610,7 +3659,7 @@ bool Graphics::RenderPostFX()
 
 
 					// Send execution command
-					_context->Dispatch(static_cast<UINT>(ceil(_viewportBlur.Width / 8.0f)), static_cast<UINT>(ceil(_viewportBlur.Height / 8.0f)), 1);
+					_context->Dispatch(static_cast<UINT>(ceil(_viewportFog.Width / 8.0f)), static_cast<UINT>(ceil(_viewportFog.Height / 8.0f)), 1);
 
 
 					// Unbind compute shader resources
@@ -4561,7 +4610,18 @@ bool Graphics::RenderUI(TimeUtils &time)
 		{
 			if (ImGui::TreeNode("Volumetric Fog"))
 			{
-				ImGui::Text(std::format("Fog Resolution: {}x{}", (int)_viewportFog.Width, (int)_viewportFog.Height).c_str());
+				ImGui::Text(std::format("Resolution: {}x{}", (int)_viewportFog.Width, (int)_viewportFog.Height).c_str());
+				if (ImGui::DragFloat("Scale##FogScale", &_fogResolutionScale, 0.005f, 0.01f, 1.0f))
+				{
+					_fogResolutionScale = std::clamp(_fogResolutionScale, 0.01f, 1.0f);
+					DebugData::Get().graphicsFogScale = _fogResolutionScale;
+
+					if (!RefreshFogBuffers())
+					{
+						ErrMsg("Failed to refresh fog buffers!");
+						return false;
+					}
+				}
 
 				if (ImGui::Checkbox("Render Fog", &_renderFogFX))
 				{
@@ -4729,7 +4789,18 @@ bool Graphics::RenderUI(TimeUtils &time)
 
 			if (ImGui::TreeNode("Emission"))
 			{
-				ImGui::Text(std::format("Emission Resolution: {}x{}", (int)_viewportBlur.Width, (int)_viewportBlur.Height).c_str());
+				ImGui::Text(std::format("Resolution: {}x{}", (int)_viewportBlur.Width, (int)_viewportBlur.Height).c_str());
+				if (ImGui::DragFloat("Scale##EmissionScale", &_emissionResolutionScale, 0.005f, 0.01f, 1.0f))
+				{
+					_emissionResolutionScale = std::clamp(_emissionResolutionScale, 0.01f, 1.0f);
+					DebugData::Get().graphicsEmissionScale = _emissionResolutionScale;
+
+					if (!RefreshEmissionBuffers())
+					{
+						ErrMsg("Failed to refresh emission buffers!");
+						return false;
+					}
+				}
 
 				if (ImGui::Checkbox("Render Emission", &_renderEmissionFX))
 				{
@@ -4890,7 +4961,18 @@ bool Graphics::RenderUI(TimeUtils &time)
 
 			if (ImGui::TreeNode("Depth of Field"))
 			{
-				ImGui::Text(std::format("DoF Resolution: {}x{}", (int)_viewportDof.Width, (int)_viewportDof.Height).c_str());
+				ImGui::Text(std::format("Resolution: {}x{}", (int)_viewportDof.Width, (int)_viewportDof.Height).c_str());
+				if (ImGui::DragFloat("Scale##DoFScale", &_dofResolutionScale, 0.005f, 0.01f, 1.0f))
+				{
+					_dofResolutionScale = std::clamp(_dofResolutionScale, 0.01f, 1.0f);
+					DebugData::Get().graphicsDofScale = _dofResolutionScale;
+
+					if (!RefreshDofBuffers())
+					{
+						ErrMsg("Failed to refresh DoF buffers!");
+						return false;
+					}
+				}
 
 				if (ImGui::Checkbox("Render Depth of Field", &_renderDepthOfFieldFX))
 				{
@@ -5049,7 +5131,18 @@ bool Graphics::RenderUI(TimeUtils &time)
 
 			if (ImGui::TreeNode("Outline"))
 			{
-				ImGui::Text(std::format("Outline Resolution: {}x{}", (int)_viewportOutline.Width, (int)_viewportOutline.Height).c_str());
+				ImGui::Text(std::format("Resolution: {}x{}", (int)_viewportOutline.Width, (int)_viewportOutline.Height).c_str());
+				if (ImGui::DragFloat("Scale##OutlineScale", &_outlineResolutionScale, 0.005f, 0.01f, 1.0f))
+				{
+					_outlineResolutionScale = std::clamp(_outlineResolutionScale, 0.01f, 1.0f);
+					DebugData::Get().graphicsOutlineScale = _outlineResolutionScale;
+
+					if (!RefreshOutlineBuffers())
+					{
+						ErrMsg("Failed to refresh outline buffers!");
+						return false;
+					}
+				}
 
 				if (ImGui::Checkbox("Render Outline", &_renderOutlineFX))
 				{
