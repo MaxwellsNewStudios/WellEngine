@@ -340,6 +340,7 @@
     <ClInclude Include="Dependencies\tinyfiledialogs\tinyfiledialogs.h" />
     <ClInclude Include="Dependencies\tracy-0.11.1\public\tracy\Tracy.hpp" />
     <ClInclude Include="Dependencies\tracy-0.11.1\public\tracy\TracyD3D11.hpp" />
+    <ClInclude Include="Source\Engine\Content\FontAtlas.h" />
     <ClInclude Include="Source\Engine\Audio\SoundEngine.h" />
     <ClInclude Include="Source\Engine\Audio\SoundSource.h" />
     <ClInclude Include="Source\Engine\Collision\Colliders.h" />
@@ -558,6 +559,7 @@
     </ClCompile>
     <ClCompile Include="Source\Engine\Content\Content.cpp" />
     <ClCompile Include="Source\Engine\Content\ContentLoader.cpp" />
+    <ClCompile Include="Source\Engine\Content\FontAtlas.cpp" />
     <ClCompile Include="Source\Engine\Content\HeightMap.cpp" />
     <ClCompile Include="Source\Engine\D3D\ConstantBufferD3D11.cpp" />
     <ClCompile Include="Source\Engine\D3D\D3D11Helper.cpp" />
