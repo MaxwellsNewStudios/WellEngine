@@ -4,6 +4,10 @@
 #include <vector>
 #include <d3d11.h>
 #include <DirectXMath.h>
+#include "rapidjson/document.h"
+
+namespace dx = DirectX;
+namespace json = rapidjson;
 
 struct GlyphVertex
 {
@@ -13,7 +17,6 @@ struct GlyphVertex
 
 struct Glyph
 {
-	UINT codepoint;
 	dx::XMFLOAT4 uvRect; // Atlas texture coordinates (min-max)
 	dx::XMFLOAT2 size;   // Size of the glyph in pixels
 	dx::XMFLOAT2 offset; // Offset from the cursor position to the top-left of the glyph
@@ -44,14 +47,18 @@ struct Glyph
 		// Advance the cursor position
 		cursor.x += advance;
 	}
+
+	[[nodiscard]] bool Serialize(json::Document::AllocatorType &docAlloc, json::Value &obj) const;
+	[[nodiscard]] bool Deserialize(const json::Value &obj);
 };
 
 class FontAtlas
 {
 private:
-	UINT _fontTextureID;
+	UINT _fontTextureID = -1;
 	UINT _fallbackGlyphID = -1;
 	std::unordered_map<UINT, Glyph> _glyphs;
+	std::string _fontName;
 
 	void AppendGlyph(UINT codepoint, std::vector<GlyphVertex> &vertices, dx::XMFLOAT2 &cursor, float lineHeight) const;
 
@@ -64,4 +71,11 @@ public:
 
 	std::vector<GlyphVertex> Generate(std::string_view text, float lineHeight) const;
 	std::vector<GlyphVertex> Generate(std::wstring_view text, float lineHeight) const;
+
+	[[nodiscard]] bool Serialize(std::string_view fileName, const Content *content) const;
+	[[nodiscard]] bool Deserialize(std::string_view fileName, const Content *content);
+
+#ifdef USE_IMGUI
+	[[nodiscard]] bool RenderUI(const Content *content);
+#endif
 };
