@@ -148,7 +148,8 @@ bool Game::LoadContent(
 	const std::vector<TextureData> &textureNames,
 	const std::vector<TextureData> &cubemapNames,
 	const std::vector<ShaderData> &shaderNames,
-	const std::vector<HeightMapData> &heightMapNames)
+	const std::vector<HeightMapData> &heightMapNames,
+	const std::vector<std::string> &fontAtlasNames)
 {
 	ZoneScopedC(RandomUniqueColor());
 	
@@ -220,6 +221,17 @@ bool Game::LoadContent(
 		}
 	}
 	
+	// Font Atlases
+	for (int i = 0; i < fontAtlasNames.size(); i++)
+	{
+		const std::string &fontName = fontAtlasNames[i];
+		if (!_content.AddFontAtlas(fontName))
+		{
+			ErrMsgF("Failed to add font atlas {}!", fontName);
+			return false;
+		}
+	}
+
 	// Samplers
 	{
 		if (_content.AddSampler(_device.Get(), "Fallback", D3D11_TEXTURE_ADDRESS_CLAMP, D3D11_FILTER_ANISOTROPIC) == CONTENT_NULL)
@@ -815,8 +827,23 @@ bool Game::Setup(TimeUtils &time, Window window)
 #endif
 	};
 
+	// Search for all .atlas files in ASSET_PATH_FONTS
+	std::vector<std::string> fontAtlasNames;
+	for (const auto &entry : std::filesystem::directory_iterator(ASSET_PATH_FONTS))
+	{
+		const auto &path = entry.path();
+		std::string filename = path.filename().string();
+		std::string ext = filename.c_str() + filename.find_last_of('.') + 1;
+
+		if (ext != ASSET_EXT_FONT_ATLAS)
+			continue; // Skip non-font atlas files
+
+		filename = filename.substr(0, filename.find_last_of('.'));
+		fontAtlasNames.emplace_back(filename);
+	}
+
 	time.TakeSnapshot("LoadContent");
-	if (!LoadContent(textureNames, cubemapNames, shaderNames, heightMapNames))
+	if (!LoadContent(textureNames, cubemapNames, shaderNames, heightMapNames, fontAtlasNames))
 	{
 		ErrMsg("Failed to load game content!");
 		return false;

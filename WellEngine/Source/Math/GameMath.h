@@ -325,7 +325,7 @@ static inline void Store(dx::XMFLOAT4X4A *dest, const dx::XMMATRIX &mat) noexcep
 }
 
 
-static inline int Wrap(int val, int min, int max)
+[[nodiscard]] static inline int Wrap(int val, int min, int max)
 {
 	int length = max - min + 1;
 
@@ -334,7 +334,7 @@ static inline int Wrap(int val, int min, int max)
 
 	return min + (val - min) % length;
 }
-static inline float Wrap(float val, float min, float max)
+[[nodiscard]] static inline float Wrap(float val, float min, float max)
 {
 	float length = max - min + 1.0f;
 
@@ -343,7 +343,7 @@ static inline float Wrap(float val, float min, float max)
 
 	return min + fmodf(val - min, length);
 }
-static inline double Wrap(double val, double min, double max)
+[[nodiscard]] static inline double Wrap(double val, double min, double max)
 {
 	double length = max - min + 1.0;
 
@@ -352,6 +352,108 @@ static inline double Wrap(double val, double min, double max)
 
 	return min + fmod(val - min, length);
 }
+
+[[nodiscard]] static inline float Lerp(float a, float b, float t) noexcept
+{
+	return std::lerp(a, b, t);
+}
+[[nodiscard]] static inline dx::XMFLOAT4A Lerp(const dx::XMFLOAT4A &a, const dx::XMFLOAT4A &b, const dx::XMFLOAT4A &t) noexcept
+{
+	return {
+		a.x + (b.x - a.x) * t.x,
+		a.y + (b.y - a.y) * t.y,
+		a.z + (b.z - a.z) * t.z,
+		a.w + (b.w - a.w) * t.w
+	};
+}
+[[nodiscard]] static inline dx::XMFLOAT3A Lerp(const dx::XMFLOAT3A &a, const dx::XMFLOAT3A &b, const dx::XMFLOAT3A &t) noexcept
+{
+	return {
+		a.x + (b.x - a.x) * t.x,
+		a.y + (b.y - a.y) * t.y,
+		a.z + (b.z - a.z) * t.z
+	};
+}
+[[nodiscard]] static inline dx::XMFLOAT2A Lerp(const dx::XMFLOAT2A &a, const dx::XMFLOAT2A &b, const dx::XMFLOAT2A &t) noexcept
+{
+	return {
+		a.x + (b.x - a.x) * t.x,
+		a.y + (b.y - a.y) * t.y
+	};
+}
+[[nodiscard]] static inline dx::XMFLOAT4 Lerp(const dx::XMFLOAT4 &a, const dx::XMFLOAT4 &b, const dx::XMFLOAT4 &t) noexcept
+{
+	return {
+		a.x + (b.x - a.x) * t.x,
+		a.y + (b.y - a.y) * t.y,
+		a.z + (b.z - a.z) * t.z,
+		a.w + (b.w - a.w) * t.w
+	};
+}
+[[nodiscard]] static inline dx::XMFLOAT3 Lerp(const dx::XMFLOAT3 &a, const dx::XMFLOAT3 &b, const dx::XMFLOAT3 &t) noexcept
+{
+	return {
+		a.x + (b.x - a.x) * t.x,
+		a.y + (b.y - a.y) * t.y,
+		a.z + (b.z - a.z) * t.z
+	};
+}
+[[nodiscard]] static inline dx::XMFLOAT2 Lerp(const dx::XMFLOAT2 &a, const dx::XMFLOAT2 &b, const dx::XMFLOAT2 &t) noexcept
+{
+	return {
+		a.x + (b.x - a.x) * t.x,
+		a.y + (b.y - a.y) * t.y
+	};
+}
+[[nodiscard]] static inline dx::XMFLOAT4A Lerp(const dx::XMFLOAT4A &a, const dx::XMFLOAT4A &b, float t) noexcept
+{
+	return {
+		a.x + (b.x - a.x) * t,
+		a.y + (b.y - a.y) * t,
+		a.z + (b.z - a.z) * t,
+		a.w + (b.w - a.w) * t
+	};
+}
+[[nodiscard]] static inline dx::XMFLOAT3A Lerp(const dx::XMFLOAT3A &a, const dx::XMFLOAT3A &b, float t) noexcept
+{
+	return {
+		a.x + (b.x - a.x) * t,
+		a.y + (b.y - a.y) * t,
+		a.z + (b.z - a.z) * t
+	};
+}
+[[nodiscard]] static inline dx::XMFLOAT2A Lerp(const dx::XMFLOAT2A &a, const dx::XMFLOAT2A &b, float t) noexcept
+{
+	return {
+		a.x + (b.x - a.x) * t,
+		a.y + (b.y - a.y) * t
+	};
+}
+[[nodiscard]] static inline dx::XMFLOAT4 Lerp(const dx::XMFLOAT4 &a, const dx::XMFLOAT4 &b, float t) noexcept
+{
+	return {
+		a.x + (b.x - a.x) * t,
+		a.y + (b.y - a.y) * t,
+		a.z + (b.z - a.z) * t,
+		a.w + (b.w - a.w) * t
+	};
+}
+[[nodiscard]] static inline dx::XMFLOAT3 Lerp(const dx::XMFLOAT3 &a, const dx::XMFLOAT3 &b, float t) noexcept
+{
+	return {
+		a.x + (b.x - a.x) * t,
+		a.y + (b.y - a.y) * t,
+		a.z + (b.z - a.z) * t
+	};
+}
+[[nodiscard]] static inline dx::XMFLOAT2 Lerp(const dx::XMFLOAT2 &a, const dx::XMFLOAT2 &b, float t) noexcept
+{
+	return {
+		a.x + (b.x - a.x) * t,
+		a.y + (b.y - a.y) * t
+	};
+}
+
 
 template<typename T>
 [[nodiscard]] static inline size_t NumericLimit() noexcept

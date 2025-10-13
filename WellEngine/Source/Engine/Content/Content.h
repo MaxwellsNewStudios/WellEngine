@@ -12,6 +12,7 @@
 #include "Source/Engine/Audio/SoundSource.h"
 #include "Material.h"
 #include "HeightMap.h"
+#include "FontAtlas.h"
 #include "Tests/TestUtils.h"
 
 inline constexpr UINT CONTENT_NULL = 0xFFFFFFFF;
@@ -185,6 +186,21 @@ public:
 	HeightTexture &operator=(HeightTexture &&other) = delete;
 };
 
+class TextureFont : public ContentBase
+{
+public:
+	FontAtlas data;
+
+	TextureFont(std::string name, const UINT id)
+		: ContentBase(name, id) { }
+	~TextureFont() = default;
+	TextureFont(const TextureFont &other) = delete;
+	TextureFont &operator=(const TextureFont &other) = delete;
+	TextureFont(TextureFont &&other) = delete;
+	TextureFont &operator=(TextureFont &&other) = delete;
+};
+
+
 struct CompiledData
 {
 	char *data = nullptr;
@@ -301,6 +317,8 @@ public:
 	[[nodiscard]] std::string GetTextureName(UINT id) const;
 	[[nodiscard]] std::string GetCubemapName(UINT id) const;
 
+	[[nodiscard]] const Texture *GetTextureContainer(UINT id) const;
+	[[nodiscard]] const Texture *GetTextureContainer(const std::string &name) const;
 	[[nodiscard]] ShaderResourceTextureD3D11 *GetTexture(UINT id) const;
 	[[nodiscard]] ShaderResourceTextureD3D11 *GetTexture(const std::string &name) const;
 	[[nodiscard]] ShaderResourceTextureD3D11 *GetCubemap(UINT id) const;
@@ -384,6 +402,23 @@ public:
 	[[nodiscard]] ID3D11BlendState *GetBlendState(UINT id) const;
 	[[nodiscard]] ComPtr<ID3D11BlendState> *GetBlendStateAddress(const std::string &name) const;
 	[[nodiscard]] ComPtr<ID3D11BlendState> *GetBlendStateAddress(UINT id) const;
+#pragma endregion
+
+#pragma region Font Atlas
+private:
+	std::vector<TextureFont *> _textureFonts;
+
+public:
+	UINT AddFontAtlas(const std::string &name);
+
+	[[nodiscard]] UINT GetFontAtlasCount() const;
+	void GetFontAtlasNames(std::vector<std::string> *names) const;
+
+	[[nodiscard]] UINT GetFontAtlasID(const std::string &name) const;
+	[[nodiscard]] std::string GetFontAtlasName(UINT id) const;
+
+	[[nodiscard]] FontAtlas *GetFontAtlas(const std::string &name) const;
+	[[nodiscard]] FontAtlas *GetFontAtlas(UINT id) const;
 #pragma endregion
 
 	TESTABLE()

@@ -9,6 +9,8 @@
 namespace dx = DirectX;
 namespace json = rapidjson;
 
+class Content;
+
 struct GlyphVertex
 {
 	dx::XMFLOAT3 position;
@@ -21,6 +23,8 @@ struct Glyph
 	dx::XMFLOAT2 size;   // Size of the glyph in pixels
 	dx::XMFLOAT2 offset; // Offset from the cursor position to the top-left of the glyph
 	float advance;       // How much to move the cursor after drawing this glyph
+
+	Glyph() : uvRect(0, 0, 0, 0), size(0, 0), offset(0, 0), advance(0) {}
 
 	void ToVerts(std::vector<GlyphVertex> &out, dx::XMFLOAT2 &cursor) const
 	{
@@ -60,11 +64,17 @@ private:
 	std::unordered_map<UINT, Glyph> _glyphs;
 	std::string _fontName;
 
+#ifdef USE_IMGUI
+	UINT _uiSelectedGlyphID = -1;
+#endif
+
 	void AppendGlyph(UINT codepoint, std::vector<GlyphVertex> &vertices, dx::XMFLOAT2 &cursor, float lineHeight) const;
 
 public:
 	FontAtlas() = default;
 	~FontAtlas() = default;
+
+	[[nodiscard]] bool Initialize(const Content *content, std::string name);
 
 	const Glyph *GetGlyph(UINT codepoint) const;
 	UINT GetFontTextureID() const { return _fontTextureID; }

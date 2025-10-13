@@ -882,6 +882,56 @@ bool Content::RenderUI(ID3D11Device *device)
 		ImGui::TreePop();
 	}
 
+	if (ImGui::TreeNode("Fonts"))
+	{
+		if (ImGui::Button("New Font Atlas"))
+			ImGui::OpenPopup("NewFontAtlasPopup");
+
+		if (ImGui::BeginPopup("NewFontAtlasPopup"))
+		{
+			static std::string fontName = "New Font";
+			ImGui::InputText("Name", &fontName);
+
+			if (ImGui::Button("Create") && !fontName.empty())
+			{
+				if (!AddFontAtlas(fontName))
+					ErrMsg("Failed to create new font atlas!");
+
+				ImGui::CloseCurrentPopup();
+			}
+
+			ImGui::EndPopup();
+		}
+
+		ImGui::BeginChild("FontList", { 0, 300 }, ImGuiChildFlags_ResizeY);
+
+		std::vector<std::string> fontNames;
+		GetFontAtlasNames(&fontNames);
+
+		for (int i = 0; i < fontNames.size(); i++)
+		{
+			ImGui::PushID(i);
+			if (ImGui::TreeNode(fontNames[i].c_str()))
+			{
+				if (!_textureFonts[i]->data.RenderUI(this))
+				{
+					ErrMsg("Failed to render font atlas UI!");
+					ImGui::TreePop();
+					ImGui::PopID();
+					ImGui::EndChild();
+					ImGui::TreePop();
+					return false;
+				}
+
+				ImGui::TreePop();
+			}
+			ImGui::PopID();
+		}
+		ImGui::EndChild();
+
+		ImGui::TreePop();
+	}
+
 	if (ImGui::TreeNode("Materials"))
 	{
 		ImGuiChildFlags childFlags = 0;
@@ -1917,6 +1967,37 @@ UINT Content::AddHeightMap(const std::string &name, const std::string &path)
 	return id;
 }
 
+UINT Content::AddFontAtlas(const std::string &name)
+{
+	if (name.empty() || name == "_" || name == "Uninitialized")
+	{
+		ErrMsgF("The name '{}' is reserved!", name);
+		return CONTENT_NULL;
+	}
+
+	UINT id = CONTENT_NULL;
+	bool duplicateName = false;
+	id = (UINT)_textureFonts.size();
+	for (UINT i = 0; i < id; i++)
+	{
+		if (_textureFonts[i]->name != name)
+			continue;
+
+		duplicateName = true;
+		id = i;
+		break;
+	}
+
+	if (!duplicateName)
+	{
+		TextureFont *font = new TextureFont(name, id);
+		font->data.Initialize(this, name);
+		_textureFonts.emplace_back(font);
+	}
+
+	return id;
+}
+
 UINT Content::GetMeshCount() const
 {
 	return static_cast<UINT>(_meshes.size());
@@ -1936,6 +2017,10 @@ UINT Content::GetSamplerCount() const
 UINT Content::GetBlendStateCount() const
 {
 	return static_cast<UINT>(_blendStates.size());
+}
+UINT Content::GetFontAtlasCount() const
+{
+	return static_cast<UINT>(_textureFonts.size());
 }
 
 void Content::GetMeshNames(std::vector<std::string> *names) const
@@ -1979,6 +2064,13 @@ void Content::GetCubemapNames(std::vector<std::string> *names) const
 	names->reserve(_cubemaps.size());
 	for (const Cubemap *cubemap : _cubemaps)
 		names->emplace_back(cubemap->name);
+}
+void Content::GetFontAtlasNames(std::vector<std::string> *names) const
+{
+	names->clear();
+	names->reserve(_textureFonts.size());
+	for (const TextureFont *font : _textureFonts)
+		names->emplace_back(font->name);
 }
 
 UINT Content::GetMeshID(const std::string &name) const
@@ -2197,6 +2289,18 @@ UINT Content::GetTextureIDByPath(const std::string &path) const
 
 	return CONTENT_NULL;
 }
+const Texture *Content::GetTextureContainer(UINT id) const
+{
+	if (id >= _textures.size())
+		return GetTextureContainer("Fallback");
+
+	return _textures[id];
+}
+const Texture *Content::GetTextureContainer(const std::string &name) const
+{
+	UINT id = GetTextureID(name);
+	return GetTextureContainer(id);
+}
 ShaderResourceTextureD3D11 *Content::GetTexture(const UINT id) const
 {
 	if (id >= _textures.size())
@@ -2392,6 +2496,57 @@ ComPtr<ID3D11BlendState> *Content::GetBlendStateAddress(const UINT id) const
 	}
 
 	return &_blendStates[id]->data;
+}
+
+UINT Content::GetFontAtlasID(const std::string &name) const
+{
+	if (name == "_" || name == "Uninitialized")
+		return CONTENT_NULL;
+
+	const UINT count = static_cast<UINT>(_textureFonts.size());
+
+	for (UINT i = 0; i < count; i++)
+	{
+		if (_textureFonts[i]->name == name)
+			return i;
+	}
+
+	return CONTENT_NULL;
+}
+std::string Content::GetFontAtlasName(UINT id) const
+{
+	if (id >= _textureFonts.size())
+		return "Uninitialized";
+	return _textureFonts[id]->name;
+}
+FontAtlas *Content::GetFontAtlas(const std::string &name) const
+{
+	const UINT count = static_cast<UINT>(_textureFonts.size());
+
+	for (UINT i = 0; i < count; i++)
+	{
+		if (_textureFonts[i]->name == name)
+			return &_textureFonts[i]->data;
+	}
+
+	DbgMsgF("Failed to find font atlas '{}'! Returning default.", name);
+	return &_textureFonts[0]->data;
+}
+FontAtlas *Content::GetFontAtlas(UINT id) const
+{
+	if (id == CONTENT_NULL)
+	{
+		DbgMsgF("Failed to find font atlas #{}! Returning default.", id);
+		return &_textureFonts[0]->data;
+	}
+
+	if (id >= _textureFonts.size())
+	{
+		DbgMsgF("Failed to find font atlas #{}! Returning default.", id);
+		return &_textureFonts[0]->data;
+	}
+
+	return &_textureFonts[id]->data;
 }
 
 UINT Content::GetInputLayoutID(const std::string &name) const
