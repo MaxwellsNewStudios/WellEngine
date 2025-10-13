@@ -1,0 +1,8 @@
+{
+    "Atlas": {
+        "Name": "DefaultFont",
+        "Texture": "ExampleFont",
+        "Fallback Glyph": 4294967295,
+        "Glyphs": []
+    }
+}

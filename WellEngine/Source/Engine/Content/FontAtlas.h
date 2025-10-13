@@ -1,9 +1,10 @@
+#pragma once
+
 #include <intsafe.h>
 #include <string>
 #include <unordered_map>
 #include <vector>
 #include <d3d11.h>
-#include <DirectXMath.h>
 #include "rapidjson/document.h"
 
 namespace dx = DirectX;
@@ -17,14 +18,15 @@ struct GlyphVertex
 	dx::XMFLOAT2 uv;
 };
 
-struct Glyph
+class GlyphData
 {
+public:
 	dx::XMFLOAT4 uvRect; // Atlas texture coordinates (min-max)
 	dx::XMFLOAT2 size;   // Size of the glyph in pixels
 	dx::XMFLOAT2 offset; // Offset from the cursor position to the top-left of the glyph
 	float advance;       // How much to move the cursor after drawing this glyph
 
-	Glyph() : uvRect(0, 0, 0, 0), size(0, 0), offset(0, 0), advance(0) {}
+	GlyphData() : uvRect(0, 0, 0, 0), size(0, 0), offset(0, 0), advance(0) {}
 
 	void ToVerts(std::vector<GlyphVertex> &out, dx::XMFLOAT2 &cursor) const
 	{
@@ -61,7 +63,7 @@ class FontAtlas
 private:
 	UINT _fontTextureID = -1;
 	UINT _fallbackGlyphID = -1;
-	std::unordered_map<UINT, Glyph> _glyphs;
+	std::unordered_map<UINT, GlyphData> _glyphs;
 	std::string _fontName;
 
 #ifdef USE_IMGUI
@@ -76,7 +78,7 @@ public:
 
 	[[nodiscard]] bool Initialize(const Content *content, std::string name);
 
-	const Glyph *GetGlyph(UINT codepoint) const;
+	const GlyphData *GetGlyph(UINT codepoint) const;
 	UINT GetFontTextureID() const { return _fontTextureID; }
 
 	std::vector<GlyphVertex> Generate(std::string_view text, float lineHeight) const;

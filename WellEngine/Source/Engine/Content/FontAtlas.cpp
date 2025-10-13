@@ -1,8 +1,7 @@
 #include "stdafx.h"
 #include "FontAtlas.h"
 
-
-bool Glyph::Serialize(json::Document::AllocatorType &docAlloc, json::Value &obj) const
+bool GlyphData::Serialize(json::Document::AllocatorType &docAlloc, json::Value &obj) const
 {
 	obj.AddMember("UV Rect", SerializerUtils::SerializeVec(uvRect, docAlloc), docAlloc);
 	obj.AddMember("Size", SerializerUtils::SerializeVec(size, docAlloc), docAlloc);
@@ -11,7 +10,7 @@ bool Glyph::Serialize(json::Document::AllocatorType &docAlloc, json::Value &obj)
 
 	return true;
 }
-bool Glyph::Deserialize(const json::Value &obj)
+bool GlyphData::Deserialize(const json::Value &obj)
 {
 	SerializerUtils::DeserializeVec(uvRect, obj["UV Rect"]);
 	SerializerUtils::DeserializeVec(size, obj["Size"]);
@@ -20,7 +19,6 @@ bool Glyph::Deserialize(const json::Value &obj)
 
 	return true;
 }
-
 
 bool FontAtlas::Initialize(const Content *content, std::string name)
 {
@@ -36,7 +34,7 @@ bool FontAtlas::Initialize(const Content *content, std::string name)
 
 void FontAtlas::AppendGlyph(UINT codepoint, std::vector<GlyphVertex> &vertices, dx::XMFLOAT2 &cursor, float lineHeight) const
 {
-	const Glyph *glyph = GetGlyph(codepoint);
+	const GlyphData *glyph = GetGlyph(codepoint);
 	if (!glyph)
 	{
 		WarnF("Missing glyph for codepoint: {}", codepoint);
@@ -46,7 +44,7 @@ void FontAtlas::AppendGlyph(UINT codepoint, std::vector<GlyphVertex> &vertices, 
 	glyph->ToVerts(vertices, cursor);
 }
 
-const Glyph *FontAtlas::GetGlyph(UINT codepoint) const
+const GlyphData *FontAtlas::GetGlyph(UINT codepoint) const
 {
 	auto it = _glyphs.find(codepoint);
 	if (it != _glyphs.end())
@@ -219,7 +217,7 @@ bool FontAtlas::Deserialize(std::string_view fileName, const Content *content)
 						if (glyphObj.HasMember("Codepoint"))
 							codepoint = glyphObj["Codepoint"].GetUint();
 
-						Glyph glyph{};
+						GlyphData glyph{};
 						if (!glyph.Deserialize(glyphObj))
 						{
 							ErrMsg("Could not deserialize glyph!");
@@ -240,6 +238,9 @@ bool FontAtlas::Deserialize(std::string_view fileName, const Content *content)
 #ifdef USE_IMGUI
 bool FontAtlas::RenderUI(const Content *content)
 {
+	auto tex = content->GetTexture(_fontTextureID);
+	std::string texName = content->GetTextureName(_fontTextureID);
+
 	if (ImGui::Button("Save"))
 	{
 		if (!Serialize(_fontName, content))
@@ -249,87 +250,199 @@ bool FontAtlas::RenderUI(const Content *content)
 		}
 	}
 
-	auto tex = content->GetTexture(_fontTextureID);
-	std::string texName = content->GetTextureName(_fontTextureID);
-
-	if (ImGui::TreeNode("Glyph Inspector"))
+	if (tex)
 	{
-		if (_uiSelectedGlyphID != CONTENT_NULL)
+		if (ImGui::Button("Add Glyph"))
+			ImGui::OpenPopup("AddGlyphPopup");
+
+		if (ImGui::BeginPopup("AddGlyphPopup"))
 		{
-			auto it = _glyphs.find(_uiSelectedGlyphID);
-			if (it != _glyphs.end())
+			static int code = (int)' ';
+			static GlyphData glyph{};
+
+			std::string charStr = "";
+			if (code >= 32 && code <= 126)
+				charStr = std::string(1, static_cast<char>(code));
+			else
+				charStr = "?";
+
+			ImGui::Text("Codepoint:");
+			ImGui::SameLine();
+			ImGui::InputInt("##InputCodepointInt", &code);
+
+			ImGui::Text("Character:");
+			ImGui::SameLine();
+			if (ImGui::InputText("##InputCodepointChar", &charStr, ImGuiInputTextFlags_AutoSelectAll | ImGuiInputTextFlags_AlwaysOverwrite))
 			{
-				Glyph &glyph = it->second;
-
-				int inputCodepoint = (int)it->first;
-				bool isChanged = false;
-
-				// Preview
-				ImGui::Image((ImTextureID)tex->GetSRV(), { glyph.size.x, glyph.size.y }, { glyph.uvRect.x, glyph.uvRect.y }, { glyph.uvRect.z, glyph.uvRect.w });
-
-				std::string charStr = "";
-				if (inputCodepoint >= 32 && inputCodepoint <= 126)
-					charStr = std::string(1, static_cast<char>(inputCodepoint));
-				else
-					charStr = "?";
-
-				ImGui::Text("Codepoint:");
-				ImGui::SameLine();
-				if (ImGui::InputInt("##InputCodepointInt", &inputCodepoint))
-					isChanged = true;
-
-				ImGui::Text("Character:");
-				ImGui::SameLine();
-				if (ImGui::InputText("##InputCodepointChar", &charStr, ImGuiInputTextFlags_AutoSelectAll | ImGuiInputTextFlags_AlwaysOverwrite))
+				char c;
+				if (charStr.length() == 1)
 				{
-					char c;
-					if (charStr.length() == 1)
-					{
-						c = charStr[0];
-					}
-					else if (charStr.length() > 1)
-					{
-						// Use the last character
-						c = charStr.back();
-					}
-					else
-					{
-						c = '\0';
-					}
-
-					// Discard if input character is unchanged
-					if (c == static_cast<char>(inputCodepoint))
-						c = '\0';
-
-					if (c != '\0')
-					{
-						if (!charStr.empty())
-							inputCodepoint = static_cast<int>(static_cast<unsigned char>(charStr[0]));
-						else
-							inputCodepoint = -1;
-						isChanged = true;
-					}
+					c = charStr[0];
+				}
+				else if (charStr.length() > 1)
+				{
+					// Use the last character
+					c = charStr.back();
+				}
+				else
+				{
+					c = '\0';
 				}
 
-				if (isChanged)
+				if (c != '\0')
 				{
-					// Move the glyph to the new codepoint & update selection
-					_glyphs[(UINT)inputCodepoint] = glyph;
-					_uiSelectedGlyphID = (UINT)inputCodepoint;
-					_glyphs.erase(it);
+					if (!charStr.empty())
+						code = static_cast<int>(static_cast<unsigned char>(charStr[0]));
+					else
+						code = (int)' ';
+				}
+			}
+
+			dx::XMUINT2 texSize = tex->GetSize();
+
+			dx::XMFLOAT4 pixRect = {
+				(glyph.uvRect.x * (float)texSize.x),
+				(glyph.uvRect.y * (float)texSize.y),
+				(glyph.uvRect.z * (float)texSize.x),
+				(glyph.uvRect.w * (float)texSize.y)
+			};
+
+			if (ImGui::DragFloat4("Rect", &pixRect.x))
+			{
+				pixRect.x = std::clamp(pixRect.x, 0.0f, (float)texSize.x);
+				pixRect.y = std::clamp(pixRect.y, 0.0f, (float)texSize.y);
+				pixRect.z = std::clamp(pixRect.z, pixRect.x, (float)texSize.x);
+				pixRect.w = std::clamp(pixRect.w, pixRect.y, (float)texSize.y);
+
+				glyph.uvRect = {
+					pixRect.x / (float)texSize.x,
+					pixRect.y / (float)texSize.y,
+					pixRect.z / (float)texSize.x,
+					pixRect.w / (float)texSize.y
+				};
+			}
+
+			dx::XMFLOAT2 pixOffset = {
+				(glyph.offset.x * (float)texSize.x),
+				(glyph.offset.y * (float)texSize.y)
+			};
+
+			if (ImGui::DragFloat2("Offset", &pixOffset.x, 0.2f))
+			{
+				glyph.offset = {
+					pixOffset.x / (float)texSize.x,
+					pixOffset.y / (float)texSize.y
+				};
+			}
+
+			float pixAdvance = glyph.advance * (float)texSize.x;
+
+			if (ImGui::DragFloat("Advance", &pixAdvance, 0.1f))
+			{
+				glyph.advance = pixAdvance / (float)texSize.x;
+			}
+
+			if (ImGui::Button("Create"))
+			{
+				glyph.size = { 
+					pixRect.z - pixRect.x, 
+					pixRect.w - pixRect.y 
+				};
+
+				_glyphs[(UINT)code] = glyph;
+				_uiSelectedGlyphID = (UINT)code;
+				ImGui::CloseCurrentPopup();
+			}
+
+			ImGui::SameLine();
+
+			if (ImGui::Button("Cancel"))
+			{
+				ImGui::CloseCurrentPopup();
+			}
+
+			ImGui::EndPopup();
+		}
+
+		if (ImGui::TreeNode("Glyph Inspector"))
+		{
+			if (_uiSelectedGlyphID != CONTENT_NULL)
+			{
+				auto it = _glyphs.find(_uiSelectedGlyphID);
+				if (it != _glyphs.end())
+				{
+					GlyphData &glyph = it->second;
+
+					int inputCodepoint = (int)it->first;
+					bool isChanged = false;
+
+					// Preview
+					ImGui::Image((ImTextureID)tex->GetSRV(), { glyph.size.x, glyph.size.y }, { glyph.uvRect.x, glyph.uvRect.y }, { glyph.uvRect.z, glyph.uvRect.w });
+
+					std::string charStr = "";
+					if (inputCodepoint >= 32 && inputCodepoint <= 126)
+						charStr = std::string(1, static_cast<char>(inputCodepoint));
+					else
+						charStr = "?";
+
+					ImGui::Text("Codepoint:");
+					ImGui::SameLine();
+					if (ImGui::InputInt("##InputCodepointInt", &inputCodepoint))
+						isChanged = true;
+
+					ImGui::Text("Character:");
+					ImGui::SameLine();
+					if (ImGui::InputText("##InputCodepointChar", &charStr, ImGuiInputTextFlags_AutoSelectAll | ImGuiInputTextFlags_AlwaysOverwrite))
+					{
+						char c;
+						if (charStr.length() == 1)
+						{
+							c = charStr[0];
+						}
+						else if (charStr.length() > 1)
+						{
+							// Use the last character
+							c = charStr.back();
+						}
+						else
+						{
+							c = '\0';
+						}
+
+						// Discard if input character is unchanged
+						if (c == static_cast<char>(inputCodepoint))
+							c = '\0';
+
+						if (c != '\0')
+						{
+							if (!charStr.empty())
+								inputCodepoint = static_cast<int>(static_cast<unsigned char>(charStr[0]));
+							else
+								inputCodepoint = -1;
+							isChanged = true;
+						}
+					}
+
+					if (isChanged)
+					{
+						// Move the glyph to the new codepoint & update selection
+						_glyphs[(UINT)inputCodepoint] = glyph;
+						_uiSelectedGlyphID = (UINT)inputCodepoint;
+						_glyphs.erase(it);
+					}
+				}
+				else
+				{
+					ImGui::Text("Selected glyph ID %u not found!", _uiSelectedGlyphID);
 				}
 			}
 			else
 			{
-				ImGui::Text("Selected glyph ID %u not found!", _uiSelectedGlyphID);
+				ImGui::Text("No glyph selected.");
 			}
-		}
-		else
-		{
-			ImGui::Text("No glyph selected.");
-		}
 
-		ImGui::TreePop();
+			ImGui::TreePop();
+		}
 	}
 
 	// Texture selection
@@ -345,7 +458,7 @@ bool FontAtlas::RenderUI(const Content *content)
 
 		ImGui::BeginGroup();
 		ImGui::Text("Texture:"); ImGui::SameLine(); ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
-		if (ImGui::BeginCombo("", texName.c_str(), comboFlags))
+		if (ImGui::BeginCombo("##FontTextureCombo", texName.c_str(), comboFlags))
 		{
 			static std::string filter = "";
 
@@ -443,15 +556,13 @@ bool FontAtlas::RenderUI(const Content *content)
 			tex = content->GetTexture(_fontTextureID);
 			texName = content->GetTextureName(_fontTextureID);
 		}
-
-		ImGui::TreePop();
 	}
 
 	dx::XMUINT2 texSize = tex ? tex->GetSize() : dx::XMUINT2{0, 0};
 
 	if (ImGui::TreeNode(std::format("Texture '{}'", texName).c_str()))
 	{
-		ImVec2 texSizeImVec = { texSize.x, texSize.y };
+		ImVec2 texSizeImVec = { (float)texSize.x, (float)texSize.y };
 		ImGui::BeginChild("AtlasTexture", texSizeImVec, ImGuiChildFlags_Borders | ImGuiChildFlags_ResizeX | ImGuiChildFlags_ResizeY, ImGuiWindowFlags_None);
 
 		ImVec2 texMin = ImGui::GetCursorPos();
@@ -593,5 +704,7 @@ bool FontAtlas::RenderUI(const Content *content)
 
 		ImGui::TreePop();
 	}
+
+	return true;
 }
 #endif

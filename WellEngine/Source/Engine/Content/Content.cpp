@@ -894,7 +894,7 @@ bool Content::RenderUI(ID3D11Device *device)
 
 			if (ImGui::Button("Create") && !fontName.empty())
 			{
-				if (!AddFontAtlas(fontName))
+				if (AddFontAtlas(fontName) == CONTENT_NULL)
 					ErrMsg("Failed to create new font atlas!");
 
 				ImGui::CloseCurrentPopup();
@@ -1991,7 +1991,11 @@ UINT Content::AddFontAtlas(const std::string &name)
 	if (!duplicateName)
 	{
 		TextureFont *font = new TextureFont(name, id);
-		font->data.Initialize(this, name);
+		if (!font->data.Initialize(this, name))
+		{
+			ErrMsg("Failed to create font atlas");
+			return CONTENT_NULL;
+		}
 		_textureFonts.emplace_back(font);
 	}
 

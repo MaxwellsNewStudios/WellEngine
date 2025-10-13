@@ -225,7 +225,7 @@ bool Game::LoadContent(
 	for (int i = 0; i < fontAtlasNames.size(); i++)
 	{
 		const std::string &fontName = fontAtlasNames[i];
-		if (!_content.AddFontAtlas(fontName))
+		if (_content.AddFontAtlas(fontName) == CONTENT_NULL)
 		{
 			ErrMsgF("Failed to add font atlas {}!", fontName);
 			return false;
