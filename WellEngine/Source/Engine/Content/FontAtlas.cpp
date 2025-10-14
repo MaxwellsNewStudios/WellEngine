@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "FontAtlas.h"
+#include <unordered_set>
 
 bool GlyphData::Serialize(json::Document::AllocatorType &docAlloc, json::Value &obj) const
 {
@@ -32,7 +33,7 @@ bool FontAtlas::Initialize(const Content *content, std::string name)
 	return true;
 }
 
-void FontAtlas::AppendGlyph(UINT codepoint, std::vector<GlyphVertex> &vertices, dx::XMFLOAT2 &cursor, float lineHeight) const
+void FontAtlas::AppendGlyph(UINT codepoint, std::vector<GlyphVertex> &vertices, dx::XMFLOAT2 &cursor) const
 {
 	const GlyphData *glyph = GetGlyph(codepoint);
 	if (!glyph)
@@ -60,33 +61,7 @@ const GlyphData *FontAtlas::GetGlyph(UINT codepoint) const
 	return nullptr;
 }
 
-std::vector<GlyphVertex> FontAtlas::Generate(std::string_view text, float lineHeight) const
-{
-	std::vector<GlyphVertex> vertices;
-	dx::XMFLOAT2 cursor{ 0.0f, 0.0f };
-
-	for (char c : text)
-	{
-		UINT codepoint = static_cast<UINT>(static_cast<unsigned char>(c));
-
-		switch (codepoint)
-		{
-		case '\n':
-			cursor = { 0.0f, cursor.y + lineHeight };
-			break;
-
-		case '\r':
-			break;
-
-		default:
-			AppendGlyph(codepoint, vertices, cursor, lineHeight);
-			break;
-		}
-	}
-
-	return vertices;
-}
-std::vector<GlyphVertex> FontAtlas::Generate(std::wstring_view text, float lineHeight) const
+std::vector<GlyphVertex> FontAtlas::Generate(std::wstring_view text) const
 {
 	std::vector<GlyphVertex> vertices;
 	dx::XMFLOAT2 cursor{ 0.0f, 0.0f };
@@ -97,20 +72,37 @@ std::vector<GlyphVertex> FontAtlas::Generate(std::wstring_view text, float lineH
 
 		switch (codepoint)
 		{
+		case '\0':
+			return vertices;
+
 		case '\n':
-			cursor = { 0.0f, cursor.y + lineHeight };
+			cursor = { 0.0f, cursor.y + _lineHeight };
 			break;
 
 		case '\r':
 			break;
 
+		case '\t':
+			// Snap to next 4-space tab stop
+			cursor.x = std::ceil((cursor.x + 1.0f) / (_spacing * 4.0f)) * (_spacing * 4.0f);
+			break;
+
+		case ' ':
+			cursor.x += _spacing;
+			break;
+
 		default:
-			AppendGlyph(codepoint, vertices, cursor, lineHeight);
+			AppendGlyph(codepoint, vertices, cursor);
 			break;
 		}
 	}
 
 	return vertices;
+}
+std::vector<GlyphVertex> FontAtlas::Generate(std::string_view text) const
+{
+	std::wstring wText(text.begin(), text.end());
+	return Generate(wText);
 }
 
 bool FontAtlas::Serialize(std::string_view fileName, const Content *content) const
@@ -124,6 +116,8 @@ bool FontAtlas::Serialize(std::string_view fileName, const Content *content) con
 		atlasObj.AddMember("Name", SerializerUtils::SerializeString(_fontName, docAlloc), docAlloc);
 		atlasObj.AddMember("Texture", SerializerUtils::SerializeString(content->GetTextureName(_fontTextureID), docAlloc), docAlloc);
 		atlasObj.AddMember("Fallback Glyph", _fallbackGlyphID, docAlloc);
+		atlasObj.AddMember("Line Height", _lineHeight, docAlloc);
+		atlasObj.AddMember("Spacing", _spacing, docAlloc);
 
 		// Serialize glyphs to array
 		json::Value glyphsArr(json::kArrayType);
@@ -202,6 +196,14 @@ bool FontAtlas::Deserialize(std::string_view fileName, const Content *content)
 		if (atlas.HasMember(memberName.c_str()))
 			_fallbackGlyphID = atlas[memberName.c_str()].GetUint();
 
+		memberName = "Line Height";
+		if (atlas.HasMember(memberName.c_str()))
+			_lineHeight = atlas[memberName.c_str()].GetFloat();
+
+		memberName = "Spacing";
+		if (atlas.HasMember(memberName.c_str()))
+			_spacing = atlas[memberName.c_str()].GetFloat();
+
 		memberName = "Glyphs";
 		if (atlas.HasMember(memberName.c_str()))
 		{
@@ -240,210 +242,6 @@ bool FontAtlas::RenderUI(const Content *content)
 {
 	auto tex = content->GetTexture(_fontTextureID);
 	std::string texName = content->GetTextureName(_fontTextureID);
-
-	if (ImGui::Button("Save"))
-	{
-		if (!Serialize(_fontName, content))
-		{
-			ErrMsg("Could not save atlas!");
-			return false;
-		}
-	}
-
-	if (tex)
-	{
-		if (ImGui::Button("Add Glyph"))
-			ImGui::OpenPopup("AddGlyphPopup");
-
-		if (ImGui::BeginPopup("AddGlyphPopup"))
-		{
-			static int code = (int)' ';
-			static GlyphData glyph{};
-
-			std::string charStr = "";
-			if (code >= 32 && code <= 126)
-				charStr = std::string(1, static_cast<char>(code));
-			else
-				charStr = "?";
-
-			ImGui::Text("Codepoint:");
-			ImGui::SameLine();
-			ImGui::InputInt("##InputCodepointInt", &code);
-
-			ImGui::Text("Character:");
-			ImGui::SameLine();
-			if (ImGui::InputText("##InputCodepointChar", &charStr, ImGuiInputTextFlags_AutoSelectAll | ImGuiInputTextFlags_AlwaysOverwrite))
-			{
-				char c;
-				if (charStr.length() == 1)
-				{
-					c = charStr[0];
-				}
-				else if (charStr.length() > 1)
-				{
-					// Use the last character
-					c = charStr.back();
-				}
-				else
-				{
-					c = '\0';
-				}
-
-				if (c != '\0')
-				{
-					if (!charStr.empty())
-						code = static_cast<int>(static_cast<unsigned char>(charStr[0]));
-					else
-						code = (int)' ';
-				}
-			}
-
-			dx::XMUINT2 texSize = tex->GetSize();
-
-			dx::XMFLOAT4 pixRect = {
-				(glyph.uvRect.x * (float)texSize.x),
-				(glyph.uvRect.y * (float)texSize.y),
-				(glyph.uvRect.z * (float)texSize.x),
-				(glyph.uvRect.w * (float)texSize.y)
-			};
-
-			if (ImGui::DragFloat4("Rect", &pixRect.x))
-			{
-				pixRect.x = std::clamp(pixRect.x, 0.0f, (float)texSize.x);
-				pixRect.y = std::clamp(pixRect.y, 0.0f, (float)texSize.y);
-				pixRect.z = std::clamp(pixRect.z, pixRect.x, (float)texSize.x);
-				pixRect.w = std::clamp(pixRect.w, pixRect.y, (float)texSize.y);
-
-				glyph.uvRect = {
-					pixRect.x / (float)texSize.x,
-					pixRect.y / (float)texSize.y,
-					pixRect.z / (float)texSize.x,
-					pixRect.w / (float)texSize.y
-				};
-			}
-
-			dx::XMFLOAT2 pixOffset = {
-				(glyph.offset.x * (float)texSize.x),
-				(glyph.offset.y * (float)texSize.y)
-			};
-
-			if (ImGui::DragFloat2("Offset", &pixOffset.x, 0.2f))
-			{
-				glyph.offset = {
-					pixOffset.x / (float)texSize.x,
-					pixOffset.y / (float)texSize.y
-				};
-			}
-
-			float pixAdvance = glyph.advance * (float)texSize.x;
-
-			if (ImGui::DragFloat("Advance", &pixAdvance, 0.1f))
-			{
-				glyph.advance = pixAdvance / (float)texSize.x;
-			}
-
-			if (ImGui::Button("Create"))
-			{
-				glyph.size = { 
-					pixRect.z - pixRect.x, 
-					pixRect.w - pixRect.y 
-				};
-
-				_glyphs[(UINT)code] = glyph;
-				_uiSelectedGlyphID = (UINT)code;
-				ImGui::CloseCurrentPopup();
-			}
-
-			ImGui::SameLine();
-
-			if (ImGui::Button("Cancel"))
-			{
-				ImGui::CloseCurrentPopup();
-			}
-
-			ImGui::EndPopup();
-		}
-
-		if (ImGui::TreeNode("Glyph Inspector"))
-		{
-			if (_uiSelectedGlyphID != CONTENT_NULL)
-			{
-				auto it = _glyphs.find(_uiSelectedGlyphID);
-				if (it != _glyphs.end())
-				{
-					GlyphData &glyph = it->second;
-
-					int inputCodepoint = (int)it->first;
-					bool isChanged = false;
-
-					// Preview
-					ImGui::Image((ImTextureID)tex->GetSRV(), { glyph.size.x, glyph.size.y }, { glyph.uvRect.x, glyph.uvRect.y }, { glyph.uvRect.z, glyph.uvRect.w });
-
-					std::string charStr = "";
-					if (inputCodepoint >= 32 && inputCodepoint <= 126)
-						charStr = std::string(1, static_cast<char>(inputCodepoint));
-					else
-						charStr = "?";
-
-					ImGui::Text("Codepoint:");
-					ImGui::SameLine();
-					if (ImGui::InputInt("##InputCodepointInt", &inputCodepoint))
-						isChanged = true;
-
-					ImGui::Text("Character:");
-					ImGui::SameLine();
-					if (ImGui::InputText("##InputCodepointChar", &charStr, ImGuiInputTextFlags_AutoSelectAll | ImGuiInputTextFlags_AlwaysOverwrite))
-					{
-						char c;
-						if (charStr.length() == 1)
-						{
-							c = charStr[0];
-						}
-						else if (charStr.length() > 1)
-						{
-							// Use the last character
-							c = charStr.back();
-						}
-						else
-						{
-							c = '\0';
-						}
-
-						// Discard if input character is unchanged
-						if (c == static_cast<char>(inputCodepoint))
-							c = '\0';
-
-						if (c != '\0')
-						{
-							if (!charStr.empty())
-								inputCodepoint = static_cast<int>(static_cast<unsigned char>(charStr[0]));
-							else
-								inputCodepoint = -1;
-							isChanged = true;
-						}
-					}
-
-					if (isChanged)
-					{
-						// Move the glyph to the new codepoint & update selection
-						_glyphs[(UINT)inputCodepoint] = glyph;
-						_uiSelectedGlyphID = (UINT)inputCodepoint;
-						_glyphs.erase(it);
-					}
-				}
-				else
-				{
-					ImGui::Text("Selected glyph ID %u not found!", _uiSelectedGlyphID);
-				}
-			}
-			else
-			{
-				ImGui::Text("No glyph selected.");
-			}
-
-			ImGui::TreePop();
-		}
-	}
 
 	// Texture selection
 	{
@@ -558,17 +356,285 @@ bool FontAtlas::RenderUI(const Content *content)
 		}
 	}
 
-	dx::XMUINT2 texSize = tex ? tex->GetSize() : dx::XMUINT2{0, 0};
+	if (!tex)
+		return true;
+
+	ImGui::Separator();
+
+	dx::XMUINT2 texSize = tex->GetSize();
+
+	if (ImGui::Button("Save"))
+	{
+		if (!Serialize(_fontName, content))
+		{
+			ErrMsg("Could not save atlas!");
+			return false;
+		}
+	}
+
+	ImGui::SameLine();
+	if (ImGui::Button("Add Glyph"))
+		ImGui::OpenPopup("AddGlyphPopup");
+
+	if (ImGui::BeginPopup("AddGlyphPopup"))
+	{
+		static int code = (int)' ';
+		static GlyphData glyph{};
+
+		std::string charStr = "";
+		if (code >= 32)
+			charStr = std::string(1, static_cast<char>(code));
+		else
+			charStr = "?";
+
+		ImGui::Text("Codepoint:");
+		ImGui::SameLine();
+		ImGui::InputInt("##InputCodepointInt", &code);
+
+		ImGui::Text("Character:");
+		ImGui::SameLine();
+		if (ImGui::InputText("##InputCodepointChar", &charStr, ImGuiInputTextFlags_AutoSelectAll | ImGuiInputTextFlags_AlwaysOverwrite))
+		{
+			char c;
+			if (charStr.length() == 1)
+			{
+				c = charStr[0];
+			}
+			else if (charStr.length() > 1)
+			{
+				// Use the last character
+				c = charStr.back();
+			}
+			else
+			{
+				c = '\0';
+			}
+
+			if (c != '\0')
+			{
+				if (!charStr.empty())
+					code = static_cast<int>(static_cast<unsigned char>(charStr[0]));
+				else
+					code = (int)' ';
+			}
+		}
+
+		dx::XMFLOAT4 pixRect = {
+			(glyph.uvRect.x * (float)texSize.x),
+			(glyph.uvRect.y * (float)texSize.y),
+			(glyph.uvRect.z * (float)texSize.x),
+			(glyph.uvRect.w * (float)texSize.y)
+		};
+
+		if (ImGui::DragFloat4("Rect", &pixRect.x))
+		{
+			pixRect.x = std::clamp(pixRect.x, 0.0f, (float)texSize.x);
+			pixRect.y = std::clamp(pixRect.y, 0.0f, (float)texSize.y);
+			pixRect.z = std::clamp(pixRect.z, pixRect.x, (float)texSize.x);
+			pixRect.w = std::clamp(pixRect.w, pixRect.y, (float)texSize.y);
+
+			glyph.uvRect = {
+				pixRect.x / (float)texSize.x,
+				pixRect.y / (float)texSize.y,
+				pixRect.z / (float)texSize.x,
+				pixRect.w / (float)texSize.y
+			};
+		}
+		ImGuiUtils::LockMouseOnActive();
+
+		dx::XMFLOAT2 pixOffset = {
+			(glyph.offset.x * (float)texSize.x),
+			(glyph.offset.y * (float)texSize.y)
+		};
+
+		if (ImGui::DragFloat2("Offset", &pixOffset.x, 0.2f))
+		{
+			glyph.offset = {
+				pixOffset.x / (float)texSize.x,
+				pixOffset.y / (float)texSize.y
+			};
+		}
+		ImGuiUtils::LockMouseOnActive();
+
+		float pixAdvance = glyph.advance * (float)texSize.x;
+
+		if (ImGui::DragFloat("Advance", &pixAdvance, 0.1f))
+		{
+			glyph.advance = pixAdvance / (float)texSize.x;
+		}
+		ImGuiUtils::LockMouseOnActive();
+
+		if (ImGui::Button("Create"))
+		{
+			glyph.size = {
+				pixRect.z - pixRect.x,
+				pixRect.w - pixRect.y
+			};
+
+			_glyphs[(UINT)code] = glyph;
+			_uiSelectedGlyphID = (UINT)code;
+			ImGui::CloseCurrentPopup();
+		}
+
+		ImGui::SameLine();
+
+		if (ImGui::Button("Cancel"))
+		{
+			ImGui::CloseCurrentPopup();
+		}
+
+		ImGui::EndPopup();
+	}
+
+	ImGui::SameLine();
+	if (ImGui::Button("Create Tileset"))
+		ImGui::OpenPopup("CreateTilesPopup");
+
+	if (ImGui::BeginPopup("CreateTilesPopup"))
+	{
+		static ImVec2i tileSize = { 32, 32 };
+		static ImVec2i tilePadding = { 0, 0 };
+		static ImVec2i tileOffset = { 8, 4 };
+		static float spacing = 16.0f;
+
+		ImGui::DragInt2("Tile Size", &tileSize.x, 1.0f, 1, INT_MAX, "%d", ImGuiSliderFlags_AlwaysClamp);
+		ImGuiUtils::LockMouseOnActive();
+
+		ImGui::DragInt2("Tile Padding", &tilePadding.x, 0.1f, 0, INT_MAX, "%d", ImGuiSliderFlags_AlwaysClamp);
+		ImGuiUtils::LockMouseOnActive();
+
+		ImGui::DragInt2("Tile Offset", &tileOffset.x, 0.1f, 0, INT_MAX, "%d", ImGuiSliderFlags_AlwaysClamp);
+		ImGuiUtils::LockMouseOnActive();
+
+		ImGui::DragFloat("Spacing", &spacing, 0.1f, 0.0f, FLT_MAX, "%.3f", ImGuiSliderFlags_AlwaysClamp);
+		ImGuiUtils::LockMouseOnActive();
+
+		static ImVec2i offset = { 0, 0 };
+		static std::string inputStr = "";
+		if (ImGui::Button("Create"))
+		{
+			_glyphs.clear();
+			ImGui::OpenPopup("DefineTilesPopup");
+			offset = { 0, 0 };
+		}
+
+		bool closePopup = false;
+		if (ImGui::BeginPopup("DefineTilesPopup"))
+		{
+			ImGui::Image(
+				(ImTextureID)tex->GetSRV(),
+				{ 96.0f, 96.0f * ((float)tileSize.y / (float)tileSize.x) },
+				{ (float)offset.x / (float)texSize.x, (float)offset.y / (float)texSize.y },
+				{ (float)(offset.x + tileSize.x) / (float)texSize.x, (float)(offset.y + tileSize.y) / (float)texSize.y }
+			);
+
+			static bool refocusInput = true;
+			if (refocusInput)
+			{
+				ImGui::SetKeyboardFocusHere(0);
+				refocusInput = false;
+			}
+
+			ImGui::Text("Code:"); ImGui::SameLine();
+			ImGui::InputText("##InputCodepointChar", &inputStr, ImGuiInputTextFlags_AutoSelectAll | ImGuiInputTextFlags_AlwaysOverwrite);
+			
+			if (inputStr.length() > 1)
+				inputStr = std::string(1, inputStr.back());
+
+			char c = '\0';
+			if (inputStr.length() == 1)
+			{
+				c = inputStr[0];
+			}
+			else
+			{
+				c = '\0';
+			}
+
+			bool advance = false;
+			ImGui::BeginDisabled(c == '\0');
+			if ((ImGui::Button("Next") || Input::Instance().GetKey(KeyCode::Enter, true) == KeyState::Pressed) && c != '\0')
+			{
+				GlyphData glyph{};
+
+				glyph.uvRect = {
+					(float)offset.x / (float)texSize.x,
+					(float)offset.y / (float)texSize.y,
+					(float)(offset.x + tileSize.x) / (float)texSize.x,
+					(float)(offset.y + tileSize.y) / (float)texSize.y
+				};
+				glyph.size = { (float)tileSize.x, (float)tileSize.y };
+				glyph.offset = { (float)tileOffset.x, (float)tileOffset.y };
+				glyph.advance = spacing;
+
+				_glyphs[(UINT)c] = glyph;
+				advance = true;
+			}
+			ImGui::EndDisabled();
+
+			ImGui::SameLine();
+			if (ImGui::Button("Skip") || Input::Instance().GetKey(KeyCode::Delete, true) == KeyState::Pressed)
+			{
+				advance = true;
+			}
+
+			bool reachedEnd = false;
+			if (advance)
+			{
+				refocusInput = true;
+				inputStr.clear();
+				offset.x += tileSize.x + tilePadding.x;
+
+				if ((offset.x + tileSize.x) > (int)texSize.x)
+				{
+					offset.x = 0;
+					offset.y += tileSize.y + tilePadding.y;
+
+					if ((offset.y + tileSize.y) > (int)texSize.y)
+					{
+						offset.y = 0;
+						reachedEnd = true;
+					}
+				}
+			}
+
+			ImGui::SameLine();
+			if (ImGui::Button("Cancel") || reachedEnd)
+			{
+				ImGui::CloseCurrentPopup();
+				closePopup = true;
+			}
+
+			ImGui::EndPopup();
+		}
+
+		ImGui::SameLine();
+		if (ImGui::Button("Cancel") || closePopup)
+		{
+			ImGui::CloseCurrentPopup();
+		}
+
+		ImGui::EndPopup();
+	}
+
+	ImGui::SameLine();
+	if (ImGui::Button("Clear Glyphs"))
+		_glyphs.clear();
 
 	if (ImGui::TreeNode(std::format("Texture '{}'", texName).c_str()))
 	{
 		ImVec2 texSizeImVec = { (float)texSize.x, (float)texSize.y };
-		ImGui::BeginChild("AtlasTexture", texSizeImVec, ImGuiChildFlags_Borders | ImGuiChildFlags_ResizeX | ImGuiChildFlags_ResizeY, ImGuiWindowFlags_None);
+		ImGui::BeginChild("AtlasTexture", texSizeImVec);
 
+		ImVec2 screenPos = ImGui::GetCursorScreenPos();
 		ImVec2 texMin = ImGui::GetCursorPos();
 		ImVec2 texMax = { texMin.x + texSizeImVec.x, texMin.y + texSizeImVec.y };
+		ImVec2 windowOffset = screenPos - texMin;
 
-		ImGui::Image((ImTextureID)tex->GetSRV(), texSizeImVec);
+		ImGui::Image(
+			(ImTextureID)tex->GetSRV(), 
+			texSizeImVec
+		);
 
 		// Draw selectable glyph outlines
 		for (const auto &[codepoint, glyph] : _glyphs)
@@ -586,10 +652,18 @@ bool FontAtlas::RenderUI(const Content *content)
 			ImVec2 glyphSize = glyphMax - glyphMin;
 
 			ImGui::SetCursorPos(glyphMin);
-			if (ImGui::Selectable(std::format("##Glyph{}", codepoint).c_str(), isSelected, ImGuiSelectableFlags_AllowItemOverlap, glyphSize))
+			ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, { 0, 0 });
+			if (ImGui::Selectable(std::format("##Glyph{}", codepoint).c_str(), isSelected, ImGuiSelectableFlags_AllowOverlap, glyphSize))
 			{
 				_uiSelectedGlyphID = codepoint;
 			}
+			ImGui::PopStyleVar();
+
+			// Draw outline
+			ImGui::GetWindowDrawList()->AddRect(
+				windowOffset + glyphMin, windowOffset + glyphMax,
+				isSelected ? IM_COL32(255, 255, 0, 255) : IM_COL32(255, 255, 255, 128)
+			);
 
 			if (isSelected)
 			{
@@ -600,15 +674,168 @@ bool FontAtlas::RenderUI(const Content *content)
 					ImGui::SetScrollHereY();
 				}
 			}
-
-			ImGui::GetWindowDrawList()->AddRect(glyphMin, glyphMax, IM_COL32(255, 255, 0, 255));
 		}
 
 		ImGui::EndChild();
 		ImGui::TreePop();
 	}
 
-	// Glyph table
+	if (ImGui::TreeNode("Glyph Inspector"))
+	{
+		if (_uiSelectedGlyphID != CONTENT_NULL)
+		{
+			auto it = _glyphs.find(_uiSelectedGlyphID);
+			if (it != _glyphs.end())
+			{
+				GlyphData &glyph = it->second;
+
+				UINT inputCodepoint = it->first;
+				bool isChanged = false;
+
+				// Preview
+				ImGui::Image(
+					(ImTextureID)tex->GetSRV(), 
+					{ glyph.size.x, glyph.size.y }, 
+					{ glyph.uvRect.x, glyph.uvRect.y }, 
+					{ glyph.uvRect.z, glyph.uvRect.w }
+				);
+
+				// Highlight offset
+				ImGui::GetWindowDrawList()->AddLine(
+					{ ImGui::GetItemRectMin().x,					ImGui::GetItemRectMin().y + glyph.offset.y },
+					{ ImGui::GetItemRectMin().x + glyph.size.x,		ImGui::GetItemRectMin().y + glyph.offset.y },
+					IM_COL32(255, 0, 0, 255)
+				);
+				ImGui::GetWindowDrawList()->AddLine(
+					{ ImGui::GetItemRectMin().x + glyph.offset.x,	ImGui::GetItemRectMin().y				 },
+					{ ImGui::GetItemRectMin().x + glyph.offset.x,	ImGui::GetItemRectMin().y + glyph.size.y },
+					IM_COL32(255, 0, 0, 255)
+				);
+
+				// Highlight advance
+				ImGui::GetWindowDrawList()->AddLine(
+					{ ImGui::GetItemRectMin().x + glyph.offset.x + glyph.advance, ImGui::GetItemRectMin().y				   },
+					{ ImGui::GetItemRectMin().x + glyph.offset.x + glyph.advance, ImGui::GetItemRectMin().y + glyph.size.y },
+					IM_COL32(0, 255, 0, 255)
+				);
+
+				std::string charStr = "";
+				if (inputCodepoint >= 32u)
+					charStr = std::string(1, (char)inputCodepoint);
+				else
+					charStr = "?";
+				
+				ImGui::Text("Codepoint:");
+				ImGui::SameLine();
+				if (ImGui::InputScalar("##InputCodepointInt", ImGuiDataType_U32, &inputCodepoint))
+					isChanged = true;
+
+				ImGui::Text("Character:");
+				ImGui::SameLine();
+				if (ImGui::InputText("##InputCodepointChar", &charStr, ImGuiInputTextFlags_AutoSelectAll | ImGuiInputTextFlags_AlwaysOverwrite))
+				{
+					char c;
+					if (charStr.length() == 1)
+					{
+						c = charStr[0];
+					}
+					else if (charStr.length() > 1)
+					{
+						// Use the last character
+						c = charStr.back();
+					}
+					else
+					{
+						c = '\0';
+					}
+
+					// Discard if input character is unchanged
+					if (c == (char)inputCodepoint)
+						c = '\0';
+
+					if (c != '\0')
+					{
+						if (!charStr.empty())
+							inputCodepoint = (UINT)charStr[0];
+						else
+							inputCodepoint = -1;
+						isChanged = true;
+					}
+				}
+
+				dx::XMFLOAT4 pixRect = {
+					(glyph.uvRect.x * (float)texSize.x),
+					(glyph.uvRect.y * (float)texSize.y),
+					(glyph.uvRect.z * (float)texSize.x),
+					(glyph.uvRect.w * (float)texSize.y)
+				};
+
+				if (ImGui::DragFloat4("Rect", &pixRect.x))
+				{
+					pixRect.x = std::clamp(pixRect.x, 0.0f, (float)texSize.x);
+					pixRect.y = std::clamp(pixRect.y, 0.0f, (float)texSize.y);
+					pixRect.z = std::clamp(pixRect.z, pixRect.x, (float)texSize.x);
+					pixRect.w = std::clamp(pixRect.w, pixRect.y, (float)texSize.y);
+
+					glyph.uvRect = {
+						pixRect.x / (float)texSize.x,
+						pixRect.y / (float)texSize.y,
+						pixRect.z / (float)texSize.x,
+						pixRect.w / (float)texSize.y
+					};
+				}
+				ImGuiUtils::LockMouseOnActive();
+
+				ImGui::DragFloat2("Offset", &glyph.offset.x, 0.1f);
+				ImGuiUtils::LockMouseOnActive();
+
+				ImGui::DragFloat("Advance", &glyph.advance, 0.1f);
+				ImGuiUtils::LockMouseOnActive();
+
+				if (isChanged && inputCodepoint != -1)
+				{
+					// Move the glyph to the new codepoint & update selection
+					_glyphs[inputCodepoint] = glyph;
+					_uiSelectedGlyphID = inputCodepoint;
+					_glyphs.erase(it);
+				}
+			}
+			else
+			{
+				ImGui::Text("Selected glyph ID %u not found!", _uiSelectedGlyphID);
+			}
+		}
+		else
+		{
+			ImGui::Text("No glyph selected.");
+		}
+
+		ImGui::TreePop();
+	}
+	
+	if (ImGui::TreeNode("General"))
+	{
+		ImGui::Text("Total Glyphs: %zu", _glyphs.size());
+
+		int fallbackGlyphID = (int)_fallbackGlyphID;
+		ImGui::Text("Fallback Glyph:"); ImGui::SameLine();
+		if (ImGui::InputInt("##FallbackGlyph", &fallbackGlyphID))
+		{
+			_fallbackGlyphID = (UINT)fallbackGlyphID;
+
+			if (_glyphs.find(_fallbackGlyphID) == _glyphs.end())
+				_fallbackGlyphID = CONTENT_NULL;
+		}
+
+		ImGui::Text("Line Height:"); ImGui::SameLine();
+		ImGui::DragFloat("##LineHeight", &_lineHeight, 0.1f, 0.0f);
+
+		ImGui::Text("Spacing:"); ImGui::SameLine();
+		ImGui::DragFloat("##Spacing", &_spacing, 0.1f, 0.0f);
+
+		ImGui::TreePop();
+	}
+
 	if (ImGui::TreeNode("Glyphs"))
 	{
 		ImGui::Text("WIP");
@@ -630,7 +857,7 @@ bool FontAtlas::RenderUI(const Content *content)
 
 				ImGui::TableNextRow();
 				ImGui::TableSetColumnIndex(0);
-				ImGui::Selectable(std::format("U+{:04X}", codepoint).c_str(), isSelected, ImGuiSelectableFlags_SpanAllColumns | ImGuiSelectableFlags_AllowItemOverlap);
+				ImGui::Selectable(std::format("U+{:04X}", codepoint).c_str(), isSelected, ImGuiSelectableFlags_SpanAllColumns | ImGuiSelectableFlags_AllowOverlap);
 
 				if (isSelected)
 				{
@@ -640,7 +867,12 @@ bool FontAtlas::RenderUI(const Content *content)
 				}
 
 				ImGui::TableSetColumnIndex(1);
-				ImGui::Image((ImTextureID)tex->GetSRV(), { glyph.size.x, glyph.size.y }, { glyph.uvRect.x, glyph.uvRect.y }, { glyph.uvRect.z, glyph.uvRect.w });
+				ImGui::Image(
+					(ImTextureID)tex->GetSRV(), 
+					{ glyph.size.x, glyph.size.y }, 
+					{ glyph.uvRect.x, glyph.uvRect.y }, 
+					{ glyph.uvRect.z, glyph.uvRect.w }
+				);
 			}
 
 			ImGui::EndTable();
@@ -650,56 +882,64 @@ bool FontAtlas::RenderUI(const Content *content)
 		ImGui::TreePop();
 	}
 
-	if (ImGui::TreeNode("Font Info"))
-	{
-		ImGui::Text("Name: %s", _fontName.c_str());
-		ImGui::Text("Texture ID: %u (%s)", _fontTextureID, texName.c_str());
-		ImGui::Text("Fallback Glyph: U+%04X", _fallbackGlyphID);
-		ImGui::Text("Total Glyphs: %zu", _glyphs.size());
-		ImGui::TreePop();
-	}
-
 	if (ImGui::TreeNode("Preview"))
 	{
 		static float sizeScale = 1.0f;
-		static float lineHeight = 24.0f;
-		ImGui::DragFloat("Line Height", &lineHeight, 0.1f, 1.0f, 100.0f, "%.1f");
-		ImGui::DragFloat("Font Scale", &sizeScale, 0.01f, 0.01f, 100.0f, "%.01f");
+		ImGui::DragFloat("Font Scale", &sizeScale, 0.01f, 0.01f);
+		ImGuiUtils::LockMouseOnActive();
 
-		const static char inputText[87] = "The quick brown fox jumps over the lazy dog.\n0123456789\n!@#$%^&*()_+-=[]{}|;':\",./<>?";
+		static std::string inputText = 
+			"The quick brown fox jumps over the lazy dog.\n"
+			"0123456789\n"
+			"!@#$ % ^&*()_ + -= [] {} | ; ':\",./<>?\n"
+			"\n"
+			"AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz\n"
+			"AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz\n"
+			"AaB bCc DdEeF fGgHhI iJjKkL lMmNnOo PpQqRrSsTtUu VvWwXxYyZz\n"
+			"A aBbCc  DdEeF fGgHhI iJjKk L l M mNn  Oo PpQqR rSs TtUu VvWw   XxYy Zz";
 
 		ImGui::SeparatorText("Example Text");
-		ImGui::Text(inputText);
+		ImGui::InputTextMultiline("##InputText", &inputText);
 
-		auto textMesh = Generate(inputText, lineHeight);
+		auto textMesh = Generate(inputText);
 		ImGui::SeparatorText("Atlas Text");
-		ImVec2 startPos = ImGui::GetCursorPos();
+		ImVec2 startPos = ImGui::GetCursorScreenPos();
+
+		static ImVec2 textSize = { 64, 16 };
+		ImGui::Dummy(textSize + ImVec2(4, 4));
+		textSize = { 64, 16 };
 
 		for (size_t i = 0; i < textMesh.size(); i += 6)
 		{
 			if (i + 5 >= textMesh.size())
 				break;
 
-			const GlyphVertex &v0 = textMesh[i + 0];
-			const GlyphVertex &v1 = textMesh[i + 1];
-			const GlyphVertex &v2 = textMesh[i + 2];
-			const GlyphVertex &v3 = textMesh[i + 4];
+			GlyphVertex &vMin = textMesh[i + 0];
+			GlyphVertex &vMax = textMesh[i + 5];
 
-			ImVec2 pos0 = { startPos.x + v0.position.x * sizeScale, startPos.y + v0.position.y * sizeScale };
-			ImVec2 pos1 = { startPos.x + v1.position.x * sizeScale, startPos.y + v1.position.y * sizeScale };
-			ImVec2 pos2 = { startPos.x + v2.position.x * sizeScale, startPos.y + v2.position.y * sizeScale };
-			ImVec2 pos3 = { startPos.x + v3.position.x * sizeScale, startPos.y + v3.position.y * sizeScale };
+			ImVec2 posMin = { 
+				startPos.x + vMin.position.x * sizeScale, 
+				startPos.y + vMin.position.y * sizeScale 
+			};
+			ImVec2 posMax = { 
+				startPos.x + vMax.position.x * sizeScale, 
+				startPos.y + vMax.position.y * sizeScale 
+			};
 
-			ImVec2 uv0 = { v0.uv.x, v0.uv.y };
-			ImVec2 uv1 = { v1.uv.x, v1.uv.y };
-			ImVec2 uv2 = { v2.uv.x, v2.uv.y };
-			ImVec2 uv3 = { v3.uv.x, v3.uv.y };
+			ImVec2 uvMin = { vMin.uv.x, vMin.uv.y };
+			ImVec2 uvMax = { vMax.uv.x, vMax.uv.y };
 
-			ImGui::GetWindowDrawList()->AddImageQuad((ImTextureID)tex->GetSRV(), pos0, pos1, pos3, pos2, uv0, uv1, uv3, uv2);
+			ImGui::GetWindowDrawList()->AddImage(
+				(ImTextureID)tex->GetSRV(), 
+				posMin, posMax, uvMin, uvMax
+			);
+
+			textSize.x = max(textSize.x, (posMax.x - startPos.x));
+			textSize.y = max(textSize.y, (posMax.y - startPos.y));
 		}
 
 		ImGui::SeparatorText("Info");
-		ImGui::Text("Characters: %zu", strlen(inputText));
+		ImGui::Text("Characters: %zu", inputText.length());
 		ImGui::Text("Generated Vertices: %zu", textMesh.size());
 
 		ImGui::TreePop();

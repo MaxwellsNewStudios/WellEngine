@@ -30,8 +30,8 @@ public:
 
 	void ToVerts(std::vector<GlyphVertex> &out, dx::XMFLOAT2 &cursor) const
 	{
-		float x = cursor.x + offset.x;
-		float y = cursor.y + offset.y;
+		float x = cursor.x - offset.x;
+		float y = cursor.y - offset.y;
 		float w = size.x;
 		float h = size.y;
 
@@ -65,12 +65,14 @@ private:
 	UINT _fallbackGlyphID = -1;
 	std::unordered_map<UINT, GlyphData> _glyphs;
 	std::string _fontName;
+	float _lineHeight = 18.0f;
+	float _spacing = 12.0f;
 
 #ifdef USE_IMGUI
 	UINT _uiSelectedGlyphID = -1;
 #endif
 
-	void AppendGlyph(UINT codepoint, std::vector<GlyphVertex> &vertices, dx::XMFLOAT2 &cursor, float lineHeight) const;
+	void AppendGlyph(UINT codepoint, std::vector<GlyphVertex> &vertices, dx::XMFLOAT2 &cursor) const;
 
 public:
 	FontAtlas() = default;
@@ -81,8 +83,8 @@ public:
 	const GlyphData *GetGlyph(UINT codepoint) const;
 	UINT GetFontTextureID() const { return _fontTextureID; }
 
-	std::vector<GlyphVertex> Generate(std::string_view text, float lineHeight) const;
-	std::vector<GlyphVertex> Generate(std::wstring_view text, float lineHeight) const;
+	std::vector<GlyphVertex> Generate(std::wstring_view text) const;
+	std::vector<GlyphVertex> Generate(std::string_view text) const;
 
 	[[nodiscard]] bool Serialize(std::string_view fileName, const Content *content) const;
 	[[nodiscard]] bool Deserialize(std::string_view fileName, const Content *content);
