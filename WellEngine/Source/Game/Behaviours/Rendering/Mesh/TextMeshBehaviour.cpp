@@ -91,7 +91,8 @@ bool TextMeshBehaviour::RenderUI()
 	Transform *transform = GetEntity()->GetTransform();
 	float pixelsPerUnit = 1.0f / transform->GetScale(Local).y;
 
-	if (ImGui::DragFloat("Pixels Per Unit", &pixelsPerUnit, 0.1f, 0.1f))
+	ImGui::Text("Pixels Per Unit:"); ImGui::SameLine(); ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
+	if (ImGui::DragFloat("##Pixels Per Unit", &pixelsPerUnit, 0.1f, 0.1f))
 	{
 		if (pixelsPerUnit < 0.1f)
 			pixelsPerUnit = 0.1f;
@@ -99,6 +100,7 @@ bool TextMeshBehaviour::RenderUI()
 		float newScale = 1.0f / pixelsPerUnit;
 		transform->SetScale({ newScale, newScale, newScale }, Local);
 	}
+	ImGuiUtils::LockMouseOnActive();
 
 	const Content *content = GetScene()->GetContent();
 
@@ -165,8 +167,13 @@ bool TextMeshBehaviour::RenderUI()
 		ImGui::EndCombo();
 	}
 
+	ImVec2 textBoxSize = ImVec2(
+		ImGui::GetContentRegionAvail().x, 
+		ImGui::CalcTextSize(_text.c_str()).y + ImGui::GetTextLineHeight() * 3.0f
+	);
+
 	// Set text
-	if (ImGui::InputTextMultiline("##InputText", &_text, ImVec2(ImGui::GetContentRegionAvail().x, ImGui::GetTextLineHeight() * 6)))
+	if (ImGui::InputTextMultiline("##InputText", &_text, textBoxSize))
 	{
 		SetText(_text);
 	}

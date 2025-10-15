@@ -903,7 +903,8 @@ bool Content::RenderUI(ID3D11Device *device)
 			ImGui::EndPopup();
 		}
 
-		ImGui::BeginChild("FontList", { 0, 300 }, ImGuiChildFlags_ResizeY);
+		ImGui::SetNextWindowSize({ ImGui::GetContentRegionAvail().x, 0 }, ImGuiCond_Always);
+		ImGui::BeginChild("FontList", { 0, 0 }, ImGuiChildFlags_AutoResizeY);
 
 		std::vector<std::string> fontNames;
 		GetFontAtlasNames(&fontNames);
