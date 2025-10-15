@@ -275,7 +275,7 @@ bool Scene::SerializeEntity(json::Document::AllocatorType &docAlloc, json::Value
 		obj.AddMember("Static", entity->IsStatic(), docAlloc);
 		obj.AddMember("Select", entity->IsDebugSelectable(), docAlloc);
 		obj.AddMember("InTree", _sceneHolder.IsEntityIncludedInTree(entity), docAlloc);
-		obj.AddMember("Hidden", entity->GetShowInHierarchy(true), docAlloc);
+		obj.AddMember("Hidden", !entity->GetShowInHierarchy(true), docAlloc);
 
 		json::Value behArr(json::kArrayType);
 		UINT count = entity->GetBehaviourCount();

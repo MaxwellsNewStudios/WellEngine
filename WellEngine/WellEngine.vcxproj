@@ -340,6 +340,8 @@
     <ClInclude Include="Dependencies\tinyfiledialogs\tinyfiledialogs.h" />
     <ClInclude Include="Dependencies\tracy-0.11.1\public\tracy\Tracy.hpp" />
     <ClInclude Include="Dependencies\tracy-0.11.1\public\tracy\TracyD3D11.hpp" />
+    <ClInclude Include="Source\Engine\Content\DefaultVertex.h" />
+    <ClInclude Include="Source\Engine\Content\FontAtlas.h" />
     <ClInclude Include="Source\Engine\Audio\SoundEngine.h" />
     <ClInclude Include="Source\Engine\Audio\SoundSource.h" />
     <ClInclude Include="Source\Engine\Collision\Colliders.h" />
@@ -409,6 +411,7 @@
     <ClInclude Include="Source\Game\Behaviour.h" />
     <ClInclude Include="Source\Game\BehaviourFactory.h" />
     <ClInclude Include="Source\Game\BehaviourRegistry.h" />
+    <ClInclude Include="Source\Game\Behaviours\Rendering\Mesh\TextMeshBehaviour.h" />
     <ClInclude Include="Source\Game\Behaviours\Sound\AmbientSoundBehaviour.h" />
     <ClInclude Include="Source\Game\Behaviours\Rendering\Mesh\BillboardMeshBehaviour.h" />
     <ClInclude Include="Source\Game\Behaviours\Interaction\BreadcrumbBehaviour.h" />
@@ -558,6 +561,7 @@
     </ClCompile>
     <ClCompile Include="Source\Engine\Content\Content.cpp" />
     <ClCompile Include="Source\Engine\Content\ContentLoader.cpp" />
+    <ClCompile Include="Source\Engine\Content\FontAtlas.cpp" />
     <ClCompile Include="Source\Engine\Content\HeightMap.cpp" />
     <ClCompile Include="Source\Engine\D3D\ConstantBufferD3D11.cpp" />
     <ClCompile Include="Source\Engine\D3D\D3D11Helper.cpp" />
@@ -599,6 +603,7 @@
     <ClCompile Include="Source\Game\Behaviour.cpp" />
     <ClCompile Include="Source\Game\BehaviourFactory.cpp" />
     <ClCompile Include="Source\Game\BehaviourRegistry.cpp" />
+    <ClCompile Include="Source\Game\Behaviours\Rendering\Mesh\TextMeshBehaviour.cpp" />
     <ClCompile Include="Source\Game\Behaviours\Sound\AmbientSoundBehaviour.cpp" />
     <ClCompile Include="Source\Game\Behaviours\Rendering\Mesh\BillboardMeshBehaviour.cpp" />
     <ClCompile Include="Source\Game\Behaviours\Interaction\BreadcrumbBehaviour.cpp" />
@@ -1162,6 +1167,11 @@
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
     </FxCompile>
+    <FxCompile Include="Source\Shaders\PS_TextDefault.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+    </FxCompile>
     <FxCompile Include="Source\Shaders\PS_Transparent.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">Pixel</ShaderType>
@@ -1293,6 +1303,11 @@
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
+    </FxCompile>
+    <FxCompile Include="Source\Shaders\VS_TextDefault.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
     </FxCompile>
   </ItemGroup>
   <ItemGroup>

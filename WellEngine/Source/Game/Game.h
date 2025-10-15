@@ -53,7 +53,8 @@ private:
 		const std::vector<TextureData> &textureNames,
 		const std::vector<TextureData> &cubemapNames,
 		const std::vector<ShaderData> &shaderNames,
-		const std::vector<HeightMapData> &heightMapNames
+		const std::vector<HeightMapData> &heightMapNames,
+		const std::vector<std::string> &fontAtlasNames
 	);
 
 	void UpdateWorker();

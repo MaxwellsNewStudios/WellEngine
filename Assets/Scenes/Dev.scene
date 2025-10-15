@@ -61,6 +61,7 @@
             "Static": true,
             "Select": false,
             "InTree": true,
+            "Hidden": false,
             "Beh": [
                 {
                     "Name": "MeshBehaviour",
@@ -188,7 +189,7 @@
             ],
             "Rot": [
                 -0.0,
-                2.30039119720459,
+                0.7233450412750244,
                 0.0
             ],
             "Scale": [
@@ -199,8 +200,88 @@
             "Prefab": "Maxwell"
         },
         {
-            "Name": "Camera",
+            "Name": "Text Entity",
             "ID": 6,
+            "Enabled": true,
+            "Pos": [
+                12.226750373840332,
+                4.494338035583496,
+                11.370635032653809
+            ],
+            "Rot": [
+                -0.0,
+                1.2973934412002563,
+                -0.0
+            ],
+            "Scale": [
+                0.020000070333480835,
+                0.019999999552965164,
+                0.020000070333480835
+            ],
+            "Static": false,
+            "Select": true,
+            "InTree": true,
+            "Hidden": false,
+            "Beh": [
+                {
+                    "Name": "TextMeshBehaviour",
+                    "Attributes": {
+                        "Atlas": "DefaultFont",
+                        "Text": "The quick brown fox jumps over the lazy dog.\n0123456789\n!?@#$%^&*()_+-=[]{}|;':\",./<>\n\nAaBbCcDdEeFfGgHMmNnOoPpQqRrSsTtUWwXxYyZz?\nAaB b fGgHhI iqRrSsTtUu VvWwXxYyZz!\nA aBbCc  DdEeF fl M mNn  OTtUu VvWw   XxYy Zz.",
+                        "Color": [
+                            0.0,
+                            0.0,
+                            0.0,
+                            1.0
+                        ],
+                        "Thickness": 0.30000001192092896
+                    }
+                }
+            ]
+        },
+        {
+            "Name": "Text Entity",
+            "ID": 8,
+            "Enabled": true,
+            "Pos": [
+                4.5000319480896,
+                3.21970796585083,
+                12.838555335998535
+            ],
+            "Rot": [
+                -0.0,
+                0.0,
+                -0.0
+            ],
+            "Scale": [
+                0.03999999910593033,
+                0.03999999910593033,
+                0.03999999910593033
+            ],
+            "Static": false,
+            "Select": true,
+            "InTree": true,
+            "Hidden": false,
+            "Beh": [
+                {
+                    "Name": "TextMeshBehaviour",
+                    "Attributes": {
+                        "Atlas": "DefaultFont",
+                        "Text": "Hello World!",
+                        "Color": [
+                            1.0,
+                            1.0,
+                            1.0,
+                            1.0
+                        ],
+                        "Thickness": 0.5
+                    }
+                }
+            ]
+        },
+        {
+            "Name": "Camera",
+            "ID": 10,
             "Enabled": true,
             "Pos": [
                 7.0,
@@ -221,7 +302,7 @@
         },
         {
             "Name": "Collision Testing",
-            "ID": 9,
+            "ID": 13,
             "Enabled": false,
             "Pos": [
                 0.0,
@@ -241,11 +322,12 @@
             "Static": false,
             "Select": true,
             "InTree": true,
+            "Hidden": false,
             "Beh": [],
             "Child": [
                 {
                     "Name": "Maxwell the first",
-                    "ID": 10,
+                    "ID": 14,
                     "Enabled": true,
                     "Pos": [
                         -7.0,
@@ -265,6 +347,7 @@
                     "Static": false,
                     "Select": true,
                     "InTree": true,
+                    "Hidden": false,
                     "Beh": [
                         {
                             "Name": "MeshBehaviour",
@@ -333,7 +416,7 @@
                     "Child": [
                         {
                             "Name": "Whiskers",
-                            "ID": 11,
+                            "ID": 15,
                             "Enabled": true,
                             "Pos": [
                                 0.0,
@@ -353,6 +436,7 @@
                             "Static": false,
                             "Select": true,
                             "InTree": true,
+                            "Hidden": false,
                             "Beh": [
                                 {
                                     "Name": "MeshBehaviour",
@@ -385,7 +469,7 @@
                 },
                 {
                     "Name": "Maxwell the second",
-                    "ID": 12,
+                    "ID": 16,
                     "Enabled": true,
                     "Pos": [
                         -7.0,
@@ -405,6 +489,7 @@
                     "Static": false,
                     "Select": true,
                     "InTree": true,
+                    "Hidden": false,
                     "Beh": [
                         {
                             "Name": "MeshBehaviour",
@@ -503,7 +588,7 @@
                     "Child": [
                         {
                             "Name": "Whiskers",
-                            "ID": 13,
+                            "ID": 17,
                             "Enabled": true,
                             "Pos": [
                                 0.0,
@@ -523,6 +608,7 @@
                             "Static": false,
                             "Select": true,
                             "InTree": true,
+                            "Hidden": false,
                             "Beh": [
                                 {
                                     "Name": "MeshBehaviour",
@@ -555,7 +641,7 @@
                 },
                 {
                     "Name": "Maxwell the third",
-                    "ID": 14,
+                    "ID": 18,
                     "Enabled": true,
                     "Pos": [
                         -8.5,
@@ -575,6 +661,7 @@
                     "Static": false,
                     "Select": true,
                     "InTree": true,
+                    "Hidden": false,
                     "Beh": [
                         {
                             "Name": "MeshBehaviour",
@@ -631,7 +718,7 @@
                     "Child": [
                         {
                             "Name": "Whiskers",
-                            "ID": 15,
+                            "ID": 19,
                             "Enabled": true,
                             "Pos": [
                                 0.0,
@@ -651,6 +738,7 @@
                             "Static": false,
                             "Select": true,
                             "InTree": true,
+                            "Hidden": false,
                             "Beh": [
                                 {
                                     "Name": "MeshBehaviour",
@@ -683,7 +771,7 @@
                 },
                 {
                     "Name": "Maxwell the fourth",
-                    "ID": 16,
+                    "ID": 20,
                     "Enabled": true,
                     "Pos": [
                         -5.0,
@@ -703,6 +791,7 @@
                     "Static": false,
                     "Select": true,
                     "InTree": true,
+                    "Hidden": false,
                     "Beh": [
                         {
                             "Name": "MeshBehaviour",
@@ -769,7 +858,7 @@
                     "Child": [
                         {
                             "Name": "Whiskers",
-                            "ID": 17,
+                            "ID": 21,
                             "Enabled": true,
                             "Pos": [
                                 0.0,
@@ -789,6 +878,7 @@
                             "Static": false,
                             "Select": true,
                             "InTree": true,
+                            "Hidden": false,
                             "Beh": [
                                 {
                                     "Name": "MeshBehaviour",
@@ -821,7 +911,7 @@
                 },
                 {
                     "Name": "Terrain",
-                    "ID": 18,
+                    "ID": 22,
                     "Enabled": true,
                     "Pos": [
                         -5.0,
@@ -841,6 +931,7 @@
                     "Static": false,
                     "Select": true,
                     "InTree": true,
+                    "Hidden": false,
                     "Beh": [
                         {
                             "Name": "MeshBehaviour",
@@ -912,7 +1003,7 @@
                 },
                 {
                     "Name": "Slope 10",
-                    "ID": 19,
+                    "ID": 23,
                     "Enabled": true,
                     "Pos": [
                         -12.75,
@@ -932,6 +1023,7 @@
                     "Static": false,
                     "Select": true,
                     "InTree": true,
+                    "Hidden": false,
                     "Beh": [
                         {
                             "Name": "MeshBehaviour",
@@ -1026,7 +1118,7 @@
                 },
                 {
                     "Name": "Slope 20",
-                    "ID": 20,
+                    "ID": 24,
                     "Enabled": true,
                     "Pos": [
                         -12.75,
@@ -1046,6 +1138,7 @@
                     "Static": false,
                     "Select": true,
                     "InTree": true,
+                    "Hidden": false,
                     "Beh": [
                         {
                             "Name": "MeshBehaviour",
@@ -1140,7 +1233,7 @@
                 },
                 {
                     "Name": "Slope 30",
-                    "ID": 21,
+                    "ID": 25,
                     "Enabled": true,
                     "Pos": [
                         -12.75,
@@ -1160,6 +1253,7 @@
                     "Static": false,
                     "Select": true,
                     "InTree": true,
+                    "Hidden": false,
                     "Beh": [
                         {
                             "Name": "MeshBehaviour",
@@ -1254,7 +1348,7 @@
                 },
                 {
                     "Name": "Slope 40",
-                    "ID": 22,
+                    "ID": 26,
                     "Enabled": true,
                     "Pos": [
                         -12.75,
@@ -1274,6 +1368,7 @@
                     "Static": false,
                     "Select": true,
                     "InTree": true,
+                    "Hidden": false,
                     "Beh": [
                         {
                             "Name": "MeshBehaviour",
@@ -1368,7 +1463,7 @@
                 },
                 {
                     "Name": "Slope 50",
-                    "ID": 23,
+                    "ID": 27,
                     "Enabled": true,
                     "Pos": [
                         -12.75,
@@ -1388,6 +1483,7 @@
                     "Static": false,
                     "Select": true,
                     "InTree": true,
+                    "Hidden": false,
                     "Beh": [
                         {
                             "Name": "MeshBehaviour",
@@ -1482,7 +1578,7 @@
                 },
                 {
                     "Name": "Slope 60",
-                    "ID": 24,
+                    "ID": 28,
                     "Enabled": true,
                     "Pos": [
                         -12.75,
@@ -1502,6 +1598,7 @@
                     "Static": false,
                     "Select": true,
                     "InTree": true,
+                    "Hidden": false,
                     "Beh": [
                         {
                             "Name": "MeshBehaviour",
@@ -1598,7 +1695,7 @@
         },
         {
             "Name": "Point",
-            "ID": 25,
+            "ID": 29,
             "Enabled": true,
             "Pos": [
                 -3.8684403896331787,
@@ -1618,6 +1715,7 @@
             "Static": false,
             "Select": true,
             "InTree": false,
+            "Hidden": false,
             "Beh": [
                 {
                     "Name": "PointLightBehaviour",
@@ -1638,7 +1736,7 @@
         },
         {
             "Name": "Light Entity",
-            "ID": 27,
+            "ID": 31,
             "Enabled": true,
             "Pos": [
                 -1.3002991676330566,
@@ -1658,6 +1756,7 @@
             "Static": false,
             "Select": true,
             "InTree": false,
+            "Hidden": false,
             "Beh": [
                 {
                     "Name": "SpotLightBehaviour",
@@ -1682,7 +1781,7 @@
         },
         {
             "Name": "Node",
-            "ID": 29,
+            "ID": 33,
             "Enabled": true,
             "Pos": [
                 0.0,
@@ -1702,6 +1801,7 @@
             "Static": false,
             "Select": true,
             "InTree": false,
+            "Hidden": false,
             "Beh": [
                 {
                     "Name": "GraphNodeBehaviour",
@@ -1713,7 +1813,7 @@
         },
         {
             "Name": "Sun Light",
-            "ID": 30,
+            "ID": 34,
             "Enabled": true,
             "Pos": [
                 37.876991271972656,
@@ -1733,6 +1833,7 @@
             "Static": false,
             "Select": true,
             "InTree": false,
+            "Hidden": false,
             "Beh": [
                 {
                     "Name": "SimplePointLightBehaviour",
@@ -1750,7 +1851,7 @@
         },
         {
             "Name": "Mesh Entity",
-            "ID": 32,
+            "ID": 36,
             "Enabled": true,
             "Pos": [
                 0.0,
@@ -1770,6 +1871,7 @@
             "Static": false,
             "Select": true,
             "InTree": true,
+            "Hidden": false,
             "Beh": [
                 {
                     "Name": "MeshBehaviour",
@@ -1800,7 +1902,7 @@
         },
         {
             "Name": "Sniper",
-            "ID": 33,
+            "ID": 37,
             "Enabled": true,
             "Pos": [
                 0.0,
@@ -1821,7 +1923,7 @@
         },
         {
             "Name": "Sniper Raw Tex",
-            "ID": 38,
+            "ID": 42,
             "Enabled": false,
             "Pos": [
                 0.0,
@@ -1841,11 +1943,12 @@
             "Static": false,
             "Select": true,
             "InTree": true,
+            "Hidden": false,
             "Beh": [],
             "Child": [
                 {
                     "Name": "Body",
-                    "ID": 39,
+                    "ID": 43,
                     "Enabled": true,
                     "Pos": [
                         0.0,
@@ -1865,6 +1968,7 @@
                     "Static": false,
                     "Select": true,
                     "InTree": true,
+                    "Hidden": false,
                     "Beh": [
                         {
                             "Name": "MeshBehaviour",
@@ -1920,7 +2024,7 @@
                 },
                 {
                     "Name": "Bolt",
-                    "ID": 40,
+                    "ID": 44,
                     "Enabled": true,
                     "Pos": [
                         0.0,
@@ -1940,6 +2044,7 @@
                     "Static": false,
                     "Select": true,
                     "InTree": true,
+                    "Hidden": false,
                     "Beh": [
                         {
                             "Name": "MeshBehaviour",
@@ -1995,7 +2100,7 @@
                 },
                 {
                     "Name": "Trigger",
-                    "ID": 41,
+                    "ID": 45,
                     "Enabled": true,
                     "Pos": [
                         0.0,
@@ -2015,6 +2120,7 @@
                     "Static": false,
                     "Select": true,
                     "InTree": true,
+                    "Hidden": false,
                     "Beh": [
                         {
                             "Name": "MeshBehaviour",
@@ -2070,7 +2176,7 @@
                 },
                 {
                     "Name": "Magazine",
-                    "ID": 42,
+                    "ID": 46,
                     "Enabled": true,
                     "Pos": [
                         0.0,
@@ -2090,6 +2196,7 @@
                     "Static": false,
                     "Select": true,
                     "InTree": true,
+                    "Hidden": false,
                     "Beh": [
                         {
                             "Name": "MeshBehaviour",
@@ -2147,7 +2254,7 @@
         },
         {
             "Name": "Sniper Error",
-            "ID": 43,
+            "ID": 47,
             "Enabled": false,
             "Pos": [
                 0.0,
@@ -2167,11 +2274,12 @@
             "Static": false,
             "Select": true,
             "InTree": true,
+            "Hidden": false,
             "Beh": [],
             "Child": [
                 {
                     "Name": "Body",
-                    "ID": 44,
+                    "ID": 48,
                     "Enabled": true,
                     "Pos": [
                         0.0,
@@ -2191,6 +2299,7 @@
                     "Static": false,
                     "Select": true,
                     "InTree": true,
+                    "Hidden": false,
                     "Beh": [
                         {
                             "Name": "MeshBehaviour",
@@ -2242,7 +2351,7 @@
                 },
                 {
                     "Name": "Bolt",
-                    "ID": 45,
+                    "ID": 49,
                     "Enabled": true,
                     "Pos": [
                         0.0,
@@ -2262,6 +2371,7 @@
                     "Static": false,
                     "Select": true,
                     "InTree": true,
+                    "Hidden": false,
                     "Beh": [
                         {
                             "Name": "MeshBehaviour",
@@ -2313,7 +2423,7 @@
                 },
                 {
                     "Name": "Trigger",
-                    "ID": 46,
+                    "ID": 50,
                     "Enabled": true,
                     "Pos": [
                         0.0,
@@ -2333,6 +2443,7 @@
                     "Static": false,
                     "Select": true,
                     "InTree": true,
+                    "Hidden": false,
                     "Beh": [
                         {
                             "Name": "MeshBehaviour",
@@ -2384,7 +2495,7 @@
                 },
                 {
                     "Name": "Magazine",
-                    "ID": 47,
+                    "ID": 51,
                     "Enabled": true,
                     "Pos": [
                         0.0,
@@ -2404,6 +2515,7 @@
                     "Static": false,
                     "Select": true,
                     "InTree": true,
+                    "Hidden": false,
                     "Beh": [
                         {
                             "Name": "MeshBehaviour",
@@ -2457,7 +2569,7 @@
         },
         {
             "Name": "Sponza",
-            "ID": 48,
+            "ID": 52,
             "Enabled": true,
             "Pos": [
                 -65.413818359375,

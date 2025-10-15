@@ -41,6 +41,7 @@
 #include "Behaviours/Rendering/Lighting/SpotLightBehaviour.h"
 #include "Behaviours/Rendering/Mesh/BillboardMeshBehaviour.h"
 #include "Behaviours/Rendering/Mesh/MeshBehaviour.h"
+#include "Behaviours/Rendering/Mesh/TextMeshBehaviour.h"
 #include "Behaviours/Sound/AmbientSoundBehaviour.h"
 #include "Behaviours/Sound/SoundBehaviour.h"
 
@@ -94,6 +95,7 @@ const std::map<std::string, std::function<Behaviour *(void)>> &BehaviourRegistry
 		{ "SpotLightBehaviour",        []() { return new SpotLightBehaviour(); }        },
 		{ "BillboardMeshBehaviour",    []() { return new BillboardMeshBehaviour(); }    },
 		{ "MeshBehaviour",             []() { return new MeshBehaviour(); }             },
+		{ "TextMeshBehaviour",         []() { return new TextMeshBehaviour(); }         },
 		{ "AmbientSoundBehaviour",     []() { return new AmbientSoundBehaviour(); }     },
 		{ "SoundBehaviour",            []() { return new SoundBehaviour(); }            },
 
@@ -147,6 +149,7 @@ const std::map<std::string, std::string> &BehaviourRegistry::GetCategories()
 		{ "SpotLightBehaviour",        "Rendering/Lighting/" },
 		{ "BillboardMeshBehaviour",    "Rendering/Mesh/"     },
 		{ "MeshBehaviour",             "Rendering/Mesh/"     },
+		{ "TextMeshBehaviour",         "Rendering/Mesh/"     },
 		{ "AmbientSoundBehaviour",     "Sound/"              },
 		{ "SoundBehaviour",            "Sound/"              },
 

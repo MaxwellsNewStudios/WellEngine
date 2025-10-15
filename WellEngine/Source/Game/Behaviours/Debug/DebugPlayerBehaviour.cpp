@@ -6,6 +6,7 @@
 //#include "../ FlashlightBehaviour.h"
 #include "../Navigation/GraphNodeBehaviour.h"
 #include "../Rendering/Mesh/BillboardMeshBehaviour.h"
+#include "../Rendering/Mesh/TextMeshBehaviour.h"
 #include "../Player/PlayerMovementBehaviour.h"
 #include "Source/Engine/Debug/DebugData.h"
 
@@ -348,7 +349,8 @@ bool DebugPlayerBehaviour::Update(TimeUtils &time, const Input &input)
 			{
 				if (Entity *parent = newSelectEnt->GetParent())
 				{
-					if (parent->HasBehaviourOfType<BillboardMeshBehaviour>())
+					if (parent->HasBehaviourOfType<BillboardMeshBehaviour>() || 
+						parent->HasBehaviourOfType<TextMeshBehaviour>())
 						newSelectEnt = parent;
 				}
 
@@ -1371,8 +1373,12 @@ bool DebugPlayerBehaviour::IsSelected(Entity *ent, UINT *index, bool includeBill
 	{
 		if (Entity *parent = ent->GetParent())
 		{
-			BillboardMeshBehaviour *billboard = nullptr;
-			if (parent->GetBehaviourByType<BillboardMeshBehaviour>(billboard))
+			if (BillboardMeshBehaviour *billboard; parent->GetBehaviourByType<BillboardMeshBehaviour>(billboard))
+			{
+				if (IsSelected(parent, index))
+					return true;
+			}
+			else if (TextMeshBehaviour *text; parent->GetBehaviourByType<TextMeshBehaviour>(text))
 			{
 				if (IsSelected(parent, index))
 					return true;

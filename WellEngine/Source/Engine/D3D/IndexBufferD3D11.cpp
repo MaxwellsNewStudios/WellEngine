@@ -16,12 +16,6 @@ IndexBufferD3D11::IndexBufferD3D11(ID3D11Device *device, const size_t nrOfIndice
 
 bool IndexBufferD3D11::Initialize(ID3D11Device *device, const size_t nrOfIndicesInBuffer, const uint32_t *indexData)
 {
-	if (_buffer != nullptr)
-	{
-		ErrMsg("Index buffer is not nullptr!");
-		return false;
-	}
-
 	_nrOfIndices = nrOfIndicesInBuffer;
 
 	D3D11_BUFFER_DESC bufferDesc = { };

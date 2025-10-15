@@ -48,12 +48,6 @@ ConstantBufferD3D11 &ConstantBufferD3D11::operator=(ConstantBufferD3D11 &&other)
 
 bool ConstantBufferD3D11::Initialize(ID3D11Device *device, const size_t byteSize, const void *initialData)
 {
-	if (_buffer)
-	{
-		ErrMsg("Constant buffer is already initialized!");
-		return false;
-	}
-
 	_bufferSize = byteSize;
 
 	D3D11_BUFFER_DESC bufferDesc = { };

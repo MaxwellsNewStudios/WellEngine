@@ -141,7 +141,7 @@
 					"Type": "Simple",
 					"Key": "Escape",
 					"Deactivation Time": -1.0,
-					"Ignore Absorb": true,
+					"Ignore Absorb": false,
 					"State": "Pressed"
 				}
 			],

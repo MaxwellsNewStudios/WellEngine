@@ -659,7 +659,11 @@ bool Entity::GetShowInHierarchy(bool ignoreShowHidden) const
 	if (_showInHierarchy || ignoreShowHidden)
 		return _showInHierarchy;
 
+#ifdef DEBUG_BUILD
 	return DebugData::Get().hierarchyShowHidden;
+#else
+	return false;
+#endif
 }
 void Entity::SetShowInHierarchy(bool show)
 {

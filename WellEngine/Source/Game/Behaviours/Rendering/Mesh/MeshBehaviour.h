@@ -127,6 +127,8 @@ public:
 	[[nodiscard]] UINT GetMeshID() const;
 	[[nodiscard]] UINT GetBlendStateID() const;
 	[[nodiscard]] const Material *GetMaterial() const;
+	[[nodiscard]] const dx::XMFLOAT4 &GetColor() const;
+	[[nodiscard]] float GetAlphaCutoff() const;
 
 	void SetLastUsedLOD(UINT lodIndex, float normalizedDist);
 	[[nodiscard]] UINT GetLastUsedLODIndex() const;

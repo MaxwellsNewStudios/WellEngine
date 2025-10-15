@@ -147,6 +147,7 @@
 #define ASSET_EXT_SAVE					"save"
 #define ASSET_EXT_PREFAB				"prefab"
 #define ASSET_EXT_FONT					"ttf"
+#define ASSET_EXT_FONT_ATLAS			"atlas"
 
 #define ASSET_REGISTRY_PATH				ASSET_PATH "\\_Registry"
 #define ASSET_REGISTRY_FILE_TEXTURES	ASSET_REGISTRY_PATH "\\_textures.txt" // TODO: Deprecate, replace with registry system

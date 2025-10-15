@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "MeshD3D11.h"
-#include "Source/Engine/Content/ContentLoader.h"
+#include "Source/Engine/Content/DefaultVertex.h"
 
 #ifdef LEAK_DETECTION
 #define new			DEBUG_NEW
@@ -41,6 +41,7 @@ bool MeshD3D11::Initialize(ID3D11Device *device, MeshData **meshData)
 		return false;
 	}
 
+	_subMeshes.clear();
 	const size_t subMeshCount = _meshData->subMeshInfo.size();
 	for (size_t i = 0; i < subMeshCount; i++)
 	{
