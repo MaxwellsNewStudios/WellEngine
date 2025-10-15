@@ -568,7 +568,7 @@ bool FontAtlas::RenderUI(const Content *content)
 			};
 
 			_glyphs[(UINT)code] = glyph;
-			_uiSelectedGlyphID = (UINT)code;
+			_selectedGlyphIDs.push_back((UINT)code);
 
 			modified = true;
 			ImGui::CloseCurrentPopup();
@@ -726,10 +726,16 @@ bool FontAtlas::RenderUI(const Content *content)
 		modified = true;
 	}
 
+	bool removeSelection = false;
+	ImGui::SameLine();
+	removeSelection = ImGui::Button("Delete");
+
+	static ImGuiSelectionBasicStorage selection;
+
 	if (ImGui::TreeNode(std::format("Texture '{}'", texName).c_str()))
 	{
 		ImVec2 texSizeImVec = { (float)texSize.x, (float)texSize.y };
-		ImGui::BeginChild("AtlasTexture", texSizeImVec);
+		ImGui::BeginChild("AtlasTexture", texSizeImVec + ImVec2(4, 4));
 
 		ImVec2 screenPos = ImGui::GetCursorScreenPos();
 		ImVec2 texMin = ImGui::GetCursorPos();
@@ -741,10 +747,15 @@ bool FontAtlas::RenderUI(const Content *content)
 			texSizeImVec
 		);
 
+		ImGuiMultiSelectFlags flags = ImGuiMultiSelectFlags_NoSelectAll | ImGuiMultiSelectFlags_ClearOnClickVoid | ImGuiMultiSelectFlags_ClearOnEscape | ImGuiMultiSelectFlags_BoxSelect2d;
+		ImGuiMultiSelectIO *ms_io = ImGui::BeginMultiSelect(flags, selection.Size, 0);
+		selection.ApplyRequests(ms_io);
+
 		// Draw selectable glyph outlines
 		for (const auto &[codepoint, glyph] : _glyphs)
 		{
-			bool isSelected = (codepoint == _uiSelectedGlyphID);
+			bool isSelected = selection.Contains((ImGuiID)codepoint);
+			ImGui::SetNextItemSelectionUserData(codepoint);
 
 			ImVec2 glyphMin = { 
 				Lerp(texMin.x, texMax.x, glyph.uvRect.x), 
@@ -760,7 +771,7 @@ bool FontAtlas::RenderUI(const Content *content)
 			ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, { 0, 0 });
 			if (ImGui::Selectable(std::format("##Glyph{}", codepoint).c_str(), isSelected, ImGuiSelectableFlags_AllowOverlap, glyphSize))
 			{
-				_uiSelectedGlyphID = codepoint;
+				_selectedGlyphIDs.push_back(codepoint);
 			}
 			ImGui::PopStyleVar();
 
@@ -781,55 +792,95 @@ bool FontAtlas::RenderUI(const Content *content)
 			}
 		}
 
+		ms_io = ImGui::EndMultiSelect();
+		selection.ApplyRequests(ms_io);
+
+		if (ImGui::Shortcut(ImGuiMod_Ctrl | ImGuiKey_A))
+		{
+			selection.Clear();
+			for (const auto &[codepoint, glyph] : _glyphs)
+				selection.SetItemSelected((ImGuiID)codepoint, true);
+		}
+
 		ImGui::EndChild();
 		ImGui::TreePop();
 	}
 
+	// Process selection
+	{
+		_selectedGlyphIDs.clear();
+
+		void *it = NULL; ImGuiID id;
+		while (selection.GetNextSelectedItem(&it, &id))
+		{
+			if (_glyphs.find((UINT)id) == _glyphs.end())
+				continue;
+
+			_selectedGlyphIDs.push_back((UINT)id);
+		}
+
+		if (removeSelection)
+		{
+			for (UINT codepoint : _selectedGlyphIDs)
+				_glyphs.erase(codepoint);
+
+			_selectedGlyphIDs.clear();
+			selection.Clear();
+			modified = true;
+		}
+	}
+
 	if (ImGui::TreeNode("Glyph Inspector"))
 	{
-		if (_uiSelectedGlyphID != CONTENT_NULL)
+		if (_selectedGlyphIDs.empty())
 		{
-			auto it = _glyphs.find(_uiSelectedGlyphID);
-			if (it != _glyphs.end())
+			ImGui::Text("No glyph selected.");
+		}
+		else
+		{
+			bool multiSelection = (_selectedGlyphIDs.size() > 1);
+
+			UINT firstID = _selectedGlyphIDs[0];
+			GlyphData &firstGlyph = _glyphs[firstID];
+
+			// Preview
+			ImGui::Image(
+				(ImTextureID)tex->GetSRV(), 
+				{ firstGlyph.size.x, firstGlyph.size.y },
+				{ firstGlyph.uvRect.x, firstGlyph.uvRect.y },
+				{ firstGlyph.uvRect.z, firstGlyph.uvRect.w }
+			);
+
+			// Highlight offset
+			ImGui::GetWindowDrawList()->AddLine(
+				{ ImGui::GetItemRectMin().x,					 ImGui::GetItemRectMin().y + firstGlyph.offset.y },
+				{ ImGui::GetItemRectMin().x + firstGlyph.size.x, ImGui::GetItemRectMin().y + firstGlyph.offset.y },
+				IM_COL32(255, 0, 0, 255)
+			);
+			ImGui::GetWindowDrawList()->AddLine(
+				{ ImGui::GetItemRectMin().x + firstGlyph.offset.x,	ImGui::GetItemRectMin().y					  },
+				{ ImGui::GetItemRectMin().x + firstGlyph.offset.x,	ImGui::GetItemRectMin().y + firstGlyph.size.y },
+				IM_COL32(255, 0, 0, 255)
+			);
+
+			// Highlight advance
+			ImGui::GetWindowDrawList()->AddLine(
+				{ ImGui::GetItemRectMin().x + firstGlyph.offset.x + firstGlyph.advance, ImGui::GetItemRectMin().y					  },
+				{ ImGui::GetItemRectMin().x + firstGlyph.offset.x + firstGlyph.advance, ImGui::GetItemRectMin().y + firstGlyph.size.y },
+				IM_COL32(0, 255, 0, 255)
+			);
+
+			bool isChanged = false;
+			UINT inputCodepoint = firstID;
+
+			if (!multiSelection)
 			{
-				GlyphData &glyph = it->second;
-
-				UINT inputCodepoint = it->first;
-				bool isChanged = false;
-
-				// Preview
-				ImGui::Image(
-					(ImTextureID)tex->GetSRV(), 
-					{ glyph.size.x, glyph.size.y }, 
-					{ glyph.uvRect.x, glyph.uvRect.y }, 
-					{ glyph.uvRect.z, glyph.uvRect.w }
-				);
-
-				// Highlight offset
-				ImGui::GetWindowDrawList()->AddLine(
-					{ ImGui::GetItemRectMin().x,					ImGui::GetItemRectMin().y + glyph.offset.y },
-					{ ImGui::GetItemRectMin().x + glyph.size.x,		ImGui::GetItemRectMin().y + glyph.offset.y },
-					IM_COL32(255, 0, 0, 255)
-				);
-				ImGui::GetWindowDrawList()->AddLine(
-					{ ImGui::GetItemRectMin().x + glyph.offset.x,	ImGui::GetItemRectMin().y				 },
-					{ ImGui::GetItemRectMin().x + glyph.offset.x,	ImGui::GetItemRectMin().y + glyph.size.y },
-					IM_COL32(255, 0, 0, 255)
-				);
-
-				// Highlight advance
-				ImGui::GetWindowDrawList()->AddLine(
-					{ ImGui::GetItemRectMin().x + glyph.offset.x + glyph.advance, ImGui::GetItemRectMin().y				   },
-					{ ImGui::GetItemRectMin().x + glyph.offset.x + glyph.advance, ImGui::GetItemRectMin().y + glyph.size.y },
-					IM_COL32(0, 255, 0, 255)
-				);
-
 				std::string charStr = "";
 				if (inputCodepoint >= 32u)
 					charStr = std::string(1, (char)inputCodepoint);
 				else
 					charStr = "?";
-				
+
 				ImGui::Text("Codepoint:");
 				ImGui::SameLine();
 				if (ImGui::InputScalar("##InputCodepointInt", ImGuiDataType_U32, &inputCodepoint))
@@ -867,57 +918,82 @@ bool FontAtlas::RenderUI(const Content *content)
 						isChanged = true;
 					}
 				}
+			}
 
-				dx::XMFLOAT4 pixRect = {
-					(glyph.uvRect.x * (float)texSize.x),
-					(glyph.uvRect.y * (float)texSize.y),
-					(glyph.uvRect.z * (float)texSize.x),
-					(glyph.uvRect.w * (float)texSize.y)
+			dx::XMFLOAT4 pixRect = {
+				(firstGlyph.uvRect.x * (float)texSize.x),
+				(firstGlyph.uvRect.y * (float)texSize.y),
+				(firstGlyph.uvRect.z * (float)texSize.x),
+				(firstGlyph.uvRect.w * (float)texSize.y)
+			};
+
+			if (ImGui::DragFloat4("Rect", &pixRect.x))
+			{
+				pixRect.x = std::clamp(pixRect.x, 0.0f, (float)texSize.x);
+				pixRect.y = std::clamp(pixRect.y, 0.0f, (float)texSize.y);
+				pixRect.z = std::clamp(pixRect.z, pixRect.x, (float)texSize.x);
+				pixRect.w = std::clamp(pixRect.w, pixRect.y, (float)texSize.y);
+
+				firstGlyph.uvRect = {
+					pixRect.x / (float)texSize.x,
+					pixRect.y / (float)texSize.y,
+					pixRect.z / (float)texSize.x,
+					pixRect.w / (float)texSize.y
 				};
 
-				if (ImGui::DragFloat4("Rect", &pixRect.x))
+				modified = true;
+
+				if (multiSelection)
 				{
-					pixRect.x = std::clamp(pixRect.x, 0.0f, (float)texSize.x);
-					pixRect.y = std::clamp(pixRect.y, 0.0f, (float)texSize.y);
-					pixRect.z = std::clamp(pixRect.z, pixRect.x, (float)texSize.x);
-					pixRect.w = std::clamp(pixRect.w, pixRect.y, (float)texSize.y);
-
-					glyph.uvRect = {
-						pixRect.x / (float)texSize.x,
-						pixRect.y / (float)texSize.y,
-						pixRect.z / (float)texSize.x,
-						pixRect.w / (float)texSize.y
-					};
-
-					modified = true;
+					for (UINT i = 1; i < _selectedGlyphIDs.size(); i++)
+					{
+						_glyphs[_selectedGlyphIDs[i]].uvRect = firstGlyph.uvRect;
+					}
 				}
-				ImGuiUtils::LockMouseOnActive();
+			}
+			ImGuiUtils::LockMouseOnActive();
 
-				if (ImGui::DragFloat2("Offset", &glyph.offset.x, 0.1f))
-					modified = true;
-				ImGuiUtils::LockMouseOnActive();
+			if (ImGui::DragFloat2("Offset", &firstGlyph.offset.x, 0.1f))
+			{
+				modified = true;
+				if (multiSelection)
+				{
+					for (UINT i = 1; i < _selectedGlyphIDs.size(); i++)
+					{
+						_glyphs[_selectedGlyphIDs[i]].offset = firstGlyph.offset;
+					}
+				}
+			}
+			ImGuiUtils::LockMouseOnActive();
 
-				if (ImGui::DragFloat("Advance", &glyph.advance, 0.1f))
-					modified = true;
-				ImGuiUtils::LockMouseOnActive();
+			if (ImGui::DragFloat("Advance", &firstGlyph.advance, 0.1f))
+			{
+				modified = true;
+				if (multiSelection)
+				{
+					for (UINT i = 1; i < _selectedGlyphIDs.size(); i++)
+					{
+						_glyphs[_selectedGlyphIDs[i]].advance = firstGlyph.advance;
+					}
+				}
+			}
+			ImGuiUtils::LockMouseOnActive();
 
+			if (!multiSelection)
+			{
 				if (isChanged && inputCodepoint != -1)
 				{
 					// Move the glyph to the new codepoint & update selection
-					_glyphs[inputCodepoint] = glyph;
-					_uiSelectedGlyphID = inputCodepoint;
-					_glyphs.erase(it);
+					_glyphs[inputCodepoint] = firstGlyph;
+					_glyphs.erase(_glyphs.find(firstID));
+
+					selection.Clear();
+					selection.SetItemSelected((ImGuiID)inputCodepoint, true);
+
 					modified = true;
 				}
 			}
-			else
-			{
-				ImGui::Text("Selected glyph ID %u not found!", _uiSelectedGlyphID);
-			}
-		}
-		else
-		{
-			ImGui::Text("No glyph selected.");
+		
 		}
 
 		ImGui::TreePop();
@@ -951,52 +1027,6 @@ bool FontAtlas::RenderUI(const Content *content)
 		ImGui::TreePop();
 	}
 
-	if (ImGui::TreeNode("Glyphs"))
-	{
-		ImGui::Text("WIP");
-
-		/*
-		if (ImGui::BeginTable("GlyphTable", 6, ImGuiTableFlags_Borders | ImGuiTableFlags_RowBg | ImGuiTableFlags_Resizable | ImGuiTableFlags_ScrollY))
-		{
-			ImGui::TableSetupColumn("Code", ImGuiTableColumnFlags_WidthFixed, 70.0f); // Fixed
-			ImGui::TableSetupColumn("Preview", ImGuiTableColumnFlags_WidthFixed, 70.0f); // Fixed
-			ImGui::TableSetupColumn("UV Rect", ImGuiTableColumnFlags_WidthStretch, 200.0f); // Editable
-			ImGui::TableSetupColumn("Size", ImGuiTableColumnFlags_WidthFixed, 100.0f); // Fixed
-			ImGui::TableSetupColumn("Offset", ImGuiTableColumnFlags_WidthFixed, 100.0f); // Editable
-			ImGui::TableSetupColumn("Advance", ImGuiTableColumnFlags_WidthFixed, 100.0f); // Editable
-
-			ImGui::TableHeadersRow();
-			for (const auto &[codepoint, glyph] : _glyphs)
-			{
-				bool isSelected = (codepoint == _uiSelectedGlyphID);
-
-				ImGui::TableNextRow();
-				ImGui::TableSetColumnIndex(0);
-				ImGui::Selectable(std::format("U+{:04X}", codepoint).c_str(), isSelected, ImGuiSelectableFlags_SpanAllColumns | ImGuiSelectableFlags_AllowOverlap);
-
-				if (isSelected)
-				{
-					ImGui::SetItemDefaultFocus();
-					if (ImGui::IsWindowAppearing())
-						ImGui::SetScrollHereY();
-				}
-
-				ImGui::TableSetColumnIndex(1);
-				ImGui::Image(
-					(ImTextureID)tex->GetSRV(), 
-					{ glyph.size.x, glyph.size.y }, 
-					{ glyph.uvRect.x, glyph.uvRect.y }, 
-					{ glyph.uvRect.z, glyph.uvRect.w }
-				);
-			}
-
-			ImGui::EndTable();
-		}
-		*/
-
-		ImGui::TreePop();
-	}
-
 	if (ImGui::TreeNode("Preview"))
 	{
 		static float sizeScale = 1.0f;
@@ -1006,12 +1036,10 @@ bool FontAtlas::RenderUI(const Content *content)
 		static std::string inputText = 
 			"The quick brown fox jumps over the lazy dog.\n"
 			"0123456789\n"
-			"!@#$ % ^&*()_ + -= [] {} | ; ':\",./<>?\n"
+			"!?@#$ % ^&*()_ + -= [] {} | ; ':\",./<>\n"
 			"\n"
 			"AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz\n"
-			"AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz\n"
-			"AaB bCc DdEeF fGgHhI iJjKkL lMmNnOo PpQqRrSsTtUu VvWwXxYyZz\n"
-			"A aBbCc  DdEeF fGgHhI iJjKk L l M mNn  Oo PpQqR rSs TtUu VvWw   XxYy Zz";
+			"A aBbCc  JjKk L l M mNn qR ru VvWw   XxYy Zz";
 
 		ImGui::SeparatorText("Example Text");
 		ImGui::InputTextMultiline("##InputText", &inputText);

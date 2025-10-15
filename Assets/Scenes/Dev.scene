@@ -189,8 +189,8 @@
             ],
             "Rot": [
                 -0.0,
-                2.0343637466430664,
-                -0.0
+                0.7233450412750244,
+                0.0
             ],
             "Scale": [
                 1.0,
@@ -204,19 +204,19 @@
             "ID": 6,
             "Enabled": true,
             "Pos": [
-                0.0,
-                4.580970764160156,
-                0.0
+                12.226750373840332,
+                4.494338035583496,
+                11.370635032653809
             ],
             "Rot": [
                 -0.0,
-                0.0,
-                0.0
+                1.2973934412002563,
+                -0.0
             ],
             "Scale": [
+                0.020000070333480835,
                 0.019999999552965164,
-                0.019999999552965164,
-                0.019999999552965164
+                0.020000070333480835
             ],
             "Static": false,
             "Select": true,
@@ -227,14 +227,14 @@
                     "Name": "TextMeshBehaviour",
                     "Attributes": {
                         "Atlas": "DefaultFont",
-                        "Text": "Hi. Hello.\nThis is text.\nWritten by Me!\n1234567890#\n",
+                        "Text": "The quick brown fox jumps over the lazy dog.\n0123456789\n!?@#$%^&*()_+-=[]{}|;':\",./<>\n\nAaBbCcDdEeFfGgHMmNnOoPpQqRrSsTtUWwXxYyZz?\nAaB b fGgHhI iqRrSsTtUu VvWwXxYyZz!\nA aBbCc  DdEeF fl M mNn  OTtUu VvWw   XxYy Zz.",
                         "Color": [
                             0.0,
-                            0.15042279660701752,
-                            0.3093922734260559,
+                            0.0,
+                            0.0,
                             1.0
                         ],
-                        "Thickness": 0.16899999976158142
+                        "Thickness": 0.30000001192092896
                     }
                 }
             ]
@@ -244,19 +244,19 @@
             "ID": 8,
             "Enabled": true,
             "Pos": [
-                0.0,
-                7.150919437408447,
-                0.0
+                4.5000319480896,
+                3.21970796585083,
+                12.838555335998535
             ],
             "Rot": [
                 -0.0,
                 0.0,
-                0.0
+                -0.0
             ],
             "Scale": [
-                0.019999999552965164,
-                0.019999999552965164,
-                0.019999999552965164
+                0.03999999910593033,
+                0.03999999910593033,
+                0.03999999910593033
             ],
             "Static": false,
             "Select": true,
@@ -267,7 +267,7 @@
                     "Name": "TextMeshBehaviour",
                     "Attributes": {
                         "Atlas": "DefaultFont",
-                        "Text": "Hell\n         o",
+                        "Text": "Hello World!",
                         "Color": [
                             1.0,
                             1.0,

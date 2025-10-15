@@ -73,7 +73,7 @@ private:
 	std::unordered_map<size_t, std::function<void(void)>> _modifyCallback;
 
 #ifdef USE_IMGUI
-	UINT _uiSelectedGlyphID = -1;
+	std::vector<UINT> _selectedGlyphIDs;
 #endif
 
 	void AppendGlyph(UINT codepoint, std::vector<GlyphVertex> &vertices, dx::XMFLOAT2 &cursor) const;
