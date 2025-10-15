@@ -2177,7 +2177,6 @@ MeshD3D11 *Content::GetMesh(const UINT id) const
 {
 	if (id == CONTENT_NULL)
 	{
-		WarnF("Failed to find mesh #{}! Returning default.", id);
 		return &_meshes[0]->data;
 	}
 

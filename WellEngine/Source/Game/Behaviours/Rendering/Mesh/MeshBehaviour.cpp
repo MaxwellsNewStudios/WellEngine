@@ -2114,7 +2114,7 @@ void MeshBehaviour::PostDeserialize()
 {
 	if (!_deserializedMesh)
 	{
-		ErrMsg("Deserialized mesh is nullptr!");
+		//ErrMsg("Deserialized mesh is nullptr!");
 		return;
 	}
 
@@ -2258,6 +2258,14 @@ UINT MeshBehaviour::GetBlendStateID() const
 const Material *MeshBehaviour::GetMaterial() const
 {
 	return _material;
+}
+const dx::XMFLOAT4 &MeshBehaviour::GetColor() const
+{
+	return _baseColor;
+}
+float MeshBehaviour::GetAlphaCutoff() const
+{
+	return _alphaCutoff;
 }
 
 void MeshBehaviour::SetLastUsedLOD(UINT lodIndex, float normalizedDist)

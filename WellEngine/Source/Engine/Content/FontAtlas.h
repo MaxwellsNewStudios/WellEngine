@@ -15,7 +15,7 @@ class Content;
 
 struct GlyphVertex
 {
-	dx::XMFLOAT3 position;
+	dx::XMFLOAT2 position;
 	dx::XMFLOAT2 uv;
 };
 
@@ -29,6 +29,7 @@ public:
 
 	GlyphData() : uvRect(0, 0, 0, 0), size(0, 0), offset(0, 0), advance(0) {}
 
+	// Generate vertices for this glyph and append them to the output vector
 	void ToVerts(std::vector<GlyphVertex> &out, dx::XMFLOAT2 &cursor) const
 	{
 		float x = cursor.x - offset.x;
@@ -37,10 +38,10 @@ public:
 		float h = size.y;
 
 		// Define the four corners of the glyph quad
-		GlyphVertex topLeft     = { { x,     y,     0.0f }, { uvRect.x, uvRect.y } };
-		GlyphVertex topRight    = { { x + w, y,     0.0f }, { uvRect.z, uvRect.y } };
-		GlyphVertex bottomRight = { { x + w, y + h, 0.0f }, { uvRect.z, uvRect.w } };
-		GlyphVertex bottomLeft  = { { x,     y + h, 0.0f }, { uvRect.x, uvRect.w } };
+		GlyphVertex topLeft     = { { x,     y,    }, { uvRect.x, uvRect.y } };
+		GlyphVertex topRight    = { { x + w, y,    }, { uvRect.z, uvRect.y } };
+		GlyphVertex bottomRight = { { x + w, y + h }, { uvRect.z, uvRect.w } };
+		GlyphVertex bottomLeft  = { { x,     y + h }, { uvRect.x, uvRect.w } };
 
 		// Two triangles for the quad
 		out.push_back(topLeft);
@@ -69,6 +70,8 @@ private:
 	float _lineHeight = 18.0f;
 	float _spacing = 12.0f;
 
+	std::unordered_map<size_t, std::function<void(void)>> _modifyCallback;
+
 #ifdef USE_IMGUI
 	UINT _uiSelectedGlyphID = -1;
 #endif
@@ -87,10 +90,13 @@ public:
 	std::vector<GlyphVertex> Generate(std::wstring_view text) const;
 	std::vector<GlyphVertex> Generate(std::string_view text) const;
 
-	MeshData *ToMesh(const std::vector<GlyphVertex> &verts, bool flip = true) const;
+	MeshData *ToMesh(const std::vector<GlyphVertex> &verts) const;
 
 	[[nodiscard]] bool Serialize(std::string_view fileName, const Content *content) const;
 	[[nodiscard]] bool Deserialize(std::string_view fileName, const Content *content);
+
+	bool AddListener(size_t id, std::function<void(void)> func);
+	bool RemoveListener(size_t id);
 
 #ifdef USE_IMGUI
 	[[nodiscard]] bool RenderUI(const Content *content);

@@ -11,6 +11,9 @@ private:
 	UINT _meshID = CONTENT_NULL;
 	std::string _text = "";
 
+	dx::XMFLOAT4 _color = { 1, 1, 1, 1 };
+	float _thickness = 0.5f;
+
 	static std::vector<UINT> &GetUnusedMeshIDs()
 	{
 		static std::vector<UINT> unusedMeshIDs;
@@ -39,10 +42,10 @@ public:
 	~TextMeshBehaviour();
 
 	const std::string &GetText() const;
-	void SetText(std::string_view text);
+	void SetText(std::string_view text, bool skipRebuild = false);
 
 	UINT GetFontAtlasID() const;
-	void SetFontAtlasID(UINT id);
+	void SetFontAtlasID(UINT id, bool skipRebuild = false);
 
 	UINT GetMeshID() const;
 

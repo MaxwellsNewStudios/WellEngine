@@ -14,6 +14,8 @@ cbuffer ViewProjMatrixBuffer : register(b1)
 struct VertexShaderInput
 {
 	float3 position : POSITION;
+	float3 normal : NORMAL;
+	float3 tangent : TANGENT;
 	float2 tex_coord : TEXCOORD;
 };
 
@@ -28,7 +30,7 @@ VertexShaderOutput main(VertexShaderInput input)
 {
 	VertexShaderOutput output;
 	
-	output.world_position = mul(float4(input.position, 1.0), worldMatrix);
+	output.world_position = mul(float4(input.position.xyz, 1.0), worldMatrix);
 	output.position = mul(output.world_position, viewProjMatrix);
 	output.tex_coord = input.tex_coord;
 

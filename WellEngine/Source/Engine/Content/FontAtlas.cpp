@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "FontAtlas.h"
-#include <unordered_set>
+#include "Source/Engine/Content/DefaultVertex.h"
 
 bool GlyphData::Serialize(json::Document::AllocatorType &docAlloc, json::Value &obj) const
 {
@@ -105,62 +105,69 @@ std::vector<GlyphVertex> FontAtlas::Generate(std::string_view text) const
 	return Generate(wText);
 }
 
-MeshData *FontAtlas::ToMesh(const std::vector<GlyphVertex> &verts, bool flip) const
+MeshData *FontAtlas::ToMesh(const std::vector<GlyphVertex> &verts) const
 {
 	MeshData *meshData = new MeshData();
 
-	meshData->vertexInfo.nrOfVerticesInBuffer = (UINT)verts.size();
-	meshData->vertexInfo.sizeOfVertex = sizeof(GlyphVertex);
-	meshData->vertexInfo.vertexData = new float[meshData->vertexInfo.sizeOfVertex * meshData->vertexInfo.nrOfVerticesInBuffer];
-	memcpy(meshData->vertexInfo.vertexData, verts.data(), (size_t)meshData->vertexInfo.sizeOfVertex * meshData->vertexInfo.nrOfVerticesInBuffer);
-	
-	// Flip Y position
-	if (flip)
+	size_t vertCount = verts.size();
+	size_t vertInSize = sizeof(GlyphVertex);
+	size_t vertOutSize = sizeof(ContentData::FormattedVertex);
+	size_t vertInSizeF = vertInSize / sizeof(float);
+	size_t vertOutSizeF = vertOutSize / sizeof(float);
+
+	meshData->vertexInfo.nrOfVerticesInBuffer = (UINT)vertCount;
+	meshData->vertexInfo.sizeOfVertex = vertOutSize;
+	meshData->vertexInfo.vertexData = new float[vertCount * vertOutSize];
+
+	for (size_t i = 0; i < vertCount; i++)
 	{
-		for (size_t i = 0; i < meshData->vertexInfo.nrOfVerticesInBuffer; i++)
-		{
-			GlyphVertex *vert = (GlyphVertex *)&meshData->vertexInfo.vertexData[i * sizeof(GlyphVertex) / sizeof(float)];
-			vert->position.y *= -1.0f;
-		}
+		const GlyphVertex &vertIn = verts[i];
+		ContentData::FormattedVertex *vertOut = (ContentData::FormattedVertex *)&meshData->vertexInfo.vertexData[i * vertOutSizeF];
+
+		vertOut->px = vertIn.position.x;
+		vertOut->py = -vertIn.position.y; // Flip Y position
+		vertOut->pz = 0.0f;
+		vertOut->u = vertIn.uv.x;
+		vertOut->v = vertIn.uv.y;
 	}
 
-	meshData->indexInfo.nrOfIndicesInBuffer = (UINT)verts.size();
-	meshData->indexInfo.indexData = new UINT[meshData->indexInfo.nrOfIndicesInBuffer];
-	for (UINT i = 0; i < meshData->indexInfo.nrOfIndicesInBuffer; i++)
-		meshData->indexInfo.indexData[i] = i;
+	meshData->indexInfo.nrOfIndicesInBuffer = (UINT)vertCount;
+	meshData->indexInfo.indexData = new UINT[vertCount];
 
-	// Flip triangle order
-	if (flip)
+	for (size_t i = 0; i + 5 < vertCount; i += 6)
 	{
-		for (UINT i = 0; i + 2 < meshData->indexInfo.nrOfIndicesInBuffer; i += 3)
-		{
-			UINT *indices = &meshData->indexInfo.indexData[i];
-			std::swap(indices[0], indices[2]);
-		}
+		meshData->indexInfo.indexData[i + 0] = i + 2;
+		meshData->indexInfo.indexData[i + 1] = i + 1;
+		meshData->indexInfo.indexData[i + 2] = i + 0;
+
+		meshData->indexInfo.indexData[i + 3] = i + 5;
+		meshData->indexInfo.indexData[i + 4] = i + 4;
+		meshData->indexInfo.indexData[i + 5] = i + 3;
 	}
 
 	// Single sub-mesh
 	meshData->subMeshInfo.push_back(MeshData::SubMeshInfo());
 	meshData->subMeshInfo[0].startIndexValue = 0;
-	meshData->subMeshInfo[0].nrOfIndicesInSubMesh = meshData->indexInfo.nrOfIndicesInBuffer;
+	meshData->subMeshInfo[0].nrOfIndicesInSubMesh = vertCount;
 
 	dx::XMFLOAT3 minBounds(FLT_MAX, FLT_MAX, FLT_MAX);
 	dx::XMFLOAT3 maxBounds(-FLT_MAX, -FLT_MAX, -FLT_MAX);
 
-	for (const GlyphVertex &v : verts)
+	for (size_t i = 0; i + 5 < vertCount; i += 6)
 	{
-		minBounds.x = min(minBounds.x, v.position.x);
-		minBounds.y = min(minBounds.y, v.position.y);
-		minBounds.z = min(minBounds.z, v.position.z);
-		maxBounds.x = max(maxBounds.x, v.position.x);
-		maxBounds.y = max(maxBounds.y, v.position.y);
-		maxBounds.z = max(maxBounds.z, v.position.z);
+		ContentData::FormattedVertex *v = (ContentData::FormattedVertex *)&meshData->vertexInfo.vertexData[i * vertOutSizeF];
+
+		dx::XMFLOAT3 *minVert = (dx::XMFLOAT3 *)&(v[1].px);
+		minBounds.x = min(minBounds.x, minVert->x);
+		minBounds.y = min(minBounds.y, minVert->y);
+
+		dx::XMFLOAT3 *maxVert = (dx::XMFLOAT3 *)&(v[2].px);
+		maxBounds.x = max(maxBounds.x, maxVert->x);
+		maxBounds.y = max(maxBounds.y, maxVert->y);
 	}
 
-	meshData->boundingBox.Center = { (minBounds.x + maxBounds.x) / 2.0f, (minBounds.y + maxBounds.y) / 2.0f, (minBounds.z + maxBounds.z) / 2.0f };
-	meshData->boundingBox.Extents = { (maxBounds.x - minBounds.x) / 2.0f, (maxBounds.y - minBounds.y) / 2.0f, (maxBounds.z - minBounds.z) / 2.0f };
-
-	meshData->boundingBox.Extents.z += 1.0f;
+	meshData->boundingBox.Center = { (minBounds.x + maxBounds.x) / 2.0f, (minBounds.y + maxBounds.y) / 2.0f, 0.0f };
+	meshData->boundingBox.Extents = { (maxBounds.x - minBounds.x) / 2.0f, (maxBounds.y - minBounds.y) / 2.0f, 1.0f };
 
 	return meshData;
 }
@@ -297,9 +304,28 @@ bool FontAtlas::Deserialize(std::string_view fileName, const Content *content)
 	return true;
 }
 
+bool FontAtlas::AddListener(size_t id, std::function<void(void)> func)
+{
+	if (_modifyCallback.find(id) != _modifyCallback.end())
+		return false;
+
+	_modifyCallback[id] = func;
+	return true;
+}
+bool FontAtlas::RemoveListener(size_t id)
+{
+	if (_modifyCallback.find(id) == _modifyCallback.end())
+		return false;
+
+	_modifyCallback.erase(id);
+	return true;
+}
+
 #ifdef USE_IMGUI
 bool FontAtlas::RenderUI(const Content *content)
 {
+	bool modified = false;
+
 	auto tex = content->GetTexture(_fontTextureID);
 	std::string texName = content->GetTextureName(_fontTextureID);
 
@@ -407,6 +433,8 @@ bool FontAtlas::RenderUI(const Content *content)
 
 		if (isChanged)
 		{
+			modified = true;
+
 			inputTexID += textureNames.size();
 			inputTexID %= textureNames.size();
 			_fontTextureID = (UINT)inputTexID;
@@ -417,7 +445,15 @@ bool FontAtlas::RenderUI(const Content *content)
 	}
 
 	if (!tex)
+	{
+		if (modified)
+		{
+			for (const auto &[id, func] : _modifyCallback)
+				func();
+		}
+
 		return true;
+	}
 
 	ImGui::Separator();
 
@@ -533,6 +569,8 @@ bool FontAtlas::RenderUI(const Content *content)
 
 			_glyphs[(UINT)code] = glyph;
 			_uiSelectedGlyphID = (UINT)code;
+
+			modified = true;
 			ImGui::CloseCurrentPopup();
 		}
 
@@ -574,6 +612,8 @@ bool FontAtlas::RenderUI(const Content *content)
 		if (ImGui::Button("Create"))
 		{
 			_glyphs.clear();
+			modified = true;
+
 			ImGui::OpenPopup("DefineTilesPopup");
 			offset = { 0, 0 };
 		}
@@ -628,6 +668,8 @@ bool FontAtlas::RenderUI(const Content *content)
 				glyph.advance = spacing;
 
 				_glyphs[(UINT)c] = glyph;
+				modified = true;
+
 				advance = true;
 			}
 			ImGui::EndDisabled();
@@ -679,7 +721,10 @@ bool FontAtlas::RenderUI(const Content *content)
 
 	ImGui::SameLine();
 	if (ImGui::Button("Clear Glyphs"))
+	{
 		_glyphs.clear();
+		modified = true;
+	}
 
 	if (ImGui::TreeNode(std::format("Texture '{}'", texName).c_str()))
 	{
@@ -843,13 +888,17 @@ bool FontAtlas::RenderUI(const Content *content)
 						pixRect.z / (float)texSize.x,
 						pixRect.w / (float)texSize.y
 					};
+
+					modified = true;
 				}
 				ImGuiUtils::LockMouseOnActive();
 
-				ImGui::DragFloat2("Offset", &glyph.offset.x, 0.1f);
+				if (ImGui::DragFloat2("Offset", &glyph.offset.x, 0.1f))
+					modified = true;
 				ImGuiUtils::LockMouseOnActive();
 
-				ImGui::DragFloat("Advance", &glyph.advance, 0.1f);
+				if (ImGui::DragFloat("Advance", &glyph.advance, 0.1f))
+					modified = true;
 				ImGuiUtils::LockMouseOnActive();
 
 				if (isChanged && inputCodepoint != -1)
@@ -858,6 +907,7 @@ bool FontAtlas::RenderUI(const Content *content)
 					_glyphs[inputCodepoint] = glyph;
 					_uiSelectedGlyphID = inputCodepoint;
 					_glyphs.erase(it);
+					modified = true;
 				}
 			}
 			else
@@ -881,6 +931,7 @@ bool FontAtlas::RenderUI(const Content *content)
 		ImGui::Text("Fallback Glyph:"); ImGui::SameLine();
 		if (ImGui::InputInt("##FallbackGlyph", &fallbackGlyphID))
 		{
+			modified = true;
 			_fallbackGlyphID = (UINT)fallbackGlyphID;
 
 			if (_glyphs.find(_fallbackGlyphID) == _glyphs.end())
@@ -888,10 +939,14 @@ bool FontAtlas::RenderUI(const Content *content)
 		}
 
 		ImGui::Text("Line Height:"); ImGui::SameLine();
-		ImGui::DragFloat("##LineHeight", &_lineHeight, 0.1f, 0.0f);
+		if (ImGui::DragFloat("##LineHeight", &_lineHeight, 0.1f, 0.0f))
+			modified = true;
+		ImGuiUtils::LockMouseOnActive();
 
 		ImGui::Text("Spacing:"); ImGui::SameLine();
-		ImGui::DragFloat("##Spacing", &_spacing, 0.1f, 0.0f);
+		if (ImGui::DragFloat("##Spacing", &_spacing, 0.1f, 0.0f))
+			modified = true;
+		ImGuiUtils::LockMouseOnActive();
 
 		ImGui::TreePop();
 	}
@@ -969,13 +1024,10 @@ bool FontAtlas::RenderUI(const Content *content)
 		ImGui::Dummy(textSize + ImVec2(4, 4));
 		textSize = { 64, 16 };
 
-		for (size_t i = 0; i < textMesh.size(); i += 6)
+		for (size_t i = 0; i + 5 < textMesh.size(); i += 6)
 		{
-			if (i + 5 >= textMesh.size())
-				break;
-
-			GlyphVertex &vMin = textMesh[i + 0];
-			GlyphVertex &vMax = textMesh[i + 5];
+			GlyphVertex &vMin = textMesh[i + 1];
+			GlyphVertex &vMax = textMesh[i + 2];
 
 			ImVec2 posMin = { 
 				startPos.x + vMin.position.x * sizeScale, 
@@ -994,6 +1046,8 @@ bool FontAtlas::RenderUI(const Content *content)
 				posMin, posMax, uvMin, uvMax
 			);
 
+			textSize.x = max(textSize.x, (posMin.x - startPos.x));
+			textSize.y = max(textSize.y, (posMin.y - startPos.y));
 			textSize.x = max(textSize.x, (posMax.x - startPos.x));
 			textSize.y = max(textSize.y, (posMax.y - startPos.y));
 		}
@@ -1003,6 +1057,12 @@ bool FontAtlas::RenderUI(const Content *content)
 		ImGui::Text("Generated Vertices: %zu", textMesh.size());
 
 		ImGui::TreePop();
+	}
+
+	if (modified)
+	{
+		for (const auto &[id, func] : _modifyCallback)
+			func();
 	}
 
 	return true;

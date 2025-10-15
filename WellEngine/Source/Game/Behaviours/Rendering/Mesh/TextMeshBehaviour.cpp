@@ -12,6 +12,16 @@ TextMeshBehaviour::~TextMeshBehaviour()
 	if (_meshID != CONTENT_NULL)
 		GetUnusedMeshIDs().push_back(_meshID);
 
+	// Stop listening for changes to the atlas.
+	if (_fontAtlasID != CONTENT_NULL)
+	{
+		Content *content = GetScene()->GetContent();
+		FontAtlas *oldAtlas = content->GetFontAtlas(_fontAtlasID);
+
+		if (oldAtlas)
+			oldAtlas->RemoveListener((size_t)this);
+	}
+
 	if (!GetScene()->IsDestroyed() && !GetEntity()->IsRemoved())
 	{
 		if (_meshBehaviour.IsValid())
@@ -42,11 +52,13 @@ bool TextMeshBehaviour::Start()
 		GetUnusedMeshIDs().pop_back();
 	}
 
+	Content *content = scene->GetContent();
+
 	// Create a mesh behaviour as a child entity
 	Material mat = {};
-	mat.textureID = scene->GetContent()->GetTextureID("White");
-	mat.vsID = scene->GetContent()->GetShaderID("VS_TextDefault");
-	mat.psID = scene->GetContent()->GetShaderID("PS_TextDefault");
+	mat.textureID = content->GetTextureID("White");
+	mat.vsID = content->GetShaderID("VS_TextDefault");
+	mat.psID = content->GetShaderID("PS_TextDefault");
 
 	Entity *entity;
 	if (!scene->CreateMeshEntity(&entity, "Text Mesh", _meshID, mat, false, false, false))
@@ -169,20 +181,59 @@ bool TextMeshBehaviour::Serialize(json::Document::AllocatorType &docAlloc, json:
 	obj.AddMember("Atlas", SerializerUtils::SerializeString(fontAtlasName, docAlloc), docAlloc);
 	obj.AddMember("Text", SerializerUtils::SerializeString(_text, docAlloc), docAlloc);
 
+	if (MeshBehaviour *mesh; _meshBehaviour.TryGet(mesh))
+	{
+		obj.AddMember("Color", SerializerUtils::SerializeVec(mesh->GetColor(), docAlloc), docAlloc);
+		obj.AddMember("Thickness", mesh->GetAlphaCutoff(), docAlloc);
+	}
+
 	return true;
 }
 bool TextMeshBehaviour::Deserialize(const json::Value &obj, Scene *scene)
 {
 	if (obj.HasMember("Atlas"))
-		_fontAtlasID = scene->GetContent()->GetFontAtlasID(obj["Atlas"].GetString());
+	{
+		Content *content = scene->GetContent();
+		UINT id = content->GetFontAtlasID(obj["Atlas"].GetString());
+
+		// Stop listening for changes to the old atlas.
+		if (_fontAtlasID != CONTENT_NULL)
+		{
+			FontAtlas *oldAtlas = content->GetFontAtlas(_fontAtlasID);
+			if (oldAtlas)
+				oldAtlas->RemoveListener((size_t)this);
+		}
+
+		// Start listening for changes to the new atlas.
+		if (id != CONTENT_NULL)
+		{
+			FontAtlas *newAtlas = content->GetFontAtlas(id);
+			if (newAtlas)
+				newAtlas->AddListener((size_t)this, std::bind(&TextMeshBehaviour::RecreateMesh, this));
+		}
+
+		_fontAtlasID = id;
+	}
 
 	if (obj.HasMember("Text"))
-		_text = obj["Text"].GetString();
+		SetText(obj["Text"].GetString(), true);
+
+	if (obj.HasMember("Color"))
+		SerializerUtils::DeserializeVec(_color, obj["Color"]);
+
+	if (obj.HasMember("Thickness"))
+		_thickness = obj["Thickness"].GetFloat();
 
 	return true;
 }
 void TextMeshBehaviour::PostDeserialize()
 {
+	if (_meshBehaviour.IsValid())
+	{
+		_meshBehaviour.Get()->SetAlphaCutoff(_thickness);
+		_meshBehaviour.Get()->SetColor(_color);
+	}
+
 	RecreateMesh();
 }
 
@@ -252,22 +303,45 @@ const std::string &TextMeshBehaviour::GetText() const
 {
 	return _text;
 }
-void TextMeshBehaviour::SetText(std::string_view text)
+void TextMeshBehaviour::SetText(std::string_view text, bool skipRebuild)
 {
 	_text = text;
 
-	RecreateMesh();
+	if (!skipRebuild)
+		RecreateMesh();
 }
 
 UINT TextMeshBehaviour::GetFontAtlasID() const
 {
 	return _fontAtlasID;
 }
-void TextMeshBehaviour::SetFontAtlasID(UINT id)
+void TextMeshBehaviour::SetFontAtlasID(UINT id, bool skipRebuild)
 {
+	if (_fontAtlasID != CONTENT_NULL || id != CONTENT_NULL)
+	{
+		Content *content = GetScene()->GetContent();
+
+		// Stop listening for changes to the old atlas.
+		if (_fontAtlasID != CONTENT_NULL)
+		{
+			FontAtlas *oldAtlas = content->GetFontAtlas(_fontAtlasID);
+			if (oldAtlas)
+				oldAtlas->RemoveListener((size_t)this);
+		}
+
+		// Start listening for changes to the new atlas.
+		if (id != CONTENT_NULL)
+		{
+			FontAtlas *newAtlas = content->GetFontAtlas(id);
+			if (newAtlas)
+				newAtlas->AddListener((size_t)this, std::bind(&TextMeshBehaviour::RecreateMesh, this));
+		}
+	}
+
 	_fontAtlasID = id;
 
-	RecreateMesh();
+	if (!skipRebuild)
+		RecreateMesh();
 }
 
 UINT TextMeshBehaviour::GetMeshID() const

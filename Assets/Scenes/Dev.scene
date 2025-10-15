@@ -189,7 +189,7 @@
             ],
             "Rot": [
                 -0.0,
-                2.6435816287994385,
+                2.0343637466430664,
                 -0.0
             ],
             "Scale": [
@@ -211,7 +211,7 @@
             "Rot": [
                 -0.0,
                 0.0,
-                -0.0
+                0.0
             ],
             "Scale": [
                 0.019999999552965164,
@@ -227,14 +227,61 @@
                     "Name": "TextMeshBehaviour",
                     "Attributes": {
                         "Atlas": "DefaultFont",
-                        "Text": "Hi. Hello.\nThis is text.\nWritten by Me! HaHaHa!!!\n1234567890#\n"
+                        "Text": "Hi. Hello.\nThis is text.\nWritten by Me!\n1234567890#\n",
+                        "Color": [
+                            0.0,
+                            0.15042279660701752,
+                            0.3093922734260559,
+                            1.0
+                        ],
+                        "Thickness": 0.16899999976158142
+                    }
+                }
+            ]
+        },
+        {
+            "Name": "Text Entity",
+            "ID": 8,
+            "Enabled": true,
+            "Pos": [
+                0.0,
+                7.150919437408447,
+                0.0
+            ],
+            "Rot": [
+                -0.0,
+                0.0,
+                0.0
+            ],
+            "Scale": [
+                0.019999999552965164,
+                0.019999999552965164,
+                0.019999999552965164
+            ],
+            "Static": false,
+            "Select": true,
+            "InTree": true,
+            "Hidden": false,
+            "Beh": [
+                {
+                    "Name": "TextMeshBehaviour",
+                    "Attributes": {
+                        "Atlas": "DefaultFont",
+                        "Text": "Hell\n         o",
+                        "Color": [
+                            1.0,
+                            1.0,
+                            1.0,
+                            1.0
+                        ],
+                        "Thickness": 0.5
                     }
                 }
             ]
         },
         {
             "Name": "Camera",
-            "ID": 8,
+            "ID": 10,
             "Enabled": true,
             "Pos": [
                 7.0,
@@ -255,7 +302,7 @@
         },
         {
             "Name": "Collision Testing",
-            "ID": 11,
+            "ID": 13,
             "Enabled": false,
             "Pos": [
                 0.0,
@@ -280,7 +327,7 @@
             "Child": [
                 {
                     "Name": "Maxwell the first",
-                    "ID": 12,
+                    "ID": 14,
                     "Enabled": true,
                     "Pos": [
                         -7.0,
@@ -369,7 +416,7 @@
                     "Child": [
                         {
                             "Name": "Whiskers",
-                            "ID": 13,
+                            "ID": 15,
                             "Enabled": true,
                             "Pos": [
                                 0.0,
@@ -422,7 +469,7 @@
                 },
                 {
                     "Name": "Maxwell the second",
-                    "ID": 14,
+                    "ID": 16,
                     "Enabled": true,
                     "Pos": [
                         -7.0,
@@ -541,7 +588,7 @@
                     "Child": [
                         {
                             "Name": "Whiskers",
-                            "ID": 15,
+                            "ID": 17,
                             "Enabled": true,
                             "Pos": [
                                 0.0,
@@ -594,7 +641,7 @@
                 },
                 {
                     "Name": "Maxwell the third",
-                    "ID": 16,
+                    "ID": 18,
                     "Enabled": true,
                     "Pos": [
                         -8.5,
@@ -671,7 +718,7 @@
                     "Child": [
                         {
                             "Name": "Whiskers",
-                            "ID": 17,
+                            "ID": 19,
                             "Enabled": true,
                             "Pos": [
                                 0.0,
@@ -724,7 +771,7 @@
                 },
                 {
                     "Name": "Maxwell the fourth",
-                    "ID": 18,
+                    "ID": 20,
                     "Enabled": true,
                     "Pos": [
                         -5.0,
@@ -811,7 +858,7 @@
                     "Child": [
                         {
                             "Name": "Whiskers",
-                            "ID": 19,
+                            "ID": 21,
                             "Enabled": true,
                             "Pos": [
                                 0.0,
@@ -864,7 +911,7 @@
                 },
                 {
                     "Name": "Terrain",
-                    "ID": 20,
+                    "ID": 22,
                     "Enabled": true,
                     "Pos": [
                         -5.0,
@@ -956,7 +1003,7 @@
                 },
                 {
                     "Name": "Slope 10",
-                    "ID": 21,
+                    "ID": 23,
                     "Enabled": true,
                     "Pos": [
                         -12.75,
@@ -1071,7 +1118,7 @@
                 },
                 {
                     "Name": "Slope 20",
-                    "ID": 22,
+                    "ID": 24,
                     "Enabled": true,
                     "Pos": [
                         -12.75,
@@ -1186,7 +1233,7 @@
                 },
                 {
                     "Name": "Slope 30",
-                    "ID": 23,
+                    "ID": 25,
                     "Enabled": true,
                     "Pos": [
                         -12.75,
@@ -1301,7 +1348,7 @@
                 },
                 {
                     "Name": "Slope 40",
-                    "ID": 24,
+                    "ID": 26,
                     "Enabled": true,
                     "Pos": [
                         -12.75,
@@ -1416,7 +1463,7 @@
                 },
                 {
                     "Name": "Slope 50",
-                    "ID": 25,
+                    "ID": 27,
                     "Enabled": true,
                     "Pos": [
                         -12.75,
@@ -1531,7 +1578,7 @@
                 },
                 {
                     "Name": "Slope 60",
-                    "ID": 26,
+                    "ID": 28,
                     "Enabled": true,
                     "Pos": [
                         -12.75,
@@ -1648,7 +1695,7 @@
         },
         {
             "Name": "Point",
-            "ID": 27,
+            "ID": 29,
             "Enabled": true,
             "Pos": [
                 -3.8684403896331787,
@@ -1689,7 +1736,7 @@
         },
         {
             "Name": "Light Entity",
-            "ID": 29,
+            "ID": 31,
             "Enabled": true,
             "Pos": [
                 -1.3002991676330566,
@@ -1734,7 +1781,7 @@
         },
         {
             "Name": "Node",
-            "ID": 31,
+            "ID": 33,
             "Enabled": true,
             "Pos": [
                 0.0,
@@ -1766,7 +1813,7 @@
         },
         {
             "Name": "Sun Light",
-            "ID": 32,
+            "ID": 34,
             "Enabled": true,
             "Pos": [
                 37.876991271972656,
@@ -1804,7 +1851,7 @@
         },
         {
             "Name": "Mesh Entity",
-            "ID": 34,
+            "ID": 36,
             "Enabled": true,
             "Pos": [
                 0.0,
@@ -1855,7 +1902,7 @@
         },
         {
             "Name": "Sniper",
-            "ID": 35,
+            "ID": 37,
             "Enabled": true,
             "Pos": [
                 0.0,
@@ -1876,7 +1923,7 @@
         },
         {
             "Name": "Sniper Raw Tex",
-            "ID": 40,
+            "ID": 42,
             "Enabled": false,
             "Pos": [
                 0.0,
@@ -1901,7 +1948,7 @@
             "Child": [
                 {
                     "Name": "Body",
-                    "ID": 41,
+                    "ID": 43,
                     "Enabled": true,
                     "Pos": [
                         0.0,
@@ -1977,7 +2024,7 @@
                 },
                 {
                     "Name": "Bolt",
-                    "ID": 42,
+                    "ID": 44,
                     "Enabled": true,
                     "Pos": [
                         0.0,
@@ -2053,7 +2100,7 @@
                 },
                 {
                     "Name": "Trigger",
-                    "ID": 43,
+                    "ID": 45,
                     "Enabled": true,
                     "Pos": [
                         0.0,
@@ -2129,7 +2176,7 @@
                 },
                 {
                     "Name": "Magazine",
-                    "ID": 44,
+                    "ID": 46,
                     "Enabled": true,
                     "Pos": [
                         0.0,
@@ -2207,7 +2254,7 @@
         },
         {
             "Name": "Sniper Error",
-            "ID": 45,
+            "ID": 47,
             "Enabled": false,
             "Pos": [
                 0.0,
@@ -2232,7 +2279,7 @@
             "Child": [
                 {
                     "Name": "Body",
-                    "ID": 46,
+                    "ID": 48,
                     "Enabled": true,
                     "Pos": [
                         0.0,
@@ -2304,7 +2351,7 @@
                 },
                 {
                     "Name": "Bolt",
-                    "ID": 47,
+                    "ID": 49,
                     "Enabled": true,
                     "Pos": [
                         0.0,
@@ -2376,7 +2423,7 @@
                 },
                 {
                     "Name": "Trigger",
-                    "ID": 48,
+                    "ID": 50,
                     "Enabled": true,
                     "Pos": [
                         0.0,
@@ -2448,7 +2495,7 @@
                 },
                 {
                     "Name": "Magazine",
-                    "ID": 49,
+                    "ID": 51,
                     "Enabled": true,
                     "Pos": [
                         0.0,
@@ -2522,7 +2569,7 @@
         },
         {
             "Name": "Sponza",
-            "ID": 50,
+            "ID": 52,
             "Enabled": true,
             "Pos": [
                 -65.413818359375,
