@@ -41,6 +41,7 @@ bool MeshD3D11::Initialize(ID3D11Device *device, MeshData **meshData)
 		return false;
 	}
 
+	_subMeshes.clear();
 	const size_t subMeshCount = _meshData->subMeshInfo.size();
 	for (size_t i = 0; i < subMeshCount; i++)
 	{

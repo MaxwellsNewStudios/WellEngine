@@ -105,6 +105,66 @@ std::vector<GlyphVertex> FontAtlas::Generate(std::string_view text) const
 	return Generate(wText);
 }
 
+MeshData *FontAtlas::ToMesh(const std::vector<GlyphVertex> &verts, bool flip) const
+{
+	MeshData *meshData = new MeshData();
+
+	meshData->vertexInfo.nrOfVerticesInBuffer = (UINT)verts.size();
+	meshData->vertexInfo.sizeOfVertex = sizeof(GlyphVertex);
+	meshData->vertexInfo.vertexData = new float[meshData->vertexInfo.sizeOfVertex * meshData->vertexInfo.nrOfVerticesInBuffer];
+	memcpy(meshData->vertexInfo.vertexData, verts.data(), (size_t)meshData->vertexInfo.sizeOfVertex * meshData->vertexInfo.nrOfVerticesInBuffer);
+	
+	// Flip Y position
+	if (flip)
+	{
+		for (size_t i = 0; i < meshData->vertexInfo.nrOfVerticesInBuffer; i++)
+		{
+			GlyphVertex *vert = (GlyphVertex *)&meshData->vertexInfo.vertexData[i * sizeof(GlyphVertex) / sizeof(float)];
+			vert->position.y *= -1.0f;
+		}
+	}
+
+	meshData->indexInfo.nrOfIndicesInBuffer = (UINT)verts.size();
+	meshData->indexInfo.indexData = new UINT[meshData->indexInfo.nrOfIndicesInBuffer];
+	for (UINT i = 0; i < meshData->indexInfo.nrOfIndicesInBuffer; i++)
+		meshData->indexInfo.indexData[i] = i;
+
+	// Flip triangle order
+	if (flip)
+	{
+		for (UINT i = 0; i + 2 < meshData->indexInfo.nrOfIndicesInBuffer; i += 3)
+		{
+			UINT *indices = &meshData->indexInfo.indexData[i];
+			std::swap(indices[0], indices[2]);
+		}
+	}
+
+	// Single sub-mesh
+	meshData->subMeshInfo.push_back(MeshData::SubMeshInfo());
+	meshData->subMeshInfo[0].startIndexValue = 0;
+	meshData->subMeshInfo[0].nrOfIndicesInSubMesh = meshData->indexInfo.nrOfIndicesInBuffer;
+
+	dx::XMFLOAT3 minBounds(FLT_MAX, FLT_MAX, FLT_MAX);
+	dx::XMFLOAT3 maxBounds(-FLT_MAX, -FLT_MAX, -FLT_MAX);
+
+	for (const GlyphVertex &v : verts)
+	{
+		minBounds.x = min(minBounds.x, v.position.x);
+		minBounds.y = min(minBounds.y, v.position.y);
+		minBounds.z = min(minBounds.z, v.position.z);
+		maxBounds.x = max(maxBounds.x, v.position.x);
+		maxBounds.y = max(maxBounds.y, v.position.y);
+		maxBounds.z = max(maxBounds.z, v.position.z);
+	}
+
+	meshData->boundingBox.Center = { (minBounds.x + maxBounds.x) / 2.0f, (minBounds.y + maxBounds.y) / 2.0f, (minBounds.z + maxBounds.z) / 2.0f };
+	meshData->boundingBox.Extents = { (maxBounds.x - minBounds.x) / 2.0f, (maxBounds.y - minBounds.y) / 2.0f, (maxBounds.z - minBounds.z) / 2.0f };
+
+	meshData->boundingBox.Extents.z += 1.0f;
+
+	return meshData;
+}
+
 bool FontAtlas::Serialize(std::string_view fileName, const Content *content) const
 {
 	// Create JSON document

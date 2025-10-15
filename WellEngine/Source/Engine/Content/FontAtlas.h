@@ -6,6 +6,7 @@
 #include <vector>
 #include <d3d11.h>
 #include "rapidjson/document.h"
+#include "Source/Engine/D3D/MeshD3D11.h"
 
 namespace dx = DirectX;
 namespace json = rapidjson;
@@ -85,6 +86,8 @@ public:
 
 	std::vector<GlyphVertex> Generate(std::wstring_view text) const;
 	std::vector<GlyphVertex> Generate(std::string_view text) const;
+
+	MeshData *ToMesh(const std::vector<GlyphVertex> &verts, bool flip = true) const;
 
 	[[nodiscard]] bool Serialize(std::string_view fileName, const Content *content) const;
 	[[nodiscard]] bool Deserialize(std::string_view fileName, const Content *content);

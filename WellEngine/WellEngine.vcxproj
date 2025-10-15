@@ -410,6 +410,7 @@
     <ClInclude Include="Source\Game\Behaviour.h" />
     <ClInclude Include="Source\Game\BehaviourFactory.h" />
     <ClInclude Include="Source\Game\BehaviourRegistry.h" />
+    <ClInclude Include="Source\Game\Behaviours\Rendering\Mesh\TextMeshBehaviour.h" />
     <ClInclude Include="Source\Game\Behaviours\Sound\AmbientSoundBehaviour.h" />
     <ClInclude Include="Source\Game\Behaviours\Rendering\Mesh\BillboardMeshBehaviour.h" />
     <ClInclude Include="Source\Game\Behaviours\Interaction\BreadcrumbBehaviour.h" />
@@ -601,6 +602,7 @@
     <ClCompile Include="Source\Game\Behaviour.cpp" />
     <ClCompile Include="Source\Game\BehaviourFactory.cpp" />
     <ClCompile Include="Source\Game\BehaviourRegistry.cpp" />
+    <ClCompile Include="Source\Game\Behaviours\Rendering\Mesh\TextMeshBehaviour.cpp" />
     <ClCompile Include="Source\Game\Behaviours\Sound\AmbientSoundBehaviour.cpp" />
     <ClCompile Include="Source\Game\Behaviours\Rendering\Mesh\BillboardMeshBehaviour.cpp" />
     <ClCompile Include="Source\Game\Behaviours\Interaction\BreadcrumbBehaviour.cpp" />
@@ -1164,6 +1166,11 @@
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
     </FxCompile>
+    <FxCompile Include="Source\Shaders\PS_TextDefault.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+    </FxCompile>
     <FxCompile Include="Source\Shaders\PS_Transparent.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">Pixel</ShaderType>
@@ -1295,6 +1302,11 @@
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
+    </FxCompile>
+    <FxCompile Include="Source\Shaders\VS_TextDefault.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
     </FxCompile>
   </ItemGroup>
   <ItemGroup>

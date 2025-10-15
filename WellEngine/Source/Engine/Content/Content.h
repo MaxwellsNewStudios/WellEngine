@@ -262,6 +262,7 @@ public:
 
 	UINT AddMesh(ID3D11Device *device, const std::string &name, MeshData **meshData);
 	UINT AddMesh(ID3D11Device *device, const std::string &name, const char *path);
+	UINT AddMesh(ID3D11Device *device, const std::string &name);
 
 	void GetMeshNames(std::vector<std::string> *names) const;
 	[[nodiscard]] UINT GetMeshCount() const;

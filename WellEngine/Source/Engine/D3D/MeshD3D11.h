@@ -125,7 +125,6 @@ struct MeshData
 	std::string mtlFile = "";
 	dx::BoundingOrientedBox boundingBox = {};
 
-
 	void Compile(std::vector<char> &data) const
 	{
 		vertexInfo.Compile(data);
@@ -161,7 +160,6 @@ struct MeshData
 		boundingBox = *(dx::BoundingOrientedBox *)&data[offset];
 		offset += sizeof(dx::BoundingOrientedBox);
 	}
-
 
 	// Merge the vertex and index data of another mesh into this mesh. Does not work for meshes with non-trivial submesh data.
 	void MergeWithMesh(const MeshData *other, const dx::XMFLOAT4X4A *otherToThisSpace);

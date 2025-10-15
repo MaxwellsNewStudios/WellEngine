@@ -348,25 +348,18 @@ bool MeshCollider::Node::RaycastNode(const Shape::Ray &ray, Shape::RayHit &hit) 
 			index2 >= mesh.vertexInfo.nrOfVerticesInBuffer)
 			continue; // Invalid index, skip this triangle.
 
-		const ContentData::FormattedVertex *vertices = reinterpret_cast<ContentData::FormattedVertex *>(mesh.vertexInfo.vertexData);
+		const float *vertices = reinterpret_cast<float *>(mesh.vertexInfo.vertexData);
 
-		const ContentData::FormattedVertex &v0 = vertices[index0];
-		const ContentData::FormattedVertex &v1 = vertices[index1];
-		const ContentData::FormattedVertex &v2 = vertices[index2];
-
+		const float *v0 = &vertices[index0 * mesh.vertexInfo.sizeOfVertex / 4];
+		const float *v1 = &vertices[index1 * mesh.vertexInfo.sizeOfVertex / 4];
+		const float *v2 = &vertices[index2 * mesh.vertexInfo.sizeOfVertex / 4];
+		
+		// Assumes position is always at start of vertex
 		triBuffer.emplace_back(
-			dx::XMFLOAT3(v0.px, v0.py, v0.pz),
-			dx::XMFLOAT3(v1.px, v1.py, v1.pz),
-			dx::XMFLOAT3(v2.px, v2.py, v2.pz)
+			dx::XMFLOAT3(v0[0], v0[1], v0[2]), 
+			dx::XMFLOAT3(v1[0], v1[1], v1[2]),
+			dx::XMFLOAT3(v2[0], v2[1], v2[2])
 		);
-
-		/*DebugDraw::Tri tri(
-			DebugDraw::Vertex({ v0.px, v0.py, v0.pz }, { v0.nx, v0.ny, v0.nz, 1.0f }),
-			DebugDraw::Vertex({ v1.px, v1.py, v1.pz }, { v1.nx, v1.ny, v1.nz, 1.0f }),
-			DebugDraw::Vertex({ v2.px, v2.py, v2.pz }, { v2.nx, v2.ny, v2.nz, 1.0f })
-		);
-
-		DebugDrawer::Instance().DrawTri(tri, false);*/
 	}
 
 	std::vector<UINT> allTriIndices;

@@ -1060,7 +1060,64 @@ CompiledData Content::GetShaderData(const std::string &name, const char *path, S
 	return data;
 }
 
+UINT Content::AddMesh(ID3D11Device *device, const std::string &name)
+{
+	ZoneScopedC(RandomUniqueColor());
+	ZoneText(name.c_str(), name.size());
 
+	if (name.empty() || name == "_" || name == "Uninitialized")
+	{
+		ErrMsgF("The name '{}' is reserved!", name);
+		return CONTENT_NULL;
+	}
+
+	MeshData *meshData = new MeshData();
+	meshData->vertexInfo.nrOfVerticesInBuffer = 1;
+	meshData->vertexInfo.sizeOfVertex = sizeof(float) * 5;
+	meshData->vertexInfo.vertexData = new float[5];
+	meshData->indexInfo.nrOfIndicesInBuffer = 3;
+	meshData->indexInfo.indexData = new UINT[3];
+	meshData->subMeshInfo.push_back(MeshData::SubMeshInfo());
+
+	UINT id = CONTENT_NULL;
+
+#pragma warning(disable: 6993)
+#pragma omp critical
+	{
+		bool duplicateName = false;
+		id = (UINT)_meshes.size();
+		for (UINT i = 0; i < id; i++)
+		{
+			if (_meshes[i]->name != name)
+				continue;
+
+			duplicateName = true;
+			id = i;
+			delete meshData;
+			break;
+		}
+
+		if (!duplicateName)
+		{
+			Mesh *addedMesh = new Mesh(name, id);
+			if (!addedMesh->data.Initialize(device, &meshData))
+			{
+				delete meshData;
+				delete addedMesh;
+				id = CONTENT_NULL;
+				ErrMsg("Failed to initialize added mesh!");
+			}
+			else
+			{
+				_meshes.emplace_back(addedMesh);
+			}
+		}
+	}
+#pragma warning(default: 6993)
+
+	meshData = nullptr;
+	return id;
+}
 UINT Content::AddMesh(ID3D11Device *device, const std::string &name, MeshData **meshData)
 {
 	ZoneScopedC(RandomUniqueColor());

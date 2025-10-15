@@ -759,6 +759,7 @@ bool Game::Setup(TimeUtils &time, Window window)
 	std::vector<ShaderData> shaderNames = {
 		{ ShaderType::VERTEX_SHADER,		"VS_Geometry",					"VS_Geometry"					},
 		{ ShaderType::VERTEX_SHADER,		"VS_GeometryDistortion",		"VS_GeometryDistortion"			},
+		{ ShaderType::VERTEX_SHADER,		"VS_TextDefault",				"VS_TextDefault"				},
 		{ ShaderType::VERTEX_SHADER,		"VS_Depth",						"VS_Depth"						},
 		{ ShaderType::VERTEX_SHADER,		"VS_DepthDistortion",			"VS_DepthDistortion"			},
 		{ ShaderType::VERTEX_SHADER,		"VS_DepthCubemap",				"VS_DepthCubemap"				},
@@ -774,6 +775,7 @@ bool Game::Setup(TimeUtils &time, Window window)
 		{ ShaderType::PIXEL_SHADER,			"PS_ReflectionProbe",			"PS_ReflectionProbe"			},
 		{ ShaderType::PIXEL_SHADER,			"PS_Static",					"PS_Static"						},
 		{ ShaderType::PIXEL_SHADER,			"PS_Transparent",				"PS_Transparent"				},
+		{ ShaderType::PIXEL_SHADER,			"PS_TextDefault",				"PS_TextDefault"				},
 		{ ShaderType::PIXEL_SHADER,			"PS_DepthCubemap",				"PS_DepthCubemap"				},
 		{ ShaderType::PIXEL_SHADER,			"PS_SkyboxDefault",				"PS_SkyboxDefault"				},
 		{ ShaderType::PIXEL_SHADER,			"PS_SkyboxNormal",				"PS_SkyboxNormal"				},
