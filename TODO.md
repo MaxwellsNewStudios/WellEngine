@@ -15,7 +15,6 @@
    - Only allow linking same-format meshes & shaders.
 
 ### Planned:
- - Text rendering.
  - Occlusion culling. Ex: Room culling.
  - Give cameras their own render texture that they render to.
  - Skeletal meshes & animations.
