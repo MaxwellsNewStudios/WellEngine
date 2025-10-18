@@ -211,7 +211,7 @@
             "Rot": [
                 -0.0,
                 1.2973934412002563,
-                -0.0
+                0.0
             ],
             "Scale": [
                 0.020000070333480835,
@@ -227,7 +227,7 @@
                     "Name": "TextMeshBehaviour",
                     "Attributes": {
                         "Atlas": "DefaultFont",
-                        "Text": "The quick brown fox jumps over the lazy dog.\n0123456789\n!?@#$%^&*()_+-=[]{}|;':\",./<>\n\nAaBbCcDdEeFfGgHMmNnOoPpQqRrSsTtUWwXxYyZz?\nAaB b fGgHhI iqRrSsTtUu VvWwXxYyZz!\nA aBbCc  DdEeF fl M mNn  OTtUu VvWw   XxYy Zz.",
+                        "Text": "The quick brown fox jumps over the lazy dog.\n0123456789\n!?@#$%^&*()_+-=[]{}|;':\",./<>\n\nAaBbCcDdEeFfGgHMmNnOoPpQqRrSsTtUWwXxYyZz?\nAaB b fGgHhI iqRrSsTtUu VvWwXxYyZz!\nA aBbCc  DdEeF fl M mNn  OTtUu VvWw   XxYy Zz.\nÅå Ää Öö",
                         "Color": [
                             0.0,
                             0.0,
@@ -251,7 +251,7 @@
             "Rot": [
                 -0.0,
                 0.0,
-                -0.0
+                0.0
             ],
             "Scale": [
                 0.03999999910593033,

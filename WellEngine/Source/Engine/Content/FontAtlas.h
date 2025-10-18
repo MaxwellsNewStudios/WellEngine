@@ -87,6 +87,9 @@ public:
 	const GlyphData *GetGlyph(UINT codepoint) const;
 	UINT GetFontTextureID() const { return _fontTextureID; }
 
+	dx::XMFLOAT2 CalcTextSize(std::wstring_view text) const;
+	dx::XMFLOAT2 CalcTextSize(std::string_view text) const;
+
 	std::vector<GlyphVertex> Generate(std::wstring_view text) const;
 	std::vector<GlyphVertex> Generate(std::string_view text) const;
 

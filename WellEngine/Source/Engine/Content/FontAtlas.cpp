@@ -47,6 +47,9 @@ void FontAtlas::AppendGlyph(UINT codepoint, std::vector<GlyphVertex> &vertices, 
 
 const GlyphData *FontAtlas::GetGlyph(UINT codepoint) const
 {
+	if (_glyphs.empty())
+		return nullptr;
+
 	auto it = _glyphs.find(codepoint);
 	if (it != _glyphs.end())
 		return &it->second;
@@ -58,7 +61,52 @@ const GlyphData *FontAtlas::GetGlyph(UINT codepoint) const
 			return &fallbackIt->second;
 	}
 
-	return nullptr;
+	return &_glyphs.begin()->second;
+}
+
+dx::XMFLOAT2 FontAtlas::CalcTextSize(std::wstring_view text) const
+{
+	dx::XMFLOAT2 size{ 0.0f, 0.0f };
+	dx::XMFLOAT2 cursor{ 0.0f, 0.0f };
+	
+	for (wchar_t codepoint : text)
+	{
+		switch (codepoint)
+		{
+		case L'\0':
+			return size;
+
+		case L'\n':
+			cursor = { 0.0f, cursor.y + _lineHeight };
+			break;
+
+		case L'\r':
+			break;
+
+		case L'\t':
+			// Snap to next 4-space tab stop
+			cursor.x = std::ceil((cursor.x + 1.0f) / (_spacing * 4.0f)) * (_spacing * 4.0f);
+			break;
+
+		case L' ':
+			cursor.x += _spacing;
+			break;
+
+		default:
+			auto glyph = GetGlyph((UINT)codepoint);
+			size.x = max(size.x, cursor.x + glyph->size.x - glyph->offset.x);
+			size.y = max(size.y, cursor.y + glyph->size.y - glyph->offset.y);
+			cursor.x += glyph->advance;
+			break;
+		}
+	}
+
+	return size;
+}
+dx::XMFLOAT2 FontAtlas::CalcTextSize(std::string_view text) const
+{
+	std::wstring wideText = StringUtils::NarrowToWide(text);
+	return CalcTextSize(wideText);
 }
 
 std::vector<GlyphVertex> FontAtlas::Generate(std::wstring_view text) const
@@ -66,33 +114,31 @@ std::vector<GlyphVertex> FontAtlas::Generate(std::wstring_view text) const
 	std::vector<GlyphVertex> vertices;
 	dx::XMFLOAT2 cursor{ 0.0f, 0.0f };
 
-	for (wchar_t c : text)
+	for (wchar_t codepoint : text)
 	{
-		UINT codepoint = static_cast<UINT>(c);
-
 		switch (codepoint)
 		{
-		case '\0':
+		case L'\0':
 			return vertices;
 
-		case '\n':
+		case L'\n':
 			cursor = { 0.0f, cursor.y + _lineHeight };
 			break;
 
-		case '\r':
+		case L'\r':
 			break;
 
-		case '\t':
+		case L'\t':
 			// Snap to next 4-space tab stop
 			cursor.x = std::ceil((cursor.x + 1.0f) / (_spacing * 4.0f)) * (_spacing * 4.0f);
 			break;
 
-		case ' ':
+		case L' ':
 			cursor.x += _spacing;
 			break;
 
 		default:
-			AppendGlyph(codepoint, vertices, cursor);
+			AppendGlyph((UINT)codepoint, vertices, cursor);
 			break;
 		}
 	}
@@ -101,8 +147,8 @@ std::vector<GlyphVertex> FontAtlas::Generate(std::wstring_view text) const
 }
 std::vector<GlyphVertex> FontAtlas::Generate(std::string_view text) const
 {
-	std::wstring wText(text.begin(), text.end());
-	return Generate(wText);
+	std::wstring wideText = StringUtils::NarrowToWide(text);
+	return Generate(wideText);
 }
 
 MeshData *FontAtlas::ToMesh(const std::vector<GlyphVertex> &verts) const
@@ -289,22 +335,22 @@ bool FontAtlas::Deserialize(std::string_view fileName, const Content *content)
 				for (json::SizeType i = 0; i < glyphsArr.Size(); i++)
 				{
 					const json::Value &glyphObj = glyphsArr[i];
-					if (glyphObj.IsObject())
+					if (!glyphObj.IsObject())
+						continue;
+
+					UINT codepoint = CONTENT_NULL;
+					if (glyphObj.HasMember("Codepoint"))
+						codepoint = glyphObj["Codepoint"].GetUint();
+
+					GlyphData glyph{};
+					if (!glyph.Deserialize(glyphObj))
 					{
-						UINT codepoint = CONTENT_NULL;
-						if (glyphObj.HasMember("Codepoint"))
-							codepoint = glyphObj["Codepoint"].GetUint();
-
-						GlyphData glyph{};
-						if (!glyph.Deserialize(glyphObj))
-						{
-							ErrMsg("Could not deserialize glyph!");
-							return false;
-						}
-
-						if (codepoint != CONTENT_NULL)
-							_glyphs[codepoint] = glyph;
+						ErrMsg("Could not deserialize glyph!");
+						return false;
 					}
+
+					if (codepoint != CONTENT_NULL)
+						_glyphs[codepoint] = glyph;
 				}
 			}
 		}
@@ -488,39 +534,52 @@ bool FontAtlas::RenderUI(const Content *content)
 
 		std::string charStr = "";
 		if (code >= 32)
-			charStr = std::string(1, static_cast<char>(code));
+		{
+			// Convert to UTF-8
+			std::wstring wCharStr = std::wstring(1, (wchar_t)code);
+			charStr = StringUtils::WideToNarrow(wCharStr);
+		}
 		else
+		{
 			charStr = "?";
+		}
 
-		ImGui::Text("Codepoint:");
-		ImGui::SameLine();
+		ImGui::Text("Codepoint:"); ImGui::SameLine();
 		ImGui::InputInt("##InputCodepointInt", &code);
 
-		ImGui::Text("Character:");
-		ImGui::SameLine();
+		ImGui::Text("Character:"); ImGui::SameLine();
 		if (ImGui::InputText("##InputCodepointChar", &charStr, ImGuiInputTextFlags_AutoSelectAll | ImGuiInputTextFlags_AlwaysOverwrite))
 		{
-			char c;
-			if (charStr.length() == 1)
+			// Extract the last character from the string, accounting for multibyte characters
+			UINT c;
+
+			if (charStr.length() > 1)
 			{
-				c = charStr[0];
-			}
-			else if (charStr.length() > 1)
-			{
-				// Use the last character
-				c = charStr.back();
+				// Keep only the last character
+				std::wstring wCharStr = StringUtils::NarrowToWide(charStr);
+				if (wCharStr.length() > 1)
+				{
+					wCharStr = wCharStr.substr(wCharStr.length() - 1, 1);
+					charStr = StringUtils::WideToNarrow(wCharStr);
+				}
+
+				c = (UINT)wCharStr[0];
 			}
 			else
 			{
-				c = '\0';
+				c = (UINT)charStr[0];
 			}
 
-			if (c != '\0')
+			if (c != (UINT)'\0')
 			{
 				if (!charStr.empty())
-					code = static_cast<int>(static_cast<unsigned char>(charStr[0]));
+				{
+					code = (int)c;
+				}
 				else
+				{
 					code = (int)' ';
+				}
 			}
 		}
 
@@ -645,24 +704,35 @@ bool FontAtlas::RenderUI(const Content *content)
 			}
 
 			ImGui::Text("Code:"); ImGui::SameLine();
-			ImGui::InputText("##InputCodepointChar", &inputStr, ImGuiInputTextFlags_AutoSelectAll | ImGuiInputTextFlags_AlwaysOverwrite);
-			
-			if (inputStr.length() > 1)
-				inputStr = std::string(1, inputStr.back());
-
-			char c = '\0';
-			if (inputStr.length() == 1)
+			if (ImGui::InputText("##InputCodepointChar", &inputStr, ImGuiInputTextFlags_AutoSelectAll | ImGuiInputTextFlags_AlwaysOverwrite))
 			{
-				c = inputStr[0];
+				if (inputStr.length() > 1)
+				{
+					// Keep only the last character
+					std::wstring wInputStr = StringUtils::NarrowToWide(inputStr);
+					if (wInputStr.length() > 1)
+					{
+						wInputStr = wInputStr.substr(wInputStr.length() - 1, 1);
+						inputStr = StringUtils::WideToNarrow(wInputStr);
+					}
+				}
 			}
-			else
+
+			UINT c = '\0';
+
+			if (inputStr.length() > 1)
 			{
-				c = '\0';
+				std::wstring wInputStr = StringUtils::NarrowToWide(inputStr);
+				c = (UINT)wInputStr[0];
+			}
+			else if (inputStr.length() == 1)
+			{
+				c = (UINT)inputStr[0];
 			}
 
 			bool advance = false;
-			ImGui::BeginDisabled(c == '\0');
-			if ((ImGui::Button("Next") || Input::Instance().GetKey(KeyCode::Enter, true) == KeyState::Pressed) && c != '\0')
+			ImGui::BeginDisabled(c == (UINT)'\0');
+			if ((ImGui::Button("Next") || Input::Instance().GetKey(KeyCode::Enter, true) == KeyState::Pressed) && c != (UINT)'\0')
 			{
 				GlyphData glyph{};
 
@@ -676,7 +746,7 @@ bool FontAtlas::RenderUI(const Content *content)
 				glyph.offset = { (float)tileOffset.x, (float)tileOffset.y };
 				glyph.advance = spacing;
 
-				_glyphs[(UINT)c] = glyph;
+				_glyphs[c] = glyph;
 				modified = true;
 
 				advance = true;
@@ -909,9 +979,16 @@ bool FontAtlas::RenderUI(const Content *content)
 					// Char
 					ImGui::TableSetColumnIndex(1);
 					if (codepoint >= 32u)
-						ImGui::Text("%c", (wchar_t)codepoint);
+					{
+						// Display as UTF-8
+						std::wstring wCharStr = std::wstring(1, (wchar_t)codepoint);
+						std::string charStr = StringUtils::WideToNarrow(wCharStr);
+						ImGui::Text("%s", charStr.c_str());
+					}
 					else
+					{
 						ImGui::Text("?");
+					}
 
 					// Codepoint
 					ImGui::TableSetColumnIndex(2);
@@ -1065,44 +1142,60 @@ bool FontAtlas::RenderUI(const Content *content)
 			{
 				std::string charStr = "";
 				if (inputCodepoint >= 32u)
-					charStr = std::string(1, (char)inputCodepoint);
+				{
+					// Convert to UTF-8
+					std::wstring wCharStr = std::wstring(1, (wchar_t)inputCodepoint);
+					charStr = StringUtils::WideToNarrow(wCharStr);
+				}
 				else
+				{
 					charStr = "?";
+				}
 
 				ImGui::Text("Codepoint:");
 				ImGui::SameLine();
 				if (ImGui::InputScalar("##InputCodepointInt", ImGuiDataType_U32, &inputCodepoint))
 					isChanged = true;
 
-				ImGui::Text("Character:");
-				ImGui::SameLine();
+				ImGui::Text("Character:"); ImGui::SameLine();
 				if (ImGui::InputText("##InputCodepointChar", &charStr, ImGuiInputTextFlags_AutoSelectAll | ImGuiInputTextFlags_AlwaysOverwrite))
 				{
-					char c;
-					if (charStr.length() == 1)
+					// Extract the last character from the string, accounting for multibyte characters
+					UINT c;
+
+					if (charStr.length() > 1)
 					{
-						c = charStr[0];
-					}
-					else if (charStr.length() > 1)
-					{
-						// Use the last character
-						c = charStr.back();
+						// Keep only the last character
+						std::wstring wCharStr = StringUtils::NarrowToWide(charStr);
+						if (wCharStr.length() > 1)
+						{
+							wCharStr = wCharStr.substr(wCharStr.length() - 1, 1);
+							charStr = StringUtils::WideToNarrow(wCharStr);
+						}
+
+						c = (UINT)wCharStr[0];
 					}
 					else
 					{
-						c = '\0';
+						c = (UINT)charStr[0];
 					}
 
 					// Discard if input character is unchanged
-					if (c == (char)inputCodepoint)
+					if (c == inputCodepoint)
+					{
 						c = '\0';
+					}
 
-					if (c != '\0')
+					if (c != (UINT)'\0')
 					{
 						if (!charStr.empty())
-							inputCodepoint = (UINT)charStr[0];
+						{
+							inputCodepoint = c;
+						}
 						else
+						{
 							inputCodepoint = -1;
+						}
 						isChanged = true;
 					}
 				}
@@ -1193,7 +1286,7 @@ bool FontAtlas::RenderUI(const Content *content)
 
 			if (!multiSelection)
 			{
-				if (isChanged && inputCodepoint != -1)
+				if (isChanged && inputCodepoint != CONTENT_NULL)
 				{
 					// Move the glyph to the new codepoint & update selection
 					_glyphs[inputCodepoint] = firstGlyph;
@@ -1205,7 +1298,6 @@ bool FontAtlas::RenderUI(const Content *content)
 					modified = true;
 				}
 			}
-		
 		}
 
 	SkipInspector:

@@ -10,7 +10,7 @@ std::string StringUtils::HResultToString(HRESULT hr)
 {
     _com_error error(hr);
     const TCHAR *message = error.ErrorMessage();
-    std::string strMessage = StringUtils::WideToNarrow(message);
+    std::string strMessage = StringUtils::WideToNarrow((std::wstring)message);
     return std::string(message ? strMessage : "Unknown HRESULT");
 }
 
@@ -26,6 +26,18 @@ std::wstring StringUtils::NarrowToWide(const std::string &narrow)
     MultiByteToWideChar(CP_UTF8, 0, narrow.c_str(), (int)narrow.length(), &ret[0], (int)ret.length());
     return ret;
 }
+std::wstring StringUtils::NarrowToWide(std::string_view narrow)
+{
+    if (narrow.empty())
+        return { };
+
+    const size_t reqLength = MultiByteToWideChar(CP_UTF8, 0, narrow.data(), (int)narrow.length(), nullptr, 0);
+
+    std::wstring ret(reqLength, L'\0');
+
+    MultiByteToWideChar(CP_UTF8, 0, narrow.data(), (int)narrow.length(), &ret[0], (int)ret.length());
+    return ret;
+}
 
 std::string StringUtils::WideToNarrow(const std::wstring &wide)
 {
@@ -37,6 +49,18 @@ std::string StringUtils::WideToNarrow(const std::wstring &wide)
     std::string ret(reqLength, '\0');
 
     WideCharToMultiByte(CP_UTF8, 0, wide.c_str(), (int)wide.length(), &ret[0], (int)ret.length(), nullptr, nullptr);
+	return ret;
+}
+std::string StringUtils::WideToNarrow(std::wstring_view wide)
+{
+    if (wide.empty())
+        return { };
+
+    const size_t reqLength = WideCharToMultiByte(CP_UTF8, 0, wide.data(), (int)wide.length(), nullptr, 0, nullptr, nullptr);
+
+    std::string ret(reqLength, '\0');
+
+    WideCharToMultiByte(CP_UTF8, 0, wide.data(), (int)wide.length(), &ret[0], (int)ret.length(), nullptr, nullptr);
 	return ret;
 }
 

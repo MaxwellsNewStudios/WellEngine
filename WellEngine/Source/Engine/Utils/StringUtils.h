@@ -6,8 +6,12 @@ namespace StringUtils
 {
 	std::string HResultToString(HRESULT hr);
 
+
 	std::wstring NarrowToWide(const std::string &narrow);
+	std::wstring NarrowToWide(std::string_view narrow);
+
 	std::string WideToNarrow(const std::wstring &wide);
+	std::string WideToNarrow(std::wstring_view wide);
 
 	std::string Trim(const std::string &str, const std::string &trimmed = " \t");
 
