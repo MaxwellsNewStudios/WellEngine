@@ -737,68 +737,212 @@ bool FontAtlas::RenderUI(const Content *content)
 
 	static ImGuiSelectionBasicStorage selection;
 
-	if (ImGui::TreeNode(std::format("Texture '{}'", texName).c_str()))
+	// Multi-select
 	{
-		ImVec2 texSizeImVec = { (float)texSize.x, (float)texSize.y };
-		ImGui::BeginChild("AtlasTexture", texSizeImVec + ImVec2(4, 4));
-
-		ImVec2 screenPos = ImGui::GetCursorScreenPos();
-		ImVec2 texMin = ImGui::GetCursorPos();
-		ImVec2 texMax = { texMin.x + texSizeImVec.x, texMin.y + texSizeImVec.y };
-		ImVec2 windowOffset = screenPos - texMin;
-
-		ImGui::Image(
-			(ImTextureID)tex->GetSRV(), 
-			texSizeImVec
-		);
-
 		ImGuiMultiSelectFlags flags = ImGuiMultiSelectFlags_NoSelectAll | ImGuiMultiSelectFlags_ClearOnClickVoid | ImGuiMultiSelectFlags_ClearOnEscape | ImGuiMultiSelectFlags_BoxSelect2d;
-		ImGuiMultiSelectIO *ms_io = ImGui::BeginMultiSelect(flags, selection.Size, 0);
-		selection.ApplyRequests(ms_io);
 
-		// Draw selectable glyph outlines
-		for (const auto &[codepoint, glyph] : _glyphs)
+		if (ImGui::TreeNode(std::format("Texture '{}'", texName).c_str()))
 		{
-			bool isSelected = selection.Contains((ImGuiID)codepoint);
-			ImGui::SetNextItemSelectionUserData(codepoint);
+			ImGui::SetItemTooltip("Zoom with ctrl + scroll \nPan with right mouse button");
 
-			ImVec2 glyphMin = { 
-				Lerp(texMin.x, texMax.x, glyph.uvRect.x), 
-				Lerp(texMin.y, texMax.y, glyph.uvRect.y) 
-			};
-			ImVec2 glyphMax = {
-				Lerp(texMin.x, texMax.x, glyph.uvRect.z),
-				Lerp(texMin.y, texMax.y, glyph.uvRect.w) 
-			};
-			ImVec2 glyphSize = glyphMax - glyphMin;
+			static float zoom = 1.0f;
+			ImVec2 texSizeImVec = ImVec2(texSize.x, texSize.y) * zoom;
 
-			ImGui::SetCursorPos(glyphMin);
-			ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, { 0, 0 });
-			if (ImGui::Selectable(std::format("##Glyph{}", codepoint).c_str(), isSelected, ImGuiSelectableFlags_AllowOverlap, glyphSize))
-			{
-				_selectedGlyphIDs.push_back(codepoint);
-			}
-			ImGui::PopStyleVar();
+			ImVec2 windowSize = texSizeImVec;
+			windowSize.x = min(windowSize.x, ImGui::GetContentRegionAvail().x - ImGui::GetStyle().ScrollbarSize);
 
-			// Draw outline
-			ImGui::GetWindowDrawList()->AddRect(
-				windowOffset + glyphMin, windowOffset + glyphMax,
-				isSelected ? IM_COL32(255, 255, 0, 255) : IM_COL32(255, 255, 255, 128)
+			ImGuiChildFlags childFlags = ImGuiChildFlags_Borders | ImGuiChildFlags_ResizeX | ImGuiChildFlags_ResizeY;
+			ImGuiWindowFlags windowFlags = ImGuiWindowFlags_None | ImGuiWindowFlags_HorizontalScrollbar;
+
+			ImGui::BeginChild("AtlasTexture", windowSize, childFlags, windowFlags);
+
+			ImVec2 screenPos = ImGui::GetCursorScreenPos();
+			ImVec2 texMin = ImGui::GetCursorPos();
+			ImVec2 texMax = { texMin.x + texSizeImVec.x, texMin.y + texSizeImVec.y };
+			ImVec2 windowOffset = screenPos - texMin;
+
+			ImGui::Image(
+				(ImTextureID)tex->GetSRV(),
+				texSizeImVec
 			);
 
-			if (isSelected)
+			static bool isPanning = false;
+
+			// Zoom + Pan control
+			if (ImGui::IsWindowFocused() && ImGui::IsWindowHovered())
 			{
-				ImGui::SetItemDefaultFocus();
-				if (ImGui::IsWindowAppearing())
+				// Zoom with ctrl + scroll
+				float scrollY = Input::Instance().GetMouse().scroll.y;
+
+				if (scrollY != 0.0f && ImGui::GetKeyData(ImGuiKey_LeftCtrl)->Down)
 				{
-					ImGui::SetScrollHereX();
-					ImGui::SetScrollHereY();
+					zoom *= 1.0f + (scrollY * 0.075f);
+					zoom = std::clamp(zoom, 0.1f, 25.0f);
+
+					// Adjust scroll to keep mouse position stable
+					ImVec2 mousePos = ImGui::GetIO().MousePos;
+					ImVec2 mouseOffset = mousePos - screenPos;
+					ImVec2 offsetRatio = { mouseOffset.x / (texSizeImVec.x), mouseOffset.y / (texSizeImVec.y) };
+					ImVec2 newTexSizeImVec = ImVec2(texSize.x, texSize.y) * zoom;
+					ImVec2 newMouseOffset = { newTexSizeImVec.x * offsetRatio.x, newTexSizeImVec.y * offsetRatio.y };
+					ImVec2 deltaOffset = newMouseOffset - mouseOffset;
+
+					ImGui::SetScrollX(ImGui::GetScrollX() + deltaOffset.x);
+					ImGui::SetScrollY(ImGui::GetScrollY() + deltaOffset.y);
+				}
+			
+				static ImVec2 lastMousePos = {};
+
+				// Pan with right mouse button
+				if (ImGui::GetIO().MouseDown[1])
+				{
+					ImVec2 mousePos = ImGui::GetIO().MousePos;
+
+					if (!isPanning)
+					{
+						isPanning = true;
+					}
+					else
+					{
+						ImVec2 delta = mousePos - lastMousePos;
+						ImGui::SetScrollX(ImGui::GetScrollX() - delta.x);
+						ImGui::SetScrollY(ImGui::GetScrollY() - delta.y);
+					}
+
+					lastMousePos = mousePos;
+				}
+				else
+				{
+					isPanning = false;
 				}
 			}
+			else 
+			{
+				isPanning = false;
+			}
+
+			ImGuiMultiSelectIO *ms_io = ImGui::BeginMultiSelect(flags, selection.Size, 0);
+			selection.ApplyRequests(ms_io);
+
+			// Draw selectable glyph outlines
+			for (const auto &[codepoint, glyph] : _glyphs)
+			{
+				bool isSelected = selection.Contains((ImGuiID)codepoint);
+				ImGui::SetNextItemSelectionUserData(codepoint);
+
+				ImVec2 glyphMin = {
+					Lerp(texMin.x, texMax.x, glyph.uvRect.x),
+					Lerp(texMin.y, texMax.y, glyph.uvRect.y)
+				};
+				ImVec2 glyphMax = {
+					Lerp(texMin.x, texMax.x, glyph.uvRect.z),
+					Lerp(texMin.y, texMax.y, glyph.uvRect.w)
+				};
+				ImVec2 glyphSize = glyphMax - glyphMin;
+
+				ImGui::SetCursorPos(glyphMin);
+				ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, { 0, 0 });
+				if (ImGui::Selectable(std::format("##Glyph{}", codepoint).c_str(), isSelected, ImGuiSelectableFlags_AllowOverlap, glyphSize))
+				{
+					_selectedGlyphIDs.push_back(codepoint);
+				}
+				ImGui::PopStyleVar();
+
+				// Draw outline
+				ImGui::GetWindowDrawList()->AddRect(
+					windowOffset + glyphMin, windowOffset + glyphMax,
+					isSelected ? IM_COL32(255, 255, 0, 255) : IM_COL32(255, 255, 255, 128)
+				);
+
+				if (isSelected)
+					ImGui::SetItemDefaultFocus();
+			}
+
+			ms_io = ImGui::EndMultiSelect();
+			selection.ApplyRequests(ms_io);
+
+			ImGui::EndChild();
+			ImGui::TreePop();
+		}
+		else
+		{
+			ImGui::SetItemTooltip("Zoom with ctrl + scroll \nPan with right mouse button");
 		}
 
-		ms_io = ImGui::EndMultiSelect();
-		selection.ApplyRequests(ms_io);
+		if (ImGui::TreeNode("Glyph Table"))
+		{
+			ImGuiChildFlags childFlags = ImGuiChildFlags_Borders | ImGuiChildFlags_ResizeY;
+			ImGuiTableFlags tableFlags = ImGuiTableFlags_RowBg | ImGuiTableFlags_Resizable | ImGuiTableFlags_ScrollY | ImGuiTableFlags_BordersInnerH;
+			ImGuiSelectableFlags selectableFlags = ImGuiSelectableFlags_SpanAllColumns | ImGuiSelectableFlags_AllowOverlap;
+
+			ImGui::BeginChild("GlyphTableChild", ImVec2(0, 200), childFlags);
+
+			if (ImGui::BeginTable("GlyphTable", 3, tableFlags))
+			{
+				ImGui::TableSetupColumn("Preview");
+				ImGui::TableSetupColumn("Char");
+				ImGui::TableSetupColumn("Code");
+				ImGui::TableHeadersRow();
+
+				ImGuiMultiSelectIO *ms_io = ImGui::BeginMultiSelect(flags, selection.Size, 0);
+				selection.ApplyRequests(ms_io);
+
+				bool foundSelection = false;
+				for (const auto &[codepoint, glyph] : _glyphs)
+				{
+					bool isSelected = selection.Contains((ImGuiID)codepoint);
+					ImGui::TableNextRow();
+
+					float rowHeight = max(ImGui::GetTextLineHeightWithSpacing(), glyph.size.y);
+
+					// Preview
+					ImGui::TableSetColumnIndex(0);
+					ImVec2 rowBegin = ImGui::GetCursorPos();
+
+					ImGui::Image(
+						(ImTextureID)tex->GetSRV(),
+						{ glyph.size.x, glyph.size.y },
+						{ glyph.uvRect.x, glyph.uvRect.y },
+						{ glyph.uvRect.z, glyph.uvRect.w }
+					);
+
+					// Char
+					ImGui::TableSetColumnIndex(1);
+					if (codepoint >= 32u)
+						ImGui::Text("%c", (wchar_t)codepoint);
+					else
+						ImGui::Text("?");
+
+					// Codepoint
+					ImGui::TableSetColumnIndex(2);
+					ImGui::Text("%u", codepoint);
+
+					ImGui::SetCursorPos(rowBegin);
+					ImGui::SetNextItemSelectionUserData(codepoint);
+					if (ImGui::Selectable(std::format("##GlyphTableSelect{}", codepoint).c_str(), isSelected, selectableFlags, {0, rowHeight}))
+					{
+						_selectedGlyphIDs.push_back(codepoint);
+					}
+
+					if (isSelected && !foundSelection)
+					{
+						ImGui::SetItemDefaultFocus();
+						if (ImGui::IsWindowAppearing())
+							ImGui::SetScrollHereY();
+
+						foundSelection = true;
+					}
+				}
+
+				ms_io = ImGui::EndMultiSelect();
+				selection.ApplyRequests(ms_io);
+
+				ImGui::EndTable();
+			}
+
+			ImGui::EndChild();
+			ImGui::TreePop();
+		}
 
 		if (ImGui::Shortcut(ImGuiMod_Ctrl | ImGuiKey_A))
 		{
@@ -807,21 +951,20 @@ bool FontAtlas::RenderUI(const Content *content)
 				selection.SetItemSelected((ImGuiID)codepoint, true);
 		}
 
-		ImGui::EndChild();
-		ImGui::TreePop();
-	}
-
-	// Process selection
-	{
-		_selectedGlyphIDs.clear();
-
-		void *it = NULL; ImGuiID id;
-		while (selection.GetNextSelectedItem(&it, &id))
+		// Process selection
 		{
-			if (_glyphs.find((UINT)id) == _glyphs.end())
-				continue;
+			_selectedGlyphIDs.clear();
 
-			_selectedGlyphIDs.push_back((UINT)id);
+			void *it = NULL;
+			ImGuiID id;
+
+			while (selection.GetNextSelectedItem(&it, &id))
+			{
+				if (_glyphs.find((UINT)id) == _glyphs.end())
+					continue;
+
+				_selectedGlyphIDs.push_back((UINT)id);
+			}
 		}
 	}
 
