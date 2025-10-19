@@ -166,7 +166,7 @@ bool Game::LoadContent(
 		if (_content.AddTexture(
 			_device.Get(), _immediateContext.Get(),
 			texture.name,
-			texture.file,
+			texture.path,
 			texture.type,
 			texture.mipmapped,
 			texture.downsample) == CONTENT_NULL)
@@ -186,7 +186,7 @@ bool Game::LoadContent(
 			if (_content.AddCubemap(
 				_device.Get(), _immediateContext.Get(),
 				cubemap.name,
-				cubemap.file,
+				cubemap.path,
 				cubemap.type,
 				cubemap.mipmapped,
 				cubemap.downsample) == CONTENT_NULL)
@@ -214,7 +214,13 @@ bool Game::LoadContent(
 
 	for (const ShaderData &shader : shaderNames)
 	{
-		if (_content.AddShader(_device.Get(), shader.name, shader.type, PATH_FILE_EXT(ASSET_COMPILED_PATH_CSO, shader.file, "cso")) == CONTENT_NULL)
+		std::string fileName = shader.path;
+		
+		size_t lastSlash = fileName.find_last_of("/\\");
+		if (lastSlash != std::string::npos)
+			fileName = fileName.substr(lastSlash + 1);
+
+		if (_content.AddShader(_device.Get(), shader.name, shader.path, shader.type, PATH_FILE_EXT(ASSET_COMPILED_PATH_CSO, fileName, "cso")) == CONTENT_NULL)
 		{
 			ErrMsgF("Failed to add shader {}!", shader.name);
 			return false;
@@ -757,75 +763,75 @@ bool Game::Setup(TimeUtils &time, Window window)
 	};
 
 	std::vector<ShaderData> shaderNames = {
-		{ ShaderType::VERTEX_SHADER,		"VS_Geometry",					"VS_Geometry"					},
-		{ ShaderType::VERTEX_SHADER,		"VS_GeometryDistortion",		"VS_GeometryDistortion"			},
-		{ ShaderType::VERTEX_SHADER,		"VS_TextDefault",				"VS_TextDefault"				},
-		{ ShaderType::VERTEX_SHADER,		"VS_Depth",						"VS_Depth"						},
-		{ ShaderType::VERTEX_SHADER,		"VS_DepthDistortion",			"VS_DepthDistortion"			},
-		{ ShaderType::VERTEX_SHADER,		"VS_DepthCubemap",				"VS_DepthCubemap"				},
-		{ ShaderType::VERTEX_SHADER,		"VS_DepthDistortionCubemap",	"VS_DepthDistortionCubemap"		},
-		{ ShaderType::VERTEX_SHADER,		"VS_ScreenEffect",				"VS_ScreenEffect"				},
+		{ ShaderType::VERTEX_SHADER,		"VS_Geometry",					"Vertex/VS_Geometry"				},
+		{ ShaderType::VERTEX_SHADER,		"VS_GeometryDistortion",		"Vertex/VS_GeometryDistortion"		},
+		{ ShaderType::VERTEX_SHADER,		"VS_TextDefault",				"Vertex/VS_TextDefault"				},
+		{ ShaderType::VERTEX_SHADER,		"VS_Depth",						"Vertex/VS_Depth"					},
+		{ ShaderType::VERTEX_SHADER,		"VS_DepthDistortion",			"Vertex/VS_DepthDistortion"			},
+		{ ShaderType::VERTEX_SHADER,		"VS_DepthCubemap",				"Vertex/VS_DepthCubemap"			},
+		{ ShaderType::VERTEX_SHADER,		"VS_DepthDistortionCubemap",	"Vertex/VS_DepthDistortionCubemap"	},
+		{ ShaderType::VERTEX_SHADER,		"VS_ScreenEffect",				"Vertex/VS_ScreenEffect"			},
 
-		{ ShaderType::GEOMETRY_SHADER,		"GS_Billboard",					"GS_Billboard"					},
-		{ ShaderType::GEOMETRY_SHADER,		"GS_DepthCubemap",				"GS_DepthCubemap"				},
+		{ ShaderType::GEOMETRY_SHADER,		"GS_Billboard",					"Geometry/GS_Billboard"				},
+		{ ShaderType::GEOMETRY_SHADER,		"GS_DepthCubemap",				"Geometry/GS_DepthCubemap"			},
 
-		{ ShaderType::PIXEL_SHADER,			"PS_Geometry",					"PS_Geometry"					},
-		{ ShaderType::PIXEL_SHADER,			"PS_GeometryMetallic",			"PS_GeometryMetallic"			},
-		{ ShaderType::PIXEL_SHADER,			"PS_TriPlanar",					"PS_TriPlanar"					},
-		{ ShaderType::PIXEL_SHADER,			"PS_ReflectionProbe",			"PS_ReflectionProbe"			},
-		{ ShaderType::PIXEL_SHADER,			"PS_Static",					"PS_Static"						},
-		{ ShaderType::PIXEL_SHADER,			"PS_Transparent",				"PS_Transparent"				},
-		{ ShaderType::PIXEL_SHADER,			"PS_TextDefault",				"PS_TextDefault"				},
-		{ ShaderType::PIXEL_SHADER,			"PS_DepthCubemap",				"PS_DepthCubemap"				},
-		{ ShaderType::PIXEL_SHADER,			"PS_SkyboxDefault",				"PS_SkyboxDefault"				},
-		{ ShaderType::PIXEL_SHADER,			"PS_SkyboxNormal",				"PS_SkyboxNormal"				},
-		{ ShaderType::PIXEL_SHADER,			"PS_SkyboxEnvironment",			"PS_SkyboxEnvironment"			},
-		{ ShaderType::PIXEL_SHADER,			"PS_ScreenEffectFog",			"PS_ScreenEffectFog"			},
+		{ ShaderType::PIXEL_SHADER,			"PS_Geometry",					"Pixel/PS_Geometry"					},
+		{ ShaderType::PIXEL_SHADER,			"PS_GeometryMetallic",			"Pixel/PS_GeometryMetallic"			},
+		{ ShaderType::PIXEL_SHADER,			"PS_TriPlanar",					"Pixel/PS_TriPlanar"				},
+		{ ShaderType::PIXEL_SHADER,			"PS_ReflectionProbe",			"Pixel/PS_ReflectionProbe"			},
+		{ ShaderType::PIXEL_SHADER,			"PS_Static",					"Pixel/PS_Static"					},
+		{ ShaderType::PIXEL_SHADER,			"PS_Transparent",				"Pixel/PS_Transparent"				},
+		{ ShaderType::PIXEL_SHADER,			"PS_TextDefault",				"Pixel/PS_TextDefault"				},
+		{ ShaderType::PIXEL_SHADER,			"PS_DepthCubemap",				"Pixel/PS_DepthCubemap"				},
+		{ ShaderType::PIXEL_SHADER,			"PS_SkyboxDefault",				"Pixel/PS_SkyboxDefault"			},
+		{ ShaderType::PIXEL_SHADER,			"PS_SkyboxNormal",				"Pixel/PS_SkyboxNormal"				},
+		{ ShaderType::PIXEL_SHADER,			"PS_SkyboxEnvironment",			"Pixel/PS_SkyboxEnvironment"		},
+		{ ShaderType::PIXEL_SHADER,			"PS_ScreenEffectFog",			"Pixel/PS_ScreenEffectFog"			},
 
-		{ ShaderType::COMPUTE_SHADER,		"CS_BlurHorizontalFX",			"CS_BlurHorizontalFX"			},
-		{ ShaderType::COMPUTE_SHADER,		"CS_BlurVerticalFX",			"CS_BlurVerticalFX"				},
-		{ ShaderType::COMPUTE_SHADER,		"CS_BlurHorizontalEmission",	"CS_BlurHorizontalEmission"		},
-		{ ShaderType::COMPUTE_SHADER,		"CS_BlurVerticalEmission",		"CS_BlurVerticalEmission"		},
-		{ ShaderType::COMPUTE_SHADER,		"CS_Downsample",				"CS_Downsample"					},
-		{ ShaderType::COMPUTE_SHADER,		"CS_DownsampleCheap",			"CS_DownsampleCheap"			},
-		{ ShaderType::COMPUTE_SHADER,		"CS_ColorLUT",					"CS_ColorLUT"					},
-		{ ShaderType::COMPUTE_SHADER,		"CS_FogFX",						"CS_FogFX"						},
-		{ ShaderType::COMPUTE_SHADER,		"CS_CombineFX",					"CS_CombineFX"					},
-		{ ShaderType::COMPUTE_SHADER,		"CS_Upsample",					"CS_Upsample"					},
-		{ ShaderType::COMPUTE_SHADER,		"CS_BlurHorizontalDof",			"CS_BlurHorizontalDof"			},
-		{ ShaderType::COMPUTE_SHADER,		"CS_BlurVerticalDof",			"CS_BlurVerticalDof"			},
-		{ ShaderType::COMPUTE_SHADER,		"CS_CircleOfConfusionFX",		"CS_CircleOfConfusionFX"		},
-		{ ShaderType::COMPUTE_SHADER,		"CS_CombineDepthOfFieldFX",		"CS_CombineDepthOfFieldFX"		},
+		{ ShaderType::COMPUTE_SHADER,		"CS_BlurHorizontalFX",			"Compute/CS_BlurHorizontalFX"		},
+		{ ShaderType::COMPUTE_SHADER,		"CS_BlurVerticalFX",			"Compute/CS_BlurVerticalFX"			},
+		{ ShaderType::COMPUTE_SHADER,		"CS_BlurHorizontalEmission",	"Compute/CS_BlurHorizontalEmission"	},
+		{ ShaderType::COMPUTE_SHADER,		"CS_BlurVerticalEmission",		"Compute/CS_BlurVerticalEmission"	},
+		{ ShaderType::COMPUTE_SHADER,		"CS_Downsample",				"Compute/CS_Downsample"				},
+		{ ShaderType::COMPUTE_SHADER,		"CS_DownsampleCheap",			"Compute/CS_DownsampleCheap"		},
+		{ ShaderType::COMPUTE_SHADER,		"CS_ColorLUT",					"Compute/CS_ColorLUT"				},
+		{ ShaderType::COMPUTE_SHADER,		"CS_FogFX",						"Compute/CS_FogFX"					},
+		{ ShaderType::COMPUTE_SHADER,		"CS_CombineFX",					"Compute/CS_CombineFX"				},
+		{ ShaderType::COMPUTE_SHADER,		"CS_Upsample",					"Compute/CS_Upsample"				},
+		{ ShaderType::COMPUTE_SHADER,		"CS_BlurHorizontalDof",			"Compute/CS_BlurHorizontalDof"		},
+		{ ShaderType::COMPUTE_SHADER,		"CS_BlurVerticalDof",			"Compute/CS_BlurVerticalDof"		},
+		{ ShaderType::COMPUTE_SHADER,		"CS_CircleOfConfusionFX",		"Compute/CS_CircleOfConfusionFX"	},
+		{ ShaderType::COMPUTE_SHADER,		"CS_CombineDepthOfFieldFX",		"Compute/CS_CombineDepthOfFieldFX"	},
 
 #ifdef DEBUG_BUILD
-		{ ShaderType::VERTEX_SHADER,		"VS_DebugDraw",					"VS_DebugDraw"					},
-		{ ShaderType::VERTEX_SHADER,		"VS_DebugDrawTri",				"VS_DebugDrawTri"				},
-		{ ShaderType::VERTEX_SHADER,		"VS_DebugDrawSprite",			"VS_DebugDrawSprite"			},
+		{ ShaderType::VERTEX_SHADER,		"VS_DebugDraw",					"Vertex/VS_DebugDraw"				},
+		{ ShaderType::VERTEX_SHADER,		"VS_DebugDrawTri",				"Vertex/VS_DebugDrawTri"			},
+		{ ShaderType::VERTEX_SHADER,		"VS_DebugDrawSprite",			"Vertex/VS_DebugDrawSprite"			},
 
-		{ ShaderType::GEOMETRY_SHADER,		"GS_DebugLine",					"GS_DebugLine"					},
-		{ ShaderType::GEOMETRY_SHADER,		"GS_DebugDrawSprite",			"GS_DebugDrawSprite"			},
+		{ ShaderType::GEOMETRY_SHADER,		"GS_DebugLine",					"Geometry/GS_DebugLine"				},
+		{ ShaderType::GEOMETRY_SHADER,		"GS_DebugDrawSprite",			"Geometry/GS_DebugDrawSprite"		},
 
-		{ ShaderType::PIXEL_SHADER,			"PS_SelectionOutline",			"PS_SelectionOutline"			},
-		{ ShaderType::PIXEL_SHADER,			"PS_DebugDraw",					"PS_DebugDraw"					},
-		{ ShaderType::PIXEL_SHADER,			"PS_DebugDrawSprite",			"PS_DebugDrawSprite"			},
-		{ ShaderType::PIXEL_SHADER,			"PS_DebugViewPosition",			"PS_DebugViewPosition"			},
-		{ ShaderType::PIXEL_SHADER,			"PS_DebugViewNormal",			"PS_DebugViewNormal"			},
-		{ ShaderType::PIXEL_SHADER,			"PS_DebugViewAmbient",			"PS_DebugViewAmbient"			},
-		{ ShaderType::PIXEL_SHADER,			"PS_DebugViewDiffuse",			"PS_DebugViewDiffuse"			},
-		{ ShaderType::PIXEL_SHADER,			"PS_DebugViewDepth",			"PS_DebugViewDepth"				},
-		{ ShaderType::PIXEL_SHADER,			"PS_DebugViewShadow",			"PS_DebugViewShadow"			},
-		{ ShaderType::PIXEL_SHADER,			"PS_DebugViewReflection",		"PS_DebugViewReflection"		},
-		{ ShaderType::PIXEL_SHADER,			"PS_DebugViewReflectivity",		"PS_DebugViewReflectivity"		},
-		{ ShaderType::PIXEL_SHADER,			"PS_DebugViewSpecular",			"PS_DebugViewSpecular"			},
-		{ ShaderType::PIXEL_SHADER,			"PS_DebugViewSpecStr",			"PS_DebugViewSpecStr"			},
-		{ ShaderType::PIXEL_SHADER,			"PS_DebugViewUVCoords",			"PS_DebugViewUVCoords"			},
-		{ ShaderType::PIXEL_SHADER,			"PS_DebugViewOcclusion",		"PS_DebugViewOcclusion"			},
-		{ ShaderType::PIXEL_SHADER,			"PS_DebugViewLightTiles",		"PS_DebugViewLightTiles"		},
-		{ ShaderType::PIXEL_SHADER,			"PS_DebugViewOverdraw",			"PS_DebugViewOverdraw"			},
+		{ ShaderType::PIXEL_SHADER,			"PS_SelectionOutline",			"Pixel/PS_SelectionOutline"			},
+		{ ShaderType::PIXEL_SHADER,			"PS_DebugDraw",					"Pixel/PS_DebugDraw"				},
+		{ ShaderType::PIXEL_SHADER,			"PS_DebugDrawSprite",			"Pixel/PS_DebugDrawSprite"			},
+		{ ShaderType::PIXEL_SHADER,			"PS_DebugViewPosition",			"Pixel/PS_DebugViewPosition"		},
+		{ ShaderType::PIXEL_SHADER,			"PS_DebugViewNormal",			"Pixel/PS_DebugViewNormal"			},
+		{ ShaderType::PIXEL_SHADER,			"PS_DebugViewAmbient",			"Pixel/PS_DebugViewAmbient"			},
+		{ ShaderType::PIXEL_SHADER,			"PS_DebugViewDiffuse",			"Pixel/PS_DebugViewDiffuse"			},
+		{ ShaderType::PIXEL_SHADER,			"PS_DebugViewDepth",			"Pixel/PS_DebugViewDepth"			},
+		{ ShaderType::PIXEL_SHADER,			"PS_DebugViewShadow",			"Pixel/PS_DebugViewShadow"			},
+		{ ShaderType::PIXEL_SHADER,			"PS_DebugViewReflection",		"Pixel/PS_DebugViewReflection"		},
+		{ ShaderType::PIXEL_SHADER,			"PS_DebugViewReflectivity",		"Pixel/PS_DebugViewReflectivity"	},
+		{ ShaderType::PIXEL_SHADER,			"PS_DebugViewSpecular",			"Pixel/PS_DebugViewSpecular"		},
+		{ ShaderType::PIXEL_SHADER,			"PS_DebugViewSpecStr",			"Pixel/PS_DebugViewSpecStr"			},
+		{ ShaderType::PIXEL_SHADER,			"PS_DebugViewUVCoords",			"Pixel/PS_DebugViewUVCoords"		},
+		{ ShaderType::PIXEL_SHADER,			"PS_DebugViewOcclusion",		"Pixel/PS_DebugViewOcclusion"		},
+		{ ShaderType::PIXEL_SHADER,			"PS_DebugViewLightTiles",		"Pixel/PS_DebugViewLightTiles"		},
+		{ ShaderType::PIXEL_SHADER,			"PS_DebugViewOverdraw",			"Pixel/PS_DebugViewOverdraw"		},
 
-		{ ShaderType::COMPUTE_SHADER,		"CS_BlurHorizontalOutline",		"CS_BlurHorizontalOutline"		},
-		{ ShaderType::COMPUTE_SHADER,		"CS_BlurVerticalOutline",		"CS_BlurVerticalOutline"		},
-		{ ShaderType::COMPUTE_SHADER,		"CS_CombineOutlineFX",			"CS_CombineOutlineFX"			},
+		{ ShaderType::COMPUTE_SHADER,		"CS_BlurHorizontalOutline",		"Compute/CS_BlurHorizontalOutline"	},
+		{ ShaderType::COMPUTE_SHADER,		"CS_BlurVerticalOutline",		"Compute/CS_BlurVerticalOutline"	},
+		{ ShaderType::COMPUTE_SHADER,		"CS_CombineOutlineFX",			"Compute/CS_CombineOutlineFX"		},
 #endif
 	};
 

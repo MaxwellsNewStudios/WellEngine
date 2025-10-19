@@ -80,9 +80,11 @@ public:
 class Shader : public ContentBase
 {
 public:
+	std::string path;
 	ShaderD3D11 data;
 
-	Shader(std::string name, const UINT id) : ContentBase(name, id) { }
+	Shader(std::string name, std::string path, const UINT id) 
+		: ContentBase(name, id), path(std::move(path)) { }
 	~Shader() = default;
 	Shader(const Shader &other) = delete;
 	Shader &operator=(const Shader &other) = delete;
@@ -335,9 +337,9 @@ private:
 public:
 	[[nodiscard]] CompiledData GetShaderData(const std::string &name, const char *path, ShaderType shaderType) const;
 
-	UINT AddShader(ID3D11Device *device, const std::string &name, ShaderType shaderType, ID3DBlob *&shaderBlob);
-	UINT AddShader(ID3D11Device *device, const std::string &name, ShaderType shaderType, const void *dataPtr, size_t dataSize);
-	UINT AddShader(ID3D11Device *device, const std::string &name, ShaderType shaderType, const std::string &path);
+	UINT AddShader(ID3D11Device *device, const std::string &name, const std::string &codePath, ShaderType shaderType, ID3DBlob *&shaderBlob);
+	UINT AddShader(ID3D11Device *device, const std::string &name, const std::string &codePath, ShaderType shaderType, const void *dataPtr, size_t dataSize);
+	UINT AddShader(ID3D11Device *device, const std::string &name, const std::string &codePath, ShaderType shaderType, const std::string &path);
 
 	[[nodiscard]] ID3DBlob *CompileShader(ID3D11Device *device, const std::string &path, ShaderType shaderType) const;
 	[[nodiscard]] bool RecompileShader(ID3D11Device *device, const std::string &name) const;
@@ -348,6 +350,8 @@ public:
 	[[nodiscard]] std::string GetShaderName(UINT id) const;
 	[[nodiscard]] ShaderD3D11 *GetShader(const std::string &name) const;
 	[[nodiscard]] ShaderD3D11 *GetShader(UINT id) const;
+	[[nodiscard]] const Shader *GetShaderContainer(const std::string &name) const;
+	[[nodiscard]] const Shader *GetShaderContainer(UINT id) const;
 
 	void GetShadersOfType(std::vector<UINT> &shaders, ShaderType type);
 	static ShaderType GetShaderTypeFromName(const std::string &name);

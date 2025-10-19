@@ -14,9 +14,9 @@
 class Game
 {
 private:
-	struct TextureData		{ DXGI_FORMAT type;	std::string name;	std::string file;	bool mipmapped; int downsample;	};
-	struct ShaderData		{ ShaderType type;	std::string name;	std::string file;									};
-	struct HeightMapData	{					std::string name;	std::string file;									};
+	struct TextureData		{ DXGI_FORMAT type;	std::string name;	std::string path;	bool mipmapped; int downsample;	};
+	struct ShaderData		{ ShaderType type;	std::string name;	std::string path;									};
+	struct HeightMapData	{					std::string name;	std::string path;									};
 
 	ComPtr<ID3D11Device>		_device;
 	ComPtr<ID3D11DeviceContext>	_immediateContext;

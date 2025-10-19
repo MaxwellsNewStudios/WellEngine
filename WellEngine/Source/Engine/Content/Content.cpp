@@ -745,8 +745,11 @@ bool Content::RenderUI(ID3D11Device *device)
 			ImGui::PushID(i);
 			if (ImGui::TreeNode(shaderNames[i].c_str()))
 			{
+				const Shader *shaderContainer = GetShaderContainer(shaderNames[i]);
+
 				ImGui::Text("ID: %d", i);
 				ImGui::Text("Name: %s", shaderNames[i].c_str());
+				ImGui::Text("Path: %s", shaderContainer->path.c_str());
 
 				if (recompile || ImGui::Button("Recompile"))
 					bool _ = RecompileShader(device, shaderNames[i]);
@@ -754,8 +757,7 @@ bool Content::RenderUI(ID3D11Device *device)
 				if (ImGui::TreeNode("Shader Info"))
 				{
 					// Expose reflection data
-					ShaderD3D11 *shader = GetShader(shaderNames[i]);
-					auto reflector = shader->GetReflector();
+					auto reflector = shaderContainer->data.GetReflector();
 
 					D3D11_SHADER_DESC shaderDesc;
 					if (FAILED(reflector->GetDesc(&shaderDesc)))
@@ -1227,7 +1229,7 @@ UINT Content::AddMesh(ID3D11Device *device, const std::string &name, const char 
 	return id;
 }
 
-UINT Content::AddShader(ID3D11Device *device, const std::string &name, ShaderType shaderType, ID3DBlob *&shaderBlob)
+UINT Content::AddShader(ID3D11Device *device, const std::string &name, const std::string &codePath, ShaderType shaderType, ID3DBlob *&shaderBlob)
 {
 	ZoneScopedC(RandomUniqueColor());
 	ZoneText(name.c_str(), name.size());
@@ -1257,7 +1259,7 @@ UINT Content::AddShader(ID3D11Device *device, const std::string &name, ShaderTyp
 
 		if (!duplicateName)
 		{
-			Shader *addedShader = new Shader(name, id);
+			Shader *addedShader = new Shader(name, codePath, id);
 			if (!addedShader->data.Initialize(device, shaderType, shaderBlob))
 			{
 				delete addedShader;
@@ -1275,7 +1277,7 @@ UINT Content::AddShader(ID3D11Device *device, const std::string &name, ShaderTyp
 	shaderBlob = nullptr;
 	return id;
 }
-UINT Content::AddShader(ID3D11Device *device, const std::string &name, const ShaderType shaderType, const void *dataPtr, const size_t dataSize)
+UINT Content::AddShader(ID3D11Device *device, const std::string &name, const std::string &codePath, ShaderType shaderType, const void *dataPtr, size_t dataSize)
 {
 	ZoneScopedC(RandomUniqueColor());
 	ZoneText(name.c_str(), name.size());
@@ -1305,7 +1307,7 @@ UINT Content::AddShader(ID3D11Device *device, const std::string &name, const Sha
 
 		if (!duplicateName)
 		{
-			Shader *addedShader = new Shader(name, id);
+			Shader *addedShader = new Shader(name, codePath, id);
 			if (!addedShader->data.Initialize(device, shaderType, dataPtr, dataSize))
 			{
 				delete addedShader;
@@ -1322,7 +1324,7 @@ UINT Content::AddShader(ID3D11Device *device, const std::string &name, const Sha
 
 	return id;
 }
-UINT Content::AddShader(ID3D11Device *device, const std::string &name, ShaderType shaderType, const std::string &path)
+UINT Content::AddShader(ID3D11Device *device, const std::string &name, const std::string &codePath, ShaderType shaderType, const std::string &csoPath)
 {
 	ZoneScopedC(RandomUniqueColor());
 	ZoneText(name.c_str(), name.size());
@@ -1352,8 +1354,8 @@ UINT Content::AddShader(ID3D11Device *device, const std::string &name, ShaderTyp
 
 		if (!duplicateName)
 		{
-			Shader *addedShader = new Shader(name, id);
-			if (!addedShader->data.Initialize(device, shaderType, path.c_str()))
+			Shader *addedShader = new Shader(name, codePath, id);
+			if (!addedShader->data.Initialize(device, shaderType, csoPath.c_str()))
 			{
 				delete addedShader;
 				id = CONTENT_NULL;
@@ -1451,15 +1453,15 @@ bool Content::RecompileShader(ID3D11Device *device, const std::string &name) con
 {
 	ZoneScopedC(RandomUniqueColor());
 
-	ShaderD3D11 *shader = GetShader(name);
-	if (!shader)
+	const Shader *shaderContainer = GetShaderContainer(name);
+	if (!shaderContainer)
 	{
 		ErrMsgF("Shader '{}' not found!", name);
 		return false;
 	}
 
-	ShaderType shaderType = shader->GetShaderType();
-	std::string path = PATH_FILE_EXT(ENGINE_PATH_SHADERS, name, "hlsl");
+	ShaderType shaderType = shaderContainer->data.GetShaderType();
+	std::string path = PATH_FILE_EXT(ENGINE_PATH_SHADERS, shaderContainer->path, "hlsl");
 
 	auto shaderBlob = CompileShader(device, path, shaderType);
 
@@ -1469,10 +1471,11 @@ bool Content::RecompileShader(ID3D11Device *device, const std::string &name) con
 		return false;
 	}
 
+	ShaderD3D11 *shader = GetShader(name);
 	if (!shader->Initialize(device, shaderType, shaderBlob))
 	{
-		ErrMsg("Failed to reinitialize shader after recompilation!");
 		shaderBlob->Release();
+		ErrMsg("Failed to reinitialize shader after recompilation!");
 		return false;
 	}
 
@@ -2233,6 +2236,29 @@ ShaderD3D11 *Content::GetShader(const UINT id) const
 	}
 
 	return &_shaders[id]->data;
+}
+const Shader *Content::GetShaderContainer(const std::string &name) const
+{
+	const UINT count = static_cast<UINT>(_shaders.size());
+
+	for (UINT i = 0; i < count; i++)
+	{
+		if (_shaders[i]->name == name)
+			return _shaders[i];
+	}
+
+	WarnF("Failed to find shader '{}'! Returning default.", name);
+	return _shaders[0];
+}
+const Shader *Content::GetShaderContainer(const UINT id) const
+{
+	if (id == CONTENT_NULL || id >= _shaders.size())
+	{
+		WarnF("Failed to find shader #{}! Returning default.", id);
+		return _shaders[0];
+	}
+
+	return _shaders[id];
 }
 
 void Content::GetShadersOfType(std::vector<UINT> &shaders, ShaderType type)
