@@ -809,7 +809,12 @@ bool FontAtlas::RenderUI(const Content *content)
 
 	// Multi-select
 	{
-		ImGuiMultiSelectFlags flags = ImGuiMultiSelectFlags_NoSelectAll | ImGuiMultiSelectFlags_ClearOnClickVoid | ImGuiMultiSelectFlags_ClearOnEscape | ImGuiMultiSelectFlags_BoxSelect2d;
+		static bool isTransforming = false;
+		static int transformCooldown = 0;
+		ImGuiMultiSelectFlags flags = ImGuiMultiSelectFlags_NoSelectAll | ImGuiMultiSelectFlags_ClearOnEscape;
+
+		if (!isTransforming)
+			flags |= ImGuiMultiSelectFlags_BoxSelect2d | ImGuiMultiSelectFlags_ClearOnClickVoid;
 
 		if (ImGui::TreeNode(std::format("Texture '{}'", texName).c_str()))
 		{
@@ -839,7 +844,7 @@ bool FontAtlas::RenderUI(const Content *content)
 			static bool isPanning = false;
 
 			// Zoom + Pan control
-			if (ImGui::IsWindowFocused() && ImGui::IsWindowHovered())
+			if (ImGui::IsWindowFocused() && ImGui::IsWindowHovered() && !isTransforming)
 			{
 				// Zoom with ctrl + scroll
 				float scrollY = Input::Instance().GetMouse().scroll.y;
@@ -891,6 +896,8 @@ bool FontAtlas::RenderUI(const Content *content)
 				isPanning = false;
 			}
 
+			ImVec4 selectionRect = { FLT_MAX, FLT_MAX, -FLT_MAX, -FLT_MAX };
+
 			ImGuiMultiSelectIO *ms_io = ImGui::BeginMultiSelect(flags, selection.Size, 0);
 			selection.ApplyRequests(ms_io);
 
@@ -925,11 +932,255 @@ bool FontAtlas::RenderUI(const Content *content)
 				);
 
 				if (isSelected)
+				{
 					ImGui::SetItemDefaultFocus();
+					Min(2, &selectionRect.x, &glyphMin.x);
+					Max(2, &selectionRect.z, &glyphMax.x);
+				}
 			}
 
 			ms_io = ImGui::EndMultiSelect();
 			selection.ApplyRequests(ms_io);
+
+			// Selection transform controls
+			{
+				enum class TransDir {
+					None = 0,
+					NW,	N,	NE,
+					W,	C,	E,
+					SW,	S,	SE
+				};
+
+				static TransDir activeDir = TransDir::None;
+				static std::vector<UINT> activeSelection;
+				static ImVec4 activeRect;
+				static ImVec2 lastMousePos;
+
+				if (!isTransforming)
+				{
+					activeDir = TransDir::None;
+
+					// Before clearing selection, keep it locked for a bit
+					// while we ensure multi-select state is cleared and
+					// won't immediately overwrite the selection
+					if (transformCooldown > 0)
+					{
+						selection.Clear();
+						for (UINT codepoint : activeSelection)
+							selection.SetItemSelected((ImGuiID)codepoint, true);
+
+						transformCooldown--;
+						if (transformCooldown <= 0)
+							activeSelection.clear();
+					}
+					else
+					{
+						activeRect = selectionRect;
+					}
+				}
+
+				if (!_selectedGlyphIDs.empty())
+				{
+					float padding = 4.0f;
+					ImVec4 paddedRect = activeRect + ImVec4(-padding, -padding, padding, padding);
+
+					ImVec2 rectMin = { paddedRect.x, paddedRect.y };
+					ImVec2 rectMax = { paddedRect.z, paddedRect.w };
+
+					// Draw transform gizmo rect
+					ImGui::GetWindowDrawList()->AddRect(
+						windowOffset + rectMin, windowOffset + rectMax,
+						IM_COL32(192, 192, 192, 255),
+						0.0f, ImDrawFlags_RoundCornersNone, padding * 0.5f
+					);
+
+					// Draw interactable handles for each TransDir
+					ImVec2 handlePos = rectMin;
+
+					bool foundActive = false;
+					for (int i = 1; i <= 9; i++)
+					{
+						bool isActive = (activeDir == (TransDir)i);
+						if (isTransforming && !isActive)
+						{
+							// Draw only active handle
+							continue;
+						}
+
+						float handleSize = 8.0f;
+						ImVec2 handlePos = { 
+							Lerp(rectMin.x, rectMax.x, ((i - 1) % 3) * 0.5f),
+							Lerp(rectMin.y, rectMax.y, ((i - 1) / 3) * 0.5f) 
+						};
+
+						ImGui::SetCursorPos(handlePos - ImVec2(handleSize, handleSize) * 0.5f);
+						ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, { 0, 0 });
+						ImGui::InvisibleButton(std::format("##Handle{}", i).c_str(), { handleSize, handleSize });
+						ImGui::PopStyleVar();
+
+						bool isHovered = ImGui::IsItemHovered();
+						bool isMouseDown = ImGui::IsMouseDown(ImGuiMouseButton_Left);
+
+						if ((isHovered || isActive) && isMouseDown)
+						{
+							foundActive = true;
+							activeDir = (TransDir)i;
+						}
+
+						if (isActive)
+						{
+							// Active handle
+							ImGui::GetWindowDrawList()->AddCircleFilled(
+								windowOffset + handlePos,
+								handleSize * 0.35f,
+								IM_COL32(255, 255, 0, 128),
+								5
+							);
+						}
+						else if (isHovered)
+						{
+							// Hovered handle
+							ImGui::GetWindowDrawList()->AddCircleFilled(
+								windowOffset + handlePos,
+								handleSize * 0.65f,
+								IM_COL32(255, 255, 196, 255),
+								8
+							);
+						}
+						else
+						{
+							// Default handle
+							ImGui::GetWindowDrawList()->AddCircleFilled(
+								windowOffset + handlePos,
+								handleSize * 0.5f,
+								IM_COL32(255, 255, 255, 192),
+								6
+							);
+						}
+					}
+
+					if (foundActive)
+					{
+						ImVec2 mousePos = ImGui::GetIO().MousePos;
+
+						if (!isTransforming)
+						{
+							// Setup transformation
+							isTransforming = true;
+							transformCooldown = 1; // Frames to keep selection locked
+							activeSelection = _selectedGlyphIDs;
+						}
+						else
+						{
+							// Update transforming
+							ImVec2 delta = mousePos - lastMousePos;
+
+							ImVec4 lastActiveRect = activeRect;
+							switch (activeDir)
+							{
+							case TransDir::NW:
+								activeRect.x += delta.x;
+								activeRect.y += delta.y;
+								break;
+							case TransDir::N:
+								activeRect.y += delta.y;
+								break;
+							case TransDir::NE:
+								activeRect.z += delta.x;
+								activeRect.y += delta.y;
+								break;
+							case TransDir::W:
+								activeRect.x += delta.x;
+								break;
+							case TransDir::C:
+								activeRect.x += delta.x;
+								activeRect.y += delta.y;
+								activeRect.z += delta.x;
+								activeRect.w += delta.y;
+								break;
+							case TransDir::E:
+								activeRect.z += delta.x;
+								break;
+							case TransDir::SW:
+								activeRect.x += delta.x;
+								activeRect.w += delta.y;
+								break;
+							case TransDir::S:
+								activeRect.w += delta.y;
+								break;
+							case TransDir::SE:
+								activeRect.z += delta.x;
+								activeRect.w += delta.y;
+								break;
+							default:
+								break;
+							}
+
+							// If new rect is invalid, ignore changes
+							const float scaleEpsilon = 0.1f;
+							if (activeRect.z <= activeRect.x + scaleEpsilon || activeRect.w <= activeRect.y + scaleEpsilon)
+							{
+								activeRect = lastActiveRect;
+								mousePos = lastMousePos;
+							}
+							else
+							{
+								// Apply changes to glyphs
+								for (UINT codepoint : activeSelection)
+								{
+									GlyphData &glyph = _glyphs[codepoint];
+									ImVec2 glyphMin = {
+										Lerp(texMin.x, texMax.x, glyph.uvRect.x),
+										Lerp(texMin.y, texMax.y, glyph.uvRect.y)
+									};
+									ImVec2 glyphMax = {
+										Lerp(texMin.x, texMax.x, glyph.uvRect.z),
+										Lerp(texMin.y, texMax.y, glyph.uvRect.w)
+									};
+
+									// Calculate the previous ratio within the last active rect, then apply to new active rect
+									ImVec2 minRatio = {
+										(glyphMin.x - (lastActiveRect.x)) / (lastActiveRect.z - lastActiveRect.x),
+										(glyphMin.y - (lastActiveRect.y)) / (lastActiveRect.w - lastActiveRect.y)
+									};
+									ImVec2 maxRatio = {
+										(glyphMax.x - (lastActiveRect.x)) / (lastActiveRect.z - lastActiveRect.x),
+										(glyphMax.y - (lastActiveRect.y)) / (lastActiveRect.w - lastActiveRect.y)
+									};
+
+									glyphMin = {
+										Lerp(activeRect.x, activeRect.z, minRatio.x),
+										Lerp(activeRect.y, activeRect.w, minRatio.y)
+									};
+									glyphMax = {
+										Lerp(activeRect.x, activeRect.z, maxRatio.x),
+										Lerp(activeRect.y, activeRect.w, maxRatio.y)
+									};
+
+									glyph.uvRect = {
+										(glyphMin.x - texMin.x) / (texMax.x - texMin.x),
+										(glyphMin.y - texMin.y) / (texMax.y - texMin.y),
+										(glyphMax.x - texMin.x) / (texMax.x - texMin.x),
+										(glyphMax.y - texMin.y) / (texMax.y - texMin.y)
+									};
+								}
+
+								modified = true;
+							}
+						}
+
+						lastMousePos = mousePos;
+					}
+					else if (isTransforming)
+					{
+						isTransforming = false;
+					}
+				}
+				else
+				{
+					isTransforming = false;
+				}
+			}
 
 			ImGui::EndChild();
 			ImGui::TreePop();

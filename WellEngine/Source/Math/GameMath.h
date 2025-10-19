@@ -1,5 +1,6 @@
 #pragma once
 
+#pragma region Includes
 #include <variant>
 #include <DirectXMath.h>
 #include <DirectXCollision.h>
@@ -7,12 +8,17 @@
 #include "Source/Engine/Collision/ColliderShapes.h"
 
 namespace dx = DirectX;
+#pragma endregion
 
+#pragma region Defines
 #define SIGN(x)	(x > 0 ? 1 : -1)
 
 static constexpr float DEG_TO_RAD = (dx::XM_PI / 180.0f);
 static constexpr float RAD_TO_DEG = (180.0f / dx::XM_PI);
+#pragma endregion
 
+
+#pragma region Vector Channel Conversions
 [[nodiscard]] static inline const dx::XMFLOAT4A To4(const dx::XMFLOAT3A &vec) noexcept
 {
 	return *reinterpret_cast<const dx::XMFLOAT4A *>(&vec);
@@ -73,7 +79,9 @@ static constexpr float RAD_TO_DEG = (180.0f / dx::XM_PI);
 {
 	return vec.x;
 }
+#pragma endregion
 
+#pragma region Vector Type Conversions
 [[nodiscard]] static inline dx::XMFLOAT4 ToFloat(const dx::XMUINT4 &vec) noexcept
 {
 	return { (float)vec.x, (float)vec.y, (float)vec.z, (float)vec.w };
@@ -172,7 +180,9 @@ static constexpr float RAD_TO_DEG = (180.0f / dx::XM_PI);
 {
 	return { (int)vec.x, (int)vec.y };
 }
+#pragma endregion
 
+#pragma region Load Helpers
 [[nodiscard]] static inline dx::XMVECTOR Load(float f) noexcept
 {
 	return dx::XMLoadFloat(&f);
@@ -242,7 +252,9 @@ static constexpr float RAD_TO_DEG = (180.0f / dx::XM_PI);
 {
 	return dx::XMLoadFloat4x4A(float4x4A);
 }
+#pragma endregion
 
+#pragma region Store Helpers
 static inline void Store(float &dest, dx::XMVECTOR vec) noexcept
 {
 	dx::XMStoreFloat(&dest, vec);
@@ -323,8 +335,10 @@ static inline void Store(dx::XMFLOAT4X4A *dest, const dx::XMMATRIX &mat) noexcep
 {
 	dx::XMStoreFloat4x4A(dest, mat);
 }
+#pragma endregion
 
 
+#pragma region Math Functions
 [[nodiscard]] static inline int Wrap(int val, int min, int max)
 {
 	int length = max - min + 1;
@@ -453,8 +467,91 @@ static inline void Store(dx::XMFLOAT4X4A *dest, const dx::XMMATRIX &mat) noexcep
 		a.y + (b.y - a.y) * t
 	};
 }
+#pragma endregion
+
+#pragma region Array Math Functions
+template<typename T>
+static inline void Lerp(int c, T *dest, const T *a, const T *b, T t) noexcept
+{
+	for (int i = 0; i < c; i++)
+		dest[i] = std::lerp(a[i], b[i], t);
+}
+template<typename T>
+static inline void Lerp(int c, T *dest, const T *a, const T *b, const T *t) noexcept
+{
+	for (int i = 0; i < c; i++)
+		dest[i] = std::lerp(a[i], b[i], t[i]);
+}
+
+template<typename T>
+[[nodiscard]] static inline T Min(int c, const T *v) noexcept
+{
+	T val = v[0];
+	for (int i = 1; i < c; i++)
+		val = min(val, v[i]);
+	return val;
+}
+template<typename T>
+[[nodiscard]] static inline T Max(int c, const T *v) noexcept
+{
+	T val = v[0];
+	for (int i = 1; i < c; i++)
+		val = max(val, v[i]);
+	return val;
+}
+
+template<typename T>
+static inline void Min(int c, T *dest, const T *a, T b) noexcept
+{
+	for (int i = 0; i < c; i++)
+		dest[i] = min(a[i], b);
+}
+template<typename T>
+static inline void Max(int c, T *dest, const T *a, T b) noexcept
+{
+	for (int i = 0; i < c; i++)
+		dest[i] = max(a[i], b);
+}
+
+template<typename T>
+static inline void Min(int c, T *dest, const T *a, const T *b) noexcept
+{
+	for (int i = 0; i < c; i++)
+		dest[i] = min(a[i], b[i]);
+}
+template<typename T>
+static inline void Max(int c, T *dest, const T *a, const T *b) noexcept
+{
+	for (int i = 0; i < c; i++)
+		dest[i] = max(a[i], b[i]);
+}
+
+template<typename T>
+static inline void Min(int c, T *dest, const T *b) noexcept
+{
+	Min(c, dest, dest, b);
+}
+template<typename T>
+static inline void Max(int c, T *dest, const T *b) noexcept
+{
+	Max(c, dest, dest, b);
+}
+
+template<typename T>
+static inline void Clamp(int c, T *dest, const T *v, const T *a, const T *b) noexcept
+{
+	for (int i = 0; i < c; i++)
+		dest[i] = std::clamp(v[i], a[i], b[i]);
+}
+template<typename T>
+static inline void Clamp(int c, T *dest, const T *a, const T *b) noexcept
+{
+	Clamp(c, dest, dest, a, b);
+}
+#pragma endregion
 
 
+#pragma region Misc
 template<typename T>
 [[nodiscard]] static inline size_t NumericLimit() noexcept
 {
@@ -643,6 +740,7 @@ template<typename T>
 
 	return axisAlignedBounds;
 }
+#pragma endregion
 
 
 namespace DXMath
