@@ -469,4 +469,5 @@ LUT_HueShift.dds
 
 <push m=false>
 ExampleFont.png
+SimpleFont.png
 <pop m>

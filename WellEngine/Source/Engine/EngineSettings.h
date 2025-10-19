@@ -92,6 +92,9 @@
 
 
 #pragma region Debug
+	/// BREAK_ON_WARN enables breaking into the debugger when a warning is issued through Warn().
+	//#define BREAK_ON_WARN
+
 	/// DEBUG_D3D11_DEVICE enables the use of the D3D11 debug device. This is only available in debug mode.
 	//#define DEBUG_D3D11_DEVICE
 

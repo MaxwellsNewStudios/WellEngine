@@ -6,8 +6,16 @@
 #endif // DEBUG_MESSAGES
 #include <string>
 
+#ifdef BREAK_ON_WARN
+#define __do_break_on_warn true
+#else
+#define __do_break_on_warn false
+#endif
+
 #define CUSTOM_WARNING(msg, file, line)								\
 	do {															\
+		if (!__do_break_on_warn)									\
+			break;													\
 		char c_msg[1024];											\
 		snprintf(c_msg, sizeof(c_msg),								\
 			"%s\n\n"												\
@@ -28,6 +36,8 @@
 #define CUSTOM_ASSERT(expr, msg, file, line)							\
 	do {																\
 		if (expr)														\
+			break;														\
+		if (!__do_break_on_warn)										\
 			break;														\
 		char c_msg[1024];												\
 		snprintf(c_msg, sizeof(c_msg),									\
