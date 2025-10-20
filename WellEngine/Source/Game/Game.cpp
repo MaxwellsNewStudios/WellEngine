@@ -396,6 +396,17 @@ bool Game::LoadContent(
 			ErrMsg("Failed to add IL_DebugDrawSprite!");
 			return false;
 		}
+
+		const std::vector<Semantic> debugDrawMeshInputLayout{
+			{ "POSITION",	DXGI_FORMAT_R32G32B32A32_FLOAT	},
+			{ "NORMAL",		DXGI_FORMAT_R32G32B32A32_FLOAT	},
+		};
+
+		if (_content.AddInputLayout(_device.Get(), "DebugDrawMesh", debugDrawMeshInputLayout, _content.GetShaderID("VS_DebugDrawMesh")) == CONTENT_NULL)
+		{
+			ErrMsg("Failed to add IL_DebugDrawMesh!");
+			return false;
+		}
 #endif
 	}
 
@@ -807,6 +818,7 @@ bool Game::Setup(TimeUtils &time, Window window)
 		{ ShaderType::VERTEX_SHADER,		"VS_DebugDraw",					"Vertex/VS_DebugDraw"				},
 		{ ShaderType::VERTEX_SHADER,		"VS_DebugDrawTri",				"Vertex/VS_DebugDrawTri"			},
 		{ ShaderType::VERTEX_SHADER,		"VS_DebugDrawSprite",			"Vertex/VS_DebugDrawSprite"			},
+		{ ShaderType::VERTEX_SHADER,		"VS_DebugDrawMesh",				"Vertex/VS_DebugDrawMesh"			},
 
 		{ ShaderType::GEOMETRY_SHADER,		"GS_DebugLine",					"Geometry/GS_DebugLine"				},
 		{ ShaderType::GEOMETRY_SHADER,		"GS_DebugDrawSprite",			"Geometry/GS_DebugDrawSprite"		},

@@ -706,10 +706,18 @@ bool CameraBehaviour::BindDebugDrawBuffers() const
 	ID3D11Buffer *const camViewProjBuffer = GetCameraVSBuffer();
 	if (camViewProjBuffer == nullptr)
 	{
-		Warn("Failed to bind vertex buffer, camera does not have that buffer!");
+		Warn("Failed to bind view projection vertex buffer, camera does not have that buffer!");
 		return true;
 	}
 	context->VSSetConstantBuffers(0, 1, &camViewProjBuffer);
+
+	ID3D11Buffer *const camPosBuffer = GetCameraCSBuffer();
+	if (camPosBuffer == nullptr)
+	{
+		Warn("Failed to bind cam pos vertex buffer, camera does not have that buffer!");
+		return true;
+	}
+	context->VSSetConstantBuffers(3, 1, &camPosBuffer);
 
 	ID3D11Buffer *const camViewPosBuffer = GetCameraGSBuffer();
 	if (camViewPosBuffer == nullptr)

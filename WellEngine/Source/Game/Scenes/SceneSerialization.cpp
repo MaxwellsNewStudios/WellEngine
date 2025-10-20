@@ -122,9 +122,11 @@ bool Scene::Serialize(bool asSaveFile)
 				{
 					FogSettingsBuffer fogSettings = _graphics->GetFogSettings();
 					sceneFogObj.AddMember("Thickness", fogSettings.thickness, docAlloc);
-					sceneFogObj.AddMember("Step Size", fogSettings.stepSize, docAlloc);
-					sceneFogObj.AddMember("Min Steps", fogSettings.minSteps, docAlloc);
+					sceneFogObj.AddMember("Sample Bias", fogSettings.sampleBias, docAlloc);
 					sceneFogObj.AddMember("Max Steps", fogSettings.maxSteps, docAlloc);
+					sceneFogObj.AddMember("Depth Fade Begin", fogSettings.depthFadeBegin, docAlloc);
+					sceneFogObj.AddMember("Depth Fade End", fogSettings.depthFadeEnd, docAlloc);
+					sceneFogObj.AddMember("Depth Fade Exp", fogSettings.depthFadeExp, docAlloc);
 				}
 				sceneGraphicsObj.AddMember("Fog", sceneFogObj, docAlloc);
 
@@ -455,10 +457,23 @@ bool Scene::Deserialize(bool sceneReload)
 			{
 				json::Value &sceneFogObj = sceneGraphicsObj["Fog"];
 
-				_fogSettings.thickness = sceneFogObj["Thickness"].GetFloat();
-				_fogSettings.stepSize = sceneFogObj["Step Size"].GetFloat();
-				_fogSettings.minSteps = sceneFogObj["Min Steps"].GetInt();
-				_fogSettings.maxSteps = sceneFogObj["Max Steps"].GetInt();
+				if (sceneFogObj.HasMember("Thickness"))
+					_fogSettings.thickness = sceneFogObj["Thickness"].GetFloat();
+
+				if (sceneFogObj.HasMember("Sample Bias"))
+					_fogSettings.sampleBias = sceneFogObj["Sample Bias"].GetFloat();
+
+				if (sceneFogObj.HasMember("Max Steps"))
+					_fogSettings.maxSteps = sceneFogObj["Max Steps"].GetInt();
+
+				if (sceneFogObj.HasMember("Depth Fade Begin"))
+					_fogSettings.depthFadeBegin = sceneFogObj["Depth Fade Begin"].GetFloat();
+
+				if (sceneFogObj.HasMember("Depth Fade End"))
+					_fogSettings.depthFadeEnd = sceneFogObj["Depth Fade End"].GetFloat();
+
+				if (sceneFogObj.HasMember("Depth Fade Exp"))
+					_fogSettings.depthFadeExp = sceneFogObj["Depth Fade Exp"].GetFloat();
 			}
 
 			if (sceneGraphicsObj.HasMember("Emission"))

@@ -126,6 +126,7 @@ void DebugDrawer::Shutdowm()
 	_sceneSpriteMeshes.clear(); 
 	_overlaySpriteMeshes.clear();
 	_screenSpriteMeshes.clear();
+	_cachedSphereMeshes.clear();
 }
 
 bool DebugDrawer::CreateOverlayDepthStencilTexture(const UINT width, const UINT height)
@@ -269,6 +270,14 @@ bool DebugDrawer::HasScreenSpriteDraws() const
 {
 	return !_screenSpriteLists.empty();
 }
+bool DebugDrawer::HasSceneMeshDraws() const
+{
+	return !_sceneInstancedMeshes.empty();
+}
+bool DebugDrawer::HasOverlayMeshDraws() const
+{
+	return !_overlayInstancedMeshes.empty();
+}
 
 void DebugDrawer::Clear()
 {
@@ -295,6 +304,9 @@ void DebugDrawer::Clear()
 
 	_sceneSpriteLists.clear();
 	_overlaySpriteLists.clear();
+
+	_sceneInstancedMeshes.clear();
+	_overlayInstancedMeshes.clear();
 }
 void DebugDrawer::ClearScreenSpace()
 {
@@ -333,9 +345,13 @@ bool DebugDrawer::Render(ID3D11RenderTargetView *targetRTV,
 	bool hasSceneSpriteDraws = HasSceneSpriteDraws();
 	bool hasOverlaySpriteDraws = HasOverlaySpriteDraws();
 
+	bool hasSceneMeshDraws = HasSceneMeshDraws();
+	bool hasOverlayMeshDraws = HasOverlayMeshDraws();
+
 	if (!hasSceneLineDraws && !hasOverlayLineDraws && 
 		!hasSceneTriDraws && !hasOverlayTriDraws &&
-		!hasSceneSpriteDraws && !hasOverlaySpriteDraws)
+		!hasSceneSpriteDraws && !hasOverlaySpriteDraws &&
+		!hasSceneMeshDraws && !hasOverlayMeshDraws)
 		return true;
 
 	ID3D11BlendState *prevBlendState;
@@ -359,7 +375,7 @@ bool DebugDrawer::Render(ID3D11RenderTargetView *targetRTV,
 	ID3D11Buffer *const camDirBuffer = _camDirBuffer.GetBuffer();
 	_context->GSSetConstantBuffers(1, 1, &camDirBuffer);
 
-	if (hasSceneLineDraws || hasSceneTriDraws || hasSceneSpriteDraws)
+	if (hasSceneLineDraws || hasSceneTriDraws || hasSceneSpriteDraws || hasSceneMeshDraws)
 	{
 		// Draw with depth
 		_context->OMSetRenderTargets(1, &targetRTV, targetDSV);
@@ -391,9 +407,18 @@ bool DebugDrawer::Render(ID3D11RenderTargetView *targetRTV,
 				return false;
 			}
 		}
+
+		if (hasSceneMeshDraws)
+		{
+			if (!RenderMeshInstances(&_sceneInstancedMeshes))
+			{
+				ErrMsg("Failed to render mesh instances in scene!");
+				return false;
+			}
+		}
 	}
 
-	if (hasOverlayLineDraws || hasOverlayTriDraws || hasOverlaySpriteDraws)
+	if (hasOverlayLineDraws || hasOverlayTriDraws || hasOverlaySpriteDraws || hasOverlayMeshDraws)
 	{
 		// Draw Overlay
 		_context->ClearDepthStencilView(_overlayDSV.Get(), D3D11_CLEAR_DEPTH, 0.0f, 0);
@@ -427,6 +452,15 @@ bool DebugDrawer::Render(ID3D11RenderTargetView *targetRTV,
 			if (!RenderSprites(&_overlaySpriteLists, &_overlaySpriteMeshes))
 			{
 				ErrMsg("Failed to render sprites in scene!");
+				return false;
+			}
+		}
+
+		if (hasOverlayMeshDraws)
+		{
+			if (!RenderMeshInstances(&_overlayInstancedMeshes))
+			{
+				ErrMsg("Failed to render mesh instances in scene!");
 				return false;
 			}
 		}
@@ -683,6 +717,80 @@ bool DebugDrawer::RenderSprites(std::map<UINT, std::vector<Sprite>> *spriteLists
 
 	return true;
 }
+bool DebugDrawer::RenderMeshInstances(std::map<SimpleMeshD3D11 *, std::vector<InstanceData>> *meshes)
+{
+	_context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	_context->RSSetState(_defaultRasterizer.Get());
+
+	_context->IASetInputLayout(_content->GetInputLayout("DebugDrawMesh")->GetInputLayout());
+
+	if (!_content->GetShader("VS_DebugDrawMesh")->BindShader(_context))
+	{
+		ErrMsg("Failed to bind debug mesh vertex shader!");
+		return false;
+	}
+
+	if (!_content->GetShader("PS_DebugDraw")->BindShader(_context))
+	{
+		ErrMsg("Failed to bind debug pixel shader!");
+		return false;
+	}
+
+	ComPtr<ID3D11Buffer> instanceBuffer;
+	InstanceData nullInstance{};
+
+	D3D11_BUFFER_DESC bufferDesc = { };
+	bufferDesc.ByteWidth = sizeof(InstanceData);
+	bufferDesc.Usage = D3D11_USAGE_DYNAMIC;
+	bufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	bufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+
+	D3D11_SUBRESOURCE_DATA initData = { };
+	initData.pSysMem = &nullInstance;
+
+	if (FAILED(_device->CreateBuffer(&bufferDesc, &initData, instanceBuffer.GetAddressOf())))
+	{
+		ErrMsg("Failed to create instance buffer!");
+		return false;
+	}
+
+	auto camFwd = _camera->GetTransform()->GetForward(World);
+
+	for (auto it = meshes->begin(); it != meshes->end(); ++it)
+	{
+		SimpleMeshD3D11 *mesh = it->first;
+		auto instanceList = &it->second;
+
+		if (instanceList->empty())
+			continue;
+
+#ifdef DEBUG_DRAW_SORT
+		SortInstances(instanceList, camFwd);
+#endif
+
+		mesh->BindMeshBuffers(_context);
+
+		for (InstanceData &instance : *instanceList)
+		{
+			// Update instance buffer
+			D3D11_MAPPED_SUBRESOURCE resource;
+			if (FAILED(_context->Map(instanceBuffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &resource)))
+			{
+				ErrMsg("Failed to update buffer!");
+				return false;
+			}
+
+			memcpy(resource.pData, &instance, sizeof(InstanceData));
+			_context->Unmap(instanceBuffer.Get(), 0);
+
+			_context->VSSetConstantBuffers(1, 1, instanceBuffer.GetAddressOf());
+
+			mesh->PerformDrawCall(_context);
+		}
+	}
+
+	return true;
+}
 
 inline static float ReturnClosest(float a, float b)
 {
@@ -779,7 +887,7 @@ void DebugDrawer::SortTris(std::vector<Tri> *triList, const XMFLOAT3A &direction
 		}
 	);
 }
-void DebugDrawer::SortSprites(std::vector<Sprite> *spriteList, const dx::XMFLOAT3A &direction)
+void DebugDrawer::SortSprites(std::vector<Sprite> *spriteList, const XMFLOAT3A &direction)
 {
 	ZoneScopedXC(RandomUniqueColor());
 
@@ -794,6 +902,23 @@ void DebugDrawer::SortSprites(std::vector<Sprite> *spriteList, const dx::XMFLOAT
 
 			return aDist > bDist;
 		}
+	);
+}
+void DebugDrawer::SortInstances(std::vector<InstanceData> *instanceList, const XMFLOAT3A &direction)
+{
+	ZoneScopedXC(RandomUniqueColor());
+
+	XMVECTOR dir = Load(direction);
+
+	// Sort points based on their projection along the direction
+	std::sort(instanceList->begin(), instanceList->end(),
+		[&dir](const InstanceData &a, const InstanceData &b) { // Calculate dot products and compare scalar results
+
+		float aDist = XMVectorGetX(XMVector3Dot(Load(XMFLOAT3A(a.matrix._41, a.matrix._42, a.matrix._43)), dir));
+		float bDist = XMVectorGetX(XMVector3Dot(Load(XMFLOAT3A(b.matrix._41, b.matrix._42, b.matrix._43)), dir));
+
+		return aDist > bDist;
+	}
 	);
 }
 
@@ -1316,7 +1441,7 @@ void DebugDrawer::DrawBoxOBB(const BoundingOrientedBox &obb, const XMFLOAT4 &col
 	DrawTri(v3, v0, v4, color, useDepth, twoSided);
 	DrawTri(v3, v4, v7, color, useDepth, twoSided);
 }
-void DebugDrawer::DrawFrustum(const dx::BoundingFrustum &frustum, const dx::XMFLOAT4 &color, bool useDepth, bool twoSided)
+void DebugDrawer::DrawFrustum(const BoundingFrustum &frustum, const XMFLOAT4 &color, bool useDepth, bool twoSided)
 {
 #ifndef DEBUG_DRAW
 	return;
@@ -1501,5 +1626,104 @@ void DebugDrawer::DrawSpriteSS(UINT texID, float layer, const XMFLOAT2 &pos, con
 
 	XMFLOAT4 pos4 = { pos.x, pos.y, layer, 0.0f };
 	_screenSpriteLists[texID].emplace_back(pos4, color, size, uv0, uv1);
+}
+
+
+void DebugDrawer::DrawSphere(const XMFLOAT3 &center, float radius, int subdivisions, const dx::XMFLOAT4 &color, bool useDepth)
+{
+#ifndef DEBUG_DRAW
+	return;
+#endif
+
+	if (subdivisions < 0)
+		subdivisions = 0;
+
+	if (subdivisions > 5)
+		subdivisions = 5;
+
+	{
+		// For testing, just draw as individual tris for now
+
+		static std::map<int, std::vector<XMFLOAT3>> cachedSphereMeshes;
+
+		if (cachedSphereMeshes.find(subdivisions) == cachedSphereMeshes.end())
+		{
+			std::vector<XMFLOAT3> vertices;
+			std::vector<int> indices;
+
+			Primitives::GenerateIcoSphere(subdivisions, vertices, indices);
+
+			std::vector<XMFLOAT3> &verts = cachedSphereMeshes[subdivisions];
+			int vertCount = static_cast<int>(indices.size());
+			verts.resize(vertCount);
+
+			for (size_t i = 0; i < vertCount; i += 3)
+			{
+				memcpy(&verts[i + 0].x, &vertices[indices[i + 2]].x, sizeof(XMFLOAT3));
+				memcpy(&verts[i + 1].x, &vertices[indices[i + 1]].x, sizeof(XMFLOAT3));
+				memcpy(&verts[i + 2].x, &vertices[indices[i + 0]].x, sizeof(XMFLOAT3));
+			}
+		}
+
+		const std::vector<XMFLOAT3> &verts = cachedSphereMeshes[subdivisions];
+		for (size_t i = 0; i < verts.size(); i += 3)
+		{
+			XMVECTOR centerV = Load(center);
+
+			XMFLOAT3 v0, v1, v2;
+			Store(v0, Load(verts[i + 0]) * radius + centerV);
+			Store(v1, Load(verts[i + 1]) * radius + centerV);
+			Store(v2, Load(verts[i + 2]) * radius + centerV);
+			DrawTri(v0, v1, v2, color, useDepth, false);
+		}
+	}
+
+	/*if (_cachedSphereMeshes.find(subdivisions) == _cachedSphereMeshes.end())
+	{
+		std::vector<XMFLOAT3> vertices;
+		std::vector<int> indices;
+
+		Primitives::GenerateIcoSphere(subdivisions, vertices, indices);
+
+		UINT vertCount = static_cast<UINT>(indices.size());
+		XMFLOAT4 *verticeData = new XMFLOAT4[vertCount * 2];
+
+		for (UINT i = 0; i < vertCount; i++)
+		{
+			// Position
+			memcpy(&verticeData[i * 2].x, &vertices[indices[i]].x, sizeof(XMFLOAT3));
+			verticeData[i].w = 1.0f;
+
+			// Normal
+			// In this case, position and normal for a unit sphere are the same
+			memcpy(&verticeData[i * 2 + 1].x, &vertices[indices[i]].x, sizeof(XMFLOAT3));
+			verticeData[i * 2 + 1].w = 0.0f;
+		}
+
+		SimpleMeshData simpleMeshData;
+		simpleMeshData.vertexInfo.sizeOfVertex = sizeof(XMFLOAT4) * 2;
+		simpleMeshData.vertexInfo.nrOfVerticesInBuffer = vertCount;
+		simpleMeshData.vertexInfo.vertexData = &(verticeData[0].x);
+
+		SimpleMeshD3D11 &sphereMesh = _cachedSphereMeshes[subdivisions];
+		if (!sphereMesh.Initialize(_device, simpleMeshData))
+		{
+			ErrMsg("Failed to initialize simple mesh!");
+			return;
+		}
+	}
+
+	InstanceData instanceData{};
+	Store(instanceData.matrix, XMMatrixScaling(radius, radius, radius) * XMMatrixTranslationFromVector(Load(center)));
+	instanceData.color = color;
+
+	if (useDepth)
+	{
+		_sceneInstancedMeshes[&_cachedSphereMeshes[subdivisions]].emplace_back(instanceData);
+	}
+	else
+	{
+		_overlayInstancedMeshes[&_cachedSphereMeshes[subdivisions]].emplace_back(instanceData);
+	}*/
 }
 #pragma endregion

@@ -12,6 +12,5 @@ struct PixelShaderInput
 float4 main(PixelShaderInput input) : SV_TARGET
 {
 	float4 result = Texture.Sample(Sampler, input.texcoord.xy) * input.color;
-	//clip(result.a - 0.001f);
 	return result;
 }

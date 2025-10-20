@@ -76,10 +76,14 @@ struct GeneralDataBuffer
 
 struct FogSettingsBuffer
 {
-	float thickness = 0.2f;
-	float stepSize = 0.0f;
-	int minSteps = 0;
-	int maxSteps = 64;
+	float	thickness = 0.2f;
+	float	sampleBias = 1.5f;
+	int		maxSteps = 64;
+	float	depthFadeBegin = 0.5f;
+	float	depthFadeEnd = 1.0f;
+	float	depthFadeExp = 1.0f;
+
+	float	_padding[2];
 };
 
 struct EmissionSettingsBuffer

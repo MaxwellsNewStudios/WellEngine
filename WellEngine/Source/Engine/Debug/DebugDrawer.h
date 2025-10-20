@@ -86,6 +86,12 @@ namespace DebugDraw
 		Sprite &operator=(const Sprite &) = default;
 		Sprite &operator=(Sprite &&) = default;
 	};
+
+	struct InstanceData
+	{
+		dx::XMFLOAT4X4 matrix;
+		dx::XMFLOAT4 color;
+	};
 }
 
 #define DD DebugDraw
@@ -109,6 +115,8 @@ private:
 	ConstantBufferD3D11 _camDirBuffer, _screenDirBuffer;
 	CameraBehaviour *_camera = nullptr;
 
+	std::map<int, SimpleMeshD3D11> _cachedSphereMeshes;
+
 	std::vector<DD::Line> _sceneLineList, _overlayLineList;
 	SimpleMeshD3D11		  _sceneLineMesh, _overlayLineMesh;
 
@@ -118,6 +126,8 @@ private:
 	std::map<UINT, std::vector<DD::Sprite>> _sceneSpriteLists,	_overlaySpriteLists,  _screenSpriteLists;
 	std::map<UINT, SimpleMeshD3D11>			_sceneSpriteMeshes, _overlaySpriteMeshes, _screenSpriteMeshes;
 
+	std::map<SimpleMeshD3D11 *, std::vector<DD::InstanceData>> _sceneInstancedMeshes, _overlayInstancedMeshes;
+
 	[[nodiscard]] bool CreateOverlayDepthStencilTexture(const UINT width, const UINT height);
 	[[nodiscard]] bool CreateDepthStencilState();
 	[[nodiscard]] bool CreateBlendState();
@@ -126,6 +136,7 @@ private:
 	void SortLines(std::vector<DD::Line> *lineList, const dx::XMFLOAT3A &direction);
 	void SortTris(std::vector<DD::Tri> *triList, const dx::XMFLOAT3A &direction);
 	void SortSprites(std::vector<DD::Sprite> *spriteList, const dx::XMFLOAT3A &direction);
+	void SortInstances(std::vector<DD::InstanceData> *instanceList, const dx::XMFLOAT3A &direction);
 
 	[[nodiscard]] bool CreateMesh(std::vector<DD::Line> *lineList, SimpleMeshD3D11 *mesh);
 	[[nodiscard]] bool RenderLines(std::vector<DD::Line> *lineList, SimpleMeshD3D11 *mesh);
@@ -135,6 +146,8 @@ private:
 
 	[[nodiscard]] bool CreateMesh(std::vector<DD::Sprite> *spriteList, SimpleMeshD3D11 *mesh, bool screenSpace);
 	[[nodiscard]] bool RenderSprites(std::map<UINT, std::vector<DD::Sprite>> *spriteLists, std::map<UINT, SimpleMeshD3D11> *meshes);
+
+	[[nodiscard]] bool RenderMeshInstances(std::map<SimpleMeshD3D11 *, std::vector<DD::InstanceData>> *meshes);
 
 	[[nodiscard]] bool HasSceneLineDraws() const;
 	[[nodiscard]] bool HasOverlayLineDraws() const;
@@ -146,6 +159,9 @@ private:
 	[[nodiscard]] bool HasSceneSpriteDraws() const;
 	[[nodiscard]] bool HasOverlaySpriteDraws() const;
 	[[nodiscard]] bool HasScreenSpriteDraws() const;
+
+	[[nodiscard]] bool HasSceneMeshDraws() const;
+	[[nodiscard]] bool HasOverlayMeshDraws() const;
 
 public:
 	[[nodiscard]] bool Setup(dx::XMUINT2 screenSize, dx::XMUINT2 sceneSize, 
@@ -236,7 +252,6 @@ public:
 	/// TODO: Describe
 	void DrawFrustum(const dx::BoundingFrustum &frustum, const dx::XMFLOAT4 &color, bool useDepth = true, bool twoSided = false);
 
-
 	/// TODO: Describe
 	void DrawTriSS(const DD::Tri &tri);
 	/// TODO: Describe
@@ -252,11 +267,15 @@ public:
 	/// TODO: Describe
 	void DrawSprite(UINT texID, const dx::XMFLOAT4 &pos, const dx::XMFLOAT2 &size, const dx::XMFLOAT4 &color = {1,1,1,1}, dx::XMFLOAT2 uv0 = {0,0}, dx::XMFLOAT2 uv1 = {1,1}, bool useDepth = true);
 
-
 	/// TODO: Describe
 	void DrawSpriteSS(UINT texID, DD::Sprite sprite);
 	/// TODO: Describe
 	void DrawSpriteSS(UINT texID, float layer, const dx::XMFLOAT2 &pos, const dx::XMFLOAT2 &size, const dx::XMFLOAT4 &color = {1,1,1,1}, dx::XMFLOAT2 uv0 = {0,0}, dx::XMFLOAT2 uv1 = {1,1});
+
+
+	/// TODO: Describe
+	void DrawSphere(const dx::XMFLOAT3 &center, float radius, int subdivisions, const dx::XMFLOAT4 &color, bool useDepth = true);
+
 
 	TESTABLE()
 };

@@ -20,10 +20,14 @@ cbuffer InverseCameraMatrixBuffer : register(b4)
 
 cbuffer FogSettings : register(b6)
 {
-	float thickness;
-	float stepSize;
-	int minSteps;
-	int maxSteps;
+	float fog_thickness;
+	float fog_sampleBias;
+	int fog_maxSteps;
+	float fog_depthFadeBegin;
+	float fog_depthFadeEnd;
+	float fog_depthFadeExp;
+	
+	float fog_padding[2];
 };
 
 
@@ -248,26 +252,45 @@ float4 SampleLight(float3 pos, LightTile lightTile)
 	return float4(totalDiffuseLight, density);
 }
 
+// Distribute steps from 0 to maxDist, with sampleBias controlling distribution curve.
+// Return the smoothed length between samples at currDist.
+float CalcStepSize(float currDist, float maxDist, int samplesLeft, float sampleBias)
+{
+	float u = currDist / maxDist;
+	float s = pow(abs(u), 1.0 / sampleBias);
+	float remaining_s = 1.0 - s;
+	float delta_s = remaining_s / (float)samplesLeft;
+	float s_next = s + delta_s;
+	float u_next = pow(abs(s_next), sampleBias);
+	return maxDist * (u_next - u);
+}
 
 void RayStepping(
 	float Length, float3 Start, float3 Dir, LightTile lightTile, // View params
-	float thickness, float Step, float MinSteps, float MaxSteps, // Setting params
 	out float3 Color, out float Density)
 {
+	Color = float3(0.0, 0.0, 0.0);
 	Density = 1.0;
-	MaxSteps = clamp(MaxSteps, 0.0, 1024.0); // Clamp to prevent harmful edge cases
 	
-	// Traverse path backwards for better accumulation
-	//Start = Start + (Dir * Length);
-	//Dir = -Dir;
+	float farPlane = max(cam_planes.x, cam_planes.y);
+	float depthFadeBegin = fog_depthFadeBegin * farPlane;
+	float depthFadeEnd = fog_depthFadeEnd * farPlane;
 	
-	Step = (Length / MaxSteps);
+	// Clip length to depth fade cutoff point
+	Length = min(Length, depthFadeEnd);
+	
+	// Clip to prevent harmful edge cases
+	int MaxSteps = min(fog_maxSteps, 1024.0);
+		
+	float step = CalcStepSize(0.0, Length, MaxSteps, fog_sampleBias);
 	
 	float3 samplePos = Start;
 	float4 lightSample = SampleLight(samplePos, lightTile);
-
-	float3 prevStepColor = lightSample.xyz;
-	float prevStepDensity = lightSample.w;
+	
+	float depthFade = pow(saturate(Remap(0.0, depthFadeBegin, depthFadeEnd, 1.0, 0.0)), fog_depthFadeExp);
+	
+	float3 prevStepColor = depthFade * lightSample.xyz;
+	float prevStepDensity = depthFade * lightSample.w;
 	float prevLength = 0.0;
 	
 	float3 thisStepColor;
@@ -282,21 +305,21 @@ void RayStepping(
 	float distortionStaticRadius = pow(RandomValue(seed), 6.0);
 	float distortionDistInv = 1.0 / (distortion_distance * 0.2);
 	float distortionStaticRadiusInv = 1.0 / (distortion_distance * 0.5 * distortionStaticRadius);
-	
+		
 	int i = 0;
 	int resampleRate = 1;
-	for (float dist = Step; dist < Length; dist += Step)
+	for (float dist = step; dist < Length; dist += step)
 	{
-		float randOffset = (RandomValue(seed) - 0.5) * Step;
-		
-		thisLength = dist + randOffset;
+		thisLength = dist - step * RandomValue(seed);
 		deltaStep = (thisLength - prevLength);
 		
 		samplePos = Start + thisLength * Dir;
 		lightSample = SampleLight(samplePos, lightTile);
 		
-		thisStepColor = lightSample.xyz;
-		thisStepDensity = lightSample.w;
+		depthFade = pow(saturate(Remap(thisLength, depthFadeBegin, depthFadeEnd, 1.0, 0.0)), fog_depthFadeExp);
+		
+		thisStepColor = depthFade * lightSample.xyz;
+		thisStepDensity = depthFade * lightSample.w;
 		
 		Color += (prevStepColor + thisStepColor) * 0.5 * deltaStep;
 		stepDensity = (prevStepDensity + thisStepDensity) * 0.5 * deltaStep;
@@ -308,29 +331,29 @@ void RayStepping(
 		
 		// Sample Distortion
 		float distToSource = length(samplePos - distortion_source);
-		float distortion = Step * pow(1.0 - saturate(distToSource * distortionDistInv), 1.25);
-		float dS = Step * pow(1.0 - saturate(distToSource * distortionStaticRadiusInv), 0.75);
+		float distortion = step * pow(1.0 - saturate(distToSource * distortionDistInv), 1.25);
+		float dS = step * pow(1.0 - saturate(distToSource * distortionStaticRadiusInv), 0.75);
 		
 		Color -= 0.1 * mad(0.1, distortion, 0.1 * dS);
-		//Density = mad(0.1, mad(6.0, distortion, 12.0 * dS), Density);
-		
-		//dist *= mad(0.075, RandomValue(seed), 1.0);
-		//dist = mad(0.0075 * Density * Step, abs(RandomValue(seed)), dist);
 		
 		i++;
 		if (i > MaxSteps) // Prevent infinite loop
 			return;
+		
+		step = CalcStepSize(thisLength, Length, MaxSteps - i, fog_sampleBias);
 	}
 	
 	deltaStep = (Length - prevLength);
 	
 	samplePos = mad(Length, Dir, Start);
 	lightSample = SampleLight(samplePos, lightTile);
-	thisStepColor = lightSample.xyz;
-	thisStepDensity = lightSample.w;
+	
+	depthFade = pow(saturate(Remap(Length, depthFadeBegin, depthFadeEnd, 1.0, 0.0)), fog_depthFadeExp);
+	
+	thisStepColor = depthFade * lightSample.xyz;
+	thisStepDensity = depthFade * lightSample.w;
 	
 	Color += (prevStepColor + thisStepColor) * 0.5 * deltaStep;
-	//Density += (prevStepDensity + thisStepDensity) * 0.5 * deltaStep;
 	stepDensity = (prevStepDensity + thisStepDensity) * 0.5 * deltaStep;
 	Density *= exp(-stepDensity);
 }
@@ -338,7 +361,7 @@ void RayStepping(
 [numthreads(8, 8, 1)]
 void main(uint3 DTid : SV_DispatchThreadID)
 {
-	if (thickness <= 0.0)
+	if (fog_thickness <= 0.0)
 	{
 		Output[DTid.xy] = float4(0, 0, 0, 0);
 		return;
@@ -360,7 +383,6 @@ void main(uint3 DTid : SV_DispatchThreadID)
 		depth11 = Input.SampleLevel(Sampler, uv + float2(uvPixelSize.x, uvPixelSize.y), 0);
     
 	float depth = (depth00 + depth01 + depth10 + depth11) / 4.0;
-	//float depth = Input.SampleLevel(Sampler, uv, 0);
     
 	float2 clipSpace = float2(uv.x * 2.0 - 1.0, 1.0 - uv.y * 2.0);
 	float4 viewRay = float4(clipSpace, 1.0, 1.0);
@@ -370,7 +392,7 @@ void main(uint3 DTid : SV_DispatchThreadID)
 	float3 rayWorldDir = mul(inverseViewMatrix, float4(viewRay.xyz, 0.0)).xyz;
 	rayWorldDir = normalize(rayWorldDir);
 	
-    
+	
 	// Calculate light tile position
 	const float4 screenPosClip = mul(float4(cam_position.xyz + rayWorldDir, 1.0f), view_proj_matrix);
 	const float3 screenPosNDC = screenPosClip.xyz / screenPosClip.w;
@@ -389,18 +411,17 @@ void main(uint3 DTid : SV_DispatchThreadID)
 	float3 stepDir = rayWorldDir;
     
 	float3 color = float3(0.0, 0.0, 0.0);
-	float density = 0.0;
+	float density = 1.0;
     
 	RayStepping(
         depth, currStep, stepDir, lightTile, // View
-        thickness, stepSize, minSteps, maxSteps, // Setting
         color, density // Output
     );
 	
 	color = max(0.0, color * 0.1);
 	
 	float transmittance = 1.0 - density;
-	transmittance *= thickness;
+	transmittance *= fog_thickness;
 	
 	Output[DTid.xy] = float4(color, transmittance);
 }

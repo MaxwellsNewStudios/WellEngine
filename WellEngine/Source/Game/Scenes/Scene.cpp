@@ -135,9 +135,11 @@ bool Scene::InitializeBase(std::string sceneName, ID3D11Device *device, ID3D11De
 		_ambientColor = { 0.1f, 0.1f, 0.1f };
 
 		_fogSettings.thickness = 0.15f;
-		_fogSettings.stepSize = 0.0f;
-		_fogSettings.minSteps = 0;
+		_fogSettings.sampleBias = 1.5f;
 		_fogSettings.maxSteps = 64;
+		_fogSettings.depthFadeBegin = 0.5f;
+		_fogSettings.depthFadeEnd = 1.0f;
+		_fogSettings.depthFadeExp = 1.0f;
 
 		_emissionSettings.strength = 1.0f;
 		_emissionSettings.exponent = 0.5f;
@@ -262,9 +264,11 @@ bool Scene::InitializeMenu(std::string sceneName, ID3D11Device *device, ID3D11De
 		_ambientColor = { 0.05f, 0.059f, 0.068f };
 
 		_fogSettings.thickness = 0.04f;
-		_fogSettings.stepSize = 0.0f;
-		_fogSettings.minSteps = 0;
+		_fogSettings.sampleBias = 1.2f;
 		_fogSettings.maxSteps = 64;
+		_fogSettings.depthFadeBegin = 1.0f;
+		_fogSettings.depthFadeEnd = 1.0f;
+		_fogSettings.depthFadeExp = 1.0f;
 
 		_emissionSettings.strength = 1.0f;
 		_emissionSettings.exponent = 0.5f;
@@ -689,9 +693,11 @@ bool Scene::InitializeEntr(std::string sceneName, ID3D11Device *device, ID3D11De
 		_ambientColor = { 0.1f, 0.1f, 0.1f };
 
 		_fogSettings.thickness = 0.25f;
-		_fogSettings.stepSize = 0.0f;
-		_fogSettings.minSteps = 0;
+		_fogSettings.sampleBias = 1.5f;
 		_fogSettings.maxSteps = 96;
+		_fogSettings.depthFadeBegin = 0.5f;
+		_fogSettings.depthFadeEnd = 1.0f;
+		_fogSettings.depthFadeExp = 1.0f;
 
 		_emissionSettings.strength = 1.25f;
 		_emissionSettings.exponent = 0.5f;
@@ -899,9 +905,11 @@ bool Scene::InitializeCave(std::string sceneName, ID3D11Device *device, ID3D11De
 	// Set visual effect parameters
 	{
 		_fogSettings.thickness = 0.2f;
-		_fogSettings.stepSize = 0.0f;
-		_fogSettings.minSteps = 0;
+		_fogSettings.sampleBias = 1.5f;
 		_fogSettings.maxSteps = 96;
+		_fogSettings.depthFadeBegin = 0.5f;
+		_fogSettings.depthFadeEnd = 1.0f;
+		_fogSettings.depthFadeExp = 1.0f;
 
 		_emissionSettings.strength = 1.2f;
 		_emissionSettings.exponent = 0.5f;
@@ -1238,9 +1246,11 @@ bool Scene::InitializeCred(std::string sceneName, ID3D11Device *device, ID3D11De
 		_ambientColor = { 0.25f, 0.25f, 0.25f };
 
 		_fogSettings.thickness = 0.0f;
-		_fogSettings.stepSize = 0.0f;
-		_fogSettings.minSteps = 0;
+		_fogSettings.sampleBias = 1.0f;
 		_fogSettings.maxSteps = 0;
+		_fogSettings.depthFadeBegin = 0.0f;
+		_fogSettings.depthFadeEnd = 0.0f;
+		_fogSettings.depthFadeExp = 1.0f;
 
 		_emissionSettings.strength = 1.0f;
 		_emissionSettings.exponent = 1.0f;

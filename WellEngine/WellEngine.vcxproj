@@ -469,6 +469,7 @@
     <ClInclude Include="Source\Math\ConstRand.h" />
     <ClInclude Include="Source\Math\EasingFunctions.h" />
     <ClInclude Include="Source\Math\GameMath.h" />
+    <ClInclude Include="Source\Math\Primitives.h" />
     <ClInclude Include="stdafx.h" />
   </ItemGroup>
   <ItemGroup>
@@ -659,6 +660,7 @@
     <ClCompile Include="Source\Game\Scenes\SceneUI.cpp" />
     <ClCompile Include="Source\Game\Transform.cpp" />
     <ClCompile Include="Source\Math\EasingFunctions.cpp" />
+    <ClCompile Include="Source\Math\Primitives.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">Create</PrecompiledHeader>
@@ -1204,6 +1206,11 @@
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
+    </FxCompile>
+    <FxCompile Include="Source\Shaders\Vertex\VS_DebugDrawMesh.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
     </FxCompile>
     <FxCompile Include="Source\Shaders\Vertex\VS_DebugDrawSprite.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>

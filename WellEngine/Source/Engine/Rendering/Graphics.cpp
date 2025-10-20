@@ -4642,17 +4642,23 @@ bool Graphics::RenderUI(TimeUtils &time)
 					ImGui::DragFloat("Thickness", &_currFogSettings.thickness, 0.01f);
 					ImGuiUtils::LockMouseOnActive();
 
-					ImGui::DragFloat("Step Size", &_currFogSettings.stepSize, 0.01f);
-					ImGuiUtils::LockMouseOnActive();
-
-					int minSteps = _currFogSettings.minSteps;
-					if (ImGui::DragInt("Min Samples", &minSteps, 1, 0, _currFogSettings.maxSteps))
-						_currFogSettings.minSteps = minSteps;
+					ImGui::DragFloat("Sample Bias", &_currFogSettings.sampleBias, 0.01f, 0.01f, 100.0f);
 					ImGuiUtils::LockMouseOnActive();
 
 					int maxSteps = _currFogSettings.maxSteps;
-					if (ImGui::DragInt("Max Samples", &maxSteps, 1, minSteps))
+					if (ImGui::DragInt("Max Samples", &maxSteps, 1))
 						_currFogSettings.maxSteps = max(maxSteps, 0);
+					ImGuiUtils::LockMouseOnActive();
+
+					float farPlane = _currViewCamera->GetPlanes().farZ;
+
+					ImGui::DragFloat("Depth Fade Begin", &_currFogSettings.depthFadeBegin, 0.1f, 0.001f, farPlane);
+					ImGuiUtils::LockMouseOnActive();
+
+					ImGui::DragFloat("Depth Fade End", &_currFogSettings.depthFadeEnd, 0.1f, 0.001f, farPlane);
+					ImGuiUtils::LockMouseOnActive();
+
+					ImGui::DragFloat("Depth Fade Exponent", &_currFogSettings.depthFadeExp, 0.01f, 0.001f);
 					ImGuiUtils::LockMouseOnActive();
 
 					if (ImGui::DragInt("Blur Iterations", &_fogBlurIterations, 0.1f, 0, 16))

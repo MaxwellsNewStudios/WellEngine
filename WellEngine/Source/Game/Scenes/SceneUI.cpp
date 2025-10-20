@@ -1747,6 +1747,121 @@ bool Scene::RenderSceneUI()
 
 	if (ImGui::CollapsingHeader("Other"))
 	{
+		if (ImGui::TreeNode("Fog Testing"))
+		{
+			const static auto calcStepSize = [](float currDist, float maxDist, int samplesLeft, int maxSamples, float sampleBias) -> float {
+				float bias = sampleBias;
+				float u = currDist / maxDist;
+				float s = pow(u, 1.0f / bias);
+				float remaining_s = 1.0f - s;
+				float delta_s = remaining_s / (float)samplesLeft;
+				float s_next = s + delta_s;
+				float u_next = pow(s_next, bias);
+				return maxDist * (u_next - u);
+			};
+
+			static Shape::Ray ray({ 0,0,0 }, { 0,0,1 }, 1);
+			static Shape::RayHit hit;
+			static bool doRecalc = false;
+
+			static std::vector<dx::XMFLOAT3> samplePoints;
+
+			if (ImGui::DragFloat("Length##FogTests", &ray.length, 0.01f))
+				doRecalc = true;
+			ImGuiUtils::LockMouseOnActive();
+
+			static int maxSamples = 0;
+			if (ImGui::DragInt("Max Samples##FogTests", &maxSamples, 1, 0, 1024))
+				doRecalc = true;
+
+			static float sampleBias = 1.0f;
+			if (ImGui::DragFloat("Sample Bias##FogTests", &sampleBias, 0.01f, 0.1f, 10.0f))
+				doRecalc = true;
+			ImGuiUtils::LockMouseOnActive();
+
+			static float randomOffset = 0.0f;
+			if (ImGui::DragFloat("Random Offset##FogTests", &randomOffset, 0.01f, 0.0f, 1.0f))
+				doRecalc = true;
+			ImGuiUtils::LockMouseOnActive();
+
+			static bool alwaysRecalc = false;
+			ImGui::Checkbox("Always Recalculate##FogTests", &alwaysRecalc);
+
+			ImGui::SeparatorText("Ray");
+			{
+				static bool followingCamera = true;
+				ImGui::Checkbox("Follow Camera##FogTests", &followingCamera);
+
+				if (_viewCamera && followingCamera)
+				{
+					Transform *camT = _viewCamera.Get()->GetTransform();
+					ray.origin = camT->GetPosition(World);
+					ray.direction = camT->GetForward(World);
+				}
+				else
+				{
+					ImGui::DragFloat3("Origin##FogTests", &ray.origin.x, 0.05f);
+					ImGuiUtils::LockMouseOnActive();
+
+					if (ImGui::DragFloat3("Direction##FogTests", &ray.direction.x, 0.01f))
+						Store(ray.direction, dx::XMVector3Normalize(Load(ray.direction)));
+					ImGuiUtils::LockMouseOnActive();
+				}
+			}
+
+			if (ImGui::Button("Recalculate##FogTests") || doRecalc || alwaysRecalc)
+			{
+				doRecalc = false;
+				Entity *_ = nullptr;
+				hit = {};
+				bool didHit = _sceneHolder.RaycastScene(ray, hit, _);
+
+				samplePoints.clear();
+				float currDist = 0.0f;
+				for (int i = 0; i < maxSamples; i++)
+				{
+					float stepSize = calcStepSize(currDist, didHit ? hit.length : ray.length, maxSamples - i, maxSamples, sampleBias);
+
+					float randomFactor = 1.0f;
+					if (randomOffset > 0.0f)
+						randomFactor = RandomFloat(1.0f - randomOffset, 1.0f);
+
+					dx::XMFLOAT3 samplePoint;
+					Store(samplePoint, Load(ray.origin) + Load(ray.direction) * (currDist + stepSize * randomFactor));
+					samplePoints.push_back(samplePoint);
+
+					currDist += stepSize;
+				}
+			}
+
+			ImGui::SeparatorText("Drawing");
+			{
+				DebugDrawer &drawer = DebugDrawer::Instance();
+
+				static bool drawRay = true;
+				ImGui::Checkbox("Draw Ray##FogTests", &drawRay);
+				if (drawRay)
+				{
+					dx::XMFLOAT3 scaledDir{};
+					Store(scaledDir, Load(ray.direction) * hit.length);
+					drawer.DrawRay(ray.origin, scaledDir, 0.01f, { 1, 1, 1, 0.25f }, true);
+				}
+
+				static bool drawSamples = true;
+				ImGui::Checkbox("Draw Samples##FogTests", &drawSamples);
+				if (drawSamples)
+				{
+					for (const auto &point : samplePoints)
+					{
+						drawer.DrawSphere(point, 0.025f, 1, { 0, 1, 0, 0.5f }, true);
+					}
+				}
+			}
+
+			ImGui::Separator();
+			ImGui::TreePop();
+		}
+		
 		if (ImGui::TreeNode("Raycast Tests"))
 		{
 			static Shape::Ray ray({ 0,0,0 }, { 0,0,1 }, 1);
