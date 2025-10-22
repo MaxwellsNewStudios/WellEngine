@@ -9,9 +9,9 @@ struct GeometryShaderOutput
 {
 	float4 position : SV_POSITION;
 	float4 world_position : POSITION;
+	float2 tex_coord : TEXCOORD;
 	float3 normal : NORMAL;
 	float4 color : COLOR;
-	float2 tex_coord : TEXCOORD;
 };
 
 

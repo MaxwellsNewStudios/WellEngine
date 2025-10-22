@@ -195,6 +195,9 @@ bool PointLightBehaviour::RenderUI()
 	ImGui::DragFloat("Fog Dispersion", &_fogStrength, 0.005f);
 	ImGuiUtils::LockMouseOnActive();
 
+	ImGui::DragFloat("Shadow Strength", &_shadowStrength, 0.005f, FLT_MIN, 1.0f);
+	ImGuiUtils::LockMouseOnActive();
+
 	if (recalculateReach && _shadowCameraCube)
 		_shadowCameraCube->SetFarZ(CalculateLightReach(_color, _falloff));
 
@@ -254,6 +257,7 @@ bool PointLightBehaviour::Serialize(json::Document::AllocatorType &docAlloc, jso
 
 	obj.AddMember("Falloff", _falloff, docAlloc);
 	obj.AddMember("Fog Strength", _fogStrength, docAlloc);
+	obj.AddMember("Shadow Strength", _shadowStrength, docAlloc);
 	obj.AddMember("Near", nearPlane, docAlloc);
 	obj.AddMember("Far", farPlane, docAlloc);
 
@@ -267,15 +271,28 @@ bool PointLightBehaviour::Deserialize(const json::Value &obj, Scene *scene)
 	if (obj.HasMember("Update Frequency"))
 		_updateFrequency = obj["Update Frequency"].GetUint();
 
-	float falloff		= obj["Falloff"].GetFloat();
-	float fogStrength	= obj["Fog Strength"].GetFloat();
-	float nearPlane		= obj["Near"].GetFloat();
-	float farPlane		= obj["Far"].GetFloat();
+	float 
+		falloff = 1.0f, 
+		fogStrength = 1.0f, 
+		shadowStrength = 1.0f, 
+		nearPlane = 0.1f, 
+		farPlane = 10.0f;
+
+	if (obj.HasMember("Falloff"))
+		falloff = obj["Falloff"].GetFloat();
+	if (obj.HasMember("Fog Strength"))
+		fogStrength = obj["Fog Strength"].GetFloat();
+	if (obj.HasMember("Shadow Strength"))
+		shadowStrength = obj["Shadow Strength"].GetFloat();
+	if (obj.HasMember("Near"))
+		nearPlane = obj["Near"].GetFloat();
+	if (obj.HasMember("Far"))
+		farPlane = obj["Far"].GetFloat();
 
 	dx::XMFLOAT3 color;
 	SerializerUtils::DeserializeVec(color, obj["Color"]);
 
-	SetLightBufferData(color, falloff, fogStrength);
+	SetLightBufferData(color, falloff, fogStrength, shadowStrength);
 	_initialCameraPlanes = { nearPlane * -1, farPlane * -1};
 
 	return true;
@@ -335,20 +352,25 @@ PointLightBufferData PointLightBehaviour::GetLightBufferData()
 	data.falloff = _falloff;
 	data.color = _color;
 	data.fogStrength = _fogStrength;
+	data.shadowStrength = _shadowStrength;
 	data.nearZ = _shadowCameraCube->GetNearZ();
 	data.farZ = _shadowCameraCube->GetFarZ();
 
 	return data;
 }
-void PointLightBehaviour::SetLightBufferData(XMFLOAT3 color, float falloff, float fogStrength)
+void PointLightBehaviour::SetLightBufferData(XMFLOAT3 color, float falloff, float fogStrength, float shadowStrength)
 {
 	_color = color;
 	_falloff = falloff;
 	_fogStrength = fogStrength;
+	_shadowStrength = shadowStrength;
 
 	if (_shadowCameraCube)
-		_shadowCameraCube->SetFarZ(CalculateLightReach(color, falloff));
+	{
+		_shadowCameraCube->SetFarZ(CalculateLightReach(_color, _falloff));
+	}
 }
+
 void PointLightBehaviour::SetIntensity(float intensity)
 {
 	float maxChannel = max(_color.x, max(_color.y, _color.z));
@@ -361,6 +383,32 @@ void PointLightBehaviour::SetIntensity(float intensity)
 		float reach = CalculateLightReach(_color, _falloff);
 		_shadowCameraCube->SetFarZ(reach);
 	}
+}
+void PointLightBehaviour::SetColor(dx::XMFLOAT3 color)
+{
+	_color = color;
+
+	if (_shadowCameraCube)
+	{
+		_shadowCameraCube->SetFarZ(CalculateLightReach(_color, _falloff));
+	}
+}
+void PointLightBehaviour::SetFalloff(float falloff)
+{
+	_falloff = falloff;
+
+	if (_shadowCameraCube)
+	{
+		_shadowCameraCube->SetFarZ(CalculateLightReach(_color, _falloff));
+	}
+}
+void PointLightBehaviour::SetFogStrength(float fogStrength)
+{
+	_fogStrength = fogStrength;
+}
+void PointLightBehaviour::SetShadowStrength(float shadowStrength)
+{
+	_shadowStrength = shadowStrength;
 }
 
 CameraCubeBehaviour *PointLightBehaviour::GetShadowCameraCube() const

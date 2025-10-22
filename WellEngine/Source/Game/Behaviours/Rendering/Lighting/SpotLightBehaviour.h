@@ -17,7 +17,9 @@ struct SpotLightBufferData
 	int orthographic = -1;
 
 	float fogStrength = 1.0f;
-	float padding[3]{};
+	float shadowStrength = 1.0f;
+
+	float padding[2]{};
 };
 
 class [[register_behaviour]] SpotLightBehaviour final : public Behaviour
@@ -27,6 +29,7 @@ private:
 	dx::XMFLOAT3 _color = { 1.0f, 1.0f, 1.0f };
 	float _falloff = 1.0f;
 	float _fogStrength = 1.0f;
+	float _shadowStrength = 1.0f;
 	bool _ortho = false;
 
 	bool _updateShadows = true;
@@ -75,8 +78,13 @@ public:
 	[[nodiscard]] bool UpdateBuffers();
 
 	[[nodiscard]] SpotLightBufferData GetLightBufferData();
-	void SetLightBufferData(dx::XMFLOAT3 color, float falloff, float fogStrength);
+	void SetLightBufferData(dx::XMFLOAT3 color, float falloff, float fogStrength, float shadowStrength);
+
 	void SetIntensity(float intensity);
+	void SetColor(dx::XMFLOAT3 color);
+	void SetFalloff(float falloff);
+	void SetFogStrength(float fogStrength);
+	void SetShadowStrength(float shadowStrength);
 
 	[[nodiscard]] CameraBehaviour *GetShadowCamera() const;
 

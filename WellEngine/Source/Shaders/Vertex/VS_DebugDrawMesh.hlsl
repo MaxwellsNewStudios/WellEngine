@@ -31,14 +31,14 @@ VertexShaderOutput main(VertexShaderInput input)
 {
 	VertexShaderOutput output;
 	
-	float4 worldPos = mul(input.position, worldMatrix);
+	float4 worldPos = mul(float4(input.position.xyz, 1.0), worldMatrix);	
 	output.position = mul(worldPos, viewProjMatrix);
 	
-	float4 normal = normalize(mul(input.normal, worldMatrix));
-	float lighting = Remap(dot(normal, cam_direction), -1.0, 1.0, 0.0, 1.0);
+	float3 normal = normalize(mul(input.normal, transpose(worldMatrix)).xyz);
+	float lighting = Remap(dot(normal, normalize(cam_position.xyz - worldPos.xyz)), -1.0, 1.0, 0.0, 1.0);
 	
 	output.color = color;
-	output.color.rgb *= lighting;
+	output.color.rgb = saturate(output.color.rgb * lighting);
 	
 	return output;
 }

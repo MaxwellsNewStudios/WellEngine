@@ -13,9 +13,9 @@ struct PixelShaderInput
 {
     float4 position : SV_POSITION;
     float4 world_position : POSITION;
+    float2 tex_coord : TEXCOORD;
     float3 normal : NORMAL;
     float3 tangent : TANGENT;
-    float2 tex_coord : TEXCOORD;
 };
 
 struct PixelShaderOutput
@@ -164,12 +164,13 @@ PixelShaderOutput main(PixelShaderInput input)
 				spotUV,
 				fragPosLightNDC.z + SHADOW_DEPTH_EPSILON
 			);
-			const float shadow = isInsideFrustum * saturate(offsetAngle * shadowFactor);
 			
-
+			const float diffShadow = isInsideFrustum * saturate(offsetAngle * lerp(1.0 - light.shadowStrength, 1.0, shadowFactor));
+			const float specShadow = isInsideFrustum * saturate(offsetAngle * shadowFactor);
+			
 			// Apply lighting
-            totalDiffuseLight += diffuseLightCol * shadow * inverseLightDistSqr;
-            totalSpecularLight += specularLightCol * shadow * inverseLightDistSqr;
+			totalDiffuseLight += diffuseLightCol * diffShadow * inverseLightDistSqr;
+			totalSpecularLight += specularLightCol * specShadow * inverseLightDistSqr;
 			
 	
 			uint seed = 112 + currentSpotlight * 773;
@@ -263,14 +264,16 @@ PixelShaderOutput main(PixelShaderInput input)
 			float shadowFactor = PointShadowMaps.SampleCmpLevelZero(
 				ShadowCubeSampler,
 				lightToPosDir,
-			1.0 - ((lightDist - light.nearZ) / (light.farZ - light.nearZ))
+				1.0 - ((lightDist - light.nearZ) / (light.farZ - light.nearZ))
 			);
-			const float shadow = saturate(shadowFactor);
+			
+			const float diffShadow = saturate(lerp(1.0 - light.shadowStrength, 1.0, shadowFactor));
+			const float specShadow = saturate(shadowFactor);
 			
 			
 			// Apply lighting
-            totalDiffuseLight += diffuseLightCol * shadow * inverseLightDistSqr;
-            totalSpecularLight += specularLightCol * shadow * inverseLightDistSqr;
+			totalDiffuseLight += diffuseLightCol * diffShadow * inverseLightDistSqr;
+			totalSpecularLight += specularLightCol * specShadow * inverseLightDistSqr;
 			
 			
 			uint seed = 274 + currentPointlight * 8789;

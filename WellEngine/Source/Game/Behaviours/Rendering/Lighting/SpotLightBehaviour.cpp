@@ -208,6 +208,9 @@ bool SpotLightBehaviour::RenderUI()
 	ImGui::DragFloat("Fog Dispersion", &_fogStrength, 0.005f);
 	ImGuiUtils::LockMouseOnActive();
 
+	ImGui::DragFloat("Shadow Strength", &_shadowStrength, 0.005f, FLT_MIN, 1.0f);
+	ImGuiUtils::LockMouseOnActive();
+
 	if (_shadowCamera)
 	{
 		float angle = _shadowCamera->GetFOV() * RAD_TO_DEG;
@@ -279,6 +282,7 @@ bool SpotLightBehaviour::Serialize(json::Document::AllocatorType &docAlloc, json
 
 	obj.AddMember("Falloff", _falloff, docAlloc);
 	obj.AddMember("Fog Strength", _fogStrength, docAlloc);
+	obj.AddMember("Shadow Strength", _shadowStrength, docAlloc);
 
 	json::Value colorArr(json::kArrayType);
 	colorArr.PushBack(_color.x, docAlloc);
@@ -300,8 +304,17 @@ bool SpotLightBehaviour::Deserialize(const json::Value &obj, Scene *scene)
 	if (obj.HasMember("Update Frequency"))
 		_updateFrequency = obj["Update Frequency"].GetUint();
 
-	float falloff		= obj["Falloff"].GetFloat();
-	float fogStrength	= obj["Fog Strength"].GetFloat();
+	float
+		falloff = 1.0f,
+		fogStrength = 1.0f,
+		shadowStrength = 1.0f;
+
+	if (obj.HasMember("Falloff"))
+		falloff = obj["Falloff"].GetFloat();
+	if (obj.HasMember("Fog Strength"))
+		fogStrength = obj["Fog Strength"].GetFloat();
+	if (obj.HasMember("Shadow Strength"))
+		shadowStrength = obj["Shadow Strength"].GetFloat();
 
 	dx::XMFLOAT3 color;
 	SerializerUtils::DeserializeVec(color, obj["Color"]);
@@ -312,7 +325,7 @@ bool SpotLightBehaviour::Deserialize(const json::Value &obj, Scene *scene)
 	float nearPlane = projObj["Near"].GetFloat();
 	float farPlane	= projObj["Far"].GetFloat();
 
-	SetLightBufferData(color, falloff, fogStrength);
+	SetLightBufferData(color, falloff, fogStrength, shadowStrength);
 	_initialProjInfo = { fov, aspect, nearPlane * -1, farPlane * -1 };
 
 	return true;
@@ -379,20 +392,22 @@ SpotLightBufferData SpotLightBehaviour::GetLightBufferData()
 	data.falloff = _falloff;
 	data.orthographic = _shadowCamera->GetOrtho() ? 1 : -1;
 	data.fogStrength = _fogStrength;
+	data.shadowStrength = _shadowStrength;
 
 	return data;
 }
-void SpotLightBehaviour::SetLightBufferData(XMFLOAT3 color, float falloff, float fogStrength)
+void SpotLightBehaviour::SetLightBufferData(XMFLOAT3 color, float falloff, float fogStrength, float shadowStrength)
 {
 	_color = color;
 	_falloff = falloff;
 	_fogStrength = fogStrength;
+	_shadowStrength = shadowStrength;
 
 	if (_shadowCamera)
 	{
 		CameraPlanes planes = _shadowCamera->GetPlanes();
 
-		float reach = CalculateLightReach(color, falloff);
+		float reach = CalculateLightReach(_color, _falloff);
 
 		if (planes.nearZ < planes.farZ)
 			planes.farZ = reach;
@@ -404,6 +419,7 @@ void SpotLightBehaviour::SetLightBufferData(XMFLOAT3 color, float falloff, float
 		_shadowCamera->SetPlanes(planes);
 	}
 }
+
 void SpotLightBehaviour::SetIntensity(float intensity)
 {
 	float maxChannel = max(_color.x, max(_color.y, _color.z));
@@ -424,6 +440,54 @@ void SpotLightBehaviour::SetIntensity(float intensity)
 
 		_shadowCamera->SetPlanes(planes);
 	}
+}
+void SpotLightBehaviour::SetColor(dx::XMFLOAT3 color)
+{
+	_color = color;
+
+	if (_shadowCamera)
+	{
+		CameraPlanes planes = _shadowCamera->GetPlanes();
+
+		float reach = CalculateLightReach(_color, _falloff);
+
+		if (planes.nearZ < planes.farZ)
+			planes.farZ = reach;
+		else
+			planes.nearZ = reach;
+
+		planes.nearZ = planes.nearZ < 0.05f ? 0.05f : planes.nearZ;
+
+		_shadowCamera->SetPlanes(planes);
+	}
+}
+void SpotLightBehaviour::SetFalloff(float falloff)
+{
+	_falloff = falloff;
+
+	if (_shadowCamera)
+	{
+		CameraPlanes planes = _shadowCamera->GetPlanes();
+
+		float reach = CalculateLightReach(_color, _falloff);
+
+		if (planes.nearZ < planes.farZ)
+			planes.farZ = reach;
+		else
+			planes.nearZ = reach;
+
+		planes.nearZ = planes.nearZ < 0.05f ? 0.05f : planes.nearZ;
+
+		_shadowCamera->SetPlanes(planes);
+	}
+}
+void SpotLightBehaviour::SetFogStrength(float fogStrength)
+{
+	_fogStrength = fogStrength;
+}
+void SpotLightBehaviour::SetShadowStrength(float shadowStrength)
+{
+	_shadowStrength = shadowStrength;
 }
 
 CameraBehaviour *SpotLightBehaviour::GetShadowCamera() const

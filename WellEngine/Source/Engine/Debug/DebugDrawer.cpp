@@ -759,18 +759,18 @@ bool DebugDrawer::RenderMeshInstances(std::map<SimpleMeshD3D11 *, std::vector<In
 	for (auto it = meshes->begin(); it != meshes->end(); ++it)
 	{
 		SimpleMeshD3D11 *mesh = it->first;
-		auto instanceList = &it->second;
+		auto &instanceList = it->second;
 
-		if (instanceList->empty())
+		if (instanceList.empty())
 			continue;
 
 #ifdef DEBUG_DRAW_SORT
-		SortInstances(instanceList, camFwd);
+		SortInstances(&instanceList, camFwd);
 #endif
 
 		mesh->BindMeshBuffers(_context);
 
-		for (InstanceData &instance : *instanceList)
+		for (InstanceData &instance : instanceList)
 		{
 			// Update instance buffer
 			D3D11_MAPPED_SUBRESOURCE resource;
@@ -1629,7 +1629,7 @@ void DebugDrawer::DrawSpriteSS(UINT texID, float layer, const XMFLOAT2 &pos, con
 }
 
 
-void DebugDrawer::DrawSphere(const XMFLOAT3 &center, float radius, int subdivisions, const dx::XMFLOAT4 &color, bool useDepth)
+void DebugDrawer::DrawSphere(const XMFLOAT3 &c, float r, int subdivisions, const dx::XMFLOAT4 &color, bool useDepth)
 {
 #ifndef DEBUG_DRAW
 	return;
@@ -1638,47 +1638,10 @@ void DebugDrawer::DrawSphere(const XMFLOAT3 &center, float radius, int subdivisi
 	if (subdivisions < 0)
 		subdivisions = 0;
 
-	if (subdivisions > 5)
-		subdivisions = 5;
+	if (subdivisions > 4)
+		subdivisions = 4;
 
-	{
-		// For testing, just draw as individual tris for now
-
-		static std::map<int, std::vector<XMFLOAT3>> cachedSphereMeshes;
-
-		if (cachedSphereMeshes.find(subdivisions) == cachedSphereMeshes.end())
-		{
-			std::vector<XMFLOAT3> vertices;
-			std::vector<int> indices;
-
-			Primitives::GenerateIcoSphere(subdivisions, vertices, indices);
-
-			std::vector<XMFLOAT3> &verts = cachedSphereMeshes[subdivisions];
-			int vertCount = static_cast<int>(indices.size());
-			verts.resize(vertCount);
-
-			for (size_t i = 0; i < vertCount; i += 3)
-			{
-				memcpy(&verts[i + 0].x, &vertices[indices[i + 2]].x, sizeof(XMFLOAT3));
-				memcpy(&verts[i + 1].x, &vertices[indices[i + 1]].x, sizeof(XMFLOAT3));
-				memcpy(&verts[i + 2].x, &vertices[indices[i + 0]].x, sizeof(XMFLOAT3));
-			}
-		}
-
-		const std::vector<XMFLOAT3> &verts = cachedSphereMeshes[subdivisions];
-		for (size_t i = 0; i < verts.size(); i += 3)
-		{
-			XMVECTOR centerV = Load(center);
-
-			XMFLOAT3 v0, v1, v2;
-			Store(v0, Load(verts[i + 0]) * radius + centerV);
-			Store(v1, Load(verts[i + 1]) * radius + centerV);
-			Store(v2, Load(verts[i + 2]) * radius + centerV);
-			DrawTri(v0, v1, v2, color, useDepth, false);
-		}
-	}
-
-	/*if (_cachedSphereMeshes.find(subdivisions) == _cachedSphereMeshes.end())
+	if (_cachedSphereMeshes.find(subdivisions) == _cachedSphereMeshes.end())
 	{
 		std::vector<XMFLOAT3> vertices;
 		std::vector<int> indices;
@@ -1687,6 +1650,12 @@ void DebugDrawer::DrawSphere(const XMFLOAT3 &center, float radius, int subdivisi
 
 		UINT vertCount = static_cast<UINT>(indices.size());
 		XMFLOAT4 *verticeData = new XMFLOAT4[vertCount * 2];
+
+		// Flip triangles
+		for (size_t i = 0; i < vertCount; i += 3)
+		{
+			std::swap(indices[i + 0], indices[i + 2]);
+		}
 
 		for (UINT i = 0; i < vertCount; i++)
 		{
@@ -1714,16 +1683,17 @@ void DebugDrawer::DrawSphere(const XMFLOAT3 &center, float radius, int subdivisi
 	}
 
 	InstanceData instanceData{};
-	Store(instanceData.matrix, XMMatrixScaling(radius, radius, radius) * XMMatrixTranslationFromVector(Load(center)));
 	instanceData.color = color;
+	instanceData.matrix = { // Transposed world matrix
+		r, 0, 0, c.x,
+		0, r, 0, c.y,
+		0, 0, r, c.z,
+		0, 0, 0, 1
+	};
 
-	if (useDepth)
-	{
-		_sceneInstancedMeshes[&_cachedSphereMeshes[subdivisions]].emplace_back(instanceData);
-	}
-	else
-	{
-		_overlayInstancedMeshes[&_cachedSphereMeshes[subdivisions]].emplace_back(instanceData);
-	}*/
+	SimpleMeshD3D11 *sphereMesh = &_cachedSphereMeshes[subdivisions];
+
+	auto &instancedMeshList = useDepth ? _sceneInstancedMeshes : _overlayInstancedMeshes;
+	instancedMeshList[sphereMesh].emplace_back(instanceData);
 }
 #pragma endregion

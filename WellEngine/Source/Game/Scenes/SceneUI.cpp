@@ -15,6 +15,8 @@
 #pragma endregion
 
 #ifdef USE_IMGUI
+using namespace ImGui;
+
 bool Scene::RenderEntityHierarchyUI(Entity *root, UINT depth, bool skipCulling, const std::string &search)
 {
 	if (!root)
@@ -32,7 +34,7 @@ bool Scene::RenderEntityHierarchyUI(Entity *root, UINT depth, bool skipCulling, 
 	if (!search.empty() && entNameLower.find(search) == std::string::npos)
 		return true;
 
-	float frameHeight = ImGui::GetFrameHeight();
+	float frameHeight = GetFrameHeight();
 	float arrowScale = 0.7f;
 	ImVec2 arrowSize = { frameHeight * arrowScale, frameHeight * arrowScale };
 	float indenting = depth * frameHeight * arrowScale;
@@ -49,14 +51,14 @@ bool Scene::RenderEntityHierarchyUI(Entity *root, UINT depth, bool skipCulling, 
 		}
 	}
 
-	ImGui::BeginGroup();
+	BeginGroup();
 
 	float lastHeight = 0.0f;
 	if (root->IsVisibleInHierarchy(lastHeight) || skipCulling)
 	{
-		float indentedXPos = ImGui::GetCursorPosX() + indenting;
-		ImGui::SetCursorPosX(indentedXPos);
-		ImGui::PushID(("Ent:" + std::to_string(entID)).c_str());
+		float indentedXPos = GetCursorPosX() + indenting;
+		SetCursorPosX(indentedXPos);
+		PushID(("Ent:" + std::to_string(entID)).c_str());
 
 		bool hasVisibleChild = false;
 		if (root->GetChildCount() > 0)
@@ -73,20 +75,20 @@ bool Scene::RenderEntityHierarchyUI(Entity *root, UINT depth, bool skipCulling, 
 
 		// Collapse arrow
 		{
-			ImVec2 originalCursorPos = ImGui::GetCursorPos();
-			ImGui::Dummy({ arrowSize.x, frameHeight });
-			ImGui::SameLine(0.0f, 2.0f);
+			ImVec2 originalCursorPos = GetCursorPos();
+			Dummy({ arrowSize.x, frameHeight });
+			SameLine(0.0f, 2.0f);
 
 			if (hasVisibleChild)
 			{
 				ImVec2 arrowCursorPos = originalCursorPos;
 				arrowCursorPos.y += 0.5f * (frameHeight - arrowSize.y);
 
-				ImVec2 afterCursorPos = ImGui::GetCursorPos();
-				ImGui::SetCursorPos(arrowCursorPos);
+				ImVec2 afterCursorPos = GetCursorPos();
+				SetCursorPos(arrowCursorPos);
 				if (isCollapsed)
 				{
-					if (ImGui::ArrowButtonEx("Expand", ImGuiDir_Right, arrowSize, ImGuiButtonFlags_None))
+					if (ArrowButtonEx("Expand", ImGuiDir_Right, arrowSize, ImGuiButtonFlags_None))
 					{
 						isCollapsed = false;
 						_collapsedEntities.erase(_collapsedEntities.begin() + collapseIndex);
@@ -94,7 +96,7 @@ bool Scene::RenderEntityHierarchyUI(Entity *root, UINT depth, bool skipCulling, 
 				}
 				else
 				{
-					if (ImGui::ArrowButtonEx("Collapse", ImGuiDir_Down, arrowSize, ImGuiButtonFlags_None))
+					if (ArrowButtonEx("Collapse", ImGuiDir_Down, arrowSize, ImGuiButtonFlags_None))
 					{
 						Ref<Entity> &entRef = _collapsedEntities.emplace_back(*root);
 						entRef.AddDestructCallback([this](Ref<Entity> *entRef) {
@@ -109,10 +111,10 @@ bool Scene::RenderEntityHierarchyUI(Entity *root, UINT depth, bool skipCulling, 
 						});
 					}
 				}
-				ImGui::SetCursorPos(afterCursorPos);
+				SetCursorPos(afterCursorPos);
 
 				if (!_isHoveringHierarchyItem)
-					_isHoveringHierarchyItem = ImGui::IsItemHovered();
+					_isHoveringHierarchyItem = IsItemHovered();
 			}
 		}
 
@@ -126,21 +128,21 @@ bool Scene::RenderEntityHierarchyUI(Entity *root, UINT depth, bool skipCulling, 
 
 			if (isSelected)
 			{
-				ImGui::PushStyleColor(ImGuiCol_Button, (ImVec4)ImColor::HSV(0.1f, 0.55f, 0.5f));
-				ImGui::PushStyleColor(ImGuiCol_ButtonHovered, (ImVec4)ImColor::HSV(0.1f, 0.65f, 0.6f));
-				ImGui::PushStyleColor(ImGuiCol_ButtonActive, (ImVec4)ImColor::HSV(0.1f, 0.75f, 0.7f));
+				PushStyleColor(ImGuiCol_Button, (ImVec4)ImColor::HSV(0.1f, 0.55f, 0.5f));
+				PushStyleColor(ImGuiCol_ButtonHovered, (ImVec4)ImColor::HSV(0.1f, 0.65f, 0.6f));
+				PushStyleColor(ImGuiCol_ButtonActive, (ImVec4)ImColor::HSV(0.1f, 0.75f, 0.7f));
 			}
 
-			ImGui::SameLine(0.0f, 3.0f);
-			entityButtonPosX = ImGui::GetCursorPosX();
-			if (ImGui::Button(std::format("{}", entName).c_str()))
+			SameLine(0.0f, 3.0f);
+			entityButtonPosX = GetCursorPosX();
+			if (Button(std::format("{}", entName).c_str()))
 			{
 				// Additive select if holding shift
 				// Deselect if already selected or holding ctrl
 				if (_debugPlayer.IsValid())
 				{
-					bool shiftHeld = ImGui::GetIO().KeyShift;
-					bool ctrlHeld = ImGui::GetIO().KeyCtrl;
+					bool shiftHeld = GetIO().KeyShift;
+					bool ctrlHeld = GetIO().KeyCtrl;
 
 					if (!isSelected && !ctrlHeld)
 						_debugPlayer.Get()->Select(root, shiftHeld);
@@ -151,36 +153,36 @@ bool Scene::RenderEntityHierarchyUI(Entity *root, UINT depth, bool skipCulling, 
 
 			if (isSelected)
 			{
-				ImGui::PopStyleColor(3);
+				PopStyleColor(3);
 			}
 
 			if (!_isHoveringHierarchyItem)
-				_isHoveringHierarchyItem = ImGui::IsItemHovered();
+				_isHoveringHierarchyItem = IsItemHovered();
 		}
 
 		// Entity Drag & Drop field
 		{
-			const char *dragDropTag = ImGui::PayloadTags.at(ImGui::PayloadType::ENTITY);
+			const char *dragDropTag = PayloadTags.at(PayloadType::ENTITY);
 
 			// Our buttons are both drag sources and drag targets
-			if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_None))
+			if (BeginDragDropSource(ImGuiDragDropFlags_None))
 			{
-				ImGui::EntityPayload payload = { entID, GetUID() };
-				ImGui::SetDragDropPayload(dragDropTag, &payload, sizeof(ImGui::EntityPayload));
+				EntityPayload payload = { entID, GetUID() };
+				SetDragDropPayload(dragDropTag, &payload, sizeof(EntityPayload));
 
-				ImGui::Text(std::format("{}", entName).c_str());
+				Text(std::format("{}", entName).c_str());
 
 				// Display preview (could be anything, e.g. when dragging an image we could decide to display
 				// the filename and a small preview of the image, etc.)
-				ImGui::EndDragDropSource();
+				EndDragDropSource();
 			}
 
-			if (ImGui::BeginDragDropTarget())
+			if (BeginDragDropTarget())
 			{
-				if (const ImGuiPayload *payload = ImGui::AcceptDragDropPayload(dragDropTag))
+				if (const ImGuiPayload *payload = AcceptDragDropPayload(dragDropTag))
 				{
-					IM_ASSERT(payload->DataSize == sizeof(ImGui::EntityPayload));
-					ImGui::EntityPayload entPayload = *(const ImGui::EntityPayload *)payload->Data;
+					IM_ASSERT(payload->DataSize == sizeof(EntityPayload));
+					EntityPayload entPayload = *(const EntityPayload *)payload->Data;
 
 					Entity *payloadEnt = nullptr;
 
@@ -192,9 +194,9 @@ bool Scene::RenderEntityHierarchyUI(Entity *root, UINT depth, bool skipCulling, 
 						if (!payloadScene)
 						{
 							ErrMsg("Failed to get scene from payload!");
-							ImGui::EndDragDropTarget();
-							ImGui::PopID();
-							ImGui::EndGroup();
+							EndDragDropTarget();
+							PopID();
+							EndGroup();
 							return false;
 						}
 
@@ -206,16 +208,16 @@ bool Scene::RenderEntityHierarchyUI(Entity *root, UINT depth, bool skipCulling, 
 						if (!payloadScene->SerializeEntity(doc.GetAllocator(), entObj, payloadEnt, true))
 						{
 							ErrMsg("Failed to serialize entity from payload!");
-							ImGui::EndDragDropTarget();
-							ImGui::PopID();
+							EndDragDropTarget();
+							PopID();
 							return false;
 						}
 
 						if (!payloadScene->_sceneHolder.RemoveEntityImmediate(payloadEnt))
 						{
 							ErrMsg("Failed to remove entity from payload scene!");
-							ImGui::EndDragDropTarget();
-							ImGui::PopID();
+							EndDragDropTarget();
+							PopID();
 							return false;
 						}
 
@@ -223,8 +225,8 @@ bool Scene::RenderEntityHierarchyUI(Entity *root, UINT depth, bool skipCulling, 
 						if (!DeserializeEntity(entObj, &payloadEnt))
 						{
 							ErrMsg("Failed to deserialize entity from payload!");
-							ImGui::EndDragDropTarget();
-							ImGui::PopID();
+							EndDragDropTarget();
+							PopID();
 							return false;
 						}
 
@@ -245,7 +247,7 @@ bool Scene::RenderEntityHierarchyUI(Entity *root, UINT depth, bool skipCulling, 
 					}
 
 				}
-				ImGui::EndDragDropTarget();
+				EndDragDropTarget();
 			}
 		}
 
@@ -253,54 +255,54 @@ bool Scene::RenderEntityHierarchyUI(Entity *root, UINT depth, bool skipCulling, 
 		{
 			std::string ctxID = std::format("EntCtxMenu:{}:{}", entID, GetUID());
 
-			if (ImGui::IsMouseReleased(ImGuiMouseButton_Right) && ImGui::IsItemHovered())
-				ImGui::OpenPopup(ctxID.c_str());
+			if (IsMouseReleased(ImGuiMouseButton_Right) && IsItemHovered())
+				OpenPopup(ctxID.c_str());
 
-			if (ImGui::BeginPopupContextItem(ctxID.c_str()))
+			if (BeginPopupContextItem(ctxID.c_str()))
 			{
 				if (!root->UIContextMenu())
 				{
-					ImGui::EndPopup();
-					ImGui::PopID();
-					ImGui::EndGroup();
+					EndPopup();
+					PopID();
+					EndGroup();
 					ErrMsg("Entity context menu failed!");
 					return false;
 				}
 
-				ImGui::EndPopup();
+				EndPopup();
 			}			
 		}
 
 		if (root->IsPrefab())
 		{
-			ImGui::SameLine();
-			ImGui::SetCursorPosY(ImGui::GetCursorPosY() - 2.0f);
+			SameLine();
+			SetCursorPosY(GetCursorPosY() - 2.0f);
 			ImGuiUtils::BeginFont(FONT_ICON_FILE_NAME_FAR, 14.0f);
-			ImGui::Text(ICON_FA_FILE_POWERPOINT);
+			Text(ICON_FA_FILE_POWERPOINT);
 			ImGuiUtils::EndFont();
 
-			if (ImGui::IsItemHovered())
+			if (IsItemHovered())
 			{
-				ImGui::SetTooltip("Prefab Instance '%s'", root->GetPrefabName().c_str());
+				SetTooltip("Prefab Instance '%s'", root->GetPrefabName().c_str());
 				_isHoveringHierarchyItem = true;
 			}
 		}
 
 		if (!root->GetShowInHierarchy(true))
 		{
-			ImGui::SameLine();
+			SameLine();
 			ImGuiUtils::BeginFont(FONT_ICON_FILE_NAME_FAR, 12.0f);
-			ImGui::Text(ICON_FA_EYE_SLASH);
+			Text(ICON_FA_EYE_SLASH);
 			ImGuiUtils::EndFont();
 
-			if (ImGui::IsItemHovered())
+			if (IsItemHovered())
 			{
-				ImGui::SetTooltip("Hidden Entity");
+				SetTooltip("Hidden Entity");
 				_isHoveringHierarchyItem = true;
 			}
 		}
 
-		float rightEdgeX = ImGui::GetContentRegionAvail().x - 6.0f;
+		float rightEdgeX = GetContentRegionAvail().x - 6.0f;
 
 		static float dockButtonWidth = 20;
 		static float enableCheckmarkWidth = 20;
@@ -308,59 +310,59 @@ bool Scene::RenderEntityHierarchyUI(Entity *root, UINT depth, bool skipCulling, 
 
 		// Dock/Undock button
 		{
-			ImGui::PushID(("Dock:" + std::to_string(entID)).c_str());
+			PushID(("Dock:" + std::to_string(entID)).c_str());
 
-			ImGui::SameLine(rightEdgeX - 20.0f - frameHeight - removeButtonWidth - dockButtonWidth);
+			SameLine(rightEdgeX - 20.0f - frameHeight - removeButtonWidth - dockButtonWidth);
 			const std::string windowID = std::format("Ent#{}:{}", entID, GetUID());
 
 			// Check if entity is undocked
 			if (ImGuiUtils::Utils::GetWindow(windowID, nullptr))
 			{
-				ImGui::PushStyleColor(ImGuiCol_Button, (ImVec4)ImColor::HSV(0.05f, 0.55f, 0.5f));
-				ImGui::PushStyleColor(ImGuiCol_ButtonHovered, (ImVec4)ImColor::HSV(0.05f, 0.65f, 0.6f));
-				ImGui::PushStyleColor(ImGuiCol_ButtonActive, (ImVec4)ImColor::HSV(0.05f, 0.75f, 0.7f));
+				PushStyleColor(ImGuiCol_Button, (ImVec4)ImColor::HSV(0.05f, 0.55f, 0.5f));
+				PushStyleColor(ImGuiCol_ButtonHovered, (ImVec4)ImColor::HSV(0.05f, 0.65f, 0.6f));
+				PushStyleColor(ImGuiCol_ButtonActive, (ImVec4)ImColor::HSV(0.05f, 0.75f, 0.7f));
 
 				// If undocked, show dock button
-				ImGui::SetCursorPosY(ImGui::GetCursorPosY() - 2.0f);
+				SetCursorPosY(GetCursorPosY() - 2.0f);
 				ImGuiUtils::BeginFont(FONT_ICON_FILE_NAME_LC, 14.0f);
-				if (ImGui::Button(ICON_LC_EXTERNAL_LINK))
+				if (Button(ICON_LC_EXTERNAL_LINK))
 				{
 					if (!ImGuiUtils::Utils::CloseWindow(windowID))
 					{
 						ImGuiUtils::EndFont();
-						ImGui::PopStyleColor(3);
-						ImGui::PopID();
-						ImGui::EndGroup();
-						ImGui::EndGroup();
+						PopStyleColor(3);
+						PopID();
+						EndGroup();
+						EndGroup();
 						ErrMsg("Failed to dock entity window!");
 						return false;
 					}
 				}
 				ImGuiUtils::EndFont();
 
-				if (ImGui::IsItemHovered())
+				if (IsItemHovered())
 				{
-					ImGui::SetTooltip("Dock Entity Window");
+					SetTooltip("Dock Entity Window");
 					_isHoveringHierarchyItem = true;
 				}
 			}
 			else
 			{
-				ImGui::PushStyleColor(ImGuiCol_Button, (ImVec4)ImColor::HSV(0.6f, 0.55f, 0.5f));
-				ImGui::PushStyleColor(ImGuiCol_ButtonHovered, (ImVec4)ImColor::HSV(0.6f, 0.65f, 0.6f));
-				ImGui::PushStyleColor(ImGuiCol_ButtonActive, (ImVec4)ImColor::HSV(0.6f, 0.75f, 0.7f));
+				PushStyleColor(ImGuiCol_Button, (ImVec4)ImColor::HSV(0.6f, 0.55f, 0.5f));
+				PushStyleColor(ImGuiCol_ButtonHovered, (ImVec4)ImColor::HSV(0.6f, 0.65f, 0.6f));
+				PushStyleColor(ImGuiCol_ButtonActive, (ImVec4)ImColor::HSV(0.6f, 0.75f, 0.7f));
 
 				// If docked, show undock button
-				ImGui::SetCursorPosY(ImGui::GetCursorPosY() - 2.0f);
+				SetCursorPosY(GetCursorPosY() - 2.0f);
 				ImGuiUtils::BeginFont(FONT_ICON_FILE_NAME_LC, 14.0f);
-				if (ImGui::Button(ICON_LC_EXTERNAL_LINK))
+				if (Button(ICON_LC_EXTERNAL_LINK))
 				{
-					ImGui::SameLine();
+					SameLine();
 					ImRect rect = {
-						ImGui::GetCursorScreenPos(), 
-						ImGui::GetWindowSize()
+						GetCursorScreenPos(), 
+						GetWindowSize()
 					};
-					ImGui::NewLine();
+					NewLine();
 
 					rect.Max.x = max(100.0f, rect.Max.x * 0.75f - 50.0f);
 					rect.Max.y = max(150.0f, rect.Max.y * 0.75f - 50.0f);
@@ -371,57 +373,57 @@ bool Scene::RenderEntityHierarchyUI(Entity *root, UINT depth, bool skipCulling, 
 					if (!ImGuiUtils::Utils::OpenWindow(windowName, windowID, std::bind(&Entity::InitialRenderUI, root), rect))
 					{
 						ImGuiUtils::EndFont();
-						ImGui::PopStyleColor(3);
-						ImGui::PopID();
+						PopStyleColor(3);
+						PopID();
 						ErrMsg("Failed to undock entity window!");
 						return false;
 					}
 				}
 				ImGuiUtils::EndFont();
 
-				if (ImGui::IsItemHovered())
+				if (IsItemHovered())
 				{
-					ImGui::SetTooltip("Undock Entity Window");
+					SetTooltip("Undock Entity Window");
 					_isHoveringHierarchyItem = true;
 				}
 			}
 			
-			dockButtonWidth = ImGui::GetItemRectSize().x;
+			dockButtonWidth = GetItemRectSize().x;
 
-			ImGui::PopStyleColor(3);
-			ImGui::PopID();
+			PopStyleColor(3);
+			PopID();
 		}
 
 		// Enabled checkbox
 		{
-			ImGui::SameLine(rightEdgeX - 10.0f - removeButtonWidth - frameHeight);
+			SameLine(rightEdgeX - 10.0f - removeButtonWidth - frameHeight);
 
 			bool isEnabled = root->IsEnabledSelf();
-			if (ImGui::Checkbox("##Enabled", &isEnabled))
+			if (Checkbox("##Enabled", &isEnabled))
 				root->SetEnabledSelf(isEnabled);
 
-			enableCheckmarkWidth = ImGui::GetItemRectSize().x;
+			enableCheckmarkWidth = GetItemRectSize().x;
 
 			if (!_isHoveringHierarchyItem)
-				_isHoveringHierarchyItem = ImGui::IsItemHovered();
+				_isHoveringHierarchyItem = IsItemHovered();
 		}
 
 		// Remove button
 		{
-			ImGui::SameLine(rightEdgeX - removeButtonWidth);
+			SameLine(rightEdgeX - removeButtonWidth);
 
-			ImGui::SetCursorPosY(ImGui::GetCursorPosY() - 2.0f);
+			SetCursorPosY(GetCursorPosY() - 2.0f);
 			ImGuiUtils::BeginButtonStyle(ImGuiUtils::StyleType::Red);
 			ImGuiUtils::BeginFont(FONT_ICON_FILE_NAME_LC, 14.0f);
-			if (ImGui::Button(ICON_LC_X "##RemoveEnt"))
+			if (Button(ICON_LC_X "##RemoveEnt"))
 				root->Destroy();
 			ImGuiUtils::EndFont();
 			ImGuiUtils::EndButtonStyle();
 
-			removeButtonWidth = ImGui::GetItemRectSize().x;
+			removeButtonWidth = GetItemRectSize().x;
 
 			if (!_isHoveringHierarchyItem)
-				_isHoveringHierarchyItem = ImGui::IsItemHovered();
+				_isHoveringHierarchyItem = IsItemHovered();
 		}
 
 		// Recurse Children
@@ -441,18 +443,18 @@ bool Scene::RenderEntityHierarchyUI(Entity *root, UINT depth, bool skipCulling, 
 				float addedIndenting = innerIndenting - indenting;
 
 				// Set vertical spacing
-				float dummyDropTargetPosY = ImGui::GetCursorPosY() - 3.0f;
-				ImGui::SetCursorPos({ entityButtonPosX + addedIndenting, dummyDropTargetPosY });
-				ImGui::Dummy({ ImGui::GetContentRegionAvail().x, 5.0f });
-				float dummyDropTargetHeight = ImGui::GetItemRectSize().y;
-				ImVec2 nextCursorPos = ImGui::GetCursorPos();
+				float dummyDropTargetPosY = GetCursorPosY() - 3.0f;
+				SetCursorPos({ entityButtonPosX + addedIndenting, dummyDropTargetPosY });
+				Dummy({ GetContentRegionAvail().x, 5.0f });
+				float dummyDropTargetHeight = GetItemRectSize().y;
+				ImVec2 nextCursorPos = GetCursorPos();
 
-				if (ImGui::BeginDragDropTarget())
+				if (BeginDragDropTarget())
 				{
-					if (const ImGuiPayload *payload = ImGui::AcceptDragDropPayload(ImGui::PayloadTags.at(ImGui::PayloadType::ENTITY)))
+					if (const ImGuiPayload *payload = AcceptDragDropPayload(PayloadTags.at(PayloadType::ENTITY)))
 					{
-						IM_ASSERT(payload->DataSize == sizeof(ImGui::EntityPayload));
-						ImGui::EntityPayload entPayload = *(const ImGui::EntityPayload *)payload->Data;
+						IM_ASSERT(payload->DataSize == sizeof(EntityPayload));
+						EntityPayload entPayload = *(const EntityPayload *)payload->Data;
 
 						Entity *payloadEnt = nullptr;
 
@@ -464,8 +466,8 @@ bool Scene::RenderEntityHierarchyUI(Entity *root, UINT depth, bool skipCulling, 
 							if (!payloadScene)
 							{
 								ErrMsg("Failed to get scene from payload!");
-								ImGui::EndDragDropTarget();
-								ImGui::PopID();
+								EndDragDropTarget();
+								PopID();
 								return false;
 							}
 
@@ -477,16 +479,16 @@ bool Scene::RenderEntityHierarchyUI(Entity *root, UINT depth, bool skipCulling, 
 							if (!payloadScene->SerializeEntity(doc.GetAllocator(), entObj, payloadEnt, true))
 							{
 								ErrMsg("Failed to serialize entity from payload!");
-								ImGui::EndDragDropTarget();
-								ImGui::PopID();
+								EndDragDropTarget();
+								PopID();
 								return false;
 							}
 
 							if (!payloadScene->_sceneHolder.RemoveEntityImmediate(payloadEnt))
 							{
 								ErrMsg("Failed to remove entity from payload scene!");
-								ImGui::EndDragDropTarget();
-								ImGui::PopID();
+								EndDragDropTarget();
+								PopID();
 								return false;
 							}
 
@@ -494,8 +496,8 @@ bool Scene::RenderEntityHierarchyUI(Entity *root, UINT depth, bool skipCulling, 
 							if (!DeserializeEntity(entObj, &payloadEnt))
 							{
 								ErrMsg("Failed to deserialize entity from payload!");
-								ImGui::EndDragDropTarget();
-								ImGui::PopID();
+								EndDragDropTarget();
+								PopID();
 								return false;
 							}
 
@@ -518,16 +520,16 @@ bool Scene::RenderEntityHierarchyUI(Entity *root, UINT depth, bool skipCulling, 
 							_sceneHolder.ReorderEntity(payloadEnt, root);
 						}
 					}
-					ImGui::EndDragDropTarget();
+					EndDragDropTarget();
 				}
 
-				ImGui::SameLine(entityButtonPosX + addedIndenting, 0.0f);
-				ImGui::SetCursorPosY(dummyDropTargetPosY + (0.5f * dummyDropTargetHeight));
-				ImGui::Separator();
+				SameLine(entityButtonPosX + addedIndenting, 0.0f);
+				SetCursorPosY(dummyDropTargetPosY + (0.5f * dummyDropTargetHeight));
+				Separator();
 
-				ImGui::SetCursorPos(nextCursorPos);
-				ImGui::Dummy({ 0, 0 });
-				ImGui::SameLine(0.0f, 0.0f);
+				SetCursorPos(nextCursorPos);
+				Dummy({ 0, 0 });
+				SameLine(0.0f, 0.0f);
 			}
 
 			for (Ref<Entity> &childRef : tempChildrenVec)
@@ -547,24 +549,24 @@ bool Scene::RenderEntityHierarchyUI(Entity *root, UINT depth, bool skipCulling, 
 			}
 		}
 
-		ImGui::PopID();
+		PopID();
 
 		// Sibling drop field
 		{
 			// Set vertical spacing
-			float dummyDropTargetPosY = ImGui::GetCursorPosY() - 3.0f;
-			ImGui::SetCursorPos({ entityButtonPosX, dummyDropTargetPosY });
-			ImGui::Dummy({ ImGui::GetContentRegionAvail().x, 5.0f });
-			float dummyDropTargetHeight = ImGui::GetItemRectSize().y;
-			ImVec2 nextCursorPos = ImGui::GetCursorPos();
+			float dummyDropTargetPosY = GetCursorPosY() - 3.0f;
+			SetCursorPos({ entityButtonPosX, dummyDropTargetPosY });
+			Dummy({ GetContentRegionAvail().x, 5.0f });
+			float dummyDropTargetHeight = GetItemRectSize().y;
+			ImVec2 nextCursorPos = GetCursorPos();
 			nextCursorPos.y -= 5.0f;
 
-			if (ImGui::BeginDragDropTarget())
+			if (BeginDragDropTarget())
 			{
-				if (const ImGuiPayload *payload = ImGui::AcceptDragDropPayload(ImGui::PayloadTags.at(ImGui::PayloadType::ENTITY)))
+				if (const ImGuiPayload *payload = AcceptDragDropPayload(PayloadTags.at(PayloadType::ENTITY)))
 				{
-					IM_ASSERT(payload->DataSize == sizeof(ImGui::EntityPayload));
-					ImGui::EntityPayload entPayload = *(const ImGui::EntityPayload *)payload->Data;
+					IM_ASSERT(payload->DataSize == sizeof(EntityPayload));
+					EntityPayload entPayload = *(const EntityPayload *)payload->Data;
 
 					Entity *payloadEnt = nullptr;
 
@@ -576,8 +578,8 @@ bool Scene::RenderEntityHierarchyUI(Entity *root, UINT depth, bool skipCulling, 
 						if (!payloadScene)
 						{
 							ErrMsg("Failed to get scene from payload!");
-							ImGui::EndDragDropTarget();
-							ImGui::PopID();
+							EndDragDropTarget();
+							PopID();
 							return false;
 						}
 
@@ -589,16 +591,16 @@ bool Scene::RenderEntityHierarchyUI(Entity *root, UINT depth, bool skipCulling, 
 						if (!payloadScene->SerializeEntity(doc.GetAllocator(), entObj, payloadEnt, true))
 						{
 							ErrMsg("Failed to serialize entity from payload!");
-							ImGui::EndDragDropTarget();
-							ImGui::PopID();
+							EndDragDropTarget();
+							PopID();
 							return false;
 						}
 
 						if (!payloadScene->_sceneHolder.RemoveEntityImmediate(payloadEnt))
 						{
 							ErrMsg("Failed to remove entity from payload scene!");
-							ImGui::EndDragDropTarget();
-							ImGui::PopID();
+							EndDragDropTarget();
+							PopID();
 							return false;
 						}
 
@@ -606,8 +608,8 @@ bool Scene::RenderEntityHierarchyUI(Entity *root, UINT depth, bool skipCulling, 
 						if (!DeserializeEntity(entObj, &payloadEnt))
 						{
 							ErrMsg("Failed to deserialize entity from payload!");
-							ImGui::EndDragDropTarget();
-							ImGui::PopID();
+							EndDragDropTarget();
+							PopID();
 							return false;
 						}
 
@@ -643,28 +645,28 @@ bool Scene::RenderEntityHierarchyUI(Entity *root, UINT depth, bool skipCulling, 
 						_sceneHolder.ReorderEntity(payloadEnt, root);
 					}
 				}
-				ImGui::EndDragDropTarget();
+				EndDragDropTarget();
 			}
 
-			ImGui::SameLine(entityButtonPosX, 0.0f);
-			ImGui::SetCursorPosY(dummyDropTargetPosY + (0.5f * dummyDropTargetHeight));
-			ImGui::Separator();
+			SameLine(entityButtonPosX, 0.0f);
+			SetCursorPosY(dummyDropTargetPosY + (0.5f * dummyDropTargetHeight));
+			Separator();
 
-			ImGui::SetCursorPos(nextCursorPos);
-			ImGui::Dummy({ 0, 0 });
-			ImGui::SameLine(0.0f, 0.0f);
+			SetCursorPos(nextCursorPos);
+			Dummy({ 0, 0 });
+			SameLine(0.0f, 0.0f);
 		}
 	}
 	else
 	{
 		// If not visible, just add a dummy to keep the same spacing
-		ImGui::Dummy({ ImGui::GetContentRegionAvail().x, max(lastHeight, frameHeight)});
+		Dummy({ GetContentRegionAvail().x, max(lastHeight, frameHeight)});
 	}
 
-	ImGui::EndGroup();
+	EndGroup();
 
 	if (!skipCulling)
-		root->SetVisibleInHierarchy(ImGui::IsItemVisible(), ImGui::GetItemRectSize().y);
+		root->SetVisibleInHierarchy(IsItemVisible(), GetItemRectSize().y);
 
 	return true;
 }
@@ -673,25 +675,25 @@ bool Scene::RenderSceneHierarchyUI(bool skipCulling)
 {
 	static std::string search = "";
 
-	float padding = ImGui::GetStyle().WindowPadding.x;
-	float inputBoxPosX = ImGui::GetCursorPosX();
+	float padding = GetStyle().WindowPadding.x;
+	float inputBoxPosX = GetCursorPosX();
 
-	ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
-	ImGui::InputText("##HierarchySearch", &search, ImGuiInputTextFlags_AutoSelectAll);
-	if (!ImGui::IsItemActive() && search.empty())
+	SetNextItemWidth(GetContentRegionAvail().x);
+	InputText("##HierarchySearch", &search, ImGuiInputTextFlags_AutoSelectAll);
+	if (!IsItemActive() && search.empty())
 	{
-		ImGui::SameLine(inputBoxPosX + padding);
-		ImGui::TextDisabled("Name Search");
+		SameLine(inputBoxPosX + padding);
+		TextDisabled("Name Search");
 	}
 
 	std::string searchLower = search;
 	std::transform(searchLower.begin(), searchLower.end(), searchLower.begin(), ::tolower);
 
-	ImGui::SetNextWindowSize(ImGui::GetContentRegionAvail(), ImGuiCond_Always);
-	ImGui::BeginChild("Scene Hierarchy");
+	SetNextWindowSize(GetContentRegionAvail(), ImGuiCond_Always);
+	BeginChild("Scene Hierarchy");
 	{
 		if (!_isHoveringHierarchy)
-			_isHoveringHierarchy = ImGui::IsWindowHovered();
+			_isHoveringHierarchy = IsWindowHovered();
 
 		SceneContents::SceneIterator entIter = _sceneHolder.GetEntities();
 
@@ -702,12 +704,12 @@ bool Scene::RenderSceneHierarchyUI(bool skipCulling)
 
 			if (!RenderEntityHierarchyUI(entity, 0, skipCulling, searchLower))
 			{
-				ImGui::EndChild();
+				EndChild();
 				return false;
 			}
 		}
 	}
-	ImGui::EndChild();
+	EndChild();
 
 	return true;
 }
@@ -716,25 +718,25 @@ bool Scene::RenderSelectionHierarchyUI(bool skipCulling)
 {
 	static std::string search = "";
 
-	float padding = ImGui::GetStyle().WindowPadding.x;
-	float inputBoxPosX = ImGui::GetCursorPosX();
+	float padding = GetStyle().WindowPadding.x;
+	float inputBoxPosX = GetCursorPosX();
 
-	ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
-	ImGui::InputText("##SelectionSearch", &search, ImGuiInputTextFlags_AutoSelectAll);
-	if (!ImGui::IsItemActive() && search.empty())
+	SetNextItemWidth(GetContentRegionAvail().x);
+	InputText("##SelectionSearch", &search, ImGuiInputTextFlags_AutoSelectAll);
+	if (!IsItemActive() && search.empty())
 	{
-		ImGui::SameLine(inputBoxPosX + padding);
-		ImGui::TextDisabled("Name Search");
+		SameLine(inputBoxPosX + padding);
+		TextDisabled("Name Search");
 	}
 
 	std::string searchLower = search;
 	std::transform(searchLower.begin(), searchLower.end(), searchLower.begin(), ::tolower);
 
-	ImGui::SetNextWindowSize(ImGui::GetContentRegionAvail(), ImGuiCond_Always);
-	ImGui::BeginChild("Selection Hierarchy");
+	SetNextWindowSize(GetContentRegionAvail(), ImGuiCond_Always);
+	BeginChild("Selection Hierarchy");
 	{
 		if (!_isHoveringHierarchy)
-			_isHoveringHierarchy = ImGui::IsWindowHovered();
+			_isHoveringHierarchy = IsWindowHovered();
 
 		auto &selection = _debugPlayer.Get()->GetSelection();
 
@@ -744,28 +746,28 @@ bool Scene::RenderSelectionHierarchyUI(bool skipCulling)
 			{
 				if (!RenderEntityHierarchyUI(ent, 0, skipCulling, searchLower))
 				{
-					ImGui::EndChild();
+					EndChild();
 					return false;
 				}
 			}
 		}
 	}
-	ImGui::EndChild();
+	EndChild();
 
 	return true;
 }
 
 bool Scene::RenderHierarchyUI()
 {
-	if (ImGui::TreeNode("Advanced"))
+	if (TreeNode("Advanced"))
 	{
-		ImGui::Text("Objects: %d", _sceneHolder.GetEntityCount());
+		Text("Objects: %d", _sceneHolder.GetEntityCount());
 
-		ImGui::Checkbox("Show Hidden", &DebugData::Get().hierarchyShowHidden);
+		Checkbox("Show Hidden", &DebugData::Get().hierarchyShowHidden);
 
 		if (!ImGuiUtils::Utils::GetWindow(_sceneName + "Hierarchy", nullptr))
 		{
-			if (ImGui::Button("Keep Open Through Scene Switch"))
+			if (Button("Keep Open Through Scene Switch"))
 			{
 				if (!ImGuiUtils::Utils::OpenWindow(
 					std::format("'{}' Hierarchy", _sceneName),
@@ -778,28 +780,28 @@ bool Scene::RenderHierarchyUI()
 			}
 		}
 
-		ImGui::RadioButton("Hovering Window", _isHoveringHierarchy);
-		ImGui::RadioButton("Hovering Item", _isHoveringHierarchyItem);
+		RadioButton("Hovering Window", _isHoveringHierarchy);
+		RadioButton("Hovering Item", _isHoveringHierarchyItem);
 
-		ImGui::TreePop();
+		TreePop();
 	}
 
-	if (!ImGui::BeginTabBar("HierarchyTab"))
+	if (!BeginTabBar("HierarchyTab"))
 		return true;
 
 	_isHoveringHierarchyItem = false;
 	_isHoveringHierarchy = false;
 
-	if (ImGui::BeginTabItem("Scene"))
+	if (BeginTabItem("Scene"))
 	{
-		ImGui::PushID("Scene Hierarchy");
+		PushID("Scene Hierarchy");
 
 		const std::string windowID = std::format("Scene'{}'", GetName());
 
 		// Check if scene hierarchy is undocked
 		if (!ImGuiUtils::Utils::GetWindow(windowID, nullptr))
 		{
-			if (ImGui::Button("Undock"))
+			if (Button("Undock"))
 			{
 				const std::string windowName = std::format("'{}' Scene Hierarchy", GetName());
 
@@ -809,38 +811,38 @@ bool Scene::RenderHierarchyUI()
 
 				if (!ImGuiUtils::Utils::OpenWindow(windowName, windowID, renderFunc))
 				{
-					ImGui::PopID();
-					ImGui::EndTabItem();
+					PopID();
+					EndTabItem();
 					ErrMsg("Failed to undock scene hierarchy window!");
 					return false;
 				}
 			}
 
-			ImGui::SameLine();
+			SameLine();
 		}
 
 		if (!RenderSceneHierarchyUI(false))
 		{
-			ImGui::PopID();
-			ImGui::EndTabItem();
+			PopID();
+			EndTabItem();
 			ErrMsg("Failed to render scene hierarchy UI!");
 			return false;
 		}
 
-		ImGui::PopID();
-		ImGui::EndTabItem();
+		PopID();
+		EndTabItem();
 	}
 	
-	if (ImGui::BeginTabItem("Selection"))
+	if (BeginTabItem("Selection"))
 	{
-		ImGui::PushID("Selection Hierarchy");
+		PushID("Selection Hierarchy");
 
 		const std::string windowID = std::format("Selection'{}'", GetName());
 
 		// Check if scene hierarchy is undocked
 		if (!ImGuiUtils::Utils::GetWindow(windowID, nullptr))
 		{
-			if (ImGui::Button("Undock"))
+			if (Button("Undock"))
 			{
 				const std::string windowName = std::format("'{}' Selection Hierarchy", GetName());
 
@@ -850,29 +852,29 @@ bool Scene::RenderHierarchyUI()
 
 				if (!ImGuiUtils::Utils::OpenWindow(windowName, windowID, renderFunc))
 				{
-					ImGui::PopID();
-					ImGui::EndTabItem();
+					PopID();
+					EndTabItem();
 					ErrMsg("Failed to undock selection hierarchy window!");
 					return false;
 				}
 			}
 
-			ImGui::SameLine();
+			SameLine();
 		}
 
 		if (!RenderSelectionHierarchyUI(true))
 		{
-			ImGui::PopID();
-			ImGui::EndTabItem();
+			PopID();
+			EndTabItem();
 			ErrMsg("Failed to render selection hierarchy UI!");
 			return false;
 		}
 
-		ImGui::PopID();
-		ImGui::EndTabItem();
+		PopID();
+		EndTabItem();
 	}
 
-	ImGui::EndTabBar();
+	EndTabBar();
 
 	if (_debugPlayer.IsValid())
 	{
@@ -880,11 +882,11 @@ bool Scene::RenderHierarchyUI()
 		// Holding shift will prevent this, to prevent accidental deselection when trying to multi-select.
 		static bool wasPressed = false;
 
-		if (_isHoveringHierarchy && !_isHoveringHierarchyItem && !ImGui::GetIO().KeyShift)
+		if (_isHoveringHierarchy && !_isHoveringHierarchyItem && !GetIO().KeyShift)
 		{
 			if (wasPressed)
 			{
-				if (ImGui::IsMouseReleased(ImGuiMouseButton_Left))
+				if (IsMouseReleased(ImGuiMouseButton_Left))
 				{
 					wasPressed = false;
 					_debugPlayer.Get()->ClearSelection();
@@ -892,13 +894,13 @@ bool Scene::RenderHierarchyUI()
 			}
 			else
 			{
-				wasPressed = ImGui::IsMouseClicked(ImGuiMouseButton_Left);
+				wasPressed = IsMouseClicked(ImGuiMouseButton_Left);
 			}
 		}
 
 		if (wasPressed)
 		{
-			if (!ImGui::IsMouseDown(ImGuiMouseButton_Left))
+			if (!IsMouseDown(ImGuiMouseButton_Left))
 				wasPressed = false;
 		}
 	}
@@ -908,7 +910,7 @@ bool Scene::RenderHierarchyUI()
 
 bool Scene::RenderSelectionUI()
 {
-	ImGui::PushID((_sceneName + "Selection").c_str());
+	PushID((_sceneName + "Selection").c_str());
 
 	int selectionSize = 0;
 	if (_debugPlayer.IsValid())
@@ -920,25 +922,25 @@ bool Scene::RenderSelectionUI()
 
 		if (selectionSize > 1)
 		{
-			ImGui::PushItemFlag(ImGuiItemFlags_ButtonRepeat, true);
+			PushItemFlag(ImGuiItemFlags_ButtonRepeat, true);
 			{
-				if (ImGui::ArrowButton("##left", ImGuiDir_Left))
+				if (ArrowButton("##left", ImGuiDir_Left))
 					selectionIndex--;
-				ImGui::SameLine(0.0f, 4.0f);
-				if (ImGui::ArrowButton("##right", ImGuiDir_Right))
+				SameLine(0.0f, 4.0f);
+				if (ArrowButton("##right", ImGuiDir_Right))
 					selectionIndex++;
-				ImGui::SameLine(0.0f, 8.0f);
+				SameLine(0.0f, 8.0f);
 			}
-			ImGui::PopItemFlag();
+			PopItemFlag();
 
-			float numWidth = ImGui::CalcTextSize(std::to_string(selectionSize).c_str()).x;
+			float numWidth = CalcTextSize(std::to_string(selectionSize).c_str()).x;
 
-			ImGui::SetNextItemWidth(numWidth + 10.0f);
-			ImGui::DragInt("##selectionIndex", &selectionIndex, 0.1f);
-			ImGui::SameLine();
-			ImGui::Text("/ %d", selectionSize);
+			SetNextItemWidth(numWidth + 10.0f);
+			DragInt("##selectionIndex", &selectionIndex, 0.1f);
+			SameLine();
+			Text("/ %d", selectionSize);
 
-			ImGui::Separator();
+			Separator();
 		}
 
 		selectionIndex = Wrap(selectionIndex, 1, selectionSize);
@@ -948,7 +950,7 @@ bool Scene::RenderSelectionUI()
 		{
 			if (!ent->InitialRenderUI())
 			{
-				ImGui::PopID();
+				PopID();
 				ErrMsg("Failed to render selected entity UI!");
 				return false;
 			}
@@ -956,10 +958,10 @@ bool Scene::RenderSelectionUI()
 	}
 	else
 	{
-		ImGui::Text("No selection.");
+		Text("No selection.");
 	}
 
-	ImGui::PopID();
+	PopID();
 
 	return true;
 }
@@ -968,24 +970,24 @@ bool Scene::RenderEntityCreatorUI()
 {
 	Entity *ent = nullptr;
 	static bool positionWithCursor = false;
-	ImGui::Checkbox("Position Entity With Cursor", &positionWithCursor);
+	Checkbox("Position Entity With Cursor", &positionWithCursor);
 
-	ImVec2 buttonSize = { ImGui::GetContentRegionAvail().x, 35.0f };
+	ImVec2 buttonSize = { GetContentRegionAvail().x, 35.0f };
 
 	// Empty entity creator
 	{
-		if (ImGui::Button("Empty Entity", buttonSize))
-			ImGui::OpenPopup("Empty Entity Creator");
+		if (Button("Empty Entity", buttonSize))
+			OpenPopup("Empty Entity Creator");
 
-		if (ImGui::BeginPopupModal("Empty Entity Creator", NULL))
+		if (BeginPopupModal("Empty Entity Creator", NULL))
 		{
 			static std::string entityName = "Empty Entity";
 
 			// Set Entity Name
-			ImGui::Text("Entity Name:"); ImGui::SameLine();
-			ImGui::InputText("##EntityName", &entityName, ImGuiInputTextFlags_AutoSelectAll);
+			Text("Entity Name:"); SameLine();
+			InputText("##EntityName", &entityName, ImGuiInputTextFlags_AutoSelectAll);
 
-			if (ImGui::Button("Create", ImVec2(120, 0)))
+			if (Button("Create", ImVec2(120, 0)))
 			{
 				// Create entity with given parameters.
 
@@ -994,34 +996,34 @@ bool Scene::RenderEntityCreatorUI()
 				if (!CreateEntity(&ent, entityName, bounds, true))
 					Warn("Failed to create empty entity!");
 
-				ImGui::CloseCurrentPopup();
+				CloseCurrentPopup();
 			}
-			ImGui::SetItemDefaultFocus(); 
+			SetItemDefaultFocus(); 
 			
-			ImGui::SameLine();
-			if (ImGui::Button("Close", ImVec2(120, 0)))
-				ImGui::CloseCurrentPopup();
+			SameLine();
+			if (Button("Close", ImVec2(120, 0)))
+				CloseCurrentPopup();
 
-			ImGui::EndPopup();
+			EndPopup();
 		}
 	}
 
 	// Mesh entity creator
 	{
-		if (ImGui::Button("Mesh Entity", buttonSize))
-			ImGui::OpenPopup("Mesh Entity Creator");
+		if (Button("Mesh Entity", buttonSize))
+			OpenPopup("Mesh Entity Creator");
 
-		if (ImGui::BeginPopupModal("Mesh Entity Creator", NULL))
+		if (BeginPopupModal("Mesh Entity Creator", NULL))
 		{
 			static std::string entityName = "";
 
 			// Set Entity Name
-			ImGui::BeginGroup();
-			ImGui::Text("Entity Name:"); ImGui::SameLine();
-			ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
-			ImGui::InputText("##EntityName", &entityName, ImGuiInputTextFlags_AutoSelectAll);
-			ImGui::EndGroup();
-			ImGui::SetItemTooltip("Leave empty to use mesh name");
+			BeginGroup();
+			Text("Entity Name:"); SameLine();
+			SetNextItemWidth(GetContentRegionAvail().x);
+			InputText("##EntityName", &entityName, ImGuiInputTextFlags_AutoSelectAll);
+			EndGroup();
+			SetItemTooltip("Leave empty to use mesh name");
 
 			static UINT meshID = 0;
 
@@ -1033,21 +1035,21 @@ bool Scene::RenderEntityCreatorUI()
 				ImGuiComboFlags comboFlags = ImGuiComboFlags_None;
 				comboFlags |= ImGuiComboFlags_HeightLarge;
 
-				ImGui::Text("Mesh:"); ImGui::SameLine();
-				if (ImGui::BeginCombo("##MeshCombo", _content->GetMeshName(meshID).c_str(), comboFlags))
+				Text("Mesh:"); SameLine();
+				if (BeginCombo("##MeshCombo", _content->GetMeshName(meshID).c_str(), comboFlags))
 				{
 					static std::string filter = "";
-					ImGui::InputText("##MeshFilter", &filter, ImGuiInputTextFlags_AutoSelectAll);
-					if (!ImGui::IsItemActive() && filter.empty())
+					InputText("##MeshFilter", &filter, ImGuiInputTextFlags_AutoSelectAll);
+					if (!IsItemActive() && filter.empty())
 					{
-						ImGui::SameLine(8.0f);
-						ImGui::TextDisabled("Search");
+						SameLine(8.0f);
+						TextDisabled("Search");
 					}
 
 					if (!filter.empty())
 						std::transform(filter.begin(), filter.end(), filter.begin(), ::tolower);
 
-					ImGui::Separator();
+					Separator();
 
 					for (int i = 0; i < meshNames.size(); i++)
 					{
@@ -1061,17 +1063,17 @@ bool Scene::RenderEntityCreatorUI()
 						}
 
 						const bool isSelected = meshID == _content->GetMeshID(meshNames[i]);
-						if (ImGui::Selectable(meshNames[i].c_str(), isSelected))
+						if (Selectable(meshNames[i].c_str(), isSelected))
 							meshID = _content->GetMeshID(meshNames[i]);
 
 						if (isSelected)
-							ImGui::SetItemDefaultFocus();
+							SetItemDefaultFocus();
 					}
-					ImGui::EndCombo();
+					EndCombo();
 				}
 			}
 
-			if (ImGui::Button("Create", ImVec2(120, 0)))
+			if (Button("Create", ImVec2(120, 0)))
 			{
 				Material mat{};
 				mat.textureID = _content->GetTextureID("Fallback");
@@ -1080,41 +1082,41 @@ bool Scene::RenderEntityCreatorUI()
 				if (!CreateMeshEntity(&ent, entityName.empty() ? _content->GetMeshName(meshID) : entityName, meshID, mat))
 					Warn("Failed to create mesh entity!");
 
-				ImGui::CloseCurrentPopup();
+				CloseCurrentPopup();
 			}
-			ImGui::SetItemDefaultFocus(); 
+			SetItemDefaultFocus(); 
 
-			ImGui::SameLine();
-			if (ImGui::Button("Close", ImVec2(120, 0)))
-				ImGui::CloseCurrentPopup();
+			SameLine();
+			if (Button("Close", ImVec2(120, 0)))
+				CloseCurrentPopup();
 
-			ImGui::EndPopup();
+			EndPopup();
 		}
 	}
 
 	// Prefab creator
 	{
-		if (ImGui::Button("Create Prefab", buttonSize))
-			ImGui::OpenPopup("Prefab Spawner");
+		if (Button("Create Prefab", buttonSize))
+			OpenPopup("Prefab Spawner");
 
-		if (ImGui::BeginPopupModal("Prefab Spawner", NULL))
+		if (BeginPopupModal("Prefab Spawner", NULL))
 		{
 			std::vector<std::string> prefabs;
 			GetPrefabNames(prefabs);
 
 			static std::string selectedPrefab = "";
 
-			ImGui::Text("Selected: '%s'", selectedPrefab.c_str());
-			ImGui::Separator();
+			Text("Selected: '%s'", selectedPrefab.c_str());
+			Separator();
 
 			// Search filter
 			{
 				static std::string search = "";
-				if (ImGui::Button("Clear"))
+				if (Button("Clear"))
 					search.clear();
-				ImGui::SameLine();
+				SameLine();
 
-				if (ImGui::InputText("##PrefabSearch", &search))
+				if (InputText("##PrefabSearch", &search))
 					std::transform(search.begin(), search.end(), search.begin(), ::tolower);
 
 				for (int i = 0; i < prefabs.size(); i++)
@@ -1138,46 +1140,46 @@ bool Scene::RenderEntityCreatorUI()
 
 			static float prefabListHeight = 300.0f;
 
-			if (ImGui::BeginChild("Prefab List", ImVec2(ImGui::GetContentRegionAvail().x, prefabListHeight), prefabChildFlags, windowFlags))
+			if (BeginChild("Prefab List", ImVec2(GetContentRegionAvail().x, prefabListHeight), prefabChildFlags, windowFlags))
 			{
 				for (int i = 0; i < prefabs.size(); i++)
 				{
 					std::string &prefab = prefabs[i];
 
-					if (ImGui::Selectable(prefab.c_str(), selectedPrefab == prefab))
+					if (Selectable(prefab.c_str(), selectedPrefab == prefab))
 						selectedPrefab = std::move(prefab);
 				}
 			}
-			ImGui::EndChild();
-			prefabListHeight = ImGui::GetItemRectSize().y;
+			EndChild();
+			prefabListHeight = GetItemRectSize().y;
 
-			ImGui::Separator();
+			Separator();
 
-			if (ImGui::Button("Spawn") && !selectedPrefab.empty())
+			if (Button("Spawn") && !selectedPrefab.empty())
 			{
 				ent = SpawnPrefab(selectedPrefab);
 
 				if (!ent)
 					WarnF("Failed to spawn prefab '{}'", selectedPrefab);
 
-				ImGui::CloseCurrentPopup();
+				CloseCurrentPopup();
 			}
 
 			static float cancelButtonWidth = 30.0f;
-			ImGui::SameLine(ImGui::GetWindowContentRegionMax().x - cancelButtonWidth);
+			SameLine(GetWindowContentRegionMax().x - cancelButtonWidth);
 
-			if (ImGui::Button("Cancel"))
-				ImGui::CloseCurrentPopup();
-			cancelButtonWidth = ImGui::GetItemRectSize().x;
+			if (Button("Cancel"))
+				CloseCurrentPopup();
+			cancelButtonWidth = GetItemRectSize().x;
 
-			ImGui::EndPopup();
+			EndPopup();
 		}
 	}
 
 	// Takes a file during runtime and creates a new mesh and entity from it.
 	// HACK: Temporarily disabled 
 	/*
-	if (ImGui::Button("Mesh from file", buttonSize))
+	if (Button("Mesh from file", buttonSize))
 	{
 		const char *filterPatterns[] = { "*.obj", "*.png", "*.dds" };
 		const char *selectedFiles = tinyfd_openFileDialog(
@@ -1313,17 +1315,17 @@ bool Scene::RenderEntityCreatorUI()
 	/*
 	// Sound Creator
 	{
-		if (ImGui::Button("Sound", ImVec2(200, 50)))
-			ImGui::OpenPopup("Sound Creator");
+		if (Button("Sound", ImVec2(200, 50)))
+			OpenPopup("Sound Creator");
 
-		if (ImGui::BeginPopupModal("Sound Creator", NULL))
+		if (BeginPopupModal("Sound Creator", NULL))
 		{
 			// Set entity parameters
 			static char entityName[64] = "Sound Entity";
 			{
-				ImGui::Text("Entity Name:");
-				ImGui::SameLine();
-				ImGui::InputText("##EntityName", entityName, sizeof(entityName));
+				Text("Entity Name:");
+				SameLine();
+				InputText("##EntityName", entityName, sizeof(entityName));
 			}
 			static std::string soundName = "";
 			static float volume = 1.0f;
@@ -1334,17 +1336,17 @@ bool Scene::RenderEntityCreatorUI()
 			static int amountOfSounds = 1;
 
 			{
-				ImGui::Text("Sound Name:");
-				ImGui::SameLine();
-				if (ImGui::InputText("##SoundName", &soundName))
+				Text("Sound Name:");
+				SameLine();
+				if (InputText("##SoundName", &soundName))
 				{
 					std::string fileName = PATH_FILE_EXT(SOUNDS_PATH, soundName, "wav");
 					struct stat buffer;
 					foundFile = stat(fileName.c_str(), &buffer) == 0;
 				}
-				ImGui::SetItemTooltip(std::format("Name of the sound file you want to use, located in {}.", SOUNDS_PATH).c_str());
+				SetItemTooltip(std::format("Name of the sound file you want to use, located in {}.", SOUNDS_PATH).c_str());
 
-				if (ImGui::Button("Browse"))
+				if (Button("Browse"))
 				{
 					const char *filterPatterns[] = { "*.wav" };
 					const char *selectedFiles = tinyfd_openFileDialog(
@@ -1381,17 +1383,17 @@ bool Scene::RenderEntityCreatorUI()
 				}
 			}
 
-			ImGui::DragFloat("Volume", &volume, 0.05f, 0.0f, 1.0f);
-			ImGui::DragFloat("Distance", &distanceScaler, 0.1f);
-			ImGui::DragFloat("Reverb", &reverbScaler, 0.1f);
-			ImGui::DragInt("Amount of Sounds", &amountOfSounds, 1, 1, 100);
-			ImGui::Checkbox("Loop", &loop);
+			DragFloat("Volume", &volume, 0.05f, 0.0f, 1.0f);
+			DragFloat("Distance", &distanceScaler, 0.1f);
+			DragFloat("Reverb", &reverbScaler, 0.1f);
+			DragInt("Amount of Sounds", &amountOfSounds, 1, 1, 100);
+			Checkbox("Loop", &loop);
 
 			if (!foundFile)
 			{
-				ImGui::BeginDisabled(true);
+				BeginDisabled(true);
 			}
-			if (ImGui::Button("Create", ImVec2(120, 0)))
+			if (Button("Create", ImVec2(120, 0)))
 			{
 				std::string foo(entityName);
 				for (int i = 0; i < amountOfSounds; i++)
@@ -1405,26 +1407,26 @@ bool Scene::RenderEntityCreatorUI()
 					if (!CreateSoundEmitterEntity(&ent, entityName, soundName, loop, volume, distanceScaler, reverbScaler))
 					{
 						ErrMsg("Failed to create sound entity!");
-						ImGui::CloseCurrentPopup();
-						ImGui::EndPopup();
-						ImGui::EndChild();
-						ImGui::TreePop();
+						CloseCurrentPopup();
+						EndPopup();
+						EndChild();
+						TreePop();
 						return false;
 					}
 				}
 				entityName[0] = '\0';
-				ImGui::CloseCurrentPopup();
+				CloseCurrentPopup();
 			}
 			if (!foundFile)
 			{
-				ImGui::EndDisabled();
-				ImGui::SetItemTooltip("File could not be found.");
+				EndDisabled();
+				SetItemTooltip("File could not be found.");
 			}
-			ImGui::SetItemDefaultFocus();
-			ImGui::SameLine();
-			if (ImGui::Button("Close", ImVec2(120, 0)))
-				ImGui::CloseCurrentPopup();
-			ImGui::EndPopup();
+			SetItemDefaultFocus();
+			SameLine();
+			if (Button("Close", ImVec2(120, 0)))
+				CloseCurrentPopup();
+			EndPopup();
 		}
 	}
 	*/
@@ -1438,7 +1440,7 @@ bool Scene::RenderEntityCreatorUI()
 		}
 		else
 		{
-			SetSelection(ent, ImGui::GetIO().KeyShift);
+			SetSelection(ent, GetIO().KeyShift);
 		}
 	}
 
@@ -1450,7 +1452,7 @@ bool Scene::RenderSceneUI()
 	ZoneScopedC(RandomUniqueColor());
 	using namespace dx;
 
-	if (ImGui::CollapsingHeader("Creation"))
+	if (CollapsingHeader("Creation"))
 	{
 		if (!RenderEntityCreatorUI())
 		{
@@ -1459,50 +1461,50 @@ bool Scene::RenderSceneUI()
 		}
 	}
 
-	if (ImGui::CollapsingHeader("Settings"))
+	if (CollapsingHeader("Settings"))
 	{
-		if (ImGui::TreeNode("Shadows"))
+		if (TreeNode("Shadows"))
 		{
-			ImGui::Text("Pointlight Resolution:"); ImGui::SameLine();
+			Text("Pointlight Resolution:"); SameLine();
 			static int pointlightRes = (int)_pointlights->GetShadowResolution();
-			if (ImGui::DragInt("##PointlightRes", &pointlightRes))
+			if (DragInt("##PointlightRes", &pointlightRes))
 			{
 				pointlightRes = max(1, pointlightRes);
 				_pointlights->SetShadowResolution((UINT)pointlightRes);
 			}
 
-			ImGui::Text("Spotlight Resolution:"); ImGui::SameLine();
+			Text("Spotlight Resolution:"); SameLine();
 			static int spotlightRes = (int)_spotlights->GetShadowResolution();
-			if (ImGui::DragInt("##SpotlightRes", &spotlightRes))
+			if (DragInt("##SpotlightRes", &spotlightRes))
 			{
 				spotlightRes = max(1, spotlightRes);
 				_spotlights->SetShadowResolution((UINT)spotlightRes);
 			}
 
-			ImGui::Separator();
-			ImGui::TreePop();
+			Separator();
+			TreePop();
 		}
 
-		if (ImGui::TreeNode("Scene Holder"))
+		if (TreeNode("Scene Holder"))
 		{
 			if (!_sceneHolder.RenderUI(this))
 			{
-				ImGui::TreePop();
+				TreePop();
 				ErrMsg("Failed to render scene holder UI!");
 				return false;
 			}
 
-			ImGui::Separator();
-			ImGui::TreePop();
+			Separator();
+			TreePop();
 		}
 
-		if (ImGui::TreeNode("Audio"))
+		if (TreeNode("Audio"))
 		{
 			dx::AudioEngine *audioEngine = _soundEngine.GetAudioEngine();
 			IXAudio2 *audioInterface = audioEngine->GetInterface();
 
 			UINT outputChannels = audioEngine->GetOutputChannels();
-			ImGui::Text("Output Channels: %d", outputChannels);
+			Text("Output Channels: %d", outputChannels);
 
 			// Set Reverb Zone
 			{
@@ -1517,41 +1519,41 @@ bool Scene::RenderSceneUI()
 				};
 
 				static dx::AUDIO_ENGINE_REVERB newReverb = Reverb_Cave;
-				if (ImGui::BeginCombo("Reverb Zone", reverbNames[(int)newReverb].c_str()))
+				if (BeginCombo("Reverb Zone", reverbNames[(int)newReverb].c_str()))
 				{
 					for (int i = 0; i < reverbNames.size(); i++)
 					{
 						const bool isSelected = ((int)newReverb == i);
-						if (ImGui::Selectable(reverbNames[i].c_str(), isSelected))
+						if (Selectable(reverbNames[i].c_str(), isSelected))
 						{
 							newReverb = (dx::AUDIO_ENGINE_REVERB)i;
 							audioEngine->SetReverb(newReverb);
 						}
 
 						if (isSelected)
-							ImGui::SetItemDefaultFocus();
+							SetItemDefaultFocus();
 					}
-					ImGui::EndCombo();
+					EndCombo();
 				}
 			}
 
-			ImGui::Separator();
-			ImGui::TreePop();
+			Separator();
+			TreePop();
 		}
 
-		if (ImGui::TreeNode("Graph Manager"))
+		if (TreeNode("Graph Manager"))
 		{
-			ImGui::Text(std::format("Nodes in Scene: {}", _graphManager.GetNodeCount()).c_str());
+			Text(std::format("Nodes in Scene: {}", _graphManager.GetNodeCount()).c_str());
 
 			if (_monster)
 			{
-				ImGui::Separator();
+				Separator();
 				static bool showMonsterPath = true;
-				ImGui::Checkbox("Show Monster Path", &showMonsterPath);
+				Checkbox("Show Monster Path", &showMonsterPath);
 				if (showMonsterPath)
 				{
 					static bool overlayMonsterPath = false;
-					ImGui::Checkbox("Overlay##OverlayMonsterPath", &overlayMonsterPath);
+					Checkbox("Overlay##OverlayMonsterPath", &overlayMonsterPath);
 
 					std::vector<dx::XMFLOAT3> *points;
 					if (_monster.GetAs<MonsterBehaviour>()->GetPath(points))
@@ -1565,7 +1567,7 @@ bool Scene::RenderSceneUI()
 						);
 					}
 				}
-				ImGui::Separator();
+				Separator();
 			}
 
 			Entity *ent = _debugPlayer.Get()->GetPrimarySelection();
@@ -1573,11 +1575,11 @@ bool Scene::RenderSceneUI()
 
 			dx::XMFLOAT3 fromPos = posA;
 			static dx::XMFLOAT3 toPos;
-			ImGui::InputFloat3("Path To", &toPos.x);
+			InputFloat3("Path To", &toPos.x);
 
 			if (!_graphManager.RenderUI(fromPos, toPos))
 			{
-				ImGui::TreePop();
+				TreePop();
 				return false;
 			}
 
@@ -1588,9 +1590,9 @@ bool Scene::RenderSceneUI()
 
 			if (firstNode)
 			{
-				ImGui::Text("Select Target Node...");
+				Text("Select Target Node...");
 
-				if (ImGui::Button("[Num1] Cancel Connection") || _input->GetKey(KeyCode::NumPad1) == KeyState::Pressed)
+				if (Button("[Num1] Cancel Connection") || _input->GetKey(KeyCode::NumPad1) == KeyState::Pressed)
 				{
 					_debugPlayer.Get()->Select(firstNode.Get());
 					firstNode = nullptr;
@@ -1602,47 +1604,47 @@ bool Scene::RenderSceneUI()
 				GraphNodeBehaviour *node;
 				if (ent->GetBehaviourByType<GraphNodeBehaviour>(node))
 				{
-					if (ImGui::TreeNode("Node Properties"))
+					if (TreeNode("Node Properties"))
 					{
-						ImGui::PushID("NodeProperties");
+						PushID("NodeProperties");
 						if (!node->InitialRenderUI())
 						{
-							ImGui::PopID();
-							ImGui::TreePop();
+							PopID();
+							TreePop();
 							ErrMsg("Failed to render selected node properties!");
 							return false;
 						}
-						ImGui::PopID();
+						PopID();
 
-						ImGui::TreePop();
+						TreePop();
 					}
 
 					if (!firstNode)
 					{
-						if (ImGui::Button("[Num0] Connect Selected") || _input->GetKey(KeyCode::NumPad0) == KeyState::Pressed)
+						if (Button("[Num0] Connect Selected") || _input->GetKey(KeyCode::NumPad0) == KeyState::Pressed)
 						{
 							graphEditType = GraphEditType::Connect;
 							firstNode = ent;
 							_debugPlayer.Get()->ClearSelection();
 						}
 
-						if (ImGui::Button("[Num2] Disconnect Selected") || _input->GetKey(KeyCode::NumPad2) == KeyState::Pressed)
+						if (Button("[Num2] Disconnect Selected") || _input->GetKey(KeyCode::NumPad2) == KeyState::Pressed)
 						{
 							graphEditType = GraphEditType::Disconnect;
 							firstNode = ent;
 							_debugPlayer.Get()->ClearSelection();
 						}
 
-						ImGui::Text("[Num3] New Connected Node");
+						Text("[Num3] New Connected Node");
 
-						if (ImGui::Button("[Num4] Split Selected") || _input->GetKey(KeyCode::NumPad4) == KeyState::Pressed)
+						if (Button("[Num4] Split Selected") || _input->GetKey(KeyCode::NumPad4) == KeyState::Pressed)
 						{
 							graphEditType = GraphEditType::Split;
 							firstNode = ent;
 							_debugPlayer.Get()->ClearSelection();
 						}
 
-						if (ImGui::Button("[Num5] New Connected Node At Camera") || _input->GetKey(KeyCode::NumPad5) == KeyState::Pressed)
+						if (Button("[Num5] New Connected Node At Camera") || _input->GetKey(KeyCode::NumPad5) == KeyState::Pressed)
 						{
 							Transform *cameraTransform = _viewCamera.Get()->GetTransform();
 
@@ -1659,7 +1661,7 @@ bool Scene::RenderSceneUI()
 							_debugPlayer.Get()->Select(copyEnt);
 						}
 
-						if (ImGui::Button("[Num6] Mark As Mine") || _input->GetKey(KeyCode::NumPad6) == KeyState::Pressed)
+						if (Button("[Num6] Mark As Mine") || _input->GetKey(KeyCode::NumPad6) == KeyState::Pressed)
 						{
 							node->SetCost(0.0f);
 						}
@@ -1675,7 +1677,7 @@ bool Scene::RenderSceneUI()
 								0.4f, { 1,0,1,0.3f }, false
 							);
 
-							if (ImGui::Button("[Enter] Apply") || _input->GetKey(KeyCode::Enter) == KeyState::Pressed)
+							if (Button("[Enter] Apply") || _input->GetKey(KeyCode::Enter) == KeyState::Pressed)
 							{
 								switch (graphEditType)
 								{
@@ -1721,33 +1723,33 @@ bool Scene::RenderSceneUI()
 				}
 			}
 
-			ImGui::Separator();
-			ImGui::TreePop();
+			Separator();
+			TreePop();
 		}
 
-		if (ImGui::TreeNode("Timeline Manager"))
+		if (TreeNode("Timeline Manager"))
 		{
 			if (!_timelineManager.RenderUI(_viewCamera.Get()->GetTransform()))
 			{
-				ImGui::TreePop();
+				TreePop();
 				return false;
 			}
 
-			ImGui::Separator();
-			ImGui::TreePop();
+			Separator();
+			TreePop();
 		}
 
-		ImGui::Dummy(ImVec2(0.0f, 2.0f));
+		Dummy(ImVec2(0.0f, 2.0f));
 
-		if (ImGui::Button("Clear All Duplicate Binds"))
+		if (Button("Clear All Duplicate Binds"))
 		{
 			_debugPlayer.Get()->ClearDuplicateBinds();
 		}
 	}
 
-	if (ImGui::CollapsingHeader("Other"))
+	if (CollapsingHeader("Other"))
 	{
-		if (ImGui::TreeNode("Fog Testing"))
+		if (TreeNode("Fog Testing"))
 		{
 			const static auto calcStepSize = [](float currDist, float maxDist, int samplesLeft, int maxSamples, float sampleBias) -> float {
 				float bias = sampleBias;
@@ -1766,31 +1768,31 @@ bool Scene::RenderSceneUI()
 
 			static std::vector<dx::XMFLOAT3> samplePoints;
 
-			if (ImGui::DragFloat("Length##FogTests", &ray.length, 0.01f))
+			if (DragFloat("Length##FogTests", &ray.length, 0.01f))
 				doRecalc = true;
 			ImGuiUtils::LockMouseOnActive();
 
 			static int maxSamples = 0;
-			if (ImGui::DragInt("Max Samples##FogTests", &maxSamples, 1, 0, 1024))
+			if (DragInt("Max Samples##FogTests", &maxSamples, 1, 0, 1024))
 				doRecalc = true;
 
 			static float sampleBias = 1.0f;
-			if (ImGui::DragFloat("Sample Bias##FogTests", &sampleBias, 0.01f, 0.1f, 10.0f))
+			if (DragFloat("Sample Bias##FogTests", &sampleBias, 0.01f, 0.1f, 10.0f))
 				doRecalc = true;
 			ImGuiUtils::LockMouseOnActive();
 
 			static float randomOffset = 0.0f;
-			if (ImGui::DragFloat("Random Offset##FogTests", &randomOffset, 0.01f, 0.0f, 1.0f))
+			if (DragFloat("Random Offset##FogTests", &randomOffset, 0.01f, 0.0f, 1.0f))
 				doRecalc = true;
 			ImGuiUtils::LockMouseOnActive();
 
 			static bool alwaysRecalc = false;
-			ImGui::Checkbox("Always Recalculate##FogTests", &alwaysRecalc);
+			Checkbox("Always Recalculate##FogTests", &alwaysRecalc);
 
-			ImGui::SeparatorText("Ray");
+			SeparatorText("Ray");
 			{
 				static bool followingCamera = true;
-				ImGui::Checkbox("Follow Camera##FogTests", &followingCamera);
+				Checkbox("Follow Camera##FogTests", &followingCamera);
 
 				if (_viewCamera && followingCamera)
 				{
@@ -1800,16 +1802,16 @@ bool Scene::RenderSceneUI()
 				}
 				else
 				{
-					ImGui::DragFloat3("Origin##FogTests", &ray.origin.x, 0.05f);
+					DragFloat3("Origin##FogTests", &ray.origin.x, 0.05f);
 					ImGuiUtils::LockMouseOnActive();
 
-					if (ImGui::DragFloat3("Direction##FogTests", &ray.direction.x, 0.01f))
+					if (DragFloat3("Direction##FogTests", &ray.direction.x, 0.01f))
 						Store(ray.direction, dx::XMVector3Normalize(Load(ray.direction)));
 					ImGuiUtils::LockMouseOnActive();
 				}
 			}
 
-			if (ImGui::Button("Recalculate##FogTests") || doRecalc || alwaysRecalc)
+			if (Button("Recalculate##FogTests") || doRecalc || alwaysRecalc)
 			{
 				doRecalc = false;
 				Entity *_ = nullptr;
@@ -1834,35 +1836,35 @@ bool Scene::RenderSceneUI()
 				}
 			}
 
-			ImGui::SeparatorText("Drawing");
+			SeparatorText("Drawing");
 			{
 				DebugDrawer &drawer = DebugDrawer::Instance();
 
 				static bool drawRay = true;
-				ImGui::Checkbox("Draw Ray##FogTests", &drawRay);
+				Checkbox("Draw Ray##FogTests", &drawRay);
 				if (drawRay)
 				{
 					dx::XMFLOAT3 scaledDir{};
 					Store(scaledDir, Load(ray.direction) * hit.length);
-					drawer.DrawRay(ray.origin, scaledDir, 0.01f, { 1, 1, 1, 0.25f }, true);
+					drawer.DrawRay(ray.origin, scaledDir, 0.01f, { 1, 1, 1, 0.25f });
 				}
 
 				static bool drawSamples = true;
-				ImGui::Checkbox("Draw Samples##FogTests", &drawSamples);
+				Checkbox("Draw Samples##FogTests", &drawSamples);
 				if (drawSamples)
 				{
 					for (const auto &point : samplePoints)
 					{
-						drawer.DrawSphere(point, 0.025f, 1, { 0, 1, 0, 0.5f }, true);
+						drawer.DrawSphere(point, 0.025f, 1, { 0, 1, 0, 0.5f });
 					}
 				}
 			}
 
-			ImGui::Separator();
-			ImGui::TreePop();
+			Separator();
+			TreePop();
 		}
 		
-		if (ImGui::TreeNode("Raycast Tests"))
+		if (TreeNode("Raycast Tests"))
 		{
 			static Shape::Ray ray({ 0,0,0 }, { 0,0,1 }, 1);
 			Shape::RayHit hit;
@@ -1870,16 +1872,16 @@ bool Scene::RenderSceneUI()
 			Entity *hitEntity = nullptr;
 			static Ref<Entity> originEntity = nullptr;
 
-			ImGui::SeparatorText("Ray");
+			SeparatorText("Ray");
 			{
-				if (ImGui::Button(std::format("Track Entity: {}", originEntity.IsValid() ? originEntity.Get()->GetName() : "None").c_str()))
+				if (Button(std::format("Track Entity: {}", originEntity.IsValid() ? originEntity.Get()->GetName() : "None").c_str()))
 					_debugPlayer.Get()->Select(originEntity.Get(), false);
-				if (ImGui::BeginDragDropTarget())
+				if (BeginDragDropTarget())
 				{
-					if (const ImGuiPayload *payload = ImGui::AcceptDragDropPayload(ImGui::PayloadTags.at(ImGui::PayloadType::ENTITY)))
+					if (const ImGuiPayload *payload = AcceptDragDropPayload(PayloadTags.at(PayloadType::ENTITY)))
 					{
-						IM_ASSERT(payload->DataSize == sizeof(ImGui::EntityPayload));
-						ImGui::EntityPayload entPayload = *(const ImGui::EntityPayload *)payload->Data;
+						IM_ASSERT(payload->DataSize == sizeof(EntityPayload));
+						EntityPayload entPayload = *(const EntityPayload *)payload->Data;
 
 						Entity *payloadEnt = nullptr;
 
@@ -1896,7 +1898,7 @@ bool Scene::RenderSceneUI()
 						}
 
 					}
-					ImGui::EndDragDropTarget();
+					EndDragDropTarget();
 				}
 
 				if (originEntity.IsValid())
@@ -1906,8 +1908,8 @@ bool Scene::RenderSceneUI()
 					ray.direction = originEntT->GetForward(World);
 
 					ImGuiUtils::BeginButtonStyle(ImGuiUtils::StyleType::Red);
-					ImGui::SameLine();
-					if (ImGui::Button("X##RaycastTests"))
+					SameLine();
+					if (Button("X##RaycastTests"))
 					{
 						originEntity = nullptr;
 					}
@@ -1915,14 +1917,14 @@ bool Scene::RenderSceneUI()
 				}
 				else
 				{
-					ImGui::DragFloat3("Origin##RaycastTests", &ray.origin.x, 0.05f);
+					DragFloat3("Origin##RaycastTests", &ray.origin.x, 0.05f);
 					ImGuiUtils::LockMouseOnActive();
 
-					if (ImGui::DragFloat3("Direction##RaycastTests", &ray.direction.x, 0.01f))
+					if (DragFloat3("Direction##RaycastTests", &ray.direction.x, 0.01f))
 						Store(ray.direction, dx::XMVector3Normalize(Load(ray.direction)));
 					ImGuiUtils::LockMouseOnActive();
 
-					if (_viewCamera && ImGui::Button("Move Ray to View##RaycastTests"))
+					if (_viewCamera && Button("Move Ray to View##RaycastTests"))
 					{
 						Transform *camT = _viewCamera.Get()->GetTransform();
 						ray.origin = camT->GetPosition(World);
@@ -1930,20 +1932,20 @@ bool Scene::RenderSceneUI()
 					}
 				}
 
-				ImGui::DragFloat("Length##RaycastTests", &ray.length, 0.01f);
+				DragFloat("Length##RaycastTests", &ray.length, 0.01f);
 				ImGuiUtils::LockMouseOnActive();
 
 				didHit = _sceneHolder.RaycastScene(ray, hit, hitEntity);
 			}
 
-			ImGui::SeparatorText("Drawing");
+			SeparatorText("Drawing");
 			{
 				static bool drawRay = true;
-				ImGui::Checkbox("Draw Ray##RaycastTests", &drawRay);
+				Checkbox("Draw Ray##RaycastTests", &drawRay);
 				if (drawRay)
 				{
 					static bool overlayRay = false;
-					ImGui::Checkbox("Overlay Ray##RaycastTests", &overlayRay);
+					Checkbox("Overlay Ray##RaycastTests", &overlayRay);
 
 					dx::XMFLOAT3 scaledDir;
 					Store(scaledDir, Load(ray.direction) * ray.length);
@@ -1951,11 +1953,11 @@ bool Scene::RenderSceneUI()
 				}
 
 				static bool drawHit = true;
-				ImGui::Checkbox("Draw Hit##RaycastTests", &drawHit);
+				Checkbox("Draw Hit##RaycastTests", &drawHit);
 				if (drawHit)
 				{
 					static bool overlayHit = false;
-					ImGui::Checkbox("Overlay Hit##RaycastTests", &overlayHit);
+					Checkbox("Overlay Hit##RaycastTests", &overlayHit);
 
 					if (didHit)
 					{
@@ -1965,54 +1967,140 @@ bool Scene::RenderSceneUI()
 				}
 			}
 
-			ImGui::SeparatorText("Data");
+			SeparatorText("Data");
 			{
-				ImGui::Text(std::format("Ray Origin:    ({}, {}, {})", ray.origin.x, ray.origin.y, ray.origin.z).c_str());
-				ImGui::Text(std::format("Ray Direction: ({}, {}, {})", ray.direction.x, ray.direction.y, ray.direction.z).c_str());
-				ImGui::Text(std::format("Ray Length:	{}", ray.length).c_str());
+				Text(std::format("Ray Origin:    ({}, {}, {})", ray.origin.x, ray.origin.y, ray.origin.z).c_str());
+				Text(std::format("Ray Direction: ({}, {}, {})", ray.direction.x, ray.direction.y, ray.direction.z).c_str());
+				Text(std::format("Ray Length:	{}", ray.length).c_str());
 
 				if (didHit)
 				{
-					ImGui::Text(std::format("Hit Point:		({}, {}, {})", hit.point.x, hit.point.y, hit.point.z).c_str());
-					ImGui::Text(std::format("Hit Normal:	({}, {}, {})", hit.normal.x, hit.normal.y, hit.normal.z).c_str());
-					ImGui::Text(std::format("Hit Length:	{}", hit.length).c_str());
+					Text(std::format("Hit Point:		({}, {}, {})", hit.point.x, hit.point.y, hit.point.z).c_str());
+					Text(std::format("Hit Normal:	({}, {}, {})", hit.normal.x, hit.normal.y, hit.normal.z).c_str());
+					Text(std::format("Hit Length:	{}", hit.length).c_str());
 
 					if (hitEntity)
 					{
 						const std::string &entName = hitEntity->GetName();
 						UINT entID = hitEntity->GetID();
 
-						ImGui::Text("Hit Entity:	");
-						ImGui::SameLine();
-						if (ImGui::Button(std::format("{}##RayHitEntID{}", entName, entID).c_str()))
+						Text("Hit Entity:	");
+						SameLine();
+						if (Button(std::format("{}##RayHitEntID{}", entName, entID).c_str()))
 							_debugPlayer.Get()->Select(hitEntity);
 					}
 					else
-						ImGui::Text("Hit Entity:	None");
+						Text("Hit Entity:	None");
 				}
 				else
-					ImGui::Text("No Hit.");
+					Text("No Hit.");
 			}
 
-			ImGui::Separator();
-			ImGui::TreePop();
+			Separator();
+			TreePop();
 		}
 
-		if (ImGui::TreeNode("Debug Tests"))
+		if (TreeNode("Ref Tests"))
 		{
-			if (ImGui::TreeNode("Tri Tests"))
+			PushID("RefTests");
+
+			static Ref<Behaviour> meshRef = nullptr;
+			static std::vector<std::pair<std::string, Ref<Entity>>> entityRefs;
+
+			if (Entity *ent = _debugPlayer.Get()->GetPrimarySelection())
+			{
+				const std::string &name = ent->GetName();
+				Text("Selected Entity: %s", name.c_str());
+				Text("Active References %d", ent->GetRefs().size());
+
+				if (Button("Add Reference to Selected"))
+					entityRefs.emplace_back(std::make_pair(name, ent->AsRef()));
+
+				MeshBehaviour *mesh = nullptr;
+				if (ent->GetBehaviourByType<MeshBehaviour>(mesh))
+				{
+					if (Button("Add Reference to Mesh"))
+						meshRef = mesh;
+				}
+			}
+
+			BeginChild("Reference Testing", ImVec2(0, 200), ImGuiChildFlags_Border | ImGuiChildFlags_ResizeY);
+			for (int i = 0; i < entityRefs.size(); i++)
+			{
+				PushID(i);
+
+				auto &[name, ref] = entityRefs[i];
+				Entity *ent = nullptr;
+
+				Text("Reference %d: %s", i, name.c_str());
+				Text("State: %d", ref.TryGet(ent));
+				Text("Pointer: %d", ent);
+
+				if (ent)
+				{
+					Text("Name: %s", ent->GetName().c_str());
+					if (Button("Reselect"))
+						_debugPlayer.Get()->Select(ent);
+				}
+
+				if (Button("Remove Reference"))
+				{
+					entityRefs.erase(entityRefs.begin() + i);
+					i--;
+				}
+
+				PopID();
+				Separator();
+			}
+			EndChild();
+
+			SeparatorText("Mesh Reference");
+			if (meshRef)
+			{
+				MeshBehaviour *mesh = nullptr;
+				Text("Mesh Reference State: %d", meshRef.TryGetAs<MeshBehaviour>(mesh));
+				if (mesh)
+				{
+					Text("Mesh Name: %s", mesh->GetName().c_str());
+					Text("Entity Name: %s", mesh->GetEntity()->GetName().c_str());
+
+					if (Button("Reselect"))
+						_debugPlayer.Get()->Select(mesh->GetEntity());
+				}
+				else
+				{
+					Text("Mesh Reference is invalid.");
+				}
+
+				if (Button("Free Reference"))
+					meshRef = nullptr;
+			}
+			else
+			{
+				Text("No mesh reference set.");
+			}
+			Separator();
+
+			PopID();
+			TreePop();
+			Separator();
+		}
+
+		if (TreeNode("Debug Draw Tests"))
+		{
+			if (TreeNode("Tri Tests"))
 			{
 				static bool overlayTri = false;
 				static bool doubleTri = true;
 				static bool screenSpace = false;
 
-				ImGui::Checkbox("Overlay##OverlayTri", &overlayTri);
-				ImGui::Checkbox("Double Sided##DoubleSidedTri", &doubleTri);
-				ImGui::Checkbox("Screen-Space Draws##DrawScreenSpaceDebugTest", &screenSpace);
-				ImGui::Dummy(ImVec2(0.0f, 8.0f));
+				Checkbox("Overlay##OverlayTri", &overlayTri);
+				Checkbox("Double Sided##DoubleSidedTri", &doubleTri);
+				Checkbox("Screen-Space Draws##DrawScreenSpaceDebugTest", &screenSpace);
+				Dummy(ImVec2(0.0f, 8.0f));
 
 
-				ImGui::SeparatorText("Single Triangle");
+				SeparatorText("Single Triangle");
 				{
 					static DebugDraw::Tri tri{
 						{ {0, 0, 0}, {1, 0, 0, 1} },
@@ -2020,34 +2108,34 @@ bool Scene::RenderSceneUI()
 						{ {0, 0, 1}, {0, 0, 1, 1} }
 					};
 
-					ImGui::Text("V0:");
-					ImGui::DragFloat3("Pos##v0", &tri.v0.position.x, 0.05f, 0.0f, 0.0f, "%.3f");
-					ImGui::DragFloat4("Col##v0", &tri.v0.color.x, 0.01f, 0.0f, 0.0f, "%.2f");
-					ImGui::Dummy(ImVec2(0.0f, 4.0f));
+					Text("V0:");
+					DragFloat3("Pos##v0", &tri.v0.position.x, 0.05f, 0.0f, 0.0f, "%.3f");
+					DragFloat4("Col##v0", &tri.v0.color.x, 0.01f, 0.0f, 0.0f, "%.2f");
+					Dummy(ImVec2(0.0f, 4.0f));
 
-					ImGui::Text("V1:");
-					ImGui::DragFloat3("Pos##v1", &tri.v1.position.x, 0.05f, 0.0f, 0.0f, "%.3f");
-					ImGui::DragFloat4("Col##v1", &tri.v1.color.x, 0.01f, 0.0f, 0.0f, "%.2f");
-					ImGui::Dummy(ImVec2(0.0f, 4.0f));
+					Text("V1:");
+					DragFloat3("Pos##v1", &tri.v1.position.x, 0.05f, 0.0f, 0.0f, "%.3f");
+					DragFloat4("Col##v1", &tri.v1.color.x, 0.01f, 0.0f, 0.0f, "%.2f");
+					Dummy(ImVec2(0.0f, 4.0f));
 
-					ImGui::Text("V2:");
-					ImGui::DragFloat3("Pos##v2", &tri.v2.position.x, 0.05f, 0.0f, 0.0f, "%.3f");
-					ImGui::DragFloat4("Col##v2", &tri.v2.color.x, 0.01f, 0.0f, 0.0f, "%.2f");
+					Text("V2:");
+					DragFloat3("Pos##v2", &tri.v2.position.x, 0.05f, 0.0f, 0.0f, "%.3f");
+					DragFloat4("Col##v2", &tri.v2.color.x, 0.01f, 0.0f, 0.0f, "%.2f");
 
 					DebugDrawer::Instance().DrawTri(tri, !overlayTri, doubleTri);
 				}
-				ImGui::Dummy(ImVec2(0.0f, 8.0f));
+				Dummy(ImVec2(0.0f, 8.0f));
 
-				ImGui::SeparatorText("Random Triangles");
+				SeparatorText("Random Triangles");
 				{
 					static std::vector<DebugDraw::Tri> tris;
 					static dx::XMFLOAT3 triSpawnBounds = { 10.0f, 10.0f, 10.0f };
 					static int triCount = 10;
 
-					ImGui::DragInt("Amount##RandTris", &triCount);
-					ImGui::DragFloat3("Bounds##TriSpawnBounds", &triSpawnBounds.x, 0.2f, 0.0f, 0.0f, "%.3f");
+					DragInt("Amount##RandTris", &triCount);
+					DragFloat3("Bounds##TriSpawnBounds", &triSpawnBounds.x, 0.2f, 0.0f, 0.0f, "%.3f");
 
-					if (ImGui::Button("Generate Random Tris"))
+					if (Button("Generate Random Tris"))
 					{
 						tris.clear();
 						tris.reserve(triCount);
@@ -2101,12 +2189,12 @@ bool Scene::RenderSceneUI()
 
 					DebugDrawer::Instance().DrawTris(tris.data(), tris.size(), !overlayTri, doubleTri);
 				}
-				ImGui::Dummy(ImVec2(0.0f, 8.0f));
+				Dummy(ImVec2(0.0f, 8.0f));
 
-				ImGui::SeparatorText("Selected OBB");
+				SeparatorText("Selected OBB");
 				{
 					static dx::XMFLOAT4 selectColor = { 0.0f, 1.0f, 0.0f, 0.25f };
-					ImGui::DragFloat4("Selection Color##SelectColor", &selectColor.x, 0.01f, 0.0f, 0.0f, "%.2f");
+					DragFloat4("Selection Color##SelectColor", &selectColor.x, 0.01f, 0.0f, 0.0f, "%.2f");
 
 					Entity *selectedEnt = _debugPlayer.Get()->GetPrimarySelection();
 					if (selectedEnt)
@@ -2162,20 +2250,20 @@ bool Scene::RenderSceneUI()
 				}
 
 
-				ImGui::TreePop();
-				ImGui::Separator();
+				TreePop();
+				Separator();
 			}
 
-			if (ImGui::TreeNode("Sprite Tests"))
+			if (TreeNode("Sprite Tests"))
 			{
-				ImGui::PushID("SpriteTests");
+				PushID("SpriteTests");
 
 				static DebugDraw::Sprite sprite;
 				static bool overlaySprite = false;
 				static bool screenSpaceSprite = false;
 				static UINT texID = _content->GetTextureID("Maxwell");
 
-				if (ImGui::BeginCombo("##SelectSpriteTextureCombo", _content->GetTextureName((UINT)texID).c_str()))
+				if (BeginCombo("##SelectSpriteTextureCombo", _content->GetTextureName((UINT)texID).c_str()))
 				{
 					std::vector<std::string> textureNames;
 					_content->GetTextureNames(&textureNames);
@@ -2183,163 +2271,112 @@ bool Scene::RenderSceneUI()
 					for (UINT i = 0; i < textureNames.size(); i++)
 					{
 						bool isSelected = (texID == i);
-						if (ImGui::Selectable(textureNames[i].c_str(), isSelected))
+						if (Selectable(textureNames[i].c_str(), isSelected))
 							texID = i;
 
 						if (isSelected)
-							ImGui::SetItemDefaultFocus();
+							SetItemDefaultFocus();
 					}
-					ImGui::EndCombo();
+					EndCombo();
 				}
 
 				if (screenSpaceSprite)
 				{
-					ImGui::DragFloat2("Position", &sprite.position.x, 0.25f);
+					DragFloat2("Position", &sprite.position.x, 0.25f);
 					ImGuiUtils::LockMouseOnActive();
 
-					ImGui::DragFloat("Depth", &sprite.position.z, 0.001f);
+					DragFloat("Depth", &sprite.position.z, 0.001f);
 					ImGuiUtils::LockMouseOnActive();
 				}
 				else
 				{
-					ImGui::DragFloat3("Position", &sprite.position.x, 0.1f);
+					DragFloat3("Position", &sprite.position.x, 0.1f);
 					ImGuiUtils::LockMouseOnActive();
 				}
 
-				ImGui::DragFloat2("Size", &sprite.size.x, screenSpaceSprite ? 0.25f : 0.1f);
+				DragFloat2("Size", &sprite.size.x, screenSpaceSprite ? 0.25f : 0.1f);
 				ImGuiUtils::LockMouseOnActive();
 
-				ImGui::DragFloat4("Rect", &sprite.uv0.x, 0.01f);
+				DragFloat4("Rect", &sprite.uv0.x, 0.01f);
 				ImGuiUtils::LockMouseOnActive();
 
-				ImGui::ColorEdit4("Color", &sprite.color.x, ImGuiColorEditFlags_NoInputs | ImGuiColorEditFlags_AlphaBar);
+				ColorEdit4("Color", &sprite.color.x, ImGuiColorEditFlags_NoInputs | ImGuiColorEditFlags_AlphaBar);
 
-				ImGui::Checkbox("Overlay##OverlaySprite", &overlaySprite);
+				Checkbox("Overlay##OverlaySprite", &overlaySprite);
 
-				ImGui::Checkbox("Screen-Space##DrawScreenSpaceSpriteDebugTest", &screenSpaceSprite);
+				Checkbox("Screen-Space##DrawScreenSpaceSpriteDebugTest", &screenSpaceSprite);
 
 				if (screenSpaceSprite)
 					DebugDrawer::Instance().DrawSpriteSS(texID, sprite);
 				else
 					DebugDrawer::Instance().DrawSprite(texID, sprite, !overlaySprite);
 
-				ImGui::PopID();
-				ImGui::TreePop();
-				ImGui::Separator();
+				PopID();
+				TreePop();
+				Separator();
 			}
 
-			if (ImGui::TreeNode("Ref Tests"))
+			if (TreeNode("Mesh Tests"))
 			{
-				ImGui::PushID("RefTests");
+				PushID("MeshTests");
 
-				static Ref<Behaviour> meshRef = nullptr;
-				static std::vector<std::pair<std::string, Ref<Entity>>> entityRefs;
-
-				if (Entity *ent = _debugPlayer.Get()->GetPrimarySelection())
 				{
-					const std::string &name = ent->GetName();
-					ImGui::Text("Selected Entity: %s", name.c_str());
-					ImGui::Text("Active References %d", ent->GetRefs().size());
+					static dx::XMFLOAT3 pos = {0,0,0};
+					static float rad = 1;
+					static dx::XMFLOAT4 col = {1,1,1,1};
+					static int subdivs = 0;
+					static bool depth = true;
 
-					if (ImGui::Button("Add Reference to Selected"))
-						entityRefs.emplace_back(std::make_pair(name, ent->AsRef()));
+					Text("Center:"); SameLine();
+					DragFloat3("##Pos", &pos.x, 0.05f);
+					ImGuiUtils::LockMouseOnActive();
 
-					MeshBehaviour *mesh = nullptr;
-					if (ent->GetBehaviourByType<MeshBehaviour>(mesh))
-					{
-						if (ImGui::Button("Add Reference to Mesh"))
-							meshRef = mesh;
-					}
+					Text("Radius:"); SameLine();
+					DragFloat("##Rad", &rad, 0.01f, 0.001f);
+					ImGuiUtils::LockMouseOnActive();
+
+					Text("Subdivisions:"); SameLine();
+					DragInt("##Divs", &subdivs, 0.1f, 0, 4, "%d", ImGuiSliderFlags_AlwaysClamp);
+					ImGuiUtils::LockMouseOnActive();
+
+					ColorEdit4("Color", &col.x);
+
+					Text("Depth:"); SameLine();
+					Checkbox("##Depth", &depth);
+
+					DebugDrawer::Instance().DrawSphere(pos, rad, subdivs, col, depth);
 				}
 
-				ImGui::BeginChild("Reference Testing", ImVec2(0, 200), ImGuiChildFlags_Border | ImGuiChildFlags_ResizeY);
-				for (int i = 0; i < entityRefs.size(); i++)
-				{
-					ImGui::PushID(i);
-
-					auto &[name, ref] = entityRefs[i];
-					Entity *ent = nullptr;
-
-					ImGui::Text("Reference %d: %s", i, name.c_str());
-					ImGui::Text("State: %d", ref.TryGet(ent));
-					ImGui::Text("Pointer: %d", ent);
-
-					if (ent)
-					{
-						ImGui::Text("Name: %s", ent->GetName().c_str());
-						if (ImGui::Button("Reselect"))
-							_debugPlayer.Get()->Select(ent);
-					}
-
-					if (ImGui::Button("Remove Reference"))
-					{
-						entityRefs.erase(entityRefs.begin() + i);
-						i--;
-					}
-
-					ImGui::PopID();
-					ImGui::Separator();
-				}
-				ImGui::EndChild();
-
-				ImGui::SeparatorText("Mesh Reference");
-				if (meshRef)
-				{
-					MeshBehaviour *mesh = nullptr;
-					ImGui::Text("Mesh Reference State: %d", meshRef.TryGetAs<MeshBehaviour>(mesh));
-					if (mesh)
-					{
-						ImGui::Text("Mesh Name: %s", mesh->GetName().c_str());
-						ImGui::Text("Entity Name: %s", mesh->GetEntity()->GetName().c_str());
-
-						if (ImGui::Button("Reselect"))
-							_debugPlayer.Get()->Select(mesh->GetEntity());
-					}
-					else
-					{
-						ImGui::Text("Mesh Reference is invalid.");
-					}
-
-					if (ImGui::Button("Free Reference"))
-						meshRef = nullptr;
-				}
-				else
-				{
-					ImGui::Text("No mesh reference set.");
-				}
-				ImGui::Separator();
-
-				ImGui::PopID();
-				ImGui::TreePop();
-				ImGui::Separator();
+				PopID();
+				TreePop();
 			}
 
-			ImGui::Separator();
-			ImGui::TreePop();
+			Separator();
+			TreePop();
 		}
 
 		static bool displayCullingRects = false;
-		ImGui::Checkbox("Show Culling Rects", &displayCullingRects);
+		Checkbox("Show Culling Rects", &displayCullingRects);
 
 		if (displayCullingRects)
 		{
 			static bool useDepthForRects = true;
-			ImGui::Checkbox("Use Depth##UseDepthForRects", &useDepthForRects);
+			Checkbox("Use Depth##UseDepthForRects", &useDepthForRects);
 
 			static bool doubleSided = false;
-			ImGui::Checkbox("Double-Sided##doubleSidedRects", &doubleSided);
+			Checkbox("Double-Sided##doubleSidedRects", &doubleSided);
 
 			static bool fullTree = false;
-			ImGui::Checkbox("Show Full Tree##FullTree", &fullTree);
+			Checkbox("Show Full Tree##FullTree", &fullTree);
 
 			static bool cullingBounds = false;
-			ImGui::Checkbox("Show Culling Bounds##CullingBounds", &cullingBounds);
+			Checkbox("Show Culling Bounds##CullingBounds", &cullingBounds);
 
 			static float opacity = 0.3f;
-			ImGui::SliderFloat("Opacity", &opacity, 0.0000001f, 1.0f);
+			SliderFloat("Opacity", &opacity, 0.0000001f, 1.0f);
 
 			static float thickness = 0.95f;
-			ImGui::DragFloat("Thickness", &thickness, 0.01f);
+			DragFloat("Thickness", &thickness, 0.01f);
 
 
 			static UINT boxCount = 16u;
@@ -2384,29 +2421,29 @@ bool Scene::RenderSceneUI()
 			std::srand(nextSeed);
 		}
 
-		ImGui::Separator();
-		ImGui::Dummy(ImVec2(0.0f, 4.0f));
+		Separator();
+		Dummy(ImVec2(0.0f, 4.0f));
 
 		static bool currState = false;
 		static float fadeDuration = 1.0f;
-		ImGui::SliderFloat("Fade Duration", &fadeDuration, 0.0f, 3.0f);
+		SliderFloat("Fade Duration", &fadeDuration, 0.0f, 3.0f);
 
-		if (ImGui::Button("Begin Fade"))
+		if (Button("Begin Fade"))
 		{
 			_graphics->BeginScreenFade(fadeDuration * (currState ? -1.0f : 1.0f));
 			currState = !currState;
 		}
 
-		ImGui::Dummy(ImVec2(0.0f, 4.0f));
+		Dummy(ImVec2(0.0f, 4.0f));
 
 		dx::XMFLOAT3A camPos = _viewCamera.Get()->GetTransform()->GetPosition();
 		char camXCoord[32]{}, camYCoord[32]{}, camZCoord[32]{};
 		snprintf(camXCoord, sizeof(camXCoord), "%.2f", camPos.x);
 		snprintf(camYCoord, sizeof(camYCoord), "%.2f", camPos.y);
 		snprintf(camZCoord, sizeof(camZCoord), "%.2f", camPos.z);
-		ImGui::Text(std::format("Camera Pos: ({}, {}, {})", camXCoord, camYCoord, camZCoord).c_str());
+		Text(std::format("Camera Pos: ({}, {}, {})", camXCoord, camYCoord, camZCoord).c_str());
 
-		ImGui::Separator();
+		Separator();
 		
 		char nearPlane[16]{}, farPlane[16]{};
 		for (UINT i = 0; i < _spotlights->GetNrOfLights(); i++)
@@ -2414,7 +2451,7 @@ bool Scene::RenderSceneUI()
 			const ProjectionInfo projInfo = _spotlights->GetLightBehaviour(i)->GetShadowCamera()->GetCurrProjectionInfo();
 			snprintf(nearPlane, sizeof(nearPlane), "%.2f", projInfo.planes.nearZ);
 			snprintf(farPlane, sizeof(farPlane), "%.1f", projInfo.planes.farZ);
-			ImGui::Text(std::format("({}:{}) Planes Spotlight #{}", nearPlane, farPlane, i).c_str());
+			Text(std::format("({}:{}) Planes Spotlight #{}", nearPlane, farPlane, i).c_str());
 		}
 	}
 	
@@ -2553,12 +2590,6 @@ bool Scene::RenderGizmoUI()
 					break;
 				}
 			}
-
-			/*if (hasCachedPivot)
-			{
-				pivotPos = cachedPivotPos;
-				pivotScale = cachedPivotScale;
-			}*/
 
 			ImGuizmo::MODE mode = (space == World) ? ImGuizmo::MODE::WORLD : ImGuizmo::MODE::LOCAL;
 			ImGuizmo::OPERATION operation = (ImGuizmo::OPERATION)0u;

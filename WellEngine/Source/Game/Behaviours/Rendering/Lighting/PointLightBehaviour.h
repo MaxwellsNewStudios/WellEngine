@@ -13,10 +13,11 @@ struct PointLightBufferData
 
 	dx::XMFLOAT3 color = { };
 	float fogStrength = 1.0f;
+	float shadowStrength = 1.0f;
 
 	float nearZ = 0.0f, farZ = 1.0f;
 
-	float padding[2]{};
+	float padding[1]{};
 };
 
 class [[register_behaviour]] PointLightBehaviour final : public Behaviour
@@ -26,6 +27,7 @@ private:
 	dx::XMFLOAT3 _color = { 1.0f, 1.0f, 1.0f };
 	float _falloff = 1.0f;
 	float _fogStrength = 1.0f;
+	float _shadowStrength = 1.0f;
 
 	bool _updateShadows = true;
 	UINT _updateFrequency = 3;
@@ -75,8 +77,13 @@ public:
 	[[nodiscard]] bool UpdateBuffers();
 
 	[[nodiscard]] PointLightBufferData GetLightBufferData();
-	void SetLightBufferData(dx::XMFLOAT3 color, float falloff, float fogStrength);
+	void SetLightBufferData(dx::XMFLOAT3 color, float falloff, float fogStrength, float shadowStrength);
+
 	void SetIntensity(float intensity);
+	void SetColor(dx::XMFLOAT3 color);
+	void SetFalloff(float falloff);
+	void SetFogStrength(float fogStrength);
+	void SetShadowStrength(float shadowStrength);
 
 	[[nodiscard]] CameraCubeBehaviour *GetShadowCameraCube() const;
 

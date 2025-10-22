@@ -14,9 +14,9 @@ struct PixelShaderInput
 {
     float4 position : SV_POSITION;
     float4 world_position : POSITION;
+    float2 tex_coord : TEXCOORD;
     float3 normal : NORMAL;
     float3 tangent : TANGENT;
-    float2 tex_coord : TEXCOORD;
 };
 
 float4 main(PixelShaderInput input) : SV_TARGET
@@ -93,18 +93,13 @@ float4 main(PixelShaderInput input) : SV_TARGET
 			fragPosLightNDC.z > 0.0 && fragPosLightNDC.z < 1.0
 		);
 		
-		/*const float3 spotUV = float3(mad(fragPosLightNDC.x, 0.5, 0.5), mad(fragPosLightNDC.y, -0.5, 0.5), currentSpotlight);
-		float spotDepth = SpotShadowMaps.SampleLevel(ShadowSampler, spotUV, 0.0).x;
-		const float spotResult = spotDepth < fragPosLightNDC.z ? 1.0 : 0.0;
-		const float shadow = saturate(spotResult);*/
-		
 		const float3 spotUV = float3(mad(fragPosLightNDC.x, 0.5, 0.5), mad(fragPosLightNDC.y, -0.5, 0.5), currentSpotlight);
 		float shadowFactor = SpotShadowMaps.SampleCmpLevelZero(
 			ShadowSampler,
 			spotUV,
 			fragPosLightNDC.z + SHADOW_DEPTH_EPSILON
 		);
-		const float shadow = saturate(shadowFactor);
+		const float shadow = saturate(lerp(1.0 - light.shadowStrength, 1.0, shadowFactor));
 		
 		// Apply lighting
 		fragmentSpotShadows += isInsideFrustum * shadow;
@@ -154,7 +149,7 @@ float4 main(PixelShaderInput input) : SV_TARGET
 			lightToPosDir,
 			1.0 - ((lightDist - light.nearZ) / (light.farZ - light.nearZ))
 		);
-		const float shadow = saturate(shadowFactor);
+		const float shadow = saturate(lerp(1.0 - light.shadowStrength, 1.0, shadowFactor));
 		
 		// Apply lighting
 		fragmentPointShadows += shadow;

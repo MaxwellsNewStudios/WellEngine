@@ -70,12 +70,6 @@ float4 SampleLight(float3 pos, LightTile lightTile)
 		if (inverseLightDistSqr <= 0.0)
 			continue;
 		
-		//const float offsetAngle = saturate(1.0f - (
-		//	light.orthographic > 0 ?
-		//	length(cross(light.direction, toLight)) :
-		//	acos(dot(-toLightDir, light.direction))
-		//	) / (light.angle * 0.5f)
-		//);
 		float offsetAngle;
 		if (light.orthographic > 0)
 		{
@@ -104,18 +98,13 @@ float4 SampleLight(float3 pos, LightTile lightTile)
 		if (!isInsideFrustum)
 			continue;
 		
-		/*const float3 spotUV = float3((fragPosLightNDC.x * 0.5) + 0.5, (fragPosLightNDC.y * -0.5) + 0.5, currentSpotlight);
-		const float spotDepth = SpotShadowMaps.SampleLevel(ShadowCubeSampler, spotUV, 0);
-		const float spotResult = spotDepth < fragPosLightNDC.z ? 1.0 : 0.0;
-		
-		const float shadow = isInsideFrustum * saturate(offsetAngle * spotResult);*/
 		const float3 spotUV = float3(mad(fragPosLightNDC.x, 0.5, 0.5), mad(fragPosLightNDC.y, -0.5, 0.5), currentSpotlight);
 		float shadowFactor = SpotShadowMaps.SampleCmpLevelZero(
 			ShadowSampler,
 			spotUV,
 			fragPosLightNDC.z
 		);
-		const float shadow = isInsideFrustum * saturate(offsetAngle * shadowFactor);
+		const float shadow = isInsideFrustum * saturate(offsetAngle * lerp(1.0 - light.shadowStrength, 1.0, shadowFactor));
 		
 		// Apply lighting
 		totalDiffuseLight += light.color.xyz * shadow * inverseLightDistSqr * light.fogStrength;
@@ -208,7 +197,7 @@ float4 SampleLight(float3 pos, LightTile lightTile)
 			lightToPosDir,
 			1.0 - ((lightDist - light.nearZ) / (light.farZ - light.nearZ))
 		);
-		const float shadow = saturate(shadowFactor);
+		const float shadow = saturate(lerp(1.0 - light.shadowStrength, 1.0, shadowFactor));
         
 		// Apply lighting
 		totalDiffuseLight += light.color.xyz * shadow * inverseLightDistSqr * light.fogStrength;

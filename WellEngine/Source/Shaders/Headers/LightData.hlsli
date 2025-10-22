@@ -17,7 +17,9 @@ struct SpotLight
 	int orthographic;
 	
 	float fogStrength;
-	float padding[3];
+	float shadowStrength;
+	
+	float padding[2];
 };
 StructuredBuffer<SpotLight> SpotLights : register(t11);
 Texture2DArray<float> SpotShadowMaps : register(t5);
@@ -34,6 +36,7 @@ struct SimpleSpotLight
 	int orthographic;
 	
 	float fogStrength;
+	
 	float padding[3];
 };
 StructuredBuffer<SimpleSpotLight> SimpleSpotLights : register(t12);
@@ -45,11 +48,12 @@ struct PointLight
 	
 	float3 color;
 	float fogStrength;
+	float shadowStrength;
 	
 	float nearZ;
 	float farZ;
 	
-	float padding[2];
+	float padding[1];
 };
 StructuredBuffer<PointLight> PointLights : register(t6);
 TextureCubeArray<float> PointShadowMaps : register(t7);

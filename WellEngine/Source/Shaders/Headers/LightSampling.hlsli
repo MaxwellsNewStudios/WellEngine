@@ -94,11 +94,13 @@ void CalculateLighting(
 			spotUV,
 			fragPosLightNDC.z + SHADOW_DEPTH_EPSILON
 		);
-		const float shadow = isInsideFrustum * saturate(offsetAngle * shadowFactor);
+		
+		const float diffShadow = isInsideFrustum * saturate(offsetAngle * lerp(1.0 - light.shadowStrength, 1.0, shadowFactor));
+		const float specShadow = isInsideFrustum * saturate(offsetAngle * shadowFactor);
 		
 		// Apply lighting
-		totalDiffuseLight += diffuseLightCol * shadow * inverseLightDistSqr;
-		totalSpecularLight += specularLightCol * shadow * inverseLightDistSqr;
+		totalDiffuseLight += diffuseLightCol * diffShadow * inverseLightDistSqr;
+		totalSpecularLight += specularLightCol * specShadow * inverseLightDistSqr;
 	}
 	
 	
@@ -194,14 +196,15 @@ void CalculateLighting(
 		float shadowFactor = PointShadowMaps.SampleCmpLevelZero(
 			ShadowCubeSampler,
 			lightToPosDir,
-			//1.0 - (lightDist / light.farZ)
 			1.0 - ((lightDist - light.nearZ) / (light.farZ - light.nearZ))
 		);
-		const float shadow = saturate(shadowFactor);
+		
+		const float diffShadow = saturate(lerp(1.0 - light.shadowStrength, 1.0, shadowFactor));
+		const float specShadow = saturate(shadowFactor);
 		
 		// Apply lighting
-		totalDiffuseLight += diffuseLightCol * shadow * inverseLightDistSqr;
-		totalSpecularLight += specularLightCol * shadow * inverseLightDistSqr;
+		totalDiffuseLight += diffuseLightCol * diffShadow * inverseLightDistSqr;
+		totalSpecularLight += specularLightCol * specShadow * inverseLightDistSqr;
 	}
 	
 	
