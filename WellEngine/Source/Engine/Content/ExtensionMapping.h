@@ -4,10 +4,11 @@
 #include <string>
 #include <algorithm>
 #include "./Asset.h"
+#include "../Utils/StringUtils.h"
 
 namespace ExtensionMapping
 {
-	static const std::unordered_map<const std::string, const AssetType> AssetTypeExtMap = {
+	static const std::unordered_map<std::string, AssetType> AssetTypeExtMap = {
 		{ "png",		AssetType::Texture },
 		{ "dds",		AssetType::Texture },
 		{ "jpg",		AssetType::Texture },
@@ -26,7 +27,8 @@ namespace ExtensionMapping
 			return AssetType::Unknown;
 
 		std::string extStr((ext[0] == '.') ? ext.substr(1) : ext);
-		std::transform(extStr.begin(), extStr.end(), extStr.begin(), static_cast<int(*)(int)>(std::tolower));
+
+		extStr = StringUtils::ToLower(extStr);
 
 		auto it = AssetTypeExtMap.find(extStr);
 		if (it != AssetTypeExtMap.end())

@@ -233,6 +233,13 @@ private:
 
 	bool _hasShutDown = false;
 
+#ifdef USE_IMGUI
+	std::vector<std::string> _browserSelection;
+	std::vector<std::string> _browserCollapsed;
+
+	[[nodiscard]] bool RenderAssetBrowserFolder(ID3D11Device *device, const std::string &folderName, const std::string &path, bool locked = false);
+#endif
+
 	template <typename C>
 	[[nodiscard]] inline bool IsNameDuplicate(const std::string &name, const std::vector<C *> &contentVec, UINT *id);
 
@@ -253,6 +260,7 @@ public:
 	[[nodiscard]] const Material *GetErrorMaterial();
 
 #ifdef USE_IMGUI
+	[[nodiscard]] bool RenderAssetBrowserUI(ID3D11Device *device);
 	[[nodiscard]] bool RenderUI(ID3D11Device *device);
 #endif
 #pragma endregion

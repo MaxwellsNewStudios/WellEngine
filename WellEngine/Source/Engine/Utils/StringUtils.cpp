@@ -75,3 +75,16 @@ std::string StringUtils::Trim(const std::string &str, const std::string &trimmed
 
     return str.substr(strBegin, strRange);
 }
+
+std::string StringUtils::ToLower(const std::string &str)
+{
+    std::string lowerStr = str;
+    std::transform(lowerStr.begin(), lowerStr.end(), lowerStr.begin(), ::tolower);
+	return lowerStr;
+}
+std::string StringUtils::ToUpper(const std::string &str)
+{
+    std::string upperStr = str;
+    std::transform(upperStr.begin(), upperStr.end(), upperStr.begin(), ::toupper);
+	return upperStr;
+}

@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "Content.h"
 #include "ContentLoader.h"
+#include "ExtensionMapping.h"
 
 #ifdef LEAK_DETECTION
 #define new			DEBUG_NEW
@@ -64,6 +65,175 @@ bool Content::Update(TimeUtils &time)
 }
 
 #ifdef USE_IMGUI
+bool Content::RenderAssetBrowserFolder(ID3D11Device *device, const std::string &folderName, const std::string &path, bool locked)
+{
+	using namespace ImGui;
+
+	if (folderName.length() <= 0)
+		return true;
+
+	if (folderName[0] == '_') // Hidden folder
+		return true;
+
+	if (!std::filesystem::exists(path))
+		return true;
+
+	bool isCollapsed = std::find(_browserCollapsed.begin(), _browserCollapsed.end(), path) != _browserCollapsed.end();
+
+	SetNextItemOpen(!isCollapsed, ImGuiCond_Appearing);
+
+	bool isOpen = TreeNode(folderName.c_str());
+
+	// Make tree node drag/drop target, source too if not locked
+	/*{
+		if (!locked)
+		{
+			std::function<void(void)> preview = [&]() {
+				ImGuiUtils::BeginFont(FONT_ICON_FILE_NAME_FAS);
+				Text(ICON_FA_FILE);
+				ImGuiUtils::EndFont();
+
+				SameLine();
+				Text(folderName.c_str());
+			};
+
+			AssetPayload pathPayload(path);
+
+			DragDropSource<AssetPayload>(PayloadType::ASSET_FILE, pathPayload, preview);
+		}
+
+		DragDropTarget<AssetPayload>(PayloadType::ASSET_FILE, [&](AssetPayload &pathPayload) -> bool {
+			// Ensure we are not trying to move a folder into itself or its subfolder
+			if (pathPayload.path == path || pathPayload.path.starts_with(std::format("{}\\", path)))
+				return false;
+
+			// Move the file/folder to this folder
+			std::filesystem::path sourcePath = pathPayload.path;
+			std::filesystem::path destPath = std::format("{}\\{}", path, sourcePath.filename().string());
+			std::error_code ec;
+			std::filesystem::rename(sourcePath, destPath, ec);
+			if (ec)
+			{
+				ErrMsgF("Failed to move asset from {} to {}: {}", sourcePath.string(), destPath.string(), ec.message());
+
+				return false;
+			}
+
+			return true;
+		});
+	}*/
+
+	if (isOpen != isCollapsed)
+	{
+		if (isOpen)
+			_browserCollapsed.erase(std::remove(_browserCollapsed.begin(), _browserCollapsed.end(), path), _browserCollapsed.end());
+		else
+			_browserCollapsed.push_back(path);
+	}
+
+	if (isOpen)
+	{
+		// Fetch directory contents
+		std::vector<std::filesystem::path> subfolders;
+		std::vector<std::filesystem::path> files;
+
+		for (const auto &entry : std::filesystem::directory_iterator(path))
+		{
+			const auto &entryPath = entry.path();
+			std::filesystem::path filename = entryPath.filename();
+
+			if (entry.is_directory())
+			{
+				subfolders.emplace_back(filename);
+			}
+			else if (entry.is_regular_file())
+			{
+				files.emplace_back(filename);
+			}
+		}
+
+		// Render subfolders
+		for (const auto &subfolder : subfolders)
+		{
+			std::string subfolderPath = std::format("{}\\{}", path, subfolder.string());
+			if (!RenderAssetBrowserFolder(device, subfolder.string(), subfolderPath))
+			{
+				ErrMsgF("Failed to render asset browser folder: {}!", subfolderPath);
+				return false;
+			}
+		}
+
+		// Render files
+		for (const auto &file : files)
+		{
+			// Determine file icon based on extension
+			std::string ext = file.extension().string();
+			AssetType type = ExtensionMapping::GetAssetTypeFromExtension(ext);
+
+			std::string fileIcon;
+			switch (type)
+			{
+			case AssetType::Texture:
+				fileIcon = ICON_FA_FILE_IMAGE;
+				break;
+
+			case AssetType::Mesh:
+				fileIcon = ICON_FA_CUBE;
+				break;
+
+			case AssetType::Audio:
+				fileIcon = ICON_FA_FILE_AUDIO;
+				break;
+
+			case AssetType::Shader:
+			case AssetType::Json:
+				fileIcon = ICON_FA_FILE_CODE;
+				break;
+
+			case AssetType::Text:
+				fileIcon = ICON_FA_FILE_LINES;
+				break;
+
+			default:
+				fileIcon = ICON_FA_FILE;
+				break;
+			}
+
+			ImVec2 filePos = GetCursorPos();
+			const float iconRegion = 24.0f;
+
+			ImGuiUtils::BeginFont(FONT_ICON_FILE_NAME_FAS);
+			float iconWidth = CalcTextSize(fileIcon.c_str()).x;
+
+			SetCursorPosX(filePos.x + (iconRegion - iconWidth) * 0.5f);
+			Text(fileIcon.c_str());
+			ImGuiUtils::EndFont();
+
+			SameLine(filePos.x + iconRegion);
+			Text(file.string().c_str());
+		}
+		
+		TreePop();
+	}
+
+	return true;
+}
+
+bool Content::RenderAssetBrowserUI(ID3D11Device *device)
+{
+	ZoneScopedXC(RandomUniqueColor());
+
+	// TODO: Asset Browser, relative to ASSET_PATH
+
+	if (!RenderAssetBrowserFolder(device, "Assets", ASSET_PATH, true))
+	{
+		ErrMsg("Failed to render asset browser!");
+		return false;
+	}
+
+	return true;
+}
+
 bool Content::RenderUI(ID3D11Device *device)
 {
 	ZoneScopedXC(RandomUniqueColor());

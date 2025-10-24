@@ -374,4 +374,88 @@
 #define ZoneTransientXNC( varname, name, color, active )
 #endif
 
+
+// Tracy color utilities
+
+// Tracy uses 0xBBGGRR format for colors
+#define TRACY_COLOR(r, g, b) ((const uint32_t)(((r) << 0) | ((g) << 8) | ((b) << 16)))
+
+constexpr uint32_t TracyColorF(const float r, const float g, const float b)
+{
+	return TRACY_COLOR((uint32_t)(r * 255.0f), (uint32_t)(g * 255.0f), (uint32_t)(b * 255.0f));
+}
+
+enum class TracyColor : uint32_t
+{
+	White			= TRACY_COLOR( 255, 255, 255 ),
+	Black			= TRACY_COLOR(   0,   0,   0 ),
+	Gray			= TRACY_COLOR( 128, 128, 128 ),
+	LightGray		= TRACY_COLOR( 211, 211, 211 ),
+	DarkGray		= TRACY_COLOR(  64,  64,  64 ),
+	Red				= TRACY_COLOR( 255,   0,   0 ),
+	Green			= TRACY_COLOR(   0, 255,   0 ),
+	Blue			= TRACY_COLOR(   0,   0, 255 ),
+	Orange			= TRACY_COLOR( 255, 165,   0 ),
+	Yellow			= TRACY_COLOR( 255, 255,   0 ),
+	Purple			= TRACY_COLOR( 128,   0, 128 ),
+	Silver			= TRACY_COLOR( 192, 192, 192 ),
+	Brown			= TRACY_COLOR( 165,  42,  42 ),
+	Pink			= TRACY_COLOR( 255, 192, 203 ),
+	Olive			= TRACY_COLOR( 128, 128,   0 ),
+	Maroon			= TRACY_COLOR( 128,   0,   0 ),
+	Violet			= TRACY_COLOR( 238, 130, 238 ),
+	Charcoal		= TRACY_COLOR(  54,  69,  79 ),
+	Magenta			= TRACY_COLOR( 255,   0, 255 ),
+	Bronze			= TRACY_COLOR( 205, 127,  40 ),
+	Cream			= TRACY_COLOR( 255, 253, 208 ),
+	Gold			= TRACY_COLOR( 255, 215,   0 ),
+	Tan				= TRACY_COLOR( 210, 180, 140 ),
+	Teal			= TRACY_COLOR(   0, 128, 128 ),
+	Mustard			= TRACY_COLOR( 255, 219,  88 ),
+	NavyBlue		= TRACY_COLOR(   0,   0, 128 ),
+	Coral			= TRACY_COLOR( 255, 127,  80 ),
+	Burgundy		= TRACY_COLOR( 128,   0,  32 ),
+	Lavender		= TRACY_COLOR( 230, 230, 250 ),
+	Mauve			= TRACY_COLOR( 224, 176, 255 ),
+	Cyan			= TRACY_COLOR( 224, 247, 250 ),
+	Peach			= TRACY_COLOR( 255, 229, 180 ),
+	Rust			= TRACY_COLOR( 183,  65,  14 ),
+	Indigo			= TRACY_COLOR(  75,   0, 130 ),
+	Ruby			= TRACY_COLOR( 224,  17,  95 ),
+	LimeGreen		= TRACY_COLOR(  50, 205,  50 ),
+	Salmon			= TRACY_COLOR( 250, 128, 114 ),
+	Azure			= TRACY_COLOR(   0, 127, 255 ),
+	Beige			= TRACY_COLOR( 245, 245, 220 ),
+	CopperRose		= TRACY_COLOR( 153, 102, 102 ),
+	Turquoise		= TRACY_COLOR(  64, 224, 208 ),
+	Aqua			= TRACY_COLOR(   0, 255, 255 ),
+	Mint			= TRACY_COLOR(  62, 180, 137 ),
+	SkyBlue			= TRACY_COLOR( 135, 206, 235 ),
+	Crimson			= TRACY_COLOR( 220,  20,  60 ),
+	Saffron			= TRACY_COLOR( 244, 196,  48 ),
+	LemonYellow		= TRACY_COLOR( 255, 244,  79 ),
+	Grapevine		= TRACY_COLOR(  67,  37,  79 ),
+	Fuschia			= TRACY_COLOR( 255,   0, 255 ),
+	Amber			= TRACY_COLOR( 255, 191,   0 ),
+	SeaGreen		= TRACY_COLOR(  46, 139,  87 ),
+	DarkGreen		= TRACY_COLOR(   0, 100,   0 ),
+	Pearl			= TRACY_COLOR( 234, 224, 200 ),
+	Ivory			= TRACY_COLOR( 255, 255, 240 ),
+	Tangerine		= TRACY_COLOR( 242, 133,   0 ),
+	Garnet			= TRACY_COLOR( 115,  44,  53 ),
+	CherryRed		= TRACY_COLOR( 222,  49,  99 ),
+	Emerald			= TRACY_COLOR(  80, 200, 120 ),
+	Brunette		= TRACY_COLOR( 102,  66,  56 ),
+	Sapphire		= TRACY_COLOR(  15,  82, 186 ),
+	Lilac			= TRACY_COLOR( 200, 162, 200 ),
+	Rosewood		= TRACY_COLOR( 101,   0,  11 ),
+	ArcticBlue		= TRACY_COLOR(   0,   0, 255 ),
+	Ash				= TRACY_COLOR( 128, 128, 128 ),
+	Mocha			= TRACY_COLOR( 192, 163, 146 ),
+	CoffeeBrown		= TRACY_COLOR( 111,  78,  55 ),
+	JetBlack		= TRACY_COLOR(  10,  10,  10 ),
+	PistaGreen		= TRACY_COLOR(   0, 255,   0 ),
+	Umber			= TRACY_COLOR(  99,  81,  71 )
+};
+
 #endif

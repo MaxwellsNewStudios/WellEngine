@@ -49,7 +49,7 @@ void ImGui::DragDropSource(PayloadType type, P &payload, std::function<void(void
 template<typename P>
 bool ImGui::DragDropTarget(PayloadType type, std::function<bool(P &)> onDropCallback)
 {
-	DragDropTarget<P>(PayloadTags.at(type), onDropCallback);
+	return DragDropTarget<P>(PayloadTags.at(type), onDropCallback);
 }
 
 void ImGui::EntityDragDropSource(const Entity &ent, ImGuiDragDropFlags flags)

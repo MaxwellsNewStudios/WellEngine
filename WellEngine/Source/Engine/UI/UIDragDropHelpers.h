@@ -21,6 +21,7 @@ namespace ImGui
 		SHADER_COMPUTE,
 		SAMPLER,
 		BLENDSTATE,
+		ASSET_FILE,
 
 		UNKNOWN
 	};
@@ -37,6 +38,7 @@ namespace ImGui
 		{ PayloadType::SHADER_COMPUTE,	"CONTENT_SHADER_COMPUTE"	},
 		{ PayloadType::SAMPLER,			"CONTENT_SAMPLER"			},
 		{ PayloadType::BLENDSTATE,		"CONTENT_BLENDSTATE"		},
+		{ PayloadType::ASSET_FILE,		"ASSET_FILE"				},
 		{ PayloadType::UNKNOWN,			"UNKNOWN"					}
 	};
 
@@ -60,6 +62,12 @@ namespace ImGui
 		UINT id = 0;
 
 		ContentPayload(UINT id) : id(id) {}
+	};
+	struct AssetPayload
+	{
+		std::string path;
+
+		AssetPayload(std::string path) : path(path) {}
 	};
 
 	void EntityDragDropSource(const Entity &ent, ImGuiDragDropFlags flags = ImGuiDragDropFlags_None);

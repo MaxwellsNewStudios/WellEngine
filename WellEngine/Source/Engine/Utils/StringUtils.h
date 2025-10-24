@@ -15,6 +15,9 @@ namespace StringUtils
 
 	std::string Trim(const std::string &str, const std::string &trimmed = " \t");
 
+	std::string ToLower(const std::string &str);
+	std::string ToUpper(const std::string &str);
+
 	template<typename... Args>
 	inline std::string PathChain(Args... args) 
 	{
