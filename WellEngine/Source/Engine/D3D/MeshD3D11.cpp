@@ -18,7 +18,7 @@ MeshD3D11::~MeshD3D11()
 	}
 }
 
-bool MeshD3D11::Initialize(ID3D11Device *device, MeshData **meshData)
+bool MeshD3D11::Initialize(ID3D11Device *device, MeshData **meshData, bool generateCollider)
 {
 	if (_meshData)
 	{
@@ -63,6 +63,20 @@ bool MeshD3D11::Initialize(ID3D11Device *device, MeshData **meshData)
 		_subMeshes.emplace_back(std::move(subMesh));
 	}
 
+	if (generateCollider)
+	{
+		if (!GenerateCollider())
+		{
+			ErrMsg("Failed to generate mesh collider!");
+			return false;
+		}
+	}
+
+	return true;
+}
+
+bool MeshD3D11::GenerateCollider()
+{
 	UINT submeshUsed = 0;
 	UINT submeshCount = _meshData->subMeshInfo.size();
 
@@ -70,7 +84,7 @@ bool MeshD3D11::Initialize(ID3D11Device *device, MeshData **meshData)
 	{
 	case 0: // Use highest detail
 		break;
-		
+
 	default:
 	case 1: // Use middle detail
 		submeshUsed = (UINT)std::floor((float)submeshCount / 2.0f);
@@ -80,14 +94,12 @@ bool MeshD3D11::Initialize(ID3D11Device *device, MeshData **meshData)
 		submeshUsed = submeshCount - 1;
 		break;
 	}
-	
+
 	if (!_meshCollider.Initialize(*_meshData, submeshUsed))
 	{
 		ErrMsg("Failed to initialize mesh collider!");
 		return false;
 	}
-
-	return true;
 }
 
 void MeshD3D11::Reset()

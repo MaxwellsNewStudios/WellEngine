@@ -132,7 +132,7 @@ bool Game::DecompileContent()
 		size_t offset = 0;
 		meshData->Decompile(data, offset);
 
-		if (_content.AddMesh(_device.Get(), std::format("{}", meshName), &meshData) == CONTENT_NULL)
+		if (_content.AddMesh(_device.Get(), std::format("{}", meshName), &meshData, false) == CONTENT_NULL)
 		{
 			ErrMsgF("Failed to add Mesh {}!", meshName);
 			reader.close();
@@ -152,33 +152,42 @@ bool Game::LoadContent(
 	const std::vector<std::string> &fontAtlasNames)
 {
 	ZoneScopedC(RandomUniqueColor());
-	
+
+	DbgMsg("Decompiling Content (Meshes)...");
 	if (!DecompileContent())
 	{
 		ErrMsg("Failed to decompile content!");
 		return false;
 	}
 
-	for (int i = 0; i < textureNames.size(); i++)
-	{
-		const TextureData &texture = textureNames[i];
-		
-		if (_content.AddTexture(
-			_device.Get(), _immediateContext.Get(),
-			texture.name,
-			texture.path,
-			texture.type,
-			texture.mipmapped,
-			texture.downsample) == CONTENT_NULL)
-		{
-			ErrMsgF("Failed to add Tex {}!", texture.name);
-		}
-	}
-	
+	int meshCount = (int)_content.GetMeshCount();
+
 #pragma warning(disable: 6993)
 #pragma omp parallel num_threads(4)
 	{
-#pragma omp for nowait
+		int threadID = omp_get_thread_num();
+
+		if (threadID == 0)
+			DbgMsg("Generating Mesh Colliders...");
+
+#pragma omp for schedule(dynamic) nowait
+		for (int i = 0; i < meshCount; i++)
+		{
+			MeshD3D11 *mesh = _content.GetMesh((UINT)i);
+
+			if (!mesh)
+				continue;
+
+			if (!mesh->GenerateCollider())
+			{
+				ErrMsgF("Failed to generate collider for mesh {}!", _content.GetMeshName((UINT)i));
+			}
+		}
+
+		if (threadID == 0)
+			DbgMsg("Loading Cubemaps...");
+
+#pragma omp for schedule(dynamic) nowait
 		for (int i = 0; i < cubemapNames.size(); i++)
 		{
 			const TextureData &cubemap = cubemapNames[i];
@@ -195,7 +204,10 @@ bool Game::LoadContent(
 			}
 		}
 
-#pragma omp for nowait
+		if (threadID == 0)
+			DbgMsg("Loading Heightmaps...");
+
+#pragma omp for schedule(dynamic) nowait
 		for (int i = 0; i < heightMapNames.size(); i++)
 		{
 			const HeightMapData &heightMap = heightMapNames[i];
@@ -212,6 +224,26 @@ bool Game::LoadContent(
 	}
 #pragma warning(default: 6993)
 
+	DbgMsg("Loading Textures...");
+
+	for (int i = 0; i < textureNames.size(); i++)
+	{
+		const TextureData &texture = textureNames[i];
+
+		if (_content.AddTexture(
+			_device.Get(), _immediateContext.Get(),
+			texture.name,
+			texture.path,
+			texture.type,
+			texture.mipmapped,
+			texture.downsample) == CONTENT_NULL)
+		{
+			ErrMsgF("Failed to add Tex {}!", texture.name);
+		}
+	}
+
+	DbgMsg("Loading Shaders...");
+
 	for (const ShaderData &shader : shaderNames)
 	{
 		std::string fileName = shader.path;
@@ -226,7 +258,9 @@ bool Game::LoadContent(
 			return false;
 		}
 	}
-	
+
+	DbgMsg("Loading Fonts...");
+
 	// Font Atlases
 	for (int i = 0; i < fontAtlasNames.size(); i++)
 	{

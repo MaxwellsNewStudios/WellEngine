@@ -262,9 +262,9 @@ private:
 public:
 	[[nodiscard]] CompiledData GetMeshData(const char *path) const;
 
-	UINT AddMesh(ID3D11Device *device, const std::string &name, MeshData **meshData);
-	UINT AddMesh(ID3D11Device *device, const std::string &name, const char *path);
-	UINT AddMesh(ID3D11Device *device, const std::string &name);
+	UINT AddMesh(ID3D11Device *device, const std::string &name, MeshData **meshData, bool generateCollider = true);
+	UINT AddMesh(ID3D11Device *device, const std::string &name, const char *path, bool generateCollider = true);
+	UINT AddMesh(ID3D11Device *device, const std::string &name, bool generateCollider = true);
 
 	void GetMeshNames(std::vector<std::string> *names) const;
 	[[nodiscard]] UINT GetMeshCount() const;

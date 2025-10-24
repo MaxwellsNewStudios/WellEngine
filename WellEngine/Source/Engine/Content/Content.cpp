@@ -1063,7 +1063,7 @@ CompiledData Content::GetShaderData(const std::string &name, const char *path, S
 	return data;
 }
 
-UINT Content::AddMesh(ID3D11Device *device, const std::string &name)
+UINT Content::AddMesh(ID3D11Device *device, const std::string &name, bool generateCollider)
 {
 	ZoneScopedC(RandomUniqueColor());
 	ZoneText(name.c_str(), name.size());
@@ -1103,7 +1103,7 @@ UINT Content::AddMesh(ID3D11Device *device, const std::string &name)
 		if (!duplicateName)
 		{
 			Mesh *addedMesh = new Mesh(name, id);
-			if (!addedMesh->data.Initialize(device, &meshData))
+			if (!addedMesh->data.Initialize(device, &meshData, generateCollider))
 			{
 				delete meshData;
 				delete addedMesh;
@@ -1121,7 +1121,7 @@ UINT Content::AddMesh(ID3D11Device *device, const std::string &name)
 	meshData = nullptr;
 	return id;
 }
-UINT Content::AddMesh(ID3D11Device *device, const std::string &name, MeshData **meshData)
+UINT Content::AddMesh(ID3D11Device *device, const std::string &name, MeshData **meshData, bool generateCollider)
 {
 	ZoneScopedC(RandomUniqueColor());
 	ZoneText(name.c_str(), name.size());
@@ -1152,7 +1152,7 @@ UINT Content::AddMesh(ID3D11Device *device, const std::string &name, MeshData **
 		if (!duplicateName)
 		{
 			Mesh *addedMesh = new Mesh(name, id);
-			if (!addedMesh->data.Initialize(device, meshData))
+			if (!addedMesh->data.Initialize(device, meshData, generateCollider))
 			{
 				delete (*meshData);
 				delete addedMesh;
@@ -1170,7 +1170,7 @@ UINT Content::AddMesh(ID3D11Device *device, const std::string &name, MeshData **
 	meshData = nullptr;
 	return id;
 }
-UINT Content::AddMesh(ID3D11Device *device, const std::string &name, const char *path)
+UINT Content::AddMesh(ID3D11Device *device, const std::string &name, const char *path, bool generateCollider)
 {
 	ZoneScopedC(RandomUniqueColor());
 	ZoneText(name.c_str(), name.size());
@@ -1210,7 +1210,7 @@ UINT Content::AddMesh(ID3D11Device *device, const std::string &name, const char 
 		if (!duplicateName)
 		{
 			Mesh *addedMesh = new Mesh(name, id);
-			if (!addedMesh->data.Initialize(device, &meshData))
+			if (!addedMesh->data.Initialize(device, &meshData, generateCollider))
 			{
 				delete meshData;
 				delete addedMesh;

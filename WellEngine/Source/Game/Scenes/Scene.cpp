@@ -1754,7 +1754,7 @@ bool Scene::Update(TimeUtils &time, const Input &input)
 	bool parallelFailed = false;
 	int parallelBallbackCount = static_cast<int>(_parallelUpdateCallbacks.size());
 
-#pragma omp parallel for num_threads(PARALLEL_THREADS)
+#pragma omp parallel for schedule(dynamic) num_threads(PARALLEL_THREADS)
 	for (int i = 0; i < parallelBallbackCount; i++)
 	{
 		if (!parallelFailed)
@@ -2011,7 +2011,7 @@ bool Scene::Render(TimeUtils &time, const Input &input)
 #pragma warning(disable: 6993)
 #pragma omp parallel num_threads(PARALLEL_THREADS)
 	{
-#pragma omp for nowait
+#pragma omp for schedule(dynamic) nowait
 		for (int i = 0; i < spotlightCount; i++)
 		{
 			ZoneNamedXNC(cullSpotlightZone, "Cull Spotlight", RandomUniqueColor(), true);
@@ -2090,7 +2090,7 @@ bool Scene::Render(TimeUtils &time, const Input &input)
 			spotlightCamera->SortGeometryQueue();
 		}
 
-#pragma omp for nowait
+#pragma omp for schedule(dynamic) nowait
 		for (int i = 0; i < pointlightCount; i++)
 		{
 			ZoneNamedXNC(cullPointlightZone, "Cull Pointlight", RandomUniqueColor(), true);
@@ -2249,7 +2249,7 @@ bool Scene::Render(TimeUtils &time, const Input &input)
 #pragma warning(disable: 6993)
 #pragma omp parallel num_threads(PARALLEL_THREADS)
 		{
-#pragma omp for nowait
+#pragma omp for schedule(dynamic) nowait
 			for (int i = 0; i < spotlightCount; i++)
 			{
 				ZoneNamedXNC(spotlightZone, "Calculate Spotlight Tiles", RandomUniqueColor(), true);
@@ -2284,7 +2284,7 @@ bool Scene::Render(TimeUtils &time, const Input &input)
 				}
 			}
 
-#pragma omp for nowait
+#pragma omp for schedule(dynamic) nowait
 			for (int i = 0; i < pointlightCount; i++)
 			{
 				ZoneNamedXNC(pointlightZone, "Calculate Pointlight Tiles", RandomUniqueColor(), true);
@@ -2315,7 +2315,7 @@ bool Scene::Render(TimeUtils &time, const Input &input)
 				}
 			}
 
-#pragma omp for nowait
+#pragma omp for schedule(dynamic) nowait
 			for (int i = 0; i < simpleSpotlightCount; i++)
 			{
 				ZoneNamedXNC(simpleSpotlightZone, "Calculate Simple Spotlight Tiles", RandomUniqueColor(), true);
@@ -2350,7 +2350,7 @@ bool Scene::Render(TimeUtils &time, const Input &input)
 				}
 			}
 
-#pragma omp for nowait
+#pragma omp for schedule(dynamic) nowait
 			for (int i = 0; i < simplePointlightCount; i++)
 			{
 				ZoneNamedXNC(simplePointlightZone, "Calculate Simple Pointlight Tiles", RandomUniqueColor(), true);

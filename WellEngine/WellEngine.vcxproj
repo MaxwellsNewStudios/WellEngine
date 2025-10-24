@@ -374,6 +374,7 @@
     <ClInclude Include="Source\Engine\Debug\DebugDrawer.h" />
     <ClInclude Include="Source\Engine\Debug\DebugNew.h" />
     <ClInclude Include="Source\Engine\Debug\ErrMsg.h" />
+    <ClInclude Include="Source\Engine\Input\KeyboardWinHook.h" />
     <ClInclude Include="Source\Engine\UI\Fonts\IconsCodicons.h" />
     <ClInclude Include="Source\Engine\UI\Fonts\IconsFontaudio.h" />
     <ClInclude Include="Source\Engine\UI\Fonts\IconsFontAwesome6.h" />
@@ -581,6 +582,7 @@
     <ClCompile Include="Source\Engine\Debug\DebugData.cpp" />
     <ClCompile Include="Source\Engine\Debug\DebugDrawer.cpp" />
     <ClCompile Include="Source\Engine\Debug\ErrMsg.cpp" />
+    <ClCompile Include="Source\Engine\Input\KeyboardWinHook.cpp" />
     <ClCompile Include="Source\Engine\UI\ImGuiExtensions.cpp" />
     <ClCompile Include="Source\Engine\UI\ImGuiUtils.cpp" />
     <ClCompile Include="Source\Engine\Debug\TrackedAlloc.cpp" />

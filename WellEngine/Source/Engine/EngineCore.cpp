@@ -21,21 +21,31 @@ EngineCore::~EngineCore()
 
 int EngineCore::Init()
 {
-	ZoneScopedC(RandomUniqueColor());
 	DbgMsg("========| Initialization |=================================================================");
 
 	// Seed random number generator
 	srand(static_cast<unsigned>(time(0)));
 
 #ifdef TRACY_ENABLE
-	// Assign names to OMP threads
-	constexpr int threadCount = (PARALLEL_THREADS < 4) ? 4 : PARALLEL_THREADS;
-#pragma omp parallel for num_threads(threadCount)
-	for (int i = 0; i < threadCount; i++)
+	DbgMsg("Tracy Profiler detected! Wait to see if a connection is made...");
+
+	SDL_Delay(500);
+
+	if (TracyIsConnected)
 	{
-		tracy::SetThreadNameWithHint("OpenMP Thread", 983464687);
+		DbgMsg("Tracy Profiler connected!");
+
+		// Assign names to OMP threads
+		constexpr int threadCount = (PARALLEL_THREADS < 4) ? 4 : PARALLEL_THREADS;
+#pragma omp parallel for num_threads(threadCount)
+		for (int i = 0; i < threadCount; i++)
+		{
+			tracy::SetThreadNameWithHint("OpenMP Thread", 983464687);
+		}
 	}
 #endif
+
+	ZoneScopedC(RandomUniqueColor());
 
 #ifdef DEBUG_BUILD
 	DbgMsg("Loading Debug Data..."); LogIndentIncr();

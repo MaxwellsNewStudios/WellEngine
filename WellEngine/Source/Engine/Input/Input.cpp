@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "Input.h"
-//#include <winuser.h>
+#include "KeyboardWinHook.h"
 #include "Source/Engine/Debug/DebugData.h"
 
 #ifdef LEAK_DETECTION
@@ -9,10 +9,11 @@
 
 Input::Input()
 {
-	for (int i = 0; i < 255; i++)
+	KeyboardWinHook &keyboardHook = KeyboardWinHook::Instance();
+	/*for (int i = 0; i < 255; i++)
 	{
 		_vKeys[i] = (GetAsyncKeyState(i) & 0x8000) ? true : false;
-	}
+	}*/
 
 	SDL_GetMouseState(&_mousePos.x, &_mousePos.y);
 
@@ -86,18 +87,23 @@ bool Input::Update(Window &window)
 #endif
 
 	{
-		ZoneNamedXNC(getAsyncKeyStateZone, "Input Update Key States", RandomUniqueColor(), true);
+		ZoneNamedXNC(getKeyStateZone, "Input Update Key States", RandomUniqueColor(), true);
 
-		for (int i = 0; i < _mouseButtonsEnd; i++)
+		KeyboardWinHook &keyboardHook = KeyboardWinHook::Instance();
+		keyboardHook.Update();
+		
+		bool *keys = keyboardHook.GetKeys();
+
+		for (int i = (int)_mouseButtonsEnd; i < 255; i++)
+		{
+			_lvKeys[i] = _vKeys[i];
+			_vKeys[i] = _hasKeyboardFocus ? keys[i] : false;
+		}
+
+		for (int i = 0; i < (int)_mouseButtonsEnd; i++)
 		{
 			_lvKeys[i] = _vKeys[i];
 			_vKeys[i] = _hasMouseFocus ? (GetAsyncKeyState(i) & 0x8000) : false;
-		}
-
-		for (int i = _mouseButtonsEnd; i < 255; i++)
-		{
-			_lvKeys[i] = _vKeys[i];
-			_vKeys[i] = _hasKeyboardFocus ? (GetAsyncKeyState(i) & 0x8000) : false;
 		}
 	}
 

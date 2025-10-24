@@ -5,7 +5,7 @@ class DebugData
 #ifdef DEBUG_BUILD
 private:
 	static constexpr const char *dataFileName = ASSETS_EDITOR_PATH "\\DebugData.json";
-	float _saveInterval = 3.0f; // Continuously save with this interval
+	float _saveInterval = 1.0f; // Continuously save with this interval
 	float _timeUntilNextSave = 0.0f;
 	bool _isDirty = false;
 

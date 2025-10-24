@@ -184,7 +184,8 @@ public:
 	MeshD3D11(MeshD3D11 &&other) = delete;
 	MeshD3D11 &operator=(MeshD3D11 &&other) = delete;
 
-	[[nodiscard]] bool Initialize(ID3D11Device *device, MeshData **meshInfo);
+	[[nodiscard]] bool Initialize(ID3D11Device *device, MeshData **meshInfo, bool generateCollider = true);
+	[[nodiscard]] bool GenerateCollider();
 	void Reset();
 
 	[[nodiscard]] bool BindMeshBuffers(ID3D11DeviceContext *context, UINT stride = 0, UINT offset = 0) const;
