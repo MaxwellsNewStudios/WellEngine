@@ -10,6 +10,14 @@ A D3D11-based 3D game + engine originally developed as a group project by six st
 
 ![Performance Tools](Docs/Images/Overdraw.png)
 
+## Usage
+
+Shouldn't require any prerequisites. Only supported platform is Windows.
+
+- Download the repository and open "WellEngine.sln" in Visual Studio (tested with 2022). 
+- Ensure "Application" is the selected startup project. 
+- The preferred build mode is usually Release. Select Debug if using breakpoints. Select Deploy to build the game with all editor functionality stripped away. 
+
 ## Functionality
 
 ### Entities & Behaviours
