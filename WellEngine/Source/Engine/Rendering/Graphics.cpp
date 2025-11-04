@@ -4428,9 +4428,11 @@ bool Graphics::RenderUI(TimeUtils &time)
 		std::vector<std::string> shaderNames;
 		_content->GetShaderNames(&shaderNames);
 
+		const std::string &currSkyboxPsName = _skyboxPsID == CONTENT_NULL ? "None" : _content->GetShaderName(_skyboxPsID);
+
 		ImGui::Text("Skybox:"); 
 		ImGui::SameLine();
-		if (ImGui::BeginCombo("##SkyboxShaderCombo", _skyboxPsID == CONTENT_NULL ? "None" : (shaderNames[_skyboxPsID].c_str())))
+		if (ImGui::BeginCombo("##SkyboxShaderCombo", currSkyboxPsName.c_str()))
 		{
 			// Add "None" option
 			{
@@ -4449,13 +4451,14 @@ bool Graphics::RenderUI(TimeUtils &time)
 				if (!shaderName.starts_with("PS_Skybox"))
 					continue; // Only show pixel shaders
 
-				const bool isSelected = (_skyboxPsID == i);
+				UINT id = _content->GetShaderID(shaderName);
+
+				const bool isSelected = (_skyboxPsID == id);
 				if (ImGui::Selectable(shaderName.c_str(), isSelected))
-					SetSkyboxShaderID(i);
+					SetSkyboxShaderID(id);
 
 				if (isSelected)
 					ImGui::SetItemDefaultFocus();
-
 			}
 			ImGui::EndCombo();
 		}
@@ -4467,21 +4470,24 @@ bool Graphics::RenderUI(TimeUtils &time)
 		std::vector<std::string> cubemapNames;
 		_content->GetCubemapNames(&cubemapNames);
 
+		const std::string &currCubemapName = _environmentCubemapID == CONTENT_NULL ? "None" : _content->GetCubemapName(_environmentCubemapID);
+
 		ImGui::Text("Cubemap:"); 
 		ImGui::SameLine();
-		if (ImGui::BeginCombo("##EnvironmentCubemapCombo", _environmentCubemapID == CONTENT_NULL ? "None" : (cubemapNames[_environmentCubemapID].c_str()), ImGuiComboFlags_HeightLarge))
+		if (ImGui::BeginCombo("##EnvironmentCubemapCombo", currCubemapName.c_str(), ImGuiComboFlags_HeightLarge))
 		{
 			for (int i = 0; i < cubemapNames.size(); i++)
 			{
 				std::string &cubemapName = cubemapNames[i];
 
-				const bool isSelected = (_environmentCubemapID == i);
+				UINT id = _content->GetTextureID(cubemapName);
+
+				const bool isSelected = (_environmentCubemapID == id);
 				if (ImGui::Selectable(cubemapName.c_str(), isSelected))
-					SetEnvironmentCubemapID(i);
+					SetEnvironmentCubemapID(id);
 
 				if (isSelected)
 					ImGui::SetItemDefaultFocus();
-
 			}
 			ImGui::EndCombo();
 		}
@@ -4505,12 +4511,12 @@ bool Graphics::RenderUI(TimeUtils &time)
 		std::vector<std::string> lutNames;
 		_content->GetTextureNames(&lutNames);
 
+		const std::string &currLutName = _colorLutID == CONTENT_NULL ? "None" : _content->GetTextureName(_colorLutID);
+
 		ImGui::BeginGroup();
 		ImGui::Text("Color LUT:"); 
 		ImGui::SameLine();
-
-		ImGui::SameLine();
-		if (ImGui::BeginCombo("##LUTTextureCombo", _colorLutID == CONTENT_NULL ? "None" : (lutNames[_colorLutID].c_str())))
+		if (ImGui::BeginCombo("##LUTTextureCombo", currLutName.c_str()))
 		{
 			// Add "None" option
 			{
@@ -4526,12 +4532,14 @@ bool Graphics::RenderUI(TimeUtils &time)
 			{
 				std::string &lutName = lutNames[i];
 
-				if (_content->GetTexture(i)->GetDim() != TexDim::Tex3D)
+				UINT id = _content->GetTextureID(lutName);
+
+				if (_content->GetTexture(id)->GetDim() != TexDim::Tex3D)
 					continue; // Only show LUT textures
 
-				const bool isSelected = (_colorLutID == i);
+				const bool isSelected = (_colorLutID == id);
 				if (ImGui::Selectable(lutName.c_str(), isSelected))
-					_colorLutID = i;
+					_colorLutID = id;
 
 				if (isSelected)
 					ImGui::SetItemDefaultFocus();

@@ -2247,6 +2247,25 @@ ShaderType Content::GetShaderTypeFromName(const std::string &name)
 	return ShaderType::VERTEX_SHADER;
 }
 
+bool Content::HasMesh(const std::string &name) const
+{
+	if (name.empty() || name == "_" || name == "Uninitialized")
+		return false;
+
+	for (auto &e : _meshes)
+	{
+		if (e.second->name == name)
+			return true;
+	}
+
+	return false;
+}
+bool Content::HasMesh(UINT id) const
+{
+	if (_meshes.find(id) == _meshes.end())
+		return false;
+	return true;
+}
 bool Content::HasTexture(const std::string &name) const
 {
 	if (name.empty() || name == "_" || name == "Uninitialized")
@@ -2260,6 +2279,12 @@ bool Content::HasTexture(const std::string &name) const
 
 	return false;
 }
+bool Content::HasTexture(UINT id) const
+{
+	if (_textures.find(id) == _textures.end())
+		return false;
+	return true;
+}
 bool Content::HasCubemap(const std::string &name) const
 {
 	if (name.empty() || name == "_" || name == "Uninitialized")
@@ -2272,6 +2297,88 @@ bool Content::HasCubemap(const std::string &name) const
 	}
 
 	return false;
+}
+bool Content::HasCubemap(UINT id) const
+{
+	if (_cubemaps.find(id) == _cubemaps.end())
+		return false;
+	return true;
+}
+bool Content::HasShader(const std::string &name) const
+{
+	if (name.empty() || name == "_" || name == "Uninitialized")
+		return false;
+
+	for (auto &e : _shaders)
+	{
+		if (e.second->name == name)
+			return true;
+	}
+
+	return false;
+}
+bool Content::HasShader(UINT id) const
+{
+	if (_shaders.find(id) == _shaders.end())
+		return false;
+	return true;
+}
+bool Content::HasSampler(const std::string &name) const
+{
+	if (name == "_" || name == "Uninitialized")
+		return false;
+
+	for (auto &e : _samplers)
+	{
+		if (e.second->name == name)
+			return true;
+	}
+
+	return false;
+}
+bool Content::HasSampler(UINT id) const
+{
+	if (_samplers.find(id) == _samplers.end())
+		return false;
+	return true;
+}
+bool Content::HasBlendState(const std::string &name) const
+{
+	if (name == "_" || name == "Uninitialized")
+		return false;
+
+	for (auto &e : _blendStates)
+	{
+		if (e.second->name == name)
+			return true;
+	}
+
+	return false;
+}
+bool Content::HasBlendState(UINT id) const
+{
+	if (_blendStates.find(id) == _blendStates.end())
+		return false;
+	return true;
+}
+bool Content::HasFontAtlas(const std::string &name) const
+{
+	if (name.empty() || name == "_" || name == "Uninitialized")
+		return false;
+
+	for (auto &e : _textureFonts)
+	{
+		if (e.second->name == name)
+			return true;
+	}
+
+	return false;
+}
+bool Content::HasFontAtlas(UINT id) const
+{
+	if (_textureFonts.find(id) == _textureFonts.end())
+		return false;
+	return true;
 }
 
 UINT Content::GetTextureID(const std::string &name) const

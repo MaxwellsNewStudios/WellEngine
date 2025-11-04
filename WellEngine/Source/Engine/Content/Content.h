@@ -273,6 +273,9 @@ public:
 	[[nodiscard]] UINT GetMeshID(const std::string &name) const;
 	[[nodiscard]] std::string GetMeshName(UINT id) const;
 
+	[[nodiscard]] bool HasMesh(const std::string &name) const;
+	[[nodiscard]] bool HasMesh(UINT id) const;
+
 	[[nodiscard]] MeshD3D11 *GetMesh(const std::string &name) const;
 	[[nodiscard]] MeshD3D11 *GetMesh(UINT id) const;
 #pragma endregion
@@ -313,7 +316,9 @@ public:
 	void GetCubemapNames(std::vector<std::string> *names) const;
 
 	[[nodiscard]] bool HasTexture(const std::string &name) const;
+	[[nodiscard]] bool HasTexture(UINT id) const;
 	[[nodiscard]] bool HasCubemap(const std::string &name) const;
+	[[nodiscard]] bool HasCubemap(UINT id) const;
 
 	[[nodiscard]] UINT GetTextureID(const std::string &name) const;
 	[[nodiscard]] UINT GetCubemapID(const std::string &name) const;
@@ -351,6 +356,9 @@ public:
 	[[nodiscard]] bool RecompileShader(ID3D11Device *device, const std::string &name) const;
 
 	void GetShaderNames(std::vector<std::string> *names) const;
+
+	[[nodiscard]] bool HasShader(const std::string &name) const;
+	[[nodiscard]] bool HasShader(UINT id) const;
 
 	[[nodiscard]] UINT GetShaderID(const std::string &name) const;
 	[[nodiscard]] std::string GetShaderName(UINT id) const;
@@ -391,6 +399,9 @@ public:
 	[[nodiscard]] UINT GetSamplerCount() const;
 	void GetSamplerNames(std::vector<std::string> *names) const;
 
+	[[nodiscard]] bool HasSampler(const std::string &name) const;
+	[[nodiscard]] bool HasSampler(UINT id) const;
+
 	[[nodiscard]] UINT GetSamplerID(const std::string &name) const;
 	[[nodiscard]] std::string GetSamplerName(UINT id) const;
 
@@ -408,6 +419,9 @@ public:
 
 	[[nodiscard]] UINT GetBlendStateCount() const;
 	void GetBlendStateNames(std::vector<std::string> *names) const;
+
+	[[nodiscard]] bool HasBlendState(const std::string &name) const;
+	[[nodiscard]] bool HasBlendState(UINT id) const;
 
 	[[nodiscard]] UINT GetBlendStateID(const std::string &name) const;
 	[[nodiscard]] std::string GetBlendStateName(UINT id) const;
@@ -428,6 +442,9 @@ public:
 
 	[[nodiscard]] UINT GetFontAtlasCount() const;
 	void GetFontAtlasNames(std::vector<std::string> *names) const;
+
+	[[nodiscard]] bool HasFontAtlas(const std::string &name) const;
+	[[nodiscard]] bool HasFontAtlas(UINT id) const;
 
 	[[nodiscard]] UINT GetFontAtlasID(const std::string &name) const;
 	[[nodiscard]] std::string GetFontAtlasName(UINT id) const;

@@ -207,14 +207,14 @@ bool MeshBehaviour::RenderUI()
 
 		ImGui::PushID("Mats");
 		bool isChanged = false;
-		int id = 1;
+		int imID = 1;
 
 		ImGuiComboFlags comboFlags = ImGuiComboFlags_None;
 		comboFlags |= ImGuiComboFlags_HeightLarge;
 
 		// Mesh
 		{
-			ImGui::PushID(("Param " + std::to_string(id++)).c_str());
+			ImGui::PushID(("Param " + std::to_string(imID++)).c_str());
 
 			ImGui::Text("Mesh:"); ImGui::SameLine(); ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
 			if (ImGui::BeginCombo("", content->GetMeshName((UINT)inputMeshID).c_str(), comboFlags))
@@ -258,10 +258,12 @@ bool MeshBehaviour::RenderUI()
 							continue;
 					}
 
-					bool isSelected = (inputMeshID == i);
+					UINT id = content->GetMeshID(meshNames[i]);
+
+					bool isSelected = (inputMeshID == id);
 					if (ImGui::Selectable(meshNames[i].c_str(), isSelected))
 					{
-						inputMeshID = i;
+						inputMeshID = id;
 						isChanged = true;
 					}
 
@@ -295,7 +297,7 @@ bool MeshBehaviour::RenderUI()
 
 		// Texture map
 		{
-			ImGui::PushID(("Param " + std::to_string(id++)).c_str());
+			ImGui::PushID(("Param " + std::to_string(imID++)).c_str());
 
 			ImGui::BeginGroup();
 			ImGui::Text("Texture:"); ImGui::SameLine(); ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
@@ -356,10 +358,12 @@ bool MeshBehaviour::RenderUI()
 							continue;
 					}
 
-					bool isSelected = (inputTexID == i);
+					UINT id = content->GetTextureID(textureNames[i]);
+
+					bool isSelected = (inputTexID == id);
 					if (ImGui::Selectable(textureNames[i].c_str(), isSelected))
 					{
-						inputTexID = i;
+						inputTexID = id;
 						isChanged = true;
 					}
 
@@ -399,7 +403,7 @@ bool MeshBehaviour::RenderUI()
 
 		// Normal map
 		{
-			ImGui::PushID(("Param " + std::to_string(id++)).c_str());
+			ImGui::PushID(("Param " + std::to_string(imID++)).c_str());
 			ImGui::BeginGroup();
 
 			ImGui::Text("Normal:"); ImGui::SameLine(); ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x - ImGui::GetFrameHeight() - 6.0f);
@@ -463,10 +467,12 @@ bool MeshBehaviour::RenderUI()
 							continue;
 					}
 
-					bool isSelected = (inputNormID == i);
+					UINT id = content->GetTextureID(textureNames[i]);
+
+					bool isSelected = (inputNormID == id);
 					if (ImGui::Selectable(textureNames[i].c_str(), isSelected))
 					{
-						inputNormID = i;
+						inputNormID = id;
 						isChanged = true;
 					}
 
@@ -515,7 +521,7 @@ bool MeshBehaviour::RenderUI()
 
 		// Specular map
 		{
-			ImGui::PushID(("Param " + std::to_string(id++)).c_str());
+			ImGui::PushID(("Param " + std::to_string(imID++)).c_str());
 			ImGui::BeginGroup();
 
 			ImGui::Text("Specular:"); ImGui::SameLine(); ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x - ImGui::GetFrameHeight() - 6.0f);
@@ -579,10 +585,12 @@ bool MeshBehaviour::RenderUI()
 							continue;
 					}
 
-					bool isSelected = (inputSpecID == i);
+					UINT id = content->GetTextureID(textureNames[i]);
+
+					bool isSelected = (inputSpecID == id);
 					if (ImGui::Selectable(textureNames[i].c_str(), isSelected))
 					{
-						inputSpecID = i;
+						inputSpecID = id;
 						isChanged = true;
 					}
 
@@ -631,7 +639,7 @@ bool MeshBehaviour::RenderUI()
 
 		// Glossiness map
 		{
-			ImGui::PushID(("Param " + std::to_string(id++)).c_str());
+			ImGui::PushID(("Param " + std::to_string(imID++)).c_str());
 			ImGui::BeginGroup();
 
 			ImGui::Text("Glossiness:"); ImGui::SameLine(); ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x - ImGui::GetFrameHeight() - 6.0f);
@@ -695,10 +703,12 @@ bool MeshBehaviour::RenderUI()
 							continue;
 					}
 
-					bool isSelected = (inputGlossID == i);
+					UINT id = content->GetTextureID(textureNames[i]);
+
+					bool isSelected = (inputGlossID == id);
 					if (ImGui::Selectable(textureNames[i].c_str(), isSelected))
 					{
-						inputGlossID = i;
+						inputGlossID = id;
 						isChanged = true;
 					}
 
@@ -747,7 +757,7 @@ bool MeshBehaviour::RenderUI()
 
 		// Ambient map
 		{
-			ImGui::PushID(("Param " + std::to_string(id++)).c_str());
+			ImGui::PushID(("Param " + std::to_string(imID++)).c_str());
 			ImGui::BeginGroup();
 
 			ImGui::Text("Ambient:"); ImGui::SameLine(); ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x - ImGui::GetFrameHeight() - 6.0f);
@@ -808,10 +818,12 @@ bool MeshBehaviour::RenderUI()
 							continue;
 					}
 
-					bool isSelected = (inputAmbID == i);
+					UINT id = content->GetTextureID(textureNames[i]);
+
+					bool isSelected = (inputAmbID == id);
 					if (ImGui::Selectable(textureNames[i].c_str(), isSelected))
 					{
-						inputAmbID = i;
+						inputAmbID = id;
 						isChanged = true;
 					}
 
@@ -859,7 +871,7 @@ bool MeshBehaviour::RenderUI()
 
 		// Reflection map
 		{
-			ImGui::PushID(("Param " + std::to_string(id++)).c_str());
+			ImGui::PushID(("Param " + std::to_string(imID++)).c_str());
 			ImGui::BeginGroup();
 
 			ImGui::Text("Reflection:"); ImGui::SameLine(); ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x - ImGui::GetFrameHeight() - 6.0f);
@@ -920,10 +932,12 @@ bool MeshBehaviour::RenderUI()
 							continue;
 					}
 
-					bool isSelected = (inputReflectID == i);
+					UINT id = content->GetTextureID(textureNames[i]);
+
+					bool isSelected = (inputReflectID == id);
 					if (ImGui::Selectable(textureNames[i].c_str(), isSelected))
 					{
-						inputReflectID = i;
+						inputReflectID = id;
 						isChanged = true;
 					}
 
@@ -972,7 +986,7 @@ bool MeshBehaviour::RenderUI()
 
 		// Occlusion map
 		{
-			ImGui::PushID(("Param " + std::to_string(id++)).c_str());
+			ImGui::PushID(("Param " + std::to_string(imID++)).c_str());
 			ImGui::BeginGroup();
 
 			ImGui::Text("Ambient Occlusion:"); ImGui::SameLine(); ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x - ImGui::GetFrameHeight() - 6.0f);
@@ -1036,10 +1050,12 @@ bool MeshBehaviour::RenderUI()
 							continue;
 					}
 
-					bool isSelected = (inputOcclusionID == i);
+					UINT id = content->GetTextureID(textureNames[i]);
+
+					bool isSelected = (inputOcclusionID == id);
 					if (ImGui::Selectable(textureNames[i].c_str(), isSelected))
 					{
-						inputOcclusionID = i;
+						inputOcclusionID = id;
 						isChanged = true;
 					}
 
@@ -1088,7 +1104,7 @@ bool MeshBehaviour::RenderUI()
 
 		// Sampler
 		{
-			ImGui::PushID(("Param " + std::to_string(id++)).c_str());
+			ImGui::PushID(("Param " + std::to_string(imID++)).c_str());
 
 			ImGui::BeginGroup();
 			ImGui::Text("Sampler:"); ImGui::SameLine(); ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x - ImGui::GetFrameHeight() - 6.0f);
@@ -1149,10 +1165,12 @@ bool MeshBehaviour::RenderUI()
 							continue;
 					}
 
-					bool isSelected = (inputSampID == i);
+					UINT id = content->GetSamplerID(samplerNames[i]);
+
+					bool isSelected = (inputSampID == id);
 					if (ImGui::Selectable(samplerNames[i].c_str(), isSelected))
 					{
-						inputSampID = i;
+						inputSampID = id;
 						isChanged = true;
 					}
 
@@ -1197,7 +1215,7 @@ bool MeshBehaviour::RenderUI()
 
 		// Blend State
 		{
-			ImGui::PushID(("Param " + std::to_string(id++)).c_str());
+			ImGui::PushID(("Param " + std::to_string(imID++)).c_str());
 			ImGui::BeginGroup();
 
 			ImGui::Text("Blend State:"); ImGui::SameLine(); ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x - ImGui::GetFrameHeight() - 6.0f);
@@ -1258,10 +1276,12 @@ bool MeshBehaviour::RenderUI()
 							continue;
 					}
 
-					bool isSelected = (inputBlendID == i);
+					UINT id = content->GetBlendStateID(blendStateNames[i]);
+
+					bool isSelected = (inputBlendID == id);
 					if (ImGui::Selectable(blendStateNames[i].c_str(), isSelected))
 					{
-						inputBlendID = i;
+						inputBlendID = id;
 						isChanged = true;
 					}
 
@@ -1306,7 +1326,7 @@ bool MeshBehaviour::RenderUI()
 
 		// Vertex Shader
 		{
-			ImGui::PushID(("Param " + std::to_string(id++)).c_str());
+			ImGui::PushID(("Param " + std::to_string(imID++)).c_str());
 			ImGui::BeginGroup();
 
 			ImGui::Text("Vertex Shader:"); ImGui::SameLine(); ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x - ImGui::GetFrameHeight() - 6.0f);
@@ -1367,13 +1387,15 @@ bool MeshBehaviour::RenderUI()
 							continue;
 					}
 
-					if (!shaderNames[i].starts_with("VS_"))
+					UINT id = content->GetShaderID(shaderNames[i]);
+
+					if (content->GetShader(id)->GetShaderType() != ShaderType::VERTEX_SHADER)
 						continue;
 
-					bool isSelected = (inputVSID == i);
+					bool isSelected = (inputVSID == id);
 					if (ImGui::Selectable(shaderNames[i].c_str(), isSelected))
 					{
-						inputVSID = i;
+						inputVSID = id;
 						isChanged = true;
 					}
 
@@ -1418,7 +1440,7 @@ bool MeshBehaviour::RenderUI()
 
 		// Pixel Shader
 		{
-			ImGui::PushID(("Param " + std::to_string(id++)).c_str());
+			ImGui::PushID(("Param " + std::to_string(imID++)).c_str());
 			ImGui::BeginGroup();
 
 			ImGui::Text("Pixel Shader:"); ImGui::SameLine(); ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x - ImGui::GetFrameHeight() - 6.0f);
@@ -1479,13 +1501,15 @@ bool MeshBehaviour::RenderUI()
 							continue;
 					}
 
-					if (!shaderNames[i].starts_with("PS_"))
+					UINT id = content->GetShaderID(shaderNames[i]);
+
+					if (content->GetShader(id)->GetShaderType() != ShaderType::PIXEL_SHADER)
 						continue;
 
-					bool isSelected = (inputPSID == i);
+					bool isSelected = (inputPSID == id);
 					if (ImGui::Selectable(shaderNames[i].c_str(), isSelected))
 					{
-						inputPSID = i;
+						inputPSID = id;
 						isChanged = true;
 					}
 
@@ -1531,88 +1555,59 @@ bool MeshBehaviour::RenderUI()
 
 		if (isChanged)
 		{
-			int texCount = (int)content->GetTextureCount();
+			if (!content->HasMesh((UINT)inputMeshID))
+				inputMeshID = (int)content->GetMeshID("Error");
 
-			inputMeshID += (int)content->GetMeshCount();
-			inputMeshID %= (int)content->GetMeshCount();
-
-			inputTexID += texCount;
-			inputTexID %= texCount;
+			if (!content->HasTexture((UINT)inputTexID))
+				inputTexID = (int)content->GetTextureID("Error");
 
 			if (inputNormID != -1)
 			{
-				if (inputNormID < 0)
-					inputNormID++;
-
-				inputNormID += texCount;
-				inputNormID %= texCount;
+				if (!content->HasTexture((UINT)inputNormID))
+					inputNormID = (int)content->GetTextureID("Error");
 			}
 
 			if (inputSpecID != -1)
 			{
-				if (inputSpecID < 0)
-					inputSpecID++;
-
-				inputSpecID += texCount;
-				inputSpecID %= texCount;
+				if (!content->HasTexture((UINT)inputSpecID))
+					inputSpecID = (int)content->GetTextureID("Error");
 			}
 
 			if (inputGlossID != -1)
 			{
-				if (inputGlossID < 0)
-					inputGlossID++;
-
-				inputGlossID += texCount;
-				inputGlossID %= texCount;
+				if (!content->HasTexture((UINT)inputGlossID))
+					inputGlossID = (int)content->GetTextureID("Error");
 			}
 
 			if (inputAmbID != -1)
 			{
-				if (inputAmbID < 0)
-					inputAmbID++;
-
-				inputAmbID += texCount;
-				inputAmbID %= texCount;
+				if (!content->HasTexture((UINT)inputAmbID))
+					inputAmbID = (int)content->GetTextureID("Error");
 			}
 
 			if (inputReflectID != -1)
 			{
-				if (inputReflectID < 0)
-					inputReflectID++;
-
-				inputReflectID += texCount;
-				inputReflectID %= texCount;
+				if (!content->HasTexture((UINT)inputReflectID))
+					inputReflectID = (int)content->GetTextureID("Error");
 			}
 
 			if (inputOcclusionID != -1)
 			{
-				if (inputOcclusionID < 0)
-					inputOcclusionID++;
-
-				inputOcclusionID += texCount;
-				inputOcclusionID %= texCount;
+				if (!content->HasTexture((UINT)inputOcclusionID))
+					inputOcclusionID = (int)content->GetTextureID("Error");
 			}
 
 			if (inputSampID != -1)
 			{
-				if (inputSampID < 0)
-					inputSampID++;
-
-				inputSampID += (int)content->GetSamplerCount();
-				inputSampID %= (int)content->GetSamplerCount();
+				if (!content->HasSampler((UINT)inputSampID))
+					inputSampID = -1;
 			}
 
 			if (inputBlendID != -1)
 			{
-				if (inputBlendID < 0)
-					inputBlendID++;
-
-				inputBlendID += (int)content->GetBlendStateCount();
-				inputBlendID %= (int)content->GetBlendStateCount();
+				if (!content->HasBlendState((UINT)inputBlendID))
+					inputBlendID = -1;
 			}
-
-			if (inputMeshID != _meshID)
-				SetMeshID((UINT)inputMeshID, true);
 
 			if (inputMeshID != _meshID)
 				SetMeshID((UINT)inputMeshID, true);

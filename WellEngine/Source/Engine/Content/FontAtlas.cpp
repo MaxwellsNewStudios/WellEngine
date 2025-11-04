@@ -454,10 +454,12 @@ bool FontAtlas::RenderUI(const Content *content)
 						continue;
 				}
 
-				bool isSelected = (inputTexID == i);
+				UINT id = content->GetTextureID(textureNames[i]);
+
+				bool isSelected = (inputTexID == id);
 				if (ImGui::Selectable(textureNames[i].c_str(), isSelected))
 				{
-					inputTexID = i;
+					inputTexID = id;
 					isChanged = true;
 				}
 

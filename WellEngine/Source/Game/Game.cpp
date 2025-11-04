@@ -160,7 +160,9 @@ bool Game::LoadContent(
 		return false;
 	}
 
-	int meshCount = (int)_content.GetMeshCount();
+	std::vector<std::string> meshNames;
+	_content.GetMeshNames(&meshNames);
+	int meshCount = (int)meshNames.size();
 
 #pragma warning(disable: 6993)
 #pragma omp parallel num_threads(4)
@@ -173,14 +175,14 @@ bool Game::LoadContent(
 #pragma omp for schedule(dynamic) nowait
 		for (int i = 0; i < meshCount; i++)
 		{
-			MeshD3D11 *mesh = _content.GetMesh((UINT)i);
+			MeshD3D11 *mesh = _content.GetMesh(meshNames[i]);
 
 			if (!mesh)
 				continue;
 
 			if (!mesh->GenerateCollider())
 			{
-				ErrMsgF("Failed to generate collider for mesh {}!", _content.GetMeshName((UINT)i));
+				ErrMsgF("Failed to generate collider for mesh {}!", meshNames[i]);
 			}
 		}
 

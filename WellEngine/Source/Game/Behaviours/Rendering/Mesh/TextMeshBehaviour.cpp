@@ -150,10 +150,12 @@ bool TextMeshBehaviour::RenderUI()
 					continue;
 			}
 
-			bool isSelected = (_fontAtlasID == i);
+			UINT id = content->GetFontAtlasID(fontNames[i]);
+
+			bool isSelected = (_fontAtlasID == id);
 			if (ImGui::Selectable(fontNames[i].c_str(), isSelected))
 			{
-				SetFontAtlasID(i);
+				SetFontAtlasID(id);
 			}
 
 			if (isSelected)

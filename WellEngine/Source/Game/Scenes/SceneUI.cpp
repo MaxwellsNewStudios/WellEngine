@@ -1062,9 +1062,11 @@ bool Scene::RenderEntityCreatorUI()
 								continue;
 						}
 
-						const bool isSelected = meshID == _content->GetMeshID(meshNames[i]);
+						UINT id = _content->GetMeshID(meshNames[i]);
+
+						const bool isSelected = meshID == id;
 						if (Selectable(meshNames[i].c_str(), isSelected))
-							meshID = _content->GetMeshID(meshNames[i]);
+							meshID = id;
 
 						if (isSelected)
 							SetItemDefaultFocus();
@@ -2270,9 +2272,11 @@ bool Scene::RenderSceneUI()
 
 					for (UINT i = 0; i < textureNames.size(); i++)
 					{
-						bool isSelected = (texID == i);
+						UINT id = _content->GetTextureID(textureNames[i]);
+
+						bool isSelected = (texID == id);
 						if (Selectable(textureNames[i].c_str(), isSelected))
-							texID = i;
+							texID = id;
 
 						if (isSelected)
 							SetItemDefaultFocus();
