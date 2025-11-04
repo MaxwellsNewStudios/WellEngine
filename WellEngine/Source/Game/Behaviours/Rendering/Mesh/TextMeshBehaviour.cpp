@@ -12,18 +12,18 @@ TextMeshBehaviour::~TextMeshBehaviour()
 	if (_meshID != CONTENT_NULL)
 		GetUnusedMeshIDs().push_back(_meshID);
 
-	// Stop listening for changes to the atlas.
-	if (_fontAtlasID != CONTENT_NULL)
-	{
-		Content *content = GetScene()->GetContent();
-		FontAtlas *oldAtlas = content->GetFontAtlas(_fontAtlasID);
-
-		if (oldAtlas)
-			oldAtlas->RemoveListener((size_t)this);
-	}
-
 	if (!GetScene()->IsDestroyed() && !GetEntity()->IsRemoved())
 	{
+		// Stop listening for changes to the atlas.
+		if (_fontAtlasID != CONTENT_NULL)
+		{
+			Content *content = GetScene()->GetContent();
+			FontAtlas *oldAtlas = content->GetFontAtlas(_fontAtlasID);
+
+			if (oldAtlas)
+				oldAtlas->RemoveListener((size_t)this);
+		}
+
 		if (_meshBehaviour.IsValid())
 		{
 			Entity *meshEntity = _meshBehaviour.Get()->GetEntity();

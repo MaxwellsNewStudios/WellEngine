@@ -20,32 +20,46 @@ void Content::Shutdown()
 	if (_hasShutDown)
 		return;
 
-	for (auto *item : _meshes)
-		delete item;
+	for (auto &item : _meshes)
+		delete item.second;
 
-	for (auto *item : _shaders)
-		delete item;
+	for (auto &item : _shaders)
+		delete item.second;
 
-	for (auto *item : _textures)
-		delete item;
+	for (auto &item : _textures)
+		delete item.second;
 
-	for (auto *item : _cubemaps)
-		delete item;
+	for (auto &item : _cubemaps)
+		delete item.second;
 
-	for (auto *item : _heightTextures)
-		delete item;
+	for (auto &item : _heightTextures)
+		delete item.second;
 
-	for (auto *item : _samplers)
-		delete item;
+	for (auto &item : _textureFonts)
+		delete item.second;
+
+	for (auto &item : _samplers)
+		delete item.second;
 	
-	for (auto *item : _blendStates)
-		delete item;
+	for (auto &item : _blendStates)
+		delete item.second;
 
-	for (auto *item : _inputLayouts)
-		delete item;
+	for (auto &item : _inputLayouts)
+		delete item.second;
 
 	for (auto *item : _materialVec)
 		delete item;
+
+	_meshes.clear();
+	_shaders.clear();
+	_textures.clear();
+	_cubemaps.clear();
+	_heightTextures.clear();
+	_textureFonts.clear();
+	_samplers.clear();
+	_blendStates.clear();
+	_inputLayouts.clear();
+	_materialVec.clear();
 
 	_hasShutDown = true;
 }
@@ -103,7 +117,7 @@ bool Content::RenderUI(ID3D11Device *device)
 				// Filtering
 				static std::string filterSearch = "";
 				static bool filterID = false;
-				static dx::XMINT2 filterIDRange = {0, (int)_textures.size() - 1};
+				static dx::XMINT2 filterIDRange = { 0, (int)_nextTextureID - 1 };
 				static DXGI_FORMAT filterFormat = DXGI_FORMAT_UNKNOWN;
 
 				// Filter options
@@ -139,7 +153,7 @@ bool Content::RenderUI(ID3D11Device *device)
 						if (ImGui::Checkbox("ID Range", &filterID))
 						{
 							if (filterID)
-								filterIDRange = { 0, (int)_textures.size() - 1 };
+								filterIDRange = { 0, (int)_nextTextureID - 1 };
 
 							refreshTextures = true;
 						}
@@ -151,8 +165,8 @@ bool Content::RenderUI(ID3D11Device *device)
 							if (filterIDRange.x < 0)
 								filterIDRange.x = 0;
 
-							if (filterIDRange.y >= (int)_textures.size())
-								filterIDRange.y = (int)_textures.size() - 1;
+							if (filterIDRange.y >= (int)_nextTextureID)
+								filterIDRange.y = (int)_nextTextureID - 1;
 
 							if (filterIDRange.x != prevFilterIDRange.x && filterIDRange.x > filterIDRange.y)
 								filterIDRange.x = filterIDRange.y;
@@ -210,13 +224,29 @@ bool Content::RenderUI(ID3D11Device *device)
 					}
 				}
 
-				static std::vector<const Texture *> sortedTextures(_textures.begin(), _textures.end());
+				static std::vector<const Texture *> sortedTextures;
+				{
+					static bool initSortedTexVec = true;
+					if (initSortedTexVec)
+					{
+						sortedTextures.clear();
+						sortedTextures.reserve(_textures.size());
+
+						for (auto &e : _textures)
+							sortedTextures.push_back(e.second);
+
+						initSortedTexVec = false;
+					}
+				}
+
 				// Apply filters & sorting
 				{
 					if (refreshTextures)
 					{
 						sortedTextures.clear();
-						sortedTextures.insert(sortedTextures.end(), _textures.begin(), _textures.end());
+
+						for (auto &e : _textures)
+							sortedTextures.push_back(e.second);
 
 						std::string searchLower = filterSearch;
 						if (!searchLower.empty())
@@ -437,7 +467,7 @@ bool Content::RenderUI(ID3D11Device *device)
 				// Filtering
 				static std::string filterSearch = "";
 				static bool filterID = false;
-				static dx::XMINT2 filterIDRange = { 0, (int)_cubemaps.size() - 1 };
+				static dx::XMINT2 filterIDRange = { 0, (int)_nextCubemapID - 1 };
 				static DXGI_FORMAT filterFormat = DXGI_FORMAT_UNKNOWN;
 
 				// Filter options
@@ -473,7 +503,7 @@ bool Content::RenderUI(ID3D11Device *device)
 						if (ImGui::Checkbox("ID Range", &filterID))
 						{
 							if (filterID)
-								filterIDRange = { 0, (int)_cubemaps.size() - 1 };
+								filterIDRange = { 0, (int)_nextCubemapID - 1 };
 
 							refreshTextures = true;
 						}
@@ -485,8 +515,8 @@ bool Content::RenderUI(ID3D11Device *device)
 							if (filterIDRange.x < 0)
 								filterIDRange.x = 0;
 
-							if (filterIDRange.y >= (int)_cubemaps.size())
-								filterIDRange.y = (int)_cubemaps.size() - 1;
+							if (filterIDRange.y >= (int)_nextCubemapID)
+								filterIDRange.y = (int)_nextCubemapID - 1;
 
 							if (filterIDRange.x != prevFilterIDRange.x && filterIDRange.x > filterIDRange.y)
 								filterIDRange.x = filterIDRange.y;
@@ -544,13 +574,29 @@ bool Content::RenderUI(ID3D11Device *device)
 					}
 				}
 
-				static std::vector<const Cubemap *> sortedTextures(_cubemaps.begin(), _cubemaps.end());
+				static std::vector<const Cubemap *> sortedTextures;
+				{
+					static bool initSortedTexVec = true;
+					if (initSortedTexVec)
+					{
+						sortedTextures.clear();
+						sortedTextures.reserve(_cubemaps.size());
+
+						for (auto &e : _cubemaps)
+							sortedTextures.push_back(e.second);
+
+						initSortedTexVec = false;
+					}
+				}
+
 				// Apply filters & sorting
 				{
 					if (refreshTextures)
 					{
 						sortedTextures.clear();
-						sortedTextures.insert(sortedTextures.end(), _cubemaps.begin(), _cubemaps.end());
+
+						for (auto &e : _cubemaps)
+							sortedTextures.push_back(e.second);
 
 						std::string searchLower = filterSearch;
 						if (!searchLower.empty())
@@ -737,27 +783,22 @@ bool Content::RenderUI(ID3D11Device *device)
 
 		ImGui::BeginChild("ShaderList", { 0, 300 }, ImGuiChildFlags_ResizeY);
 
-		std::vector<std::string> shaderNames;
-		GetShaderNames(&shaderNames);
-
-		for (int i = 0; i < shaderNames.size(); i++)
+		for (auto &e : _shaders)
 		{
-			ImGui::PushID(i);
-			if (ImGui::TreeNode(shaderNames[i].c_str()))
+			ImGui::PushID(e.first);
+			if (ImGui::TreeNode(e.second->name.c_str()))
 			{
-				const Shader *shaderContainer = GetShaderContainer(shaderNames[i]);
-
-				ImGui::Text("ID: %d", i);
-				ImGui::Text("Name: %s", shaderNames[i].c_str());
-				ImGui::Text("Path: %s", shaderContainer->path.c_str());
+				ImGui::Text("ID: %d", e.first);
+				ImGui::Text("Name: %s", e.second->name.c_str());
+				ImGui::Text("Path: %s", e.second->path.c_str());
 
 				if (recompile || ImGui::Button("Recompile"))
-					bool _ = RecompileShader(device, shaderNames[i]);
+					bool _ = RecompileShader(device, e.second->name);
 
 				if (ImGui::TreeNode("Shader Info"))
 				{
 					// Expose reflection data
-					auto reflector = shaderContainer->data.GetReflector();
+					auto reflector = e.second->data.GetReflector();
 
 					D3D11_SHADER_DESC shaderDesc;
 					if (FAILED(reflector->GetDesc(&shaderDesc)))
@@ -908,15 +949,12 @@ bool Content::RenderUI(ID3D11Device *device)
 		ImGui::SetNextWindowSize({ ImGui::GetContentRegionAvail().x, 0 }, ImGuiCond_Always);
 		ImGui::BeginChild("FontList", { 0, 0 }, ImGuiChildFlags_AutoResizeY);
 
-		std::vector<std::string> fontNames;
-		GetFontAtlasNames(&fontNames);
-
-		for (int i = 0; i < fontNames.size(); i++)
+		for (auto &e : _textureFonts)
 		{
-			ImGui::PushID(i);
-			if (ImGui::TreeNode(fontNames[i].c_str()))
+			ImGui::PushID(e.first);
+			if (ImGui::TreeNode(e.second->name.c_str()))
 			{
-				if (!_textureFonts[i]->data.RenderUI(this))
+				if (!e.second->data.RenderUI(this))
 				{
 					ErrMsg("Failed to render font atlas UI!");
 					ImGui::TreePop();
@@ -1087,32 +1125,26 @@ UINT Content::AddMesh(ID3D11Device *device, const std::string &name, bool genera
 #pragma warning(disable: 6993)
 #pragma omp critical
 	{
-		bool duplicateName = false;
-		id = (UINT)_meshes.size();
-		for (UINT i = 0; i < id; i++)
+		if (IsNameDuplicate(name, _meshes, &id))
 		{
-			if (_meshes[i]->name != name)
-				continue;
-
-			duplicateName = true;
-			id = i;
 			delete meshData;
-			break;
 		}
-
-		if (!duplicateName)
+		else
 		{
+			id = _nextMeshID++;
+
 			Mesh *addedMesh = new Mesh(name, id);
 			if (!addedMesh->data.Initialize(device, &meshData, generateCollider))
 			{
 				delete meshData;
 				delete addedMesh;
 				id = CONTENT_NULL;
+				_nextMeshID--;
 				ErrMsg("Failed to initialize added mesh!");
 			}
 			else
 			{
-				_meshes.emplace_back(addedMesh);
+				_meshes[id] = addedMesh;
 			}
 		}
 	}
@@ -1137,31 +1169,22 @@ UINT Content::AddMesh(ID3D11Device *device, const std::string &name, MeshData **
 #pragma warning(disable: 6993)
 #pragma omp critical
 	{
-		bool duplicateName = false;
-		id = (UINT)_meshes.size();
-		for (UINT i = 0; i < id; i++)
+		if (!IsNameDuplicate(name, _meshes, &id))
 		{
-			if (_meshes[i]->name != name)
-				continue;
+			id = _nextMeshID++;
 
-			duplicateName = true;
-			id = i;
-			break;
-		}
-
-		if (!duplicateName)
-		{
 			Mesh *addedMesh = new Mesh(name, id);
 			if (!addedMesh->data.Initialize(device, meshData, generateCollider))
 			{
 				delete (*meshData);
 				delete addedMesh;
 				id = CONTENT_NULL;
+				_nextMeshID--;
 				ErrMsg("Failed to initialize added mesh!");
 			}
 			else
 			{
-				_meshes.emplace_back(addedMesh);
+				_meshes[id] = addedMesh;
 			}
 		}
 	}
@@ -1194,32 +1217,26 @@ UINT Content::AddMesh(ID3D11Device *device, const std::string &name, const char 
 #pragma warning(disable: 6993)
 #pragma omp critical
 	{
-		bool duplicateName = false;
-		id = (UINT)_meshes.size();
-		for (UINT i = 0; i < id; i++)
+		if (IsNameDuplicate(name, _meshes, &id))
 		{
-			if (_meshes[i]->name != name)
-				continue;
-
-			duplicateName = true;
-			id = i;
 			delete meshData;
-			break;
 		}
-
-		if (!duplicateName)
+		else
 		{
+			id = _nextMeshID++;
+
 			Mesh *addedMesh = new Mesh(name, id);
 			if (!addedMesh->data.Initialize(device, &meshData, generateCollider))
 			{
 				delete meshData;
 				delete addedMesh;
 				id = CONTENT_NULL;
+				_nextMeshID--;
 				ErrMsg("Failed to initialize added mesh!");
 			}
 			else
 			{
-				_meshes.emplace_back(addedMesh);
+				_meshes[id] = addedMesh;
 			}
 		}
 	}
@@ -1245,30 +1262,21 @@ UINT Content::AddShader(ID3D11Device *device, const std::string &name, const std
 #pragma warning(disable: 6993)
 #pragma omp critical
 	{
-		bool duplicateName = false;
-		id = (UINT)_shaders.size();
-		for (UINT i = 0; i < id; i++)
+		if (!IsNameDuplicate(name, _shaders, &id))
 		{
-			if (_shaders[i]->name != name)
-				continue;
+			id = _nextShaderID++;
 
-			duplicateName = true;
-			id = i;
-			break;
-		}
-
-		if (!duplicateName)
-		{
 			Shader *addedShader = new Shader(name, codePath, id);
 			if (!addedShader->data.Initialize(device, shaderType, shaderBlob))
 			{
 				delete addedShader;
 				id = CONTENT_NULL;
+				_nextShaderID--;
 				ErrMsg("Failed to initialize added shader!");
 			}
 			else
 			{
-				_shaders.emplace_back(addedShader);
+				_shaders[id] = addedShader;
 			}
 		}
 	}
@@ -1293,30 +1301,21 @@ UINT Content::AddShader(ID3D11Device *device, const std::string &name, const std
 #pragma warning(disable: 6993)
 #pragma omp critical
 	{
-		bool duplicateName = false;
-		id = (UINT)_shaders.size();
-		for (UINT i = 0; i < id; i++)
+		if (!IsNameDuplicate(name, _shaders, &id))
 		{
-			if (_shaders[i]->name != name)
-				continue;
+			id = _nextShaderID++;
 
-			duplicateName = true;
-			id = i;
-			break;
-		}
-
-		if (!duplicateName)
-		{
 			Shader *addedShader = new Shader(name, codePath, id);
 			if (!addedShader->data.Initialize(device, shaderType, dataPtr, dataSize))
 			{
 				delete addedShader;
 				id = CONTENT_NULL;
+				_nextShaderID--;
 				ErrMsg("Failed to initialize added shader!");
 			}
 			else
 			{
-				_shaders.emplace_back(addedShader);
+				_shaders[id] = addedShader;
 			}
 		}
 	}
@@ -1340,30 +1339,21 @@ UINT Content::AddShader(ID3D11Device *device, const std::string &name, const std
 #pragma warning(disable: 6993)
 #pragma omp critical
 	{
-		bool duplicateName = false;
-		id = (UINT)_shaders.size();
-		for (UINT i = 0; i < id; i++)
+		if (!IsNameDuplicate(name, _shaders, &id))
 		{
-			if (_shaders[i]->name != name)
-				continue;
+			id = _nextShaderID++;
 
-			duplicateName = true;
-			id = i;
-			break;
-		}
-
-		if (!duplicateName)
-		{
 			Shader *addedShader = new Shader(name, codePath, id);
 			if (!addedShader->data.Initialize(device, shaderType, csoPath.c_str()))
 			{
 				delete addedShader;
 				id = CONTENT_NULL;
+				_nextShaderID--;
 				ErrMsg("Failed to initialize added shader!");
 			}
 			else
 			{
-				_shaders.emplace_back(addedShader);
+				_shaders[id] = addedShader;
 			}
 		}
 	}
@@ -1547,24 +1537,25 @@ UINT Content::AddTexture(ID3D11Device *device, ID3D11DeviceContext *context, con
 			{
 				Warn("Failed to load texture from file!");
 				failed = true;
-				id = CONTENT_NULL;
 			}
 
 			if (!failed)
 			{
+				id = _nextTextureID++;
+
 				Texture *addedTexture = new Texture(name, std::string(path), id, useMipmaps);
 				if (!addedTexture->data.Initialize(std::move(texture), std::move(srv)))
 				{
 					delete addedTexture;
 					id = CONTENT_NULL;
+					_nextTextureID--;
 					Warn("Failed to initialize added texture!");
 				}
 				else
 				{
-					_textures.emplace_back(addedTexture);
+					_textures[id] = addedTexture;
+					addedTexture->actualPath = *pathToUse;
 				}
-
-				addedTexture->actualPath = *pathToUse;
 			}
 		}
 	}
@@ -1698,30 +1689,21 @@ UINT Content::AddCubemap(ID3D11Device *device, ID3D11DeviceContext *context, con
 #pragma warning(disable: 6993)
 #pragma omp critical
 	{
-		bool duplicateName = false;
-		id = (UINT)_cubemaps.size();
-		for (UINT i = 0; i < id; i++)
+		if (!IsNameDuplicate(name, _cubemaps, &id))
 		{
-			if (_cubemaps[i]->name != name)
-				continue;
+			id = _nextCubemapID++;
 
-			duplicateName = true;
-			id = i;
-			break;
-		}
-
-		if (!duplicateName)
-		{
 			Cubemap *addedCubemap = new Cubemap(name, std::string(path), id);
 			if (!addedCubemap->data.Initialize(device, context, width, height, formattedTexData.data(), format, useMipmaps, true))
 			{
 				delete addedCubemap;
 				id = CONTENT_NULL;
+				_nextCubemapID--;
 				Warn("Failed to initialize added cubemap!");
 			}
 			else
 			{
-				_cubemaps.emplace_back(addedCubemap);
+				_cubemaps[id] = addedCubemap;
 			}
 		}
 	}
@@ -1742,21 +1724,21 @@ UINT Content::AddSampler(ID3D11Device *device, const std::string &name,
 		return CONTENT_NULL;
 	}
 
-	const UINT id = static_cast<UINT>(_samplers.size());
-	for (UINT i = 0; i < id; i++)
-	{
-		if (_samplers[i]->name == name)
-			return i;
-	}
+	UINT id = CONTENT_NULL;
+	if (IsNameDuplicate(name, _samplers, &id))
+		return id;
+
+	id = _nextSamplerID++;
 
 	Sampler* addedSampler = new Sampler(name, id);
 	if (!addedSampler->data.Initialize(device, adressMode, filter, comparisonFunc))
 	{
 		delete addedSampler;
 		ErrMsgF("Failed to initialize added sampler '{}'!", name);
+		_nextSamplerID--;
 		return CONTENT_NULL;
 	}
-	_samplers.emplace_back(addedSampler);
+	_samplers[id] = addedSampler;
 
 	return id;
 }
@@ -1771,21 +1753,21 @@ UINT Content::AddSampler(ID3D11Device *device, const std::string &name, const D3
 		return CONTENT_NULL;
 	}
 
-	const UINT id = static_cast<UINT>(_samplers.size());
-	for (UINT i = 0; i < id; i++)
-	{
-		if (_samplers[i]->name == name)
-			return i;
-	}
+	UINT id = CONTENT_NULL;
+	if (IsNameDuplicate(name, _samplers, &id))
+		return id;
+
+	id = _nextSamplerID++;
 
 	Sampler* addedSampler = new Sampler(name, id);
 	if (!addedSampler->data.Initialize(device, samplerDesc))
 	{
 		delete addedSampler;
 		ErrMsgF("Failed to initialize added sampler '{}'!", name);
+		_nextSamplerID--;
 		return CONTENT_NULL;
 	}
-	_samplers.emplace_back(addedSampler);
+	_samplers[id] = addedSampler;
 
 	return id;
 }
@@ -1801,21 +1783,21 @@ UINT Content::AddBlendState(ID3D11Device *device, const std::string &name, const
 		return CONTENT_NULL;
 	}
 
-	const UINT id = static_cast<UINT>(_blendStates.size());
-	for (UINT i = 0; i < id; i++)
-	{
-		if (_blendStates[i]->name == name)
-			return i;
-	}
+	UINT id = CONTENT_NULL;
+	if (IsNameDuplicate(name, _blendStates, &id))
+		return id;
+
+	id = _nextBlendStateID++;
 
 	BlendState *addedBlendState = new BlendState(name, id);
 	if (FAILED(device->CreateBlendState(&blendDesc, addedBlendState->data.ReleaseAndGetAddressOf())))
 	{
 		delete addedBlendState;
 		ErrMsgF("Failed to initialize added blend state '{}'!", name);
+		_nextBlendStateID--;
 		return CONTENT_NULL;
 	}
-	_blendStates.emplace_back(addedBlendState);
+	_blendStates[id] = addedBlendState;
 
 	return id;
 }
@@ -1832,12 +1814,11 @@ UINT Content::AddInputLayout(ID3D11Device *device, const std::string &name, cons
 		return CONTENT_NULL;
 	}
 
-	const UINT id = static_cast<UINT>(_inputLayouts.size());
-	for (UINT i = 0; i < id; i++)
-	{
-		if (_inputLayouts[i]->name == name)
-			return i;
-	}
+	UINT id = CONTENT_NULL;
+	if (IsNameDuplicate(name, _inputLayouts, &id))
+		return id;
+
+	id = _nextInputLayoutID++;
 
 	InputLayout* addedInputLayout = new InputLayout(name, id);
 	for (const Semantic& semantic : semantics)
@@ -1846,6 +1827,7 @@ UINT Content::AddInputLayout(ID3D11Device *device, const std::string &name, cons
 		{
 			delete addedInputLayout;
 			ErrMsgF("Failed to add element \"{}\" to input layout!", semantic.name);
+			_nextInputLayoutID--;
 			return CONTENT_NULL;
 		}
 	}
@@ -1854,9 +1836,10 @@ UINT Content::AddInputLayout(ID3D11Device *device, const std::string &name, cons
 	{
 		delete addedInputLayout;
 		ErrMsgF("Failed to finalize added input layout '{}'!", name);
+		_nextInputLayoutID--;
 		return CONTENT_NULL;
 	}
-	_inputLayouts.emplace_back(addedInputLayout);
+	_inputLayouts[id] = addedInputLayout;
 
 	return id;
 }
@@ -1993,24 +1976,14 @@ UINT Content::AddHeightMap(const std::string &name, const std::string &path)
 	UINT id = CONTENT_NULL;
 #pragma omp critical
 	{
-		bool duplicateName = false;
-		id = (UINT)_heightTextures.size();
-		for (UINT i = 0; i < id; i++)
+		if (!IsNameDuplicate(name, _heightTextures, &id))
 		{
-			if (_heightTextures[i]->name != name)
-				continue;
+			id = _nextHeightTextureID++;
 
-			duplicateName = true;
-			id = i;
-			break;
-		}
-
-		if (!duplicateName)
-		{
 			HeightTexture *ht = new HeightTexture(name, id);
 			ht->data.Initialize(texData, width, height, name);
 
-			_heightTextures.emplace_back(ht);
+			_heightTextures[id] = ht;
 		}
 	}
 
@@ -2037,27 +2010,18 @@ UINT Content::AddFontAtlas(const std::string &name)
 	}
 
 	UINT id = CONTENT_NULL;
-	bool duplicateName = false;
-	id = (UINT)_textureFonts.size();
-	for (UINT i = 0; i < id; i++)
+	if (!IsNameDuplicate(name, _textureFonts, &id))
 	{
-		if (_textureFonts[i]->name != name)
-			continue;
+		id = _nextFontAtlasID++;
 
-		duplicateName = true;
-		id = i;
-		break;
-	}
-
-	if (!duplicateName)
-	{
 		TextureFont *font = new TextureFont(name, id);
 		if (!font->data.Initialize(this, name))
 		{
 			ErrMsg("Failed to create font atlas");
+			_nextFontAtlasID--;
 			return CONTENT_NULL;
 		}
-		_textureFonts.emplace_back(font);
+		_textureFonts[id] = font;
 	}
 
 	return id;
@@ -2092,50 +2056,50 @@ void Content::GetMeshNames(std::vector<std::string> *names) const
 {
 	names->clear();
 	names->reserve(_meshes.size());
-	for (const Mesh *mesh : _meshes)
-		names->emplace_back(mesh->name);
+	for (const auto &mesh : _meshes)
+		names->emplace_back(mesh.second->name);
 }
 void Content::GetShaderNames(std::vector<std::string> *names) const
 {
 	names->clear();
 	names->reserve(_shaders.size());
-	for (const Shader *shader : _shaders)
-		names->emplace_back(shader->name);
+	for (const auto &shader : _shaders)
+		names->emplace_back(shader.second->name);
 }
 void Content::GetSamplerNames(std::vector<std::string> *names) const
 {
 	names->clear();
 	names->reserve(_samplers.size());
-	for (const Sampler *sampler : _samplers)
-		names->emplace_back(sampler->name);
+	for (const auto &sampler : _samplers)
+		names->emplace_back(sampler.second->name);
 }
 void Content::GetBlendStateNames(std::vector<std::string> *names) const
 {
 	names->clear();
 	names->reserve(_blendStates.size());
-	for (const BlendState *blendState : _blendStates)
-		names->emplace_back(blendState->name);
+	for (const auto &blendState : _blendStates)
+		names->emplace_back(blendState.second->name);
 }
 void Content::GetTextureNames(std::vector<std::string> *names) const
 {
 	names->clear();
 	names->reserve(_textures.size());
-	for (const Texture *texture : _textures)
-		names->emplace_back(texture->name);
+	for (const auto &texture : _textures)
+		names->emplace_back(texture.second->name);
 }
 void Content::GetCubemapNames(std::vector<std::string> *names) const
 {
 	names->clear();
 	names->reserve(_cubemaps.size());
-	for (const Cubemap *cubemap : _cubemaps)
-		names->emplace_back(cubemap->name);
+	for (const auto &cubemap : _cubemaps)
+		names->emplace_back(cubemap.second->name);
 }
 void Content::GetFontAtlasNames(std::vector<std::string> *names) const
 {
 	names->clear();
 	names->reserve(_textureFonts.size());
-	for (const TextureFont *font : _textureFonts)
-		names->emplace_back(font->name);
+	for (const auto &font : _textureFonts)
+		names->emplace_back(font.second->name);
 }
 
 UINT Content::GetMeshID(const std::string &name) const
@@ -2150,12 +2114,10 @@ UINT Content::GetMeshID(const std::string &name) const
 	else
 		lookupName = name;
 
-	const UINT count = static_cast<UINT>(_meshes.size());
-
-	for (UINT i = 0; i < count; i++)
+	for (auto &e : _meshes)
 	{
-		if (_meshes[i]->name == lookupName)
-			return i;
+		if (e.second->name == lookupName)
+			return e.first;
 	}
 
 	if (lookupName == "Error")
@@ -2168,9 +2130,9 @@ UINT Content::GetMeshID(const std::string &name) const
 }
 std::string Content::GetMeshName(UINT id) const
 {
-	if (id >= _meshes.size())
+	if (_meshes.find(id) == _meshes.end())
 		return "Uninitialized";
-	return _meshes[id]->name;
+	return _meshes.at(id)->name;
 }
 MeshD3D11 *Content::GetMesh(const std::string &name) const
 {
@@ -2180,17 +2142,15 @@ MeshD3D11 *Content::GetMesh(const std::string &name) const
 MeshD3D11 *Content::GetMesh(const UINT id) const
 {
 	if (id == CONTENT_NULL)
-	{
-		return &_meshes[0]->data;
-	}
+		return &_meshes.begin()->second->data;
 
-	if (id >= _meshes.size())
+	if (_meshes.find(id) == _meshes.end())
 	{
 		WarnF("Failed to find mesh #{}! Returning default.", id);
-		return &_meshes[0]->data;
+		return &_meshes.begin()->second->data;
 	}
 
-	return &_meshes[id]->data;
+	return &_meshes.at(id)->data;
 }
 
 UINT Content::GetShaderID(const std::string &name) const
@@ -2198,67 +2158,61 @@ UINT Content::GetShaderID(const std::string &name) const
 	if (name.empty() || name == "_" || name == "Uninitialized")
 		return CONTENT_NULL;
 
-	const UINT count = static_cast<UINT>(_shaders.size());
-
-	for (UINT i = 0; i < count; i++)
+	for (auto &e : _shaders)
 	{
-		if (_shaders[i]->name == name)
-			return i;
+		if (e.second->name == name)
+			return e.first;
 	}
 
 	return CONTENT_NULL;
 }
 std::string Content::GetShaderName(UINT id) const
 {
-	if (id >= _shaders.size())
+	if (_shaders.find(id) == _shaders.end())
 		return "Uninitialized";
-	return _shaders[id]->name;
+	return _shaders.at(id)->name;
 }
 ShaderD3D11 *Content::GetShader(const std::string &name) const
 {
-	const UINT count = static_cast<UINT>(_shaders.size());
-
-	for (UINT i = 0; i < count; i++)
+	for (auto &e : _shaders)
 	{
-		if (_shaders[i]->name == name)
-			return &_shaders[i]->data;
+		if (e.second->name == name)
+			return &e.second->data;
 	}
 
 	WarnF("Failed to find shader '{}'! Returning default.", name);
-	return &_shaders[0]->data;
+	return &_shaders.begin()->second->data;
 }
 ShaderD3D11 *Content::GetShader(const UINT id) const
 {
-	if (id == CONTENT_NULL || id >= _shaders.size())
+	if (_shaders.find(id) == _shaders.end())
 	{
 		WarnF("Failed to find shader #{}! Returning default.", id);
-		return &_shaders[0]->data;
+		return &_shaders.begin()->second->data;
 	}
 
-	return &_shaders[id]->data;
+	return &_shaders.at(id)->data;
 }
 const Shader *Content::GetShaderContainer(const std::string &name) const
 {
-	const UINT count = static_cast<UINT>(_shaders.size());
-
-	for (UINT i = 0; i < count; i++)
+	for (auto &e : _shaders)
 	{
-		if (_shaders[i]->name == name)
-			return _shaders[i];
+		if (e.second->name == name)
+			return e.second;
 	}
 
 	WarnF("Failed to find shader '{}'! Returning default.", name);
-	return _shaders[0];
+	return _shaders.begin()->second;
 }
 const Shader *Content::GetShaderContainer(const UINT id) const
 {
-	if (id == CONTENT_NULL || id >= _shaders.size())
+	if (_shaders.find(id) == _shaders.end())
 	{
 		WarnF("Failed to find shader #{}! Returning default.", id);
-		return _shaders[0];
+		return _shaders.begin()->second;
 	}
 
-	return _shaders[id];
+	return _shaders.at(id);
 }
 
 void Content::GetShadersOfType(std::vector<UINT> &shaders, ShaderType type)
@@ -2266,11 +2220,11 @@ void Content::GetShadersOfType(std::vector<UINT> &shaders, ShaderType type)
 	shaders.clear();
 	shaders.reserve(_shaders.size() / 2);
 
-	for (int i = 0; i < _shaders.size(); i++)
+	for (const auto &sID : _shaders)
 	{
-		const Shader *shader = _shaders[i];
+		const Shader *shader = sID.second;
 		if (shader->data.GetShaderType() == type)
-			shaders.emplace_back(i);
+			shaders.emplace_back(sID.first);
 	}
 }
 ShaderType Content::GetShaderTypeFromName(const std::string &name)
@@ -2293,23 +2247,14 @@ ShaderType Content::GetShaderTypeFromName(const std::string &name)
 	return ShaderType::VERTEX_SHADER;
 }
 
-bool Content::HasTexture(const std::string & name) const
+bool Content::HasTexture(const std::string &name) const
 {
 	if (name.empty() || name == "_" || name == "Uninitialized")
 		return false;
 
-	std::string lookupName;
-
-	if (name.find("", 0) != 0)
-		lookupName = "" + name; // Add prefix if it is missing.
-	else
-		lookupName = name;
-
-	const UINT count = static_cast<UINT>(_textures.size());
-
-	for (UINT i = 0; i < count; i++)
+	for (auto &e : _textures)
 	{
-		if (_textures[i]->name == lookupName)
+		if (e.second->name == name)
 			return true;
 	}
 
@@ -2320,10 +2265,9 @@ bool Content::HasCubemap(const std::string &name) const
 	if (name.empty() || name == "_" || name == "Uninitialized")
 		return false;
 
-	const UINT count = static_cast<UINT>(_cubemaps.size());
-	for (UINT i = 0; i < count; i++)
+	for (auto &e : _cubemaps)
 	{
-		if (_cubemaps[i]->name == name)
+		if (e.second->name == name)
 			return true;
 	}
 
@@ -2335,22 +2279,13 @@ UINT Content::GetTextureID(const std::string &name) const
 	if (name.empty() || name == "_" || name == "Uninitialized")
 		return GetTextureID("Fallback");
 
-	std::string lookupName;
-
-	if (name.find("", 0) != 0)
-		lookupName = "" + name; // Add prefix if it is missing.
-	else
-		lookupName = name;
-
-	const UINT count = static_cast<UINT>(_textures.size());
-
-	for (UINT i = 0; i < count; i++)
+	for (auto &e : _textures)
 	{
-		if (_textures[i]->name == lookupName)
-			return i;
+		if (e.second->name == name)
+			return e.first;
 	}
 
-	if (lookupName == "Fallback")
+	if (name == "Fallback")
 	{
 		Warn("No fallback texture defined!");
 		return CONTENT_NULL;
@@ -2360,28 +2295,25 @@ UINT Content::GetTextureID(const std::string &name) const
 }
 std::string Content::GetTextureName(UINT id) const
 {
-	if (id >= _textures.size())
+	if (_textures.find(id) == _textures.end())
 		return "Uninitialized";
-	return _textures[id]->name;
+	return _textures.at(id)->name;
 }
 UINT Content::GetTextureIDByPath(const std::string &path) const
 {
-	const UINT count = static_cast<UINT>(_textures.size());
-
-	for (UINT i = 0; i < count; i++)
+	for (auto &e : _textures)
 	{
-		if (_textures[i]->path == path)
-			return i;
+		if (e.second->path == path)
+			return e.first;
 	}
 
 	return CONTENT_NULL;
 }
 const Texture *Content::GetTextureContainer(UINT id) const
 {
-	if (id >= _textures.size())
+	if (_textures.find(id) == _textures.end())
 		return GetTextureContainer("Fallback");
-
-	return _textures[id];
+	return _textures.at(id);
 }
 const Texture *Content::GetTextureContainer(const std::string &name) const
 {
@@ -2390,10 +2322,9 @@ const Texture *Content::GetTextureContainer(const std::string &name) const
 }
 ShaderResourceTextureD3D11 *Content::GetTexture(const UINT id) const
 {
-	if (id >= _textures.size())
+	if (_textures.find(id) == _textures.end())
 		return GetTexture("Fallback");
-
-	return &_textures[id]->data;
+	return &_textures.at(id)->data;
 }
 ShaderResourceTextureD3D11 *Content::GetTexture(const std::string &name) const
 {
@@ -2406,40 +2337,35 @@ UINT Content::GetCubemapID(const std::string &name) const
 	if (name.empty() || name == "_" || name == "Uninitialized")
 		return false;
 
-	const UINT count = static_cast<UINT>(_cubemaps.size());
-
-	for (UINT i = 0; i < count; i++)
+	for (auto &e : _cubemaps)
 	{
-		if (_cubemaps[i]->name == name)
-			return i;
+		if (e.second->name == name)
+			return e.first;
 	}
 
 	return CONTENT_NULL;
 }
 std::string Content::GetCubemapName(UINT id) const
 {
-	if (id >= _cubemaps.size())
+	if (_cubemaps.find(id) == _cubemaps.end())
 		return "Uninitialized";
-	return _cubemaps[id]->name;
+	return _cubemaps.at(id)->name;
 }
 UINT Content::GetCubemapIDByPath(const std::string &path) const
 {
-	const UINT count = static_cast<UINT>(_cubemaps.size());
-
-	for (UINT i = 0; i < count; i++)
+	for (auto &e : _cubemaps)
 	{
-		if (_cubemaps[i]->path == path)
-			return i;
+		if (e.second->path == path)
+			return e.first;
 	}
 
 	return CONTENT_NULL;
 }
 ShaderResourceTextureD3D11 *Content::GetCubemap(UINT id) const
 {
-	if (id >= _cubemaps.size())
-		return GetCubemap("Fallback");
-
-	return &_cubemaps[id]->data;
+	if (_cubemaps.find(id) == _cubemaps.end())
+		return GetTexture("Fallback");
+	return &_cubemaps.at(id)->data;
 }
 ShaderResourceTextureD3D11 *Content::GetCubemap(const std::string &name) const
 {
@@ -2452,57 +2378,46 @@ UINT Content::GetSamplerID(const std::string &name) const
 	if (name == "_" || name == "Uninitialized")
 		return CONTENT_NULL;
 
-	std::string lookupName;
-
-	if (name.find("", 0) != 0)
-		lookupName = "" + name; // Add prefix if it is missing.
-	else
-		lookupName = name;
-
-	const UINT count = static_cast<UINT>(_samplers.size());
-
-	for (UINT i = 0; i < count; i++)
+	for (auto &e : _samplers)
 	{
-		if (_samplers[i]->name == lookupName)
-			return i;
+		if (e.second->name == name)
+			return e.first;
 	}
 
 	return CONTENT_NULL;
 }
 std::string Content::GetSamplerName(UINT id) const
 {
-	if (id >= _samplers.size())
+	if (_samplers.find(id) == _samplers.end())
 		return "Uninitialized";
-	return _samplers[id]->name;
+	return _samplers.at(id)->name;
 }
 SamplerD3D11 *Content::GetSampler(const std::string &name) const
 {
-	const UINT count = static_cast<UINT>(_samplers.size());
-
-	for (UINT i = 0; i < count; i++)
+	for (auto &e : _samplers)
 	{
-		if (_samplers[i]->name == name)
-			return &_samplers[i]->data;
+		if (e.second->name == name)
+			return &e.second->data;
 	}
 
 	DbgMsg(std::format("Failed to find sampler '{}'! Returning default.", name));
-	return &_samplers[0]->data;
+	return &_samplers.begin()->second->data;
 }
 SamplerD3D11 *Content::GetSampler(const UINT id) const
 {
 	if (id == CONTENT_NULL)
 	{
 		DbgMsg(std::format("Failed to find sampler #{}! Returning default.", id));
-		return &_samplers[0]->data;
+		return &_samplers.begin()->second->data;
 	}
 
-	if (id >= _samplers.size())
+	if (_samplers.find(id) == _samplers.end())
 	{
 		DbgMsg(std::format("Failed to find sampler #{}! Returning default.", id));
-		return &_samplers[0]->data;
+		return &_samplers.begin()->second->data;
 	}
 
-	return &_samplers[id]->data;
+	return &_samplers.at(id)->data;
 }
 
 UINT Content::GetBlendStateID(const std::string &name) const
@@ -2510,79 +2425,73 @@ UINT Content::GetBlendStateID(const std::string &name) const
 	if (name == "_" || name == "Uninitialized")
 		return CONTENT_NULL;
 
-	const UINT count = static_cast<UINT>(_blendStates.size());
-
-	for (UINT i = 0; i < count; i++)
+	for (auto &e : _blendStates)
 	{
-		if (_blendStates[i]->name == name)
-			return i;
+		if (e.second->name == name)
+			return e.first;
 	}
 
 	return CONTENT_NULL;
 }
 std::string Content::GetBlendStateName(UINT id) const
 {
-	if (id >= _blendStates.size())
+	if (_blendStates.find(id) == _blendStates.end())
 		return "Uninitialized";
-	return _blendStates[id]->name;
+	return _blendStates.at(id)->name;
 }
 ID3D11BlendState *Content::GetBlendState(const std::string &name) const
 {
-	const UINT count = static_cast<UINT>(_blendStates.size());
-
-	for (UINT i = 0; i < count; i++)
+	for (auto &e : _blendStates)
 	{
-		if (_blendStates[i]->name == name)
-			return _blendStates[i]->data.Get();
+		if (e.second->name == name)
+			return e.second->data.Get();
 	}
 
 	DbgMsgF("Failed to find blend state '{}'! Returning default.", name);
-	return _blendStates[0]->data.Get();
+	return _blendStates.begin()->second->data.Get();
 }
 ID3D11BlendState *Content::GetBlendState(const UINT id) const
 {
 	if (id == CONTENT_NULL)
 	{
 		DbgMsgF("Failed to find blend state #{}! Returning default.", id);
-		return _blendStates[0]->data.Get();
+		return _blendStates.begin()->second->data.Get();
 	}
 
-	if (id >= _blendStates.size())
+	if (_blendStates.find(id) == _blendStates.end())
 	{
 		DbgMsgF("Failed to find blend state #{}! Returning default.", id);
-		return _blendStates[0]->data.Get();
+		return _blendStates.begin()->second->data.Get();
 	}
 
-	return _blendStates[id]->data.Get();
+	return _blendStates.at(id)->data.Get();
 }
 ComPtr<ID3D11BlendState> *Content::GetBlendStateAddress(const std::string &name) const
 {
-	const UINT count = static_cast<UINT>(_blendStates.size());
-
-	for (UINT i = 0; i < count; i++)
+	for (auto &e : _blendStates)
 	{
-		if (_blendStates[i]->name == name)
-			return &_blendStates[i]->data;
+		if (e.second->name == name)
+			return &e.second->data;
 	}
 
 	DbgMsgF("Failed to find blend state '{}'! Returning default.", name);
-	return &_blendStates[0]->data;
+	return &_blendStates.begin()->second->data;
 }
 ComPtr<ID3D11BlendState> *Content::GetBlendStateAddress(const UINT id) const
 {
 	if (id == CONTENT_NULL)
 	{
 		DbgMsgF("Failed to find blend state #{}! Returning default.", id);
-		return &_blendStates[0]->data;
+		return &_blendStates.begin()->second->data;
 	}
 
-	if (id >= _blendStates.size())
+	if (_blendStates.find(id) == _blendStates.end())
 	{
 		DbgMsgF("Failed to find blend state #{}! Returning default.", id);
-		return &_blendStates[0]->data;
+		return &_blendStates.begin()->second->data;
 	}
 
-	return &_blendStates[id]->data;
+	return &_blendStates.at(id)->data;
 }
 
 UINT Content::GetFontAtlasID(const std::string &name) const
@@ -2590,92 +2499,84 @@ UINT Content::GetFontAtlasID(const std::string &name) const
 	if (name == "_" || name == "Uninitialized")
 		return CONTENT_NULL;
 
-	const UINT count = static_cast<UINT>(_textureFonts.size());
-
-	for (UINT i = 0; i < count; i++)
+	for (auto &e : _textureFonts)
 	{
-		if (_textureFonts[i]->name == name)
-			return i;
+		if (e.second->name == name)
+			return e.first;
 	}
 
 	return CONTENT_NULL;
 }
 std::string Content::GetFontAtlasName(UINT id) const
 {
-	if (id >= _textureFonts.size())
+	if (_textureFonts.find(id) == _textureFonts.end())
 		return "Uninitialized";
-	return _textureFonts[id]->name;
+	return _textureFonts.at(id)->name;
 }
 FontAtlas *Content::GetFontAtlas(const std::string &name) const
 {
-	const UINT count = static_cast<UINT>(_textureFonts.size());
-
-	for (UINT i = 0; i < count; i++)
+	for (auto &e : _textureFonts)
 	{
-		if (_textureFonts[i]->name == name)
-			return &_textureFonts[i]->data;
+		if (e.second->name == name)
+			return &e.second->data;
 	}
 
 	DbgMsgF("Failed to find font atlas '{}'! Returning default.", name);
-	return &_textureFonts[0]->data;
+	return &_textureFonts.begin()->second->data;
 }
 FontAtlas *Content::GetFontAtlas(UINT id) const
 {
 	if (id == CONTENT_NULL)
 	{
 		DbgMsgF("Failed to find font atlas #{}! Returning default.", id);
-		return &_textureFonts[0]->data;
+		return &_textureFonts.begin()->second->data;
 	}
 
-	if (id >= _textureFonts.size())
+	if (_textureFonts.find(id) == _textureFonts.end())
 	{
 		DbgMsgF("Failed to find font atlas #{}! Returning default.", id);
-		return &_textureFonts[0]->data;
+		return &_textureFonts.begin()->second->data;
 	}
 
-	return &_textureFonts[id]->data;
+	return &_textureFonts.at(id)->data;
 }
 
 UINT Content::GetInputLayoutID(const std::string &name) const
 {
-	const UINT count = static_cast<UINT>(_inputLayouts.size());
-
-	for (UINT i = 0; i < count; i++)
+	for (auto &e : _inputLayouts)
 	{
-		if (_inputLayouts[i]->name == name)
-			return i;
+		if (e.second->name == name)
+			return e.first;
 	}
 
 	return CONTENT_NULL;
 }
 InputLayoutD3D11 *Content::GetInputLayout(const std::string &name) const
 {
-	const UINT count = static_cast<UINT>(_inputLayouts.size());
-
-	for (UINT i = 0; i < count; i++)
+	for (auto &e : _inputLayouts)
 	{
-		if (_inputLayouts[i]->name == name)
-			return &_inputLayouts[i]->data;
+		if (e.second->name == name)
+			return &e.second->data;
 	}
 
-	DbgMsg(std::format("Failed to find input layout '{}'! Returning default.", name));
-	return &_inputLayouts[0]->data;
+	DbgMsgF("Failed to find input layout '{}'! Returning default.", name);
+	return &_inputLayouts.begin()->second->data;
 }
 InputLayoutD3D11 *Content::GetInputLayout(const UINT id) const
 {
 	if (id == CONTENT_NULL)
 	{
 		ErrMsgF("Failed to find input layout #{}! Returning default.", id);
-		return &_inputLayouts[0]->data;
+		return &_inputLayouts.begin()->second->data;
 	}
 
-	if (id >= _inputLayouts.size())
+	if (_inputLayouts.find(id) == _inputLayouts.end())
 	{
 		ErrMsgF("Failed to find input layout #{}! Returning default.", id);
-		return &_inputLayouts[0]->data;
+		return &_inputLayouts.begin()->second->data;
 	}
 
-	return &_inputLayouts[id]->data;
+	return &_inputLayouts.at(id)->data;
 }
 
 UINT Content::GetSoundID(const std::string &name) const
@@ -2683,24 +2584,20 @@ UINT Content::GetSoundID(const std::string &name) const
 	if (name == "_" || name == "Uninitialized")
 		return CONTENT_NULL;
 
-	const UINT count = static_cast<UINT>(_sounds.size());
-
-	for (UINT i = 0; i < count; i++)
+	for (auto &e : _sounds)
 	{
-		if (_sounds[i]->name == name)
-			return i;
+		if (e.second->name == name)
+			return e.first;
 	}
 
 	return CONTENT_NULL;
 }
 SoundSource *Content::GetSound(const std::string &name) const
 {
-	const UINT count = static_cast<UINT>(_sounds.size());
-
-	for (UINT i = 0; i < count; i++)
+	for (auto &e : _sounds)
 	{
-		if (_sounds[i]->name == name)
-			return &_sounds[i]->data;
+		if (e.second->name == name)
+			return &e.second->data;
 	}
 
 	return nullptr;
@@ -2709,41 +2606,42 @@ SoundSource *Content::GetSound(UINT id) const
 {
 	if (id == CONTENT_NULL)
 		return nullptr;
-	if (id >= _sounds.size())
+
+	if (_sounds.find(id) == _sounds.end())
 		return nullptr;
 
-	return &_sounds[id]->data;
+	return &_sounds.at(id)->data;
 }
 
 UINT Content::GetHeightMapID(const std::string &name) const
 {
-	const UINT count = static_cast<UINT>(_heightTextures.size());
-
-	for (UINT i = 0; i < count; i++)
+	for (auto &e : _heightTextures)
 	{
-		if (_heightTextures[i]->name == name)
-			return i;
+		if (e.second->name == name)
+			return e.first;
 	}
 
 	return CONTENT_NULL;
 }
 HeightMap *Content::GetHeightMap(const std::string &name) const
 {
-	const UINT count = static_cast<UINT>(_heightTextures.size());
+	for (auto &e : _heightTextures)
+	{
+		if (e.second->name == name)
+			return &e.second->data;
+	}
 
-	for (UINT i = 0; i < count; i++)
-		if (_heightTextures[i]->name == name)
-			return &_heightTextures[i]->data;
 	return nullptr;
 }
 HeightMap *Content::GetHeightMap(UINT id) const
 {
 	if (id == CONTENT_NULL)
 		return nullptr;
-	if (id >= _heightTextures.size())
+
+	if (_heightTextures.find(id) == _heightTextures.end())
 		return nullptr;
 
-	return &_heightTextures[id]->data;
+	return &_heightTextures.at(id)->data;
 }
 
 // Looks for material with the same properties as the arguments.

@@ -233,7 +233,7 @@ private:
 	bool _hasShutDown = false;
 
 	template <typename C>
-	[[nodiscard]] inline bool IsNameDuplicate(const std::string &name, const std::vector<C *> &contentVec, UINT *id);
+	[[nodiscard]] inline bool IsNameDuplicate(const std::string &name, const std::unordered_map<UINT, C *> &contentVec, UINT *id);
 
 public:
 	Content();
@@ -257,7 +257,8 @@ public:
 
 #pragma region Mesh
 private:
-	std::vector<Mesh *> _meshes;
+	UINT _nextMeshID = 0;
+	std::unordered_map<UINT, Mesh *> _meshes;
 
 public:
 	[[nodiscard]] CompiledData GetMeshData(const char *path) const;
@@ -278,7 +279,8 @@ public:
 
 #pragma region Sound
 private:
-	std::vector<Sound *> _sounds;
+	UINT _nextSoundID = 0;
+	std::unordered_map<UINT, Sound *> _sounds;
 
 public:
 	[[nodiscard]] UINT GetSoundID(const std::string &name) const;
@@ -288,9 +290,12 @@ public:
 
 #pragma region Texture
 private:
-	std::vector<Texture *> _textures;
-	std::vector<Cubemap *> _cubemaps;
-	std::vector<HeightTexture *> _heightTextures;
+	UINT _nextTextureID = 0;
+	UINT _nextCubemapID = 0;
+	UINT _nextHeightTextureID = 0;
+	std::unordered_map<UINT, Texture *> _textures;
+	std::unordered_map<UINT, Cubemap *> _cubemaps;
+	std::unordered_map<UINT, HeightTexture *> _heightTextures;
 
 public:
 	UINT AddTexture(ID3D11Device *device, ID3D11DeviceContext *context,
@@ -332,7 +337,8 @@ public:
 
 #pragma region Shader
 private:
-	std::vector<Shader *> _shaders;
+	UINT _nextShaderID = 0;
+	std::unordered_map<UINT, Shader *> _shaders;
 
 public:
 	[[nodiscard]] CompiledData GetShaderData(const std::string &name, const char *path, ShaderType shaderType) const;
@@ -359,7 +365,8 @@ public:
 
 #pragma region Input Layout
 private:
-	std::vector<InputLayout *> _inputLayouts;
+	UINT _nextInputLayoutID = 0;
+	std::unordered_map<UINT, InputLayout *> _inputLayouts;
 
 public:
 	UINT AddInputLayout(ID3D11Device *device, const std::string &name, const std::vector<Semantic> &semantics, const void *vsByteData, size_t vsByteSize);
@@ -372,7 +379,8 @@ public:
 
 #pragma region Sampler
 private:
-	std::vector<Sampler *> _samplers;
+	UINT _nextSamplerID = 0;
+	std::unordered_map<UINT, Sampler *> _samplers;
 
 public:
 	UINT AddSampler(ID3D11Device *device, const std::string &name, 
@@ -392,7 +400,8 @@ public:
 
 #pragma region Blend State
 private:
-	std::vector<BlendState *> _blendStates;
+	UINT _nextBlendStateID = 0;
+	std::unordered_map<UINT, BlendState *> _blendStates;
 
 public:
 	UINT AddBlendState(ID3D11Device *device, const std::string &name, const D3D11_BLEND_DESC &blendDesc);
@@ -411,7 +420,8 @@ public:
 
 #pragma region Font Atlas
 private:
-	std::vector<TextureFont *> _textureFonts;
+	UINT _nextFontAtlasID = 0;
+	std::unordered_map<UINT, TextureFont *> _textureFonts;
 
 public:
 	UINT AddFontAtlas(const std::string &name);
@@ -430,25 +440,20 @@ public:
 };
 
 template<typename C>
-inline bool Content::IsNameDuplicate(const std::string &name, const std::vector<C *> &contentVec, UINT *id)
+inline bool Content::IsNameDuplicate(const std::string &name, const std::unordered_map<UINT, C *> &contentVec, UINT *id)
 {
 	static_assert(std::is_base_of<ContentBase, C>::value, "C must be derived from ContentBase");
 
-	UINT size = (UINT)contentVec.size();
-
-	for (UINT i = 0; i < size; i++)
+	for (auto &e : contentVec)
 	{
-		if (contentVec[i]->name != name)
+		if (e.second->name != name)
 			continue;
 
-		if (id) 
-			*id = i;
+		if (id)
+			*id = e.first;
 
 		return true;
 	}
-
-	if (id) 
-		*id = size;
 
 	return false;
 }
