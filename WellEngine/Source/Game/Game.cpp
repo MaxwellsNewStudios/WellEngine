@@ -1521,10 +1521,10 @@ bool Game::RenderUI(TimeUtils &time)
 	stylesPushed++; ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
 	stylesPushed++; ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0);
 
-	if (ImGui::Begin("View", nullptr, viewWindowFlags))
+	bool isSceneViewOpen = ImGui::Begin("View", nullptr, viewWindowFlags);
+	ImGui::PopStyleVar(stylesPushed);
+	if (isSceneViewOpen)
 	{
-		ImGui::PopStyleVar(stylesPushed);
-
 		if (ImGui::BeginMenuBar())
 		{
 			if (ImGui::BeginMenu("Settings##ViewViewMenu"))
@@ -1981,8 +1981,6 @@ bool Game::RenderUI(TimeUtils &time)
 			return false;
 		}
 	}
-	else
-		ImGui::PopStyleVar(stylesPushed);
 	ImGui::End();
 
 	if (ImGui::Begin("General", nullptr, defaultWindowFlags))
@@ -2689,7 +2687,7 @@ bool Game::RenderUI(TimeUtils &time)
 	ImGui::End();
 
 #ifdef USE_IMGUIZMO
-	if (ActiveSceneIsValid())
+	if (ActiveSceneIsValid() && isSceneViewOpen)
 	{
 		Scene *scene = _scenes[_activeSceneIndex].get();
 		if (!scene->RenderGizmoUI())
