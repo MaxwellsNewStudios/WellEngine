@@ -81,3 +81,4 @@
 #define MESH_COLLISION_MAX_DEPTH
 #define DD
 #define ASSETS_EDITOR_PATH
+#define TRACY_GPU

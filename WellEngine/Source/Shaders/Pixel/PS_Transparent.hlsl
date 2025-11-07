@@ -6,6 +6,13 @@
 #include "../Headers/LightSampling.hlsli"
 #endif
 
+inline float ComputeWeight(float alpha, float depth)
+{
+	float a = min(1.0, alpha) * 8.0 + 0.01;
+	float b = -depth * 0.95 + 1.0;
+	float w = a * a * a * 1e8 * b * b * b;
+	return saturate(w) * 1.0;
+}
 
 struct PixelShaderInput
 {
@@ -16,8 +23,16 @@ struct PixelShaderInput
 	float3 tangent			: TANGENT;
 };
 
-float4 main(PixelShaderInput input) : SV_TARGET
+struct PixelShaderOutput
 {
+	float4 accum : SV_Target0;
+	float reveal : SV_Target1;
+};
+
+PixelShaderOutput main(PixelShaderInput input)
+{
+	PixelShaderOutput output;
+	
 	bool sampleNormal, sampleSpecular, sampleGlossiness, sampleReflective, sampleAmbient, sampleOcclusion;
 	GetSampleFlags(sampleNormal, sampleSpecular, sampleGlossiness, sampleReflective, sampleAmbient, sampleOcclusion);
 
@@ -34,7 +49,11 @@ float4 main(PixelShaderInput input) : SV_TARGET
 		clip(clipVal);
 	
 		if (clipVal < 0.0)
-			return 0.0.rrrr;
+		{
+			output.accum = 0.0.rrrr;
+			output.reveal = 0.0;
+			return output;
+		}
 	}
 	
 	float3 surfaceNormal;
@@ -64,10 +83,6 @@ float4 main(PixelShaderInput input) : SV_TARGET
 		? AmbientMap.Sample(Sampler, uv).xyz
         : 0.0.rrr;
 
-	const float reflective = MatProp_reflectFactor * (sampleReflective
-		? ReflectiveMap.Sample(Sampler, uv)
-		: 1.0);
-
 	const float occlusion = sampleOcclusion
 		? Remap(OcclusionMap.Sample(Sampler, uv), 0.0, 1.0, 1.0 - MatProp_occlusionFactor, 1.0)
 		: 1.0;
@@ -82,9 +97,18 @@ float4 main(PixelShaderInput input) : SV_TARGET
 		
 	float3 totalLight = col.xyz * (ambientCol + occlusion * totalDiffuseLight) + totalSpecularLight;
 	
-	// Apply far-plane depth fade out
-	totalLight = ApplyRenderDistanceFog(totalLight, input.position.z);
+	float depth = input.position.z;
+	float alpha = col.w;
 	
-	float3 acesLight = ACESFilm(totalLight);
-    return float4(saturate(totalLight), col.w);
+	// Apply far-plane depth fade out
+	totalLight = ApplyRenderDistanceFog(totalLight, depth);
+	
+	//float weight = clamp(pow(min(1.0, alpha * 10.0) + 0.01, 3.0) * 1e8 * pow(1.0 - depth * 0.9, 3.0), 1e-2, 3e3);
+	float weight = ComputeWeight(alpha, depth);
+	weight = clamp(weight, 1e-2, 3e2); // clamp to avoid float overflow
+	
+	output.accum = float4(totalLight * alpha, alpha) * weight;
+	output.reveal = alpha;
+	
+	return output;
 }

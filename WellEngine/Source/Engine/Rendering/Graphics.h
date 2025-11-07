@@ -29,7 +29,6 @@ enum class RenderType
 	SPECULAR_STRENGTH,
 	UV_COORDS,
 	OCCLUSION,
-	TRANSPARENCY,
 	LIGHT_TILES,
 	OVERDRAW,
 
@@ -220,6 +219,8 @@ private:
 
 	// The view camera is rendered to sceneRT, the alpha channel is used for emission strength and depth is rendered to depthRT.
 	RenderTargetD3D11 _sceneRT; // RGBA
+	RenderTargetD3D11 _transAccumRT; // RGBA
+	RenderTargetD3D11 _transRevealageRT; // R
 	RenderTargetD3D11 _depthRT; // R
 	RenderTargetD3D11 _emissionRT; // RGB
 	RenderTargetD3D11 _blurRT; // RGB
@@ -358,7 +359,10 @@ private:
 	[[nodiscard]] bool RenderCustom(ID3D11RenderTargetView *targetRTV, ID3D11RenderTargetView *targetDepthRTV, 
 		ID3D11DepthStencilView *targetDSV, const D3D11_VIEWPORT *targetViewport, const std::string &pixelShader, bool overlayStage = false);
 
-	[[nodiscard]] bool RenderTransparency(ID3D11RenderTargetView *targetRTV, ID3D11DepthStencilView *targetDSV,
+	[[nodiscard]] bool RenderTransparency(
+		ID3D11RenderTargetView *targetAccumRTV, 
+		ID3D11RenderTargetView *targetRevealRTV, 
+		ID3D11DepthStencilView *targetDSV,
 		const D3D11_VIEWPORT *targetViewport);
 
 	[[nodiscard]] bool RenderPostFX();

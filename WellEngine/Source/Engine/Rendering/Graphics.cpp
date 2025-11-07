@@ -336,6 +336,8 @@ void Graphics::Shutdown()
 	_wireframeRasterizer.Reset();
 	_shadowRasterizer.Reset();
 	_sceneRT.Reset();
+	_transAccumRT.Reset();
+	_transRevealageRT.Reset();
 	_depthRT.Reset();
 	_emissionRT.Reset();
 	_blurRT.Reset();
@@ -482,6 +484,8 @@ bool Graphics::ResizeSceneViewBuffers(UINT newWidth, UINT newHeight)
 	_intermediateRT.Reset();
 #endif
 	_sceneRT.Reset();
+	_transAccumRT.Reset();
+	_transRevealageRT.Reset();
 	_depthRT.Reset();
 	_emissionRT.Reset();
 	_blurRT.Reset();
@@ -520,9 +524,22 @@ bool Graphics::ResizeSceneViewBuffers(UINT newWidth, UINT newHeight)
 		default: break;
 		}
 
-		if (!_sceneRT.Initialize(_device, (UINT)_viewportSceneView.Width, (UINT)_viewportSceneView.Height, VIEW_BUFFER_FORMAT, true))
+		if (!_sceneRT.Initialize(_device, (UINT)_viewportSceneView.Width, (UINT)_viewportSceneView.Height, VIEW_BUFFER_FORMAT, true, true))
 		{
 			ErrMsg("Failed to initialize scene render target!");
+			return false;
+		}
+
+		if (!_transAccumRT.Initialize(_device, (UINT)_viewportSceneView.Width, (UINT)_viewportSceneView.Height, DXGI_FORMAT_R16G16B16A16_FLOAT, true))
+		{
+			ErrMsg("Failed to initialize transparency accumulation render target!");
+			return false;
+		}
+
+		//   DXGI_FORMAT_R8_UNORM    DXGI_FORMAT_R16_FLOAT
+		if (!_transRevealageRT.Initialize(_device, (UINT)_viewportSceneView.Width, (UINT)_viewportSceneView.Height, DXGI_FORMAT_R8_UNORM, true))
+		{
+			ErrMsg("Failed to initialize transparency revealage render target!");
 			return false;
 		}
 
@@ -1227,7 +1244,7 @@ bool Graphics::RenderToTarget(
 		
 		if (_renderTransparency)
 		{
-			if (!RenderTransparency(_sceneRT.GetRTV(), targetDSV, targetViewport))
+			if (!RenderTransparency(_transAccumRT.GetRTV(), _transRevealageRT.GetRTV(), targetDSV, targetViewport))
 			{
 				ErrMsg("Failed to render transparency!");
 				return false;
@@ -1530,26 +1547,6 @@ bool Graphics::RenderToTarget(
 		if (_renderOverlay)
 			if (!RenderCustom(targetRTV, targetDepthRTV, targetDSV, targetViewport, "PS_DebugViewOcclusion", true))
 				return false;
-		break;
-
-	case RenderType::TRANSPARENCY:
-		_context->ClearRenderTargetView(targetRTV, &_currAmbientColor.x);
-
-		if (!RenderTransparency(targetRTV, targetDSV, targetViewport))
-		{
-			ErrMsg("Failed to render transparency view!");
-			return false;
-		}
-
-		if (_renderDebugDraw)
-		{
-			if (!DebugDrawer::Instance().Render(targetRTV, targetDSV, targetViewport))
-			{
-				ErrMsg("Failed to render debug drawer!");
-				return false;
-			}
-		}
-		DebugDrawer::Instance().Clear();
 		break;
 
 	case RenderType::LIGHT_TILES:
@@ -3052,12 +3049,21 @@ bool Graphics::RenderCustom(
 }
 
 bool Graphics::RenderTransparency(
-	ID3D11RenderTargetView *targetRTV,
+	ID3D11RenderTargetView *targetAccumRTV,
+	ID3D11RenderTargetView *targetRevealRTV,
 	ID3D11DepthStencilView *targetDSV,
 	const D3D11_VIEWPORT *targetViewport)
 {
 	ZoneScopedC(RandomUniqueColor());
 	TracyD3D11ZoneC(_tracyD3D11Context, "Transparency", RandomUniqueColor());
+
+	// Clear render targets
+	{
+		constexpr float clearAccum[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
+		constexpr float clearRevealage[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
+		_context->ClearRenderTargetView(targetAccumRTV, clearAccum);
+		_context->ClearRenderTargetView(targetRevealRTV, clearRevealage);
+	}
 
 	_context->OMSetDepthStencilState(_tdss.Get(), 0);
 
@@ -3066,7 +3072,7 @@ bool Graphics::RenderTransparency(
 	UINT prevSampleMask = 0;
 	_context->OMGetBlendState(&prevBlendState, prevBlendFactor, &prevSampleMask);
 
-	static UINT defaultBlendStateID = _content->GetBlendStateID("Fallback");
+	static UINT defaultBlendStateID = _content->GetBlendStateID("Transparent");
 	ID3D11BlendState *const defaultBlendState = _content->GetBlendState(defaultBlendStateID);
 	constexpr float transparentBlendFactor[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
 	if (_currBlendStateID != defaultBlendStateID)
@@ -3075,7 +3081,12 @@ bool Graphics::RenderTransparency(
 		_currBlendStateID = defaultBlendStateID;
 	}
 
-	_context->OMSetRenderTargets(1, &targetRTV, targetDSV);
+
+	ID3D11RenderTargetView *rtvs[2] = {
+		targetAccumRTV,
+		targetRevealRTV
+	};
+	_context->OMSetRenderTargets(2, rtvs, targetDSV);
 	_context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	_context->RSSetViewports(1, targetViewport);
 	_context->RSSetState(_wireframe ? _wireframeRasterizer.Get() : _defaultRasterizer.Get());
@@ -3394,6 +3405,10 @@ bool Graphics::RenderTransparency(
 			ErrMsg("Failed to unbind spotlight buffers!");
 			return false;
 		}
+
+		// Unbind depth texture
+		//static ID3D11ShaderResourceView *const nullSRV[1] = { nullptr };
+		//_context->PSSetShaderResources(21, 1, nullSRV);
 
 		// Reset blend state
 		_context->OMSetBlendState(prevBlendState, prevBlendFactor, prevSampleMask);
@@ -3854,101 +3869,181 @@ bool Graphics::RenderPostFX()
 	
 #ifdef DEBUG_BUILD
 		// Perform Outline Blur
-		if (_renderOutlineFX && _outlineBlurIterations > 0)
+if (_renderOutlineFX && _outlineBlurIterations > 0)
+{
+	ZoneNamedXNC(outlineBlurZone, "Outline Blur", RandomUniqueColor(), true);
+	TracyD3D11NamedZoneXC(_tracyD3D11Context, outlineBlurD3D11Zone, "Outline Blur", RandomUniqueColor(), true);
+
+	// Bind blur weights
+	ID3D11ShaderResourceView *const srvGaussianWeights[1] = { _outlineGaussianWeightsBuffer.GetSRV() };
+	_context->CSSetShaderResources(3, 1, srvGaussianWeights);
+
+	for (int i = 0; i < _outlineBlurIterations; i++)
+	{
+		TracyD3D11NamedZoneXC(_tracyD3D11Context, outlineBlurIterationD3D11Zone, "Blur Iteration", RandomUniqueColor(), true);
+
+		ID3D11UnorderedAccessView *uavStageOne = _intermediateOutlineRT.GetUAV();
+		ID3D11ShaderResourceView *srvStageOne = _outlineRT.GetSRV();
+
+		ID3D11UnorderedAccessView *uavStageTwo = _outlineRT.GetUAV();
+		ID3D11ShaderResourceView *srvStageTwo = _intermediateOutlineRT.GetSRV();
+
+		// Blur Stage One
 		{
-			ZoneNamedXNC(outlineBlurZone, "Outline Blur", RandomUniqueColor(), true);
-			TracyD3D11NamedZoneXC(_tracyD3D11Context, outlineBlurD3D11Zone, "Outline Blur", RandomUniqueColor(), true);
+			TracyD3D11NamedZoneXC(_tracyD3D11Context, outlineBlurIterationXD3D11Zone, "Horizontal", RandomUniqueColor(), true);
 
-			// Bind blur weights
-			ID3D11ShaderResourceView *const srvGaussianWeights[1] = { _outlineGaussianWeightsBuffer.GetSRV() };
-			_context->CSSetShaderResources(3, 1, srvGaussianWeights);
-
-			for (int i = 0; i < _outlineBlurIterations; i++)
+			// Bind compute shader
+			if (!_content->GetShader("CS_BlurHorizontalOutline")->BindShader(_context))
 			{
-				TracyD3D11NamedZoneXC(_tracyD3D11Context, outlineBlurIterationD3D11Zone, "Blur Iteration", RandomUniqueColor(), true);
-
-				ID3D11UnorderedAccessView *uavStageOne = _intermediateOutlineRT.GetUAV();
-				ID3D11ShaderResourceView *srvStageOne = _outlineRT.GetSRV();
-
-				ID3D11UnorderedAccessView *uavStageTwo = _outlineRT.GetUAV();
-				ID3D11ShaderResourceView *srvStageTwo = _intermediateOutlineRT.GetSRV();
-
-				// Blur Stage One
-				{
-					TracyD3D11NamedZoneXC(_tracyD3D11Context, outlineBlurIterationXD3D11Zone, "Horizontal", RandomUniqueColor(), true);
-
-					// Bind compute shader
-					if (!_content->GetShader("CS_BlurHorizontalOutline")->BindShader(_context))
-					{
-						ErrMsg("Failed to bind horizontal blur compute shader!");
-						return false;
-					}
-
-					// Bind render target
-					ID3D11UnorderedAccessView *const uav[1] = { uavStageOne };
-					_context->CSSetUnorderedAccessViews(0, 1, uav, nullptr);
-
-					// Bind shader resource
-					ID3D11ShaderResourceView *const srv[1] = { srvStageOne };
-					_context->CSSetShaderResources(0, 1, srv);
-
-
-					// Send execution command
-					_context->Dispatch(static_cast<UINT>(ceil(_viewportOutline.Width / 8.0f)), static_cast<UINT>(ceil(_viewportOutline.Height / 8.0f)), 1);
-
-
-					// Unbind compute shader resources
-					ID3D11ShaderResourceView *nullSRV[1] = {};
-					memset(nullSRV, 0, sizeof(ID3D11ShaderResourceView));
-					_context->CSSetShaderResources(0, 1, nullSRV);
-
-					// Unbind render target
-					static ID3D11UnorderedAccessView *const nullUAV = nullptr;
-					_context->CSSetUnorderedAccessViews(0, 1, &nullUAV, nullptr);
-
-				}
-
-				// Blur Stage Two
-				{
-					TracyD3D11NamedZoneXC(_tracyD3D11Context, outlineBlurIterationYD3D11Zone, "Vertical", RandomUniqueColor(), true);
-
-					// Bind compute shader
-					if (!_content->GetShader("CS_BlurVerticalOutline")->BindShader(_context))
-					{
-						ErrMsg("Failed to bind vertical blur compute shader!");
-						return false;
-					}
-
-					// Bind render target
-					ID3D11UnorderedAccessView *const uav[1] = { uavStageTwo };
-					_context->CSSetUnorderedAccessViews(0, 1, uav, nullptr);
-
-					// Bind shader resource
-					ID3D11ShaderResourceView *const srv[1] = { srvStageTwo };
-					_context->CSSetShaderResources(0, 1, srv);
-
-
-					// Send execution command
-					_context->Dispatch(static_cast<UINT>(ceil(_viewportOutline.Width / 8.0f)), static_cast<UINT>(ceil(_viewportOutline.Height / 8.0f)), 1);
-
-
-					// Unbind compute shader resources
-					ID3D11ShaderResourceView *nullSRV[1] = {};
-					memset(nullSRV, 0, sizeof(ID3D11ShaderResourceView));
-					_context->CSSetShaderResources(0, 1, nullSRV);
-
-					// Unbind render target
-					static ID3D11UnorderedAccessView *const nullUAV = nullptr;
-					_context->CSSetUnorderedAccessViews(0, 1, &nullUAV, nullptr);
-				}
+				ErrMsg("Failed to bind horizontal blur compute shader!");
+				return false;
 			}
 
-			// Unbind weight resource
+			// Bind render target
+			ID3D11UnorderedAccessView *const uav[1] = { uavStageOne };
+			_context->CSSetUnorderedAccessViews(0, 1, uav, nullptr);
+
+			// Bind shader resource
+			ID3D11ShaderResourceView *const srv[1] = { srvStageOne };
+			_context->CSSetShaderResources(0, 1, srv);
+
+
+			// Send execution command
+			_context->Dispatch(static_cast<UINT>(ceil(_viewportOutline.Width / 8.0f)), static_cast<UINT>(ceil(_viewportOutline.Height / 8.0f)), 1);
+
+
+			// Unbind compute shader resources
 			ID3D11ShaderResourceView *nullSRV[1] = {};
 			memset(nullSRV, 0, sizeof(ID3D11ShaderResourceView));
-			_context->CSSetShaderResources(3, 1, nullSRV);
+			_context->CSSetShaderResources(0, 1, nullSRV);
+
+			// Unbind render target
+			static ID3D11UnorderedAccessView *const nullUAV = nullptr;
+			_context->CSSetUnorderedAccessViews(0, 1, &nullUAV, nullptr);
+
 		}
+
+		// Blur Stage Two
+		{
+			TracyD3D11NamedZoneXC(_tracyD3D11Context, outlineBlurIterationYD3D11Zone, "Vertical", RandomUniqueColor(), true);
+
+			// Bind compute shader
+			if (!_content->GetShader("CS_BlurVerticalOutline")->BindShader(_context))
+			{
+				ErrMsg("Failed to bind vertical blur compute shader!");
+				return false;
+			}
+
+			// Bind render target
+			ID3D11UnorderedAccessView *const uav[1] = { uavStageTwo };
+			_context->CSSetUnorderedAccessViews(0, 1, uav, nullptr);
+
+			// Bind shader resource
+			ID3D11ShaderResourceView *const srv[1] = { srvStageTwo };
+			_context->CSSetShaderResources(0, 1, srv);
+
+
+			// Send execution command
+			_context->Dispatch(static_cast<UINT>(ceil(_viewportOutline.Width / 8.0f)), static_cast<UINT>(ceil(_viewportOutline.Height / 8.0f)), 1);
+
+
+			// Unbind compute shader resources
+			ID3D11ShaderResourceView *nullSRV[1] = {};
+			memset(nullSRV, 0, sizeof(ID3D11ShaderResourceView));
+			_context->CSSetShaderResources(0, 1, nullSRV);
+
+			// Unbind render target
+			static ID3D11UnorderedAccessView *const nullUAV = nullptr;
+			_context->CSSetUnorderedAccessViews(0, 1, &nullUAV, nullptr);
+		}
+	}
+
+	// Unbind weight resource
+	ID3D11ShaderResourceView *nullSRV[1] = {};
+	memset(nullSRV, 0, sizeof(ID3D11ShaderResourceView));
+	_context->CSSetShaderResources(3, 1, nullSRV);
+}
 #endif
+	}
+
+	// Transparency Composite Stage
+	if (_renderTransparency)
+	{
+		ZoneNamedXNC(compositePostFXZone, "Transparency Composite Stage", RandomUniqueColor(), true);
+		TracyD3D11NamedZoneC(_tracyD3D11Context, combinePostFXD3D11Zone, "Transparency Composite Stage", RandomUniqueColor(), true);
+
+		if (false) // Compute
+		{
+			std::string shaderName = "CS_CompositeWBOIT";
+
+			// Bind combine compute shader
+			if (!_content->GetShader(shaderName)->BindShader(_context))
+			{
+				ErrMsg("Failed to bind composite compute shader!");
+				return false;
+			}
+
+			// Bind composite render target
+			ID3D11UnorderedAccessView *const uav[1] = {
+				_sceneRT.GetUAV()
+			};
+			_context->CSSetUnorderedAccessViews(0, 1, uav, nullptr);
+
+			// Bind accumulation & revealage resources
+			ID3D11ShaderResourceView *srvs[2] = {
+				_transAccumRT.GetSRV(),
+				_transRevealageRT.GetSRV()
+			};
+			_context->CSSetShaderResources(0, 2, srvs);
+
+
+			// Send execution command
+			_context->Dispatch(static_cast<UINT>(ceil(_viewportSceneView.Width / 8.0f)), static_cast<UINT>(ceil(_viewportSceneView.Height / 8.0f)), 1);
+
+
+			// Unbind shader resources
+			memset(srvs, 0, sizeof(srvs));
+			_context->CSSetShaderResources(0, 2, srvs);
+
+			// Unbind render target
+			static ID3D11UnorderedAccessView *const nullUAV = nullptr;
+			_context->CSSetUnorderedAccessViews(0, 1, &nullUAV, nullptr);
+		}
+		else // Pixel
+		{
+			// Bind scene render target
+			ID3D11RenderTargetView *const rtv[1] = { _sceneRT.GetRTV() };
+			_context->OMSetRenderTargets(1, rtv, nullptr);
+
+			// Bind accum & revealage resources
+			ID3D11ShaderResourceView *const srvs[2] = { _transAccumRT.GetSRV(), _transRevealageRT.GetSRV() };
+			_context->PSSetShaderResources(0, 2, srvs);
+
+			// Set blend state
+			ID3D11BlendState *prevBlendState;
+			FLOAT prevBlendFactor[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
+			UINT prevSampleMask = 0;
+			_context->OMGetBlendState(&prevBlendState, prevBlendFactor, &prevSampleMask);
+
+			ID3D11BlendState *const compositeBlendState = _content->GetBlendState("Composite");
+			constexpr float transparentBlendFactor[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
+			_context->OMSetBlendState(compositeBlendState, transparentBlendFactor, 0xffffffff);
+
+			// Render full-screen quad
+			RenderScreenEffect(_content->GetShaderID("PS_ScreenCompositeWBOIT"));
+
+			// Reset blend state
+			_context->OMSetBlendState(prevBlendState, prevBlendFactor, prevSampleMask);
+
+			// Unbind shader resources
+			ID3D11ShaderResourceView *nullSRV[2] = {};
+			memset(nullSRV, 0, sizeof(ID3D11ShaderResourceView) * 2);
+			_context->PSSetShaderResources(0, 2, nullSRV);
+
+			// Unbind render target
+			static ID3D11RenderTargetView *const nullRTV = nullptr;
+			_context->OMSetRenderTargets(1, &nullRTV, nullptr);
+		}
 	}
 
 	// Combine
@@ -3972,7 +4067,7 @@ bool Graphics::RenderPostFX()
 		// Bind combine compute shader
 		if (!_content->GetShader(shaderName)->BindShader(_context))
 		{
-			ErrMsg("Failed to bind fog compute shader!");
+			ErrMsg("Failed to bind combine compute shader!");
 			return false;
 		}
 
@@ -4386,7 +4481,6 @@ bool Graphics::RenderUI(TimeUtils &time)
 			"Specular Strength",
 			"UV Coordinates",
 			"Occlusion",
-			"Transparency",
 			"Light Tiles",
 			"Overdraw"
 		};
@@ -5458,24 +5552,38 @@ bool Graphics::RenderUI(TimeUtils &time)
 	
 	if (ImGui::TreeNode("Transparency Blending"))
 	{
+		struct BlendStateRT
+		{
+			bool blendEnable;
+
+			int srcBlend;
+			int destBlend;
+			int blendOp;
+
+			int srcBlendAlpha;
+			int destBlendAlpha;
+			int blendOpAlpha;
+
+			int renderTargetWriteMask;
+		};
+
 		static std::string blendStateName = "";
 		ImGui::InputText("Blend State Name", &blendStateName);
 
 		bool hasChanged = false;
+		static int currRT = 0;
 
 		static bool alphaToCoverageEnable = _transparentBlendDesc.AlphaToCoverageEnable;
 		static bool independentBlendEnable = _transparentBlendDesc.IndependentBlendEnable;
-		static bool blendEnable = _transparentBlendDesc.RenderTarget[0].BlendEnable;
-		
-		static int srcBlend = 4;
-		static int destBlend = 1;
-		static int blendOp = 0;
-		
-		static int srcBlendAlpha = 4;
-		static int destBlendAlpha = 5;
-		static int blendOpAlpha = 4;
 
-		static int renderTargetWriteMask = _transparentBlendDesc.RenderTarget[0].RenderTargetWriteMask;
+		static BlendStateRT rtStates[8] = {
+			{
+				(bool)_transparentBlendDesc.RenderTarget[0].BlendEnable,
+				4, 1, 0,
+				4, 5, 4,
+				_transparentBlendDesc.RenderTarget[0].RenderTargetWriteMask
+			}, {}, {}, {}, {}, {}, {}, {}
+		};
 
 		constexpr D3D11_BLEND blendValues[] = {
 			D3D11_BLEND_ZERO,
@@ -5507,6 +5615,39 @@ bool Graphics::RenderUI(TimeUtils &time)
 		};
 		constexpr char blendOpNames[] = "ADD\0SUBTRACT\0REV_SUBTRACT\0MIN\0MAX\0";
 
+		if (_content->HasBlendState(blendStateName))
+		{
+			if (ImGui::Button("Copy Current Values"))
+			{
+				ID3D11BlendState *currState = _content->GetBlendState(blendStateName);
+				currState->GetDesc(&_transparentBlendDesc);
+
+				alphaToCoverageEnable = _transparentBlendDesc.AlphaToCoverageEnable;
+				independentBlendEnable = _transparentBlendDesc.IndependentBlendEnable;
+
+				for (int i = 0; i < 8; i++)
+				{
+					rtStates[i].blendEnable = _transparentBlendDesc.RenderTarget[i].BlendEnable;
+
+					rtStates[i].srcBlend = std::distance(blendValues, std::find(std::begin(blendValues), std::end(blendValues), _transparentBlendDesc.RenderTarget[i].SrcBlend));
+					rtStates[i].destBlend = std::distance(blendValues, std::find(std::begin(blendValues), std::end(blendValues), _transparentBlendDesc.RenderTarget[i].DestBlend));
+					rtStates[i].blendOp = std::distance(blendOpValues, std::find(std::begin(blendOpValues), std::end(blendOpValues), _transparentBlendDesc.RenderTarget[i].BlendOp));
+
+					rtStates[i].srcBlendAlpha = std::distance(blendValues, std::find(std::begin(blendValues), std::end(blendValues), _transparentBlendDesc.RenderTarget[i].SrcBlendAlpha));
+					rtStates[i].destBlendAlpha = std::distance(blendValues, std::find(std::begin(blendValues), std::end(blendValues), _transparentBlendDesc.RenderTarget[i].DestBlendAlpha));
+					rtStates[i].blendOpAlpha = std::distance(blendOpValues, std::find(std::begin(blendOpValues), std::end(blendOpValues), _transparentBlendDesc.RenderTarget[i].BlendOpAlpha));
+
+					rtStates[i].renderTargetWriteMask = _transparentBlendDesc.RenderTarget[i].RenderTargetWriteMask;
+				}
+
+				hasChanged = true;
+			}
+		}
+
+		ImGui::Text("Render Target:"); ImGui::SameLine();
+		if (ImGui::InputInt("##RenderTargetSelect", &currRT))
+			currRT = std::clamp(currRT, 0, 7);
+
 		if (ImGui::Checkbox("Alpha to Coverage", &alphaToCoverageEnable))
 		{
 			_transparentBlendDesc.AlphaToCoverageEnable = alphaToCoverageEnable;
@@ -5519,89 +5660,89 @@ bool Graphics::RenderUI(TimeUtils &time)
 			hasChanged = true;
 		}
 
-		if (ImGui::Checkbox("Blend", &blendEnable))
+		if (ImGui::Checkbox("Blend", &rtStates[currRT].blendEnable))
 		{
-			_transparentBlendDesc.RenderTarget[0].BlendEnable = blendEnable ? 1 : 0;
+			_transparentBlendDesc.RenderTarget[currRT].BlendEnable = rtStates[currRT].blendEnable ? 1 : 0;
 			hasChanged = true;
 		}
 
-		if (ImGui::Combo("Source Blend", &srcBlend, blendNames))
+		if (ImGui::Combo("Source Blend", &rtStates[currRT].srcBlend, blendNames))
 		{
-			_transparentBlendDesc.RenderTarget[0].SrcBlend = blendValues[srcBlend];
+			_transparentBlendDesc.RenderTarget[currRT].SrcBlend = blendValues[rtStates[currRT].srcBlend];
 			hasChanged = true;
 		}
 		
-		if (ImGui::Combo("Destination Blend", &destBlend, blendNames))
+		if (ImGui::Combo("Destination Blend", &rtStates[currRT].destBlend, blendNames))
 		{
-			_transparentBlendDesc.RenderTarget[0].DestBlend = blendValues[destBlend];
+			_transparentBlendDesc.RenderTarget[currRT].DestBlend = blendValues[rtStates[currRT].destBlend];
 			hasChanged = true;
 		}
 
-		if (ImGui::Combo("Blend Operation", &blendOp, blendOpNames))
+		if (ImGui::Combo("Blend Operation", &rtStates[currRT].blendOp, blendOpNames))
 		{
-			_transparentBlendDesc.RenderTarget[0].BlendOp = blendOpValues[blendOp];
+			_transparentBlendDesc.RenderTarget[currRT].BlendOp = blendOpValues[rtStates[currRT].blendOp];
 			hasChanged = true;
 		}
 
-		if (ImGui::Combo("Source Blend Alpha", &srcBlendAlpha, blendNames))
+		if (ImGui::Combo("Source Blend Alpha", &rtStates[currRT].srcBlendAlpha, blendNames))
 		{
-			_transparentBlendDesc.RenderTarget[0].SrcBlendAlpha = blendValues[srcBlendAlpha];
+			_transparentBlendDesc.RenderTarget[currRT].SrcBlendAlpha = blendValues[rtStates[currRT].srcBlendAlpha];
 			hasChanged = true;
 		}
 
-		if (ImGui::Combo("Destination Blend Alpha", &destBlendAlpha, blendNames))
+		if (ImGui::Combo("Destination Blend Alpha", &rtStates[currRT].destBlendAlpha, blendNames))
 		{
-			_transparentBlendDesc.RenderTarget[0].DestBlendAlpha = blendValues[destBlendAlpha];
+			_transparentBlendDesc.RenderTarget[currRT].DestBlendAlpha = blendValues[rtStates[currRT].destBlendAlpha];
 			hasChanged = true;
 		}
 
-		if (ImGui::Combo("Blend Operation Alpha", &blendOpAlpha, blendOpNames))
+		if (ImGui::Combo("Blend Operation Alpha", &rtStates[currRT].blendOpAlpha, blendOpNames))
 		{
-			_transparentBlendDesc.RenderTarget[0].BlendOpAlpha = blendOpValues[blendOpAlpha];
+			_transparentBlendDesc.RenderTarget[currRT].BlendOpAlpha = blendOpValues[rtStates[currRT].blendOpAlpha];
 			hasChanged = true;
 		}
 
-		bool renderTargetWriteMaskR = renderTargetWriteMask & D3D11_COLOR_WRITE_ENABLE_RED;
+		bool renderTargetWriteMaskR = rtStates[currRT].renderTargetWriteMask & D3D11_COLOR_WRITE_ENABLE_RED;
 		if (ImGui::Checkbox("Write Red", &renderTargetWriteMaskR))
 		{
-			renderTargetWriteMask = renderTargetWriteMaskR ? 
-				renderTargetWriteMask | D3D11_COLOR_WRITE_ENABLE_RED : 
-				renderTargetWriteMask & ~D3D11_COLOR_WRITE_ENABLE_RED;
+			rtStates[currRT].renderTargetWriteMask = renderTargetWriteMaskR ?
+				rtStates[currRT].renderTargetWriteMask | D3D11_COLOR_WRITE_ENABLE_RED :
+				rtStates[currRT].renderTargetWriteMask & ~D3D11_COLOR_WRITE_ENABLE_RED;
 
-			_transparentBlendDesc.RenderTarget[0].RenderTargetWriteMask = renderTargetWriteMask;
+			_transparentBlendDesc.RenderTarget[currRT].RenderTargetWriteMask = rtStates[currRT].renderTargetWriteMask;
 			hasChanged = true;
 		}
 
-		bool renderTargetWriteMaskG = renderTargetWriteMask & D3D11_COLOR_WRITE_ENABLE_GREEN;
+		bool renderTargetWriteMaskG = rtStates[currRT].renderTargetWriteMask & D3D11_COLOR_WRITE_ENABLE_GREEN;
 		if (ImGui::Checkbox("Write Green", &renderTargetWriteMaskG))
 		{
-			renderTargetWriteMask = renderTargetWriteMaskG ? 
-				renderTargetWriteMask | D3D11_COLOR_WRITE_ENABLE_GREEN : 
-				renderTargetWriteMask & ~D3D11_COLOR_WRITE_ENABLE_GREEN;
+			rtStates[currRT].renderTargetWriteMask = renderTargetWriteMaskG ?
+				rtStates[currRT].renderTargetWriteMask | D3D11_COLOR_WRITE_ENABLE_GREEN :
+				rtStates[currRT].renderTargetWriteMask & ~D3D11_COLOR_WRITE_ENABLE_GREEN;
 
-			_transparentBlendDesc.RenderTarget[0].RenderTargetWriteMask = renderTargetWriteMask;
+			_transparentBlendDesc.RenderTarget[currRT].RenderTargetWriteMask = rtStates[currRT].renderTargetWriteMask;
 			hasChanged = true;
 		}
 
-		bool renderTargetWriteMaskB = renderTargetWriteMask & D3D11_COLOR_WRITE_ENABLE_BLUE;
+		bool renderTargetWriteMaskB = rtStates[currRT].renderTargetWriteMask & D3D11_COLOR_WRITE_ENABLE_BLUE;
 		if (ImGui::Checkbox("Write Blue", &renderTargetWriteMaskB))
 		{
-			renderTargetWriteMask = renderTargetWriteMaskB ?
-				renderTargetWriteMask | D3D11_COLOR_WRITE_ENABLE_BLUE :
-				renderTargetWriteMask & ~D3D11_COLOR_WRITE_ENABLE_BLUE;
+			rtStates[currRT].renderTargetWriteMask = renderTargetWriteMaskB ?
+				rtStates[currRT].renderTargetWriteMask | D3D11_COLOR_WRITE_ENABLE_BLUE :
+				rtStates[currRT].renderTargetWriteMask & ~D3D11_COLOR_WRITE_ENABLE_BLUE;
 
-			_transparentBlendDesc.RenderTarget[0].RenderTargetWriteMask = renderTargetWriteMask;
+			_transparentBlendDesc.RenderTarget[currRT].RenderTargetWriteMask = rtStates[currRT].renderTargetWriteMask;
 			hasChanged = true;
 		}
 
-		bool renderTargetWriteMaskA = renderTargetWriteMask & D3D11_COLOR_WRITE_ENABLE_ALPHA;
+		bool renderTargetWriteMaskA = rtStates[currRT].renderTargetWriteMask & D3D11_COLOR_WRITE_ENABLE_ALPHA;
 		if (ImGui::Checkbox("Write Alpha", &renderTargetWriteMaskA))
 		{
-			renderTargetWriteMask = renderTargetWriteMaskA ?
-				renderTargetWriteMask | D3D11_COLOR_WRITE_ENABLE_ALPHA :
-				renderTargetWriteMask & ~D3D11_COLOR_WRITE_ENABLE_ALPHA;
+			rtStates[currRT].renderTargetWriteMask = renderTargetWriteMaskA ?
+				rtStates[currRT].renderTargetWriteMask | D3D11_COLOR_WRITE_ENABLE_ALPHA :
+				rtStates[currRT].renderTargetWriteMask & ~D3D11_COLOR_WRITE_ENABLE_ALPHA;
 
-			_transparentBlendDesc.RenderTarget[0].RenderTargetWriteMask = renderTargetWriteMask;
+			_transparentBlendDesc.RenderTarget[currRT].RenderTargetWriteMask = rtStates[currRT].renderTargetWriteMask;
 			hasChanged = true;
 		}
 
@@ -5614,10 +5755,10 @@ bool Graphics::RenderUI(TimeUtils &time)
 		static bool invalidPreset = false;
 		if (applyPreset)
 		{
-			auto *blendStatePtr = _content->GetBlendStateAddress(std::format("{}", blendStateName));
-			if (blendStatePtr)
+			if (_content->HasBlendState(blendStateName))
 			{
 				// Replace existing blend state
+				auto *blendStatePtr = _content->GetBlendStateAddress(blendStateName);
 				if (FAILED(_device->CreateBlendState(&_transparentBlendDesc, blendStatePtr->ReleaseAndGetAddressOf())))
 				{
 					invalidPreset = true;
@@ -5630,7 +5771,7 @@ bool Graphics::RenderUI(TimeUtils &time)
 			else
 			{
 				// Create new blend state
-				UINT ret = _content->AddBlendState(_device, std::format("{}", blendStateName), _transparentBlendDesc);
+				UINT ret = _content->AddBlendState(_device, blendStateName, _transparentBlendDesc);
 				invalidPreset = ret == 0;
 			}
 		}

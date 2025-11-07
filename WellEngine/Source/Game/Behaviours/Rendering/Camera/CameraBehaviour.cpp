@@ -174,13 +174,20 @@ bool CameraBehaviour::RenderUI()
 	if (ImGui::Button("Control"))
 		GetScene()->SetViewCamera(this);
 
-	if (ImGui::InputInt("Sort Mode", &_sortMode))
+	if (ImGui::TreeNode("Sort Modes"))
 	{
-		while (_sortMode < 0)
-			_sortMode += 3;
+		constexpr char const *sortModeNames = "None\0Front to Back\0Back to Front\0Material\0\0";
 
-		while (_sortMode >= 3)
-			_sortMode -= 3;
+		ImGui::Text("Geometry:"); ImGui::SameLine();
+		ImGui::Combo("##GeometrySortMode", reinterpret_cast<int *>(&_geometrySortMode), sortModeNames);
+
+		ImGui::Text("Transparent:"); ImGui::SameLine();
+		ImGui::Combo("##TransparentSortMode", reinterpret_cast<int *>(&_transparentSortMode), sortModeNames);
+
+		ImGui::Text("Overlay:"); ImGui::SameLine();
+		ImGui::Combo("##OverlaySortMode", reinterpret_cast<int *>(&_overlaySortMode), sortModeNames);
+
+		ImGui::TreePop();
 	}
 
 	ImGui::Checkbox("Debug Draw", &_debugDraw);
@@ -294,6 +301,10 @@ bool CameraBehaviour::Serialize(json::Document::AllocatorType &docAlloc, json::V
 	obj.AddMember("Ortho", _ortho, docAlloc);
 	obj.AddMember("Inverted", _invertedDepth, docAlloc);
 
+	obj.AddMember("Geometry Sort", (int)_geometrySortMode, docAlloc);
+	obj.AddMember("Transparent Sort", (int)_transparentSortMode, docAlloc);
+	obj.AddMember("Overlay Sort", (int)_overlaySortMode, docAlloc);
+
 	json::Value defaultProjObj(json::kObjectType);
 	defaultProjObj.AddMember("FOV", _defaultProjInfo.fovAngleY, docAlloc);
 	defaultProjObj.AddMember("Aspect", _defaultProjInfo.aspectRatio, docAlloc);
@@ -314,6 +325,13 @@ bool CameraBehaviour::Deserialize(const json::Value &obj, Scene *scene)
 {
 	_ortho			= obj["Ortho"].GetBool();
 	_invertedDepth	= obj["Inverted"].GetBool();
+
+	if (obj.HasMember("Geometry Sort"))
+		_geometrySortMode = (RenderSortMode)obj["Geometry Sort"].GetInt();
+	if (obj.HasMember("Transparent Sort"))
+		_transparentSortMode = (RenderSortMode)obj["Transparent Sort"].GetInt();
+	if (obj.HasMember("Overlay Sort"))
+		_overlaySortMode = (RenderSortMode)obj["Overlay Sort"].GetInt();
 
 	const json::Value &defaultProjObj = obj["Default Projection"];
 	_defaultProjInfo.fovAngleY		= defaultProjObj["FOV"].GetFloat();
@@ -1110,70 +1128,70 @@ void CameraBehaviour::ResetRenderQueue()
 	_overlayRenderQueue.reserve(overlayCount);
 }
 
-void CameraBehaviour::SortQueue(std::vector<RenderQueueEntry> &queue, bool reverse, int sortModeOverride) const
+void CameraBehaviour::SortQueue(std::vector<RenderQueueEntry> &queue, RenderSortMode sortMode) const
 {
-	ZoneScopedXC(RandomUniqueColor());
-
-	// TODO: Implement more sophisticated sorting logic that reduces resource binding or overdraw.
-	
-	switch (sortModeOverride >= 0 ? sortModeOverride : _sortMode)
+	switch (sortMode)
 	{
-	case 0: // Don't sort at all
+	case RenderSortMode::None: // Don't sort at all
 		break;
 
-	case 1: // Sort by material to minimize binding
-		std::sort(queue.begin(), queue.end());
-		break;
-
-	case 2: // Sort by distance to camera to reduce overdraw
+	case RenderSortMode::FrontToBack: // Sort by distance to camera to reduce overdraw
+	case RenderSortMode::BackToFront: 
 	{
 		Transform *t = GetTransform();
 		XMFLOAT3 camDir = t->GetForward(World);
-		XMVECTOR dir = Load(camDir) * (reverse ? -1.0f : 1.0f);
+		XMVECTOR dir = Load(camDir);
+
+		if (sortMode == RenderSortMode::BackToFront)
+			dir *= -1.0f;
 
 		// Sort queue based on the entry position projected along the camera direction
 		std::sort(std::execution::par, queue.begin(), queue.end(),
 			[&dir](const RenderQueueEntry &a, const RenderQueueEntry &b) { // Calculate dot products and compare scalar results
 
-				BoundingOrientedBox aBounds, bBounds;
-				a.instance.subject->GetEntity()->StoreEntityBounds(aBounds, World);
-				b.instance.subject->GetEntity()->StoreEntityBounds(bBounds, World);
+			BoundingOrientedBox aBounds, bBounds;
+			a.instance.subject->GetEntity()->StoreEntityBounds(aBounds, World);
+			b.instance.subject->GetEntity()->StoreEntityBounds(bBounds, World);
 
-				XMFLOAT3 aCorners[8]{}, bCorners[8]{};
-				aBounds.GetCorners(aCorners);
-				bBounds.GetCorners(bCorners);
+			XMFLOAT3 aCorners[8]{}, bCorners[8]{};
+			aBounds.GetCorners(aCorners);
+			bBounds.GetCorners(bCorners);
 
-				int aCornerIndex = 0;
-				float aCurrDist = XMVectorGetX(XMVector3Dot(Load(aCorners[aCornerIndex]), dir));
+			int aCornerIndex = 0;
+			float aCurrDist = XMVectorGetX(XMVector3Dot(Load(aCorners[aCornerIndex]), dir));
 
-				int bCornerIndex = 0;
-				float bCurrDist = XMVectorGetX(XMVector3Dot(Load(bCorners[bCornerIndex]), dir));
+			int bCornerIndex = 0;
+			float bCurrDist = XMVectorGetX(XMVector3Dot(Load(bCorners[bCornerIndex]), dir));
 
-				while (true)
+			while (true)
+			{
+				if (aCurrDist < bCurrDist)
 				{
-					if (aCurrDist < bCurrDist)
-					{
-						bCornerIndex++;
-						if (bCornerIndex >= 8)
-							return true; // a is closer than b
+					bCornerIndex++;
+					if (bCornerIndex >= 8)
+						return true; // a is closer than b
 
-						bCurrDist = XMVectorGetX(XMVector3Dot(Load(bCorners[bCornerIndex]), dir));
-					}
-					else
-					{
-						aCornerIndex++;
-						if (aCornerIndex >= 8)
-							return false; // b is closer than a
-
-						aCurrDist = XMVectorGetX(XMVector3Dot(Load(aCorners[aCornerIndex]), dir));
-					}
+					bCurrDist = XMVectorGetX(XMVector3Dot(Load(bCorners[bCornerIndex]), dir));
 				}
+				else
+				{
+					aCornerIndex++;
+					if (aCornerIndex >= 8)
+						return false; // b is closer than a
 
-				return true;
+					aCurrDist = XMVectorGetX(XMVector3Dot(Load(aCorners[aCornerIndex]), dir));
+				}
 			}
+
+			return true;
+		}
 		);
 		break;
 	}
+
+	case RenderSortMode::Material: // Sort by material to minimize binding
+		std::sort(queue.begin(), queue.end());
+		break;
 
 	default:
 		break;
@@ -1184,19 +1202,19 @@ void CameraBehaviour::SortGeometryQueue()
 {
 	ZoneScopedXC(RandomUniqueColor());
 
-	SortQueue(_geometryRenderQueue);
+	SortQueue(_geometryRenderQueue, _geometrySortMode);
 }
 void CameraBehaviour::SortTransparentQueue()
 {
 	ZoneScopedXC(RandomUniqueColor());
 
-	SortQueue(_transparentRenderQueue, true, 2);
+	SortQueue(_transparentRenderQueue, _transparentSortMode);
 }
 void CameraBehaviour::SortOverlayQueue()
 {
 	ZoneScopedXC(RandomUniqueColor());
 
-	SortQueue(_overlayRenderQueue);
+	SortQueue(_overlayRenderQueue, _overlaySortMode);
 }
 
 const std::vector<RenderQueueEntry> &CameraBehaviour::GetGeometryQueue() const

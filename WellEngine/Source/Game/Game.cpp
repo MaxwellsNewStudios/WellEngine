@@ -364,6 +364,53 @@ bool Game::LoadContent(
 			return false;
 		}
 
+		blendDesc = { };
+		blendDesc.AlphaToCoverageEnable = FALSE;
+		blendDesc.IndependentBlendEnable = TRUE;
+
+		blendDesc.RenderTarget[0].BlendEnable = TRUE;
+		blendDesc.RenderTarget[0].SrcBlend = D3D11_BLEND_ONE;
+		blendDesc.RenderTarget[0].DestBlend = D3D11_BLEND_ONE;
+		blendDesc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
+		blendDesc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
+		blendDesc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ONE;
+		blendDesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
+		blendDesc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+
+		blendDesc.RenderTarget[1].BlendEnable = TRUE;
+		blendDesc.RenderTarget[1].SrcBlend = D3D11_BLEND_ZERO;
+		blendDesc.RenderTarget[1].DestBlend = D3D11_BLEND_INV_SRC_COLOR;
+		blendDesc.RenderTarget[1].BlendOp = D3D11_BLEND_OP_ADD;
+		blendDesc.RenderTarget[1].SrcBlendAlpha = D3D11_BLEND_ZERO;
+		blendDesc.RenderTarget[1].DestBlendAlpha = D3D11_BLEND_INV_SRC_ALPHA;
+		blendDesc.RenderTarget[1].BlendOpAlpha = D3D11_BLEND_OP_ADD;
+		blendDesc.RenderTarget[1].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+
+		if (_content.AddBlendState(_device.Get(), "Transparent", blendDesc) == CONTENT_NULL)
+		{
+			ErrMsg("Failed to add Transparent blend state!");
+			return false;
+		}
+
+		blendDesc = { };
+		blendDesc.AlphaToCoverageEnable = FALSE;
+		blendDesc.IndependentBlendEnable = TRUE;
+
+		blendDesc.RenderTarget[0].BlendEnable = TRUE;
+		blendDesc.RenderTarget[0].SrcBlend = D3D11_BLEND_INV_SRC_ALPHA;
+		blendDesc.RenderTarget[0].DestBlend = D3D11_BLEND_SRC_ALPHA;
+		blendDesc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
+		blendDesc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
+		blendDesc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ONE;
+		blendDesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
+		blendDesc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+
+		if (_content.AddBlendState(_device.Get(), "Composite", blendDesc) == CONTENT_NULL)
+		{
+			ErrMsg("Failed to add Transparent blend state!");
+			return false;
+		}
+
 #ifdef DEBUG_BUILD
 		blendDesc.RenderTarget[0].SrcBlend = D3D11_BLEND_BLEND_FACTOR;
 		blendDesc.RenderTarget[0].DestBlend = D3D11_BLEND_DEST_ALPHA;
@@ -834,7 +881,9 @@ bool Game::Setup(TimeUtils &time, Window window)
 		{ ShaderType::PIXEL_SHADER,			"PS_SkyboxNormal",				"Pixel/PS_SkyboxNormal"				},
 		{ ShaderType::PIXEL_SHADER,			"PS_SkyboxEnvironment",			"Pixel/PS_SkyboxEnvironment"		},
 		{ ShaderType::PIXEL_SHADER,			"PS_ScreenEffectFog",			"Pixel/PS_ScreenEffectFog"			},
+		{ ShaderType::PIXEL_SHADER,			"PS_ScreenCompositeWBOIT",		"Pixel/PS_ScreenCompositeWBOIT"		},
 
+		{ ShaderType::COMPUTE_SHADER,		"CS_CompositeWBOIT",			"Compute/CS_CompositeWBOIT"			},
 		{ ShaderType::COMPUTE_SHADER,		"CS_BlurHorizontalFX",			"Compute/CS_BlurHorizontalFX"		},
 		{ ShaderType::COMPUTE_SHADER,		"CS_BlurVerticalFX",			"Compute/CS_BlurVerticalFX"			},
 		{ ShaderType::COMPUTE_SHADER,		"CS_BlurHorizontalEmission",	"Compute/CS_BlurHorizontalEmission"	},

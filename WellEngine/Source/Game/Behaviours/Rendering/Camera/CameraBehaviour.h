@@ -9,6 +9,14 @@
 #include "Source/Engine/Content/Content.h"
 #include "Source/Engine/Rendering/RendererInfo.h"
 
+enum class RenderSortMode : int
+{
+	None = 0,
+	FrontToBack = 1,
+	BackToFront = 2,
+	Material = 3
+};
+
 struct CamBounds
 {
 	union
@@ -113,8 +121,6 @@ private:
 		_ortho = false,
 		_invertedDepth = false;
 
-	int _sortMode = 1;
-
 	CamBounds _bounds;
 	CamBounds _transformedBounds;
 	bool _recalculateBounds = true;
@@ -135,12 +141,16 @@ private:
 	std::vector<RenderQueueEntry> _transparentRenderQueue;
 	std::vector<RenderQueueEntry> _overlayRenderQueue;
 
+	RenderSortMode _geometrySortMode = RenderSortMode::Material;
+	RenderSortMode _transparentSortMode = RenderSortMode::BackToFront;
+	RenderSortMode _overlaySortMode = RenderSortMode::Material;
+
 	UINT _lastCullCount = 0;
 
 	float _screenFadeAmount = 0.0f; /// Screen is black at 1.0f, normal at 0.0f. Use for transition fades.
 	float _screenFadeRate = 0.0f;
 
-	void SortQueue(std::vector<RenderQueueEntry> &queue, bool reverse = false, int sortModeOverride = -1) const;
+	void SortQueue(std::vector<RenderQueueEntry> &queue, RenderSortMode sortMode) const;
 
 protected:
 	[[nodiscard]] bool Start() override;
@@ -155,7 +165,6 @@ protected:
 	void OnDirty() override;
 
 	[[nodiscard]] bool Serialize(json::Document::AllocatorType &docAlloc, json::Value &obj) override;
-
 	[[nodiscard]] bool Deserialize(const json::Value &obj, Scene *scene) override;
 
 public:
@@ -198,6 +207,10 @@ public:
 	void SortGeometryQueue();
 	void SortTransparentQueue();
 	void SortOverlayQueue();
+
+	void SetSortModeGeometry();
+	void SetSortModeTransparent();
+	void SetSortModeOverlay();
 
 	[[nodiscard]] const std::vector<RenderQueueEntry> &GetGeometryQueue() const;
 	[[nodiscard]] const std::vector<RenderQueueEntry> &GetTransparentQueue() const;

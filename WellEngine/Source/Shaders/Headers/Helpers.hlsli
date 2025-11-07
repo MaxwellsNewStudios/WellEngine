@@ -176,3 +176,8 @@ float4 Remap(float4 value, float4 inMin, float4 inMax, float4 outMin, float4 out
 	
 	return result;
 }
+
+bool EqualEst(float a, float b, float epsilon)
+{
+	return abs(a - b) <= (abs(a) < abs(b) ? abs(b) : abs(a)) * epsilon;
+}
