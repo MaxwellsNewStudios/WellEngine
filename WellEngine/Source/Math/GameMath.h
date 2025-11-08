@@ -690,6 +690,35 @@ template<typename T>
 	return min + static_cast<float>(rand()) / (static_cast<float>(RAND_MAX / (max - min)));
 };
 
+[[nodiscard]] static inline dx::BoundingBox MergeBounds(const dx::BoundingOrientedBox &a, const dx::BoundingOrientedBox &b) noexcept
+{
+	dx::XMFLOAT3 corners[16]{};
+	a.GetCorners(&(corners[0])); // fills corners[0] to corners[7]
+	b.GetCorners(&(corners[8])); // fills corners[8] to corners[15]
+
+	dx::XMVECTOR cornersV[16]{};
+	for (int i = 0; i < 16; i++)
+		cornersV[i] = Load(corners[i]);
+
+	dx::XMVECTOR
+		min = { FLT_MAX, FLT_MAX, FLT_MAX },
+		max = { -FLT_MAX, -FLT_MAX, -FLT_MAX };
+
+	for (int i = 0; i < 16; i++)
+	{
+		min = dx::XMVectorMin(min, Load(corners[i]));
+		max = dx::XMVectorMax(max, Load(corners[i]));
+	}
+
+	dx::BoundingBox axisAlignedBounds;
+	dx::BoundingBox().CreateFromPoints(axisAlignedBounds, min, max);
+
+	return axisAlignedBounds;
+}
+#pragma endregion
+
+
+#pragma region Bounds & Collision
 [[nodiscard]] static inline dx::BoundingBox OBBtoAABB(const dx::BoundingOrientedBox &obb) noexcept
 {
 	dx::XMFLOAT3 corners[8];
@@ -715,30 +744,58 @@ template<typename T>
 	return axisAlignedBounds;
 }
 
-[[nodiscard]] static inline dx::BoundingBox MergeBounds(const dx::BoundingOrientedBox &a, const dx::BoundingOrientedBox &b) noexcept
+[[nodiscard]] static inline dx::XMFLOAT3 ClosestPoint(const dx::XMFLOAT3 &p, const dx::BoundingBox &bounds) noexcept
 {
-	dx::XMFLOAT3 corners[16]{};
-	a.GetCorners(&(corners[0])); // fills corners[0] to corners[7]
-	b.GetCorners(&(corners[8])); // fills corners[8] to corners[15]
+	using namespace dx;
 
-	dx::XMVECTOR cornersV[16]{};
-	for (int i = 0; i < 16; i++)
-		cornersV[i] = Load(corners[i]);
+	XMVECTOR point = Load(p);
 
-	dx::XMVECTOR
-		min = { FLT_MAX, FLT_MAX, FLT_MAX },
-		max = { -FLT_MAX, -FLT_MAX, -FLT_MAX };
+	XMVECTOR boundsCenter = Load(bounds.Center);
+	XMVECTOR boundsExtents = Load(bounds.Extents);
 
-	for (int i = 0; i < 16; i++)
-	{
-		min = dx::XMVectorMin(min, Load(corners[i]));
-		max = dx::XMVectorMax(max, Load(corners[i]));
-	}
+	XMVECTOR boundsMin = boundsCenter - boundsExtents;
+	XMVECTOR boundsMax = boundsCenter + boundsExtents;
 
-	dx::BoundingBox axisAlignedBounds;
-	dx::BoundingBox().CreateFromPoints(axisAlignedBounds, min, max);
+	XMVECTOR closestPointVec = XMVectorClamp(point, boundsMin, boundsMax);
 
-	return axisAlignedBounds;
+	XMFLOAT3 closestPoint;
+	Store(closestPoint, closestPointVec);
+	return closestPoint;
+}
+[[nodiscard]] static inline dx::XMFLOAT3 ClosestPoint(const dx::XMFLOAT3 &p, const dx::BoundingOrientedBox &bounds) noexcept
+{
+	using namespace dx;
+
+	XMVECTOR point = Load(p);
+
+	XMVECTOR boundsCenter = Load(bounds.Center);
+	XMVECTOR boundsExtents = Load(bounds.Extents);
+	XMVECTOR boundsOrientation = Load(bounds.Orientation);
+
+	XMVECTOR xAxis = XMVector3Rotate(XMVectorSet(1.0f, 0.0f, 0.0f, 0.0f), boundsOrientation);
+	XMVECTOR yAxis = XMVector3Rotate(XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f), boundsOrientation);
+	XMVECTOR zAxis = XMVector3Rotate(XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f), boundsOrientation);
+
+	XMVECTOR dir = point - boundsCenter;
+
+	float distX = XMVectorGetX(XMVector3Dot(dir, xAxis));
+	float distY = XMVectorGetX(XMVector3Dot(dir, yAxis));
+	float distZ = XMVectorGetX(XMVector3Dot(dir, zAxis));
+
+	if (distX > bounds.Extents.x) distX = bounds.Extents.x;
+	else if (distX < -bounds.Extents.x) distX = -bounds.Extents.x;
+
+	if (distY > bounds.Extents.y) distY = bounds.Extents.y;
+	else if (distY < -bounds.Extents.y) distY = -bounds.Extents.y;
+
+	if (distZ > bounds.Extents.z) distZ = bounds.Extents.z;
+	else if (distZ < -bounds.Extents.z) distZ = -bounds.Extents.z;
+
+	XMVECTOR closestPointVec = boundsCenter + (distX * xAxis) + (distY * yAxis) + (distZ * zAxis);
+
+	XMFLOAT3 closestPoint;
+	Store(closestPoint, closestPointVec);
+	return closestPoint;
 }
 #pragma endregion
 

@@ -2359,6 +2359,49 @@ bool Scene::RenderSceneUI()
 			TreePop();
 		}
 
+		if (TreeNode("Bounds Test"))
+		{
+			static dx::XMFLOAT3 point = {0, 0, 0};
+			static bool convertToAABB = false;
+
+			Checkbox("Use AABB##ConvertToAABB", &convertToAABB);
+			Dummy(ImVec2(0.0f, 4.0f));
+
+			DragFloat3("Point Position##PointPosition", &point.x, 0.01f);
+
+			Entity *selectedEnt = _debugPlayer.Get()->GetPrimarySelection();
+			if (selectedEnt)
+			{
+				DebugDrawer &drawer = DebugDrawer::Instance();
+				drawer.DrawSphere(point, 0.05f, 2, { 1.0f, 1.0f, 0.0f, 0.5f });
+
+				dx::BoundingOrientedBox obb;
+				selectedEnt->StoreEntityBounds(obb, World);
+
+				dx::XMFLOAT3 closestPoint{};
+
+				if (convertToAABB)
+				{
+					dx::BoundingBox aabb = OBBtoAABB(obb);
+					
+					drawer.DrawBoxAABB(aabb, { 0.0f, 0.0f, 1.0f, 0.25f });
+
+					closestPoint = ClosestPoint(point, aabb);
+				}
+				else
+				{
+					DebugDrawer::Instance().DrawBoxOBB(obb, { 0.0f, 0.0f, 1.0f, 0.25f });
+
+					closestPoint = ClosestPoint(point, obb);
+				}
+
+				drawer.DrawSphere(closestPoint, 0.05f, 2, { 1.0f, 1.0f, 1.0f, 1.0f });
+			}
+
+			Separator();
+			TreePop();
+		}
+
 		static bool displayCullingRects = false;
 		Checkbox("Show Culling Rects", &displayCullingRects);
 
