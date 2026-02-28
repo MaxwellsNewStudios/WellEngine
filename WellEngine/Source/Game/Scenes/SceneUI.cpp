@@ -757,6 +757,27 @@ bool Scene::RenderSelectionHierarchyUI(bool skipCulling)
 	return true;
 }
 
+bool Scene::RenderHierarchyContextMenuUI()
+{
+	if (ImGui::MenuItem("New Entity"))
+	{
+		const dx::BoundingOrientedBox bounds = { {0,0,0}, {0.25f, 0.25f, 0.25f}, {0,0,0,1} };
+
+		Entity* ent = nullptr;
+		if (!CreateEntity(&ent, "New Entity", bounds, true))
+			Warn("Failed to create new entity!");
+
+		// If created successfully, select the new entity
+		if (ent)
+		{
+			if (_debugPlayer.IsValid())
+				_debugPlayer.Get()->Select(ent, false);
+		}
+	}
+
+	return true;
+}
+
 bool Scene::RenderHierarchyUI()
 {
 	if (TreeNode("Advanced"))
@@ -903,6 +924,25 @@ bool Scene::RenderHierarchyUI()
 			if (!IsMouseDown(ImGuiMouseButton_Left))
 				wasPressed = false;
 		}
+	}
+
+	// If right-clicking empty area of hierarchy, open general context menu
+	if (_isHoveringHierarchy && !_isHoveringHierarchyItem)
+	{
+		if (IsMouseReleased(ImGuiMouseButton_Right))
+			OpenPopup("GeneralCtxMenu");
+	}
+
+	if (BeginPopupContextItem("GeneralCtxMenu"))
+	{
+		if (!RenderHierarchyContextMenuUI())
+		{
+			EndPopup();
+			ErrMsg("General context menu failed!");
+			return false;
+		}
+
+		EndPopup();
 	}
 
 	return true;
