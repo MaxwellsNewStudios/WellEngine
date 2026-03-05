@@ -1508,6 +1508,313 @@ bool Game::RenderUI(TimeUtils &time)
 	float &imGuiFontScale = debugData.imGuiFontScale;
 	int stylesPushed = 0;
 
+	if (ImGui::BeginMainMenuBar())
+	{
+		if (ImGui::BeginMenu("File##MainMenu"))
+		{
+			ImGui::SeparatorText("Scene");
+			{
+				constexpr ImGuiWindowFlags popupFlags =
+					ImGuiWindowFlags_AlwaysAutoResize |
+					ImGuiWindowFlags_NoCollapse |
+					ImGuiWindowFlags_NoResize |
+					ImGuiWindowFlags_NoDocking;
+
+				if (ImGui::BeginMenu("Scenes##SceneListMenu"))
+				{
+					UINT newSceneID = _activeSceneIndex;
+					bool hasSelected = false;
+
+					float longestNameWidth = 32.0f;
+					for (int i = 0; i < _scenes.size(); i++)
+					{
+						const auto& scene = _scenes[i];
+
+						if (!scene)
+							continue;
+
+						float nameWidth = ImGui::CalcTextSize(scene->GetName().c_str()).x;
+						if (nameWidth > longestNameWidth)
+						{
+							longestNameWidth = nameWidth;
+						}
+					}
+
+					ImGui::PushID("SceneList");
+					for (int i = 0; i < _scenes.size(); i++)
+					{
+						const auto& scene = _scenes[i];
+						if (!scene)
+							continue;
+
+						const std::string& sceneName = scene->GetName();
+
+						ImGui::PushID(sceneName.c_str());
+
+						const bool isSelected = (_activeSceneIndex == i);
+						if (ImGui::Button(sceneName.c_str(), { longestNameWidth + 8.0f, 0.0f }))
+						{
+							newSceneID = i;
+							hasSelected = true;
+						}
+
+						if (_scenes.size() > 1)
+						{
+							ImGui::SameLine();
+							ImGuiUtils::BeginButtonStyle(ImGuiUtils::StyleType::Red);
+							if (ImGui::Button(std::format("X", sceneName, i).c_str()))
+							{
+								ImGui::OpenPopup("ConfirmDeleteScene");
+							}
+							ImGuiUtils::EndButtonStyle();
+
+							if (ImGui::BeginPopup("ConfirmDeleteScene", popupFlags))
+							{
+								ImGui::Text("Are you sure you want to delete scene '%s'?", sceneName.c_str());
+
+								if (ImGui::Button("Delete Scene"))
+								{
+									std::string sceneFilePath = PATH_FILE_EXT(ASSET_PATH_SCENES, sceneName, ASSET_EXT_SCENE);
+									std::filesystem::remove(sceneFilePath);
+									_pendingSceneRemovals.push_back(sceneName);
+									ImGui::CloseCurrentPopup();
+								}
+
+								ImGui::SameLine();
+								if (ImGui::Button("Cancel"))
+								{
+									ImGui::CloseCurrentPopup();
+								}
+
+								ImGui::EndPopup();
+							}
+						}
+
+						ImGui::PopID();
+					}
+					ImGui::PopID();
+
+					if (hasSelected)
+					{
+						if (!SetScene(newSceneID))
+						{
+							ErrMsg("Failed to set scene!");
+							ImGui::EndMenu();
+							ImGui::EndMenu();
+							ImGui::EndMenuBar();
+							return false;
+						}
+					}
+
+					ImGui::EndMenu();
+				}
+
+				if (ImGui::Button("New Scene"))
+				{
+					ImGui::OpenPopup("NewScenePopup");
+				}
+
+				if (ImGui::BeginPopup("NewScenePopup", popupFlags))
+				{
+					static std::string newSceneName = "New Scene";
+					static dx::BoundingBox newSceneBounds = { {0, 0, 0}, {500, 250, 500} };
+					static bool transitional = false;
+
+					ImGui::Text("Create New Scene");
+
+					ImGui::Text("Name:"); ImGui::SameLine();
+					ImGui::InputText("##NewSceneName", &newSceneName);
+
+					ImGui::Text("Center:"); ImGui::SameLine();
+					ImGui::DragFloat3("##NewSceneCenter", &newSceneBounds.Center.x);
+
+					ImGui::Text("Extents:"); ImGui::SameLine();
+					if (ImGui::DragFloat3("##NewSceneExtents", &newSceneBounds.Extents.x))
+					{
+						newSceneBounds.Extents.x = max(0.1f, newSceneBounds.Extents.x);
+						newSceneBounds.Extents.y = max(0.1f, newSceneBounds.Extents.y);
+						newSceneBounds.Extents.z = max(0.1f, newSceneBounds.Extents.z);
+					}
+
+					ImGui::Text("Transitional:"); ImGui::SameLine();
+					ImGui::Checkbox("##NewSceneTransitional", &transitional);
+
+					bool isValid = true;
+					if (newSceneName.empty())
+					{
+						isValid = false;
+						ImGui::TextColored(ImVec4(1.0f, 0.3f, 0.0f, 1.0f), "Input a name!");
+					}
+					else
+					{
+						for (const auto& scene : _scenes)
+						{
+							if (scene && scene->GetName() == newSceneName)
+							{
+								isValid = false;
+								ImGui::TextColored(ImVec4(1.0f, 0.3f, 0.0f, 1.0f), "Name taken!");
+								break;
+							}
+						}
+					}
+
+					ImGui::BeginDisabled(!isValid);
+					if (ImGui::Button("Create"))
+					{
+						Scene* newScene = new Scene(newSceneName, transitional);
+						if (!AddScene(&newScene, true))
+						{
+							delete newScene;
+							ErrMsg("Failed to create new scene!");
+						}
+
+						newSceneName = "New Scene";
+						newSceneBounds = { {0, 0, 0}, {500, 250, 500} };
+						transitional = false;
+
+						ImGui::CloseCurrentPopup();
+					}
+					ImGui::EndDisabled();
+
+					ImGui::EndPopup();
+				}
+			}
+
+
+			ImGui::EndMenu();
+		}
+		
+		if (ImGui::BeginMenu("Edit##MainMenu"))
+		{
+			ImGui::SeparatorText("Transform");
+			{
+				static const std::string transformTypes[6] = { "None", "Translate", "Rotate", "Scale", "Universal", "Bounds" };
+				int& transformType = debugData.transformType;
+
+				if (ImGui::BeginMenu(std::format("Tool: {}", transformTypes[transformType]).c_str()))
+				{
+					for (int i = 0; i < 6; i++)
+					{
+						if (ImGui::MenuItem(std::format("{}##SelectTransformType{}", transformTypes[i], i).c_str(), NULL, transformType == i))
+							transformType = i;
+					}
+
+					ImGui::EndMenu();
+				}
+
+				static const std::string transformOrigins[5] = { "None", "Primary", "Center", "Average", "Separate " };
+				int& transformOrigin = debugData.transformOriginMode;
+
+				if (ImGui::BeginMenu(std::format("Origin: {}", transformOrigins[transformOrigin]).c_str()))
+				{
+					for (int i = 0; i < 4; i++)
+					{
+						if (ImGui::MenuItem(std::format("{}##SelectTransformOrigin{}", transformOrigins[i], i).c_str(), NULL, transformOrigin == i))
+							transformOrigin = i;
+					}
+
+					ImGui::BeginDisabled(true);
+					if (ImGui::MenuItem("Separate##SelectTransformOrigin4", NULL, transformOrigin == 4))
+						transformOrigin = 4;
+					ImGui::EndDisabled();
+
+					ImGui::EndMenu();
+				}
+
+				int& transformSpace = debugData.transformSpace;
+				if (ImGui::Button(transformSpace == (int)Local ? "Space: Local" : "Space: World"))
+					transformSpace = transformSpace == (int)Local ? (int)World : (int)Local;
+
+				bool& transformRelative = debugData.transformRelative;
+				if (ImGui::Button(transformRelative ? "Relative" : "Absolute"))
+					transformRelative = !transformRelative;
+
+				ImGui::Separator();
+
+				ImGui::SliderFloat("Gizmo Scale", &debugData.transformScale, 0.0f, 1.0f);
+
+				ImGui::DragFloat("Snap Size", &debugData.transformSnap, 0.01f, FLT_MIN);
+				ImGuiUtils::LockMouseOnActive();
+			}
+
+			ImGui::EndMenu();
+		}
+		
+		if (ImGui::BeginMenu("Window##MainMenu"))
+		{
+			ImGui::SeparatorText("Layout");
+			{
+				static std::string selectedLoadout = "";
+				static std::string styleName = "";
+
+				if (ImGui::Button("Load Layout"))
+				{
+					ImGui::OpenPopup("Load Layout");
+					selectedLoadout = DebugData::Get().layoutName;
+				}
+				
+				if (ImGui::Button("Save Layout"))
+				{
+					ImGui::OpenPopup("Save Layout");
+					styleName = DebugData::Get().layoutName;
+				}
+
+				if (ImGui::BeginPopup("Load Layout"))
+				{
+					std::vector<std::string> layouts;
+					UILayout::GetLayoutNames(layouts);
+
+					if (ImGui::BeginCombo("Layouts", selectedLoadout.c_str()))
+					{
+						for (int i = 0; i < layouts.size(); i++)
+						{
+							const bool isSelected = layouts[i] == selectedLoadout;
+							if (ImGui::Selectable(layouts[i].c_str(), isSelected))
+								selectedLoadout = layouts[i];
+
+							if (isSelected)
+								ImGui::SetItemDefaultFocus();
+						}
+						ImGui::EndCombo();
+					}
+
+					if (ImGui::Button("Confirm"))
+					{
+						_pendingLayoutChange = selectedLoadout;
+						ImGui::CloseCurrentPopup();
+					}
+					ImGui::SameLine();
+
+					if (ImGui::Button("Cancel"))
+						ImGui::CloseCurrentPopup();
+
+					ImGui::EndPopup();
+				}
+
+				if (ImGui::BeginPopup("Save Layout"))
+				{
+					ImGui::InputText("Layout Name", &styleName);
+
+					if (ImGui::Button("Save"))
+					{
+						UILayout::SaveLayout(styleName);
+						ImGui::CloseCurrentPopup();
+					}
+					ImGui::SameLine();
+
+					if (ImGui::Button("Cancel"))
+						ImGui::CloseCurrentPopup();
+
+					ImGui::EndPopup();
+				}
+			}
+
+			ImGui::EndMenu();
+		}
+
+		ImGui::EndMainMenuBar();
+	}
+
 	ImGui::GetStyle().FontScaleMain = imGuiFontScale;
 	float defWindowPadding = ImGui::GetStyle().WindowPadding.y;
 
@@ -1528,73 +1835,6 @@ bool Game::RenderUI(TimeUtils &time)
 			if (ImGui::BeginMenu("Settings##ViewViewMenu"))
 			{
 				bool sceneValid = ActiveSceneIsValid();
-
-				// Layout Save / Load
-				{
-					static std::string selectedLoadout = "";
-					static std::string styleName = "";
-
-					if (ImGui::Button("Load Window Layout"))
-					{
-						ImGui::OpenPopup("Load Layout");
-						selectedLoadout = DebugData::Get().layoutName;
-					}
-					ImGui::SameLine();
-					if (ImGui::Button("Save Window Layout"))
-					{
-						ImGui::OpenPopup("Save Layout");
-						styleName = DebugData::Get().layoutName;
-					}
-
-					if (ImGui::BeginPopup("Load Layout"))
-					{
-						std::vector<std::string> layouts;
-						UILayout::GetLayoutNames(layouts);
-
-						if (ImGui::BeginCombo("Layouts", selectedLoadout.c_str()))
-						{
-							for (int i = 0; i < layouts.size(); i++)
-							{
-								const bool isSelected = layouts[i] == selectedLoadout;
-								if (ImGui::Selectable(layouts[i].c_str(), isSelected))
-									selectedLoadout = layouts[i];
-
-								if (isSelected)
-									ImGui::SetItemDefaultFocus();
-							}
-							ImGui::EndCombo();
-						}
-
-						if (ImGui::Button("Confirm"))
-						{
-							_pendingLayoutChange = selectedLoadout;
-							ImGui::CloseCurrentPopup();
-						}
-						ImGui::SameLine();
-
-						if (ImGui::Button("Cancel"))
-							ImGui::CloseCurrentPopup();
-
-						ImGui::EndPopup();
-					}
-
-					if (ImGui::BeginPopup("Save Layout"))
-					{
-						ImGui::InputText("Layout Name", &styleName);
-
-						if (ImGui::Button("Save"))
-						{
-							UILayout::SaveLayout(styleName);
-							ImGui::CloseCurrentPopup();
-						}
-						ImGui::SameLine();
-
-						if (ImGui::Button("Cancel"))
-							ImGui::CloseCurrentPopup();
-
-						ImGui::EndPopup();
-					}
-				}
 
 				ImGui::SeparatorText("Control");
 
@@ -1742,234 +1982,6 @@ bool Game::RenderUI(TimeUtils &time)
 				ImGui::EndMenu();
 			}
 			
-			if (ImGui::BeginMenu("Scene##ViewSceneMenu"))
-			{
-				ImGui::Text("Current:"); ImGui::SameLine();
-				ImGui::Text(_scenes[_activeSceneIndex]->GetName().c_str());
-
-				ImGui::Separator();
-
-				constexpr ImGuiWindowFlags popupFlags =
-					ImGuiWindowFlags_AlwaysAutoResize |
-					ImGuiWindowFlags_NoCollapse |
-					ImGuiWindowFlags_NoResize |
-					ImGuiWindowFlags_NoDocking;
-
-				if (ImGui::BeginMenu("Scene List##SceneListMenu"))
-				{
-					UINT newSceneID = _activeSceneIndex;
-					bool hasSelected = false;
-
-					float longestNameWidth = 32.0f;
-					for (int i = 0; i < _scenes.size(); i++)
-					{
-						const auto &scene = _scenes[i];
-
-						if (!scene)
-							continue;
-
-						float nameWidth = ImGui::CalcTextSize(scene->GetName().c_str()).x;
-						if (nameWidth > longestNameWidth)
-						{
-							longestNameWidth = nameWidth;
-						}
-					}
-
-					ImGui::PushID("SceneList");
-					for (int i = 0; i < _scenes.size(); i++)
-					{
-						const auto &scene = _scenes[i];
-						if (!scene)
-							continue;
-
-						const std::string &sceneName = scene->GetName();
-
-						ImGui::PushID(sceneName.c_str());
-
-						const bool isSelected = (_activeSceneIndex == i);
-						if (ImGui::Button(sceneName.c_str(), { longestNameWidth + 8.0f, 0.0f }))
-						{
-							newSceneID = i;
-							hasSelected = true;
-						}
-
-						if (_scenes.size() > 1)
-						{
-							ImGui::SameLine();
-							ImGuiUtils::BeginButtonStyle(ImGuiUtils::StyleType::Red);
-							if (ImGui::Button(std::format("X", sceneName, i).c_str()))
-							{
-								ImGui::OpenPopup("ConfirmDeleteScene");
-							}
-							ImGuiUtils::EndButtonStyle();
-
-							if (ImGui::BeginPopup("ConfirmDeleteScene", popupFlags))
-							{
-								ImGui::Text("Are you sure you want to delete scene '%s'?", sceneName.c_str());
-
-								if (ImGui::Button("Delete Scene"))
-								{
-									std::string sceneFilePath = PATH_FILE_EXT(ASSET_PATH_SCENES, sceneName, ASSET_EXT_SCENE);
-									std::filesystem::remove(sceneFilePath);
-									_pendingSceneRemovals.push_back(sceneName);
-									ImGui::CloseCurrentPopup();
-								}
-
-								ImGui::SameLine();
-								if (ImGui::Button("Cancel"))
-								{
-									ImGui::CloseCurrentPopup();
-								}
-
-								ImGui::EndPopup();
-							}
-						}
-
-						ImGui::PopID();
-					}
-					ImGui::PopID();
-
-					if (hasSelected)
-					{
-						if (!SetScene(newSceneID))
-						{
-							ErrMsg("Failed to set scene!");
-							ImGui::EndMenu();
-							ImGui::EndMenu();
-							ImGui::EndMenuBar();
-							return false;
-						}
-					}
-
-					ImGui::EndMenu();
-				}
-				
-				if (ImGui::Button("New Scene"))
-				{
-					ImGui::OpenPopup("NewScenePopup");
-				}
-
-				if (ImGui::BeginPopup("NewScenePopup", popupFlags))
-				{
-					static std::string newSceneName = "New Scene";
-					static dx::BoundingBox newSceneBounds = { {0, 0, 0}, {500, 250, 500} };
-					static bool transitional = false;
-
-					ImGui::Text("Create New Scene");
-
-					ImGui::Text("Name:"); ImGui::SameLine();
-					ImGui::InputText("##NewSceneName", &newSceneName);
-
-					ImGui::Text("Center:"); ImGui::SameLine();
-					ImGui::DragFloat3("##NewSceneCenter", &newSceneBounds.Center.x);
-
-					ImGui::Text("Extents:"); ImGui::SameLine();
-					if (ImGui::DragFloat3("##NewSceneExtents", &newSceneBounds.Extents.x))
-					{
-						newSceneBounds.Extents.x = max(0.1f, newSceneBounds.Extents.x);
-						newSceneBounds.Extents.y = max(0.1f, newSceneBounds.Extents.y);
-						newSceneBounds.Extents.z = max(0.1f, newSceneBounds.Extents.z);
-					}
-
-					ImGui::Text("Transitional:"); ImGui::SameLine();
-					ImGui::Checkbox("##NewSceneTransitional", &transitional);
-
-					bool isValid = true;
-					if (newSceneName.empty())
-					{
-						isValid = false;
-						ImGui::TextColored(ImVec4(1.0f, 0.3f, 0.0f, 1.0f), "Input a name!");
-					}
-					else
-					{
-						for (const auto &scene : _scenes)
-						{
-							if (scene && scene->GetName() == newSceneName)
-							{
-								isValid = false;
-								ImGui::TextColored(ImVec4(1.0f, 0.3f, 0.0f, 1.0f), "Name taken!");
-								break;
-							}
-						}
-					}
-
-					ImGui::BeginDisabled(!isValid);
-					if (ImGui::Button("Create"))
-					{
-						Scene *newScene = new Scene(newSceneName, transitional);
-						if (!AddScene(&newScene, true))
-						{
-							delete newScene;
-							ErrMsg("Failed to create new scene!");
-						}
-
-						newSceneName = "New Scene";
-						newSceneBounds = { {0, 0, 0}, {500, 250, 500} };
-						transitional = false;
-
-						ImGui::CloseCurrentPopup();
-					}
-					ImGui::EndDisabled();
-
-					ImGui::EndPopup();
-				}
-
-				ImGui::EndMenu();
-			}
-
-			if (ImGui::BeginMenu("Transform##ViewTransformMenu"))
-			{
-				static const std::string transformTypes[6] = { "None", "Translate", "Rotate", "Scale", "Universal", "Bounds" };
-				int &transformType = debugData.transformType;
-
-				if (ImGui::BeginMenu(std::format("Tool: {}", transformTypes[transformType]).c_str()))
-				{
-					for (int i = 0; i < 6; i++)
-					{
-						if (ImGui::MenuItem(std::format("{}##SelectTransformType{}", transformTypes[i], i).c_str(), NULL, transformType == i))
-							transformType = i;
-					}
-
-					ImGui::EndMenu();
-				}
-
-				static const std::string transformOrigins[5] = { "None", "Primary", "Center", "Average", "Separate "};
-				int &transformOrigin = debugData.transformOriginMode;
-
-				if (ImGui::BeginMenu(std::format("Origin: {}", transformOrigins[transformOrigin]).c_str()))
-				{
-					for (int i = 0; i < 4; i++)
-					{
-						if (ImGui::MenuItem(std::format("{}##SelectTransformOrigin{}", transformOrigins[i], i).c_str(), NULL, transformOrigin == i))
-							transformOrigin = i;
-					}
-
-					ImGui::BeginDisabled(true);
-					if (ImGui::MenuItem("Separate##SelectTransformOrigin4", NULL, transformOrigin == 4))
-						transformOrigin = 4;
-					ImGui::EndDisabled();
-
-					ImGui::EndMenu();
-				}
-
-				int &transformSpace = debugData.transformSpace;
-				if (ImGui::Button(transformSpace == (int)Local ? "Space: Local" : "Space: World"))
-					transformSpace = transformSpace == (int)Local ? (int)World : (int)Local;
-
-				bool &transformRelative = debugData.transformRelative;
-				if (ImGui::Button(transformRelative ? "Relative" : "Absolute"))
-					transformRelative = !transformRelative;
-
-				ImGui::Separator();
-
-				ImGui::SliderFloat("Gizmo Scale", &debugData.transformScale, 0.0f, 1.0f);
-
-				ImGui::DragFloat("Snap Size", &debugData.transformSnap, 0.01f, FLT_MIN);
-				ImGuiUtils::LockMouseOnActive();
-
-				ImGui::EndMenu();
-			}
-
 			ImGui::EndMenuBar();
 		}
 
@@ -2618,18 +2630,28 @@ bool Game::RenderUI(TimeUtils &time)
 
 	stylesPushed = 0;
 	stylesPushed++; ImGui::PushStyleVarY(ImGuiStyleVar_WindowPadding, 0);
-	if (ImGui::Begin("Hierarchy", nullptr, defaultWindowFlags))
+	if (ImGui::Begin("Hierarchy", nullptr, defaultWindowFlags | ImGuiWindowFlags_MenuBar))
 	{
 		ImGui::PopStyleVar(stylesPushed);
-		ImGui::SetCursorPosY(ImGui::GetCursorPosY() + defWindowPadding);
 
 		if (ActiveSceneIsValid())
 		{
 			Scene *scene = _scenes[_activeSceneIndex].get();
 
+			if (ImGui::BeginMenuBar())
+			{
+				if (!scene->RenderHierarchyMenuBarUI())
+				{
+					ErrMsg("Failed to render scene context menu UI!");
+					return false;
+				}
+
+				ImGui::EndMenuBar();
+			}
+
 			if (!scene->RenderHierarchyUI())
 			{
-				ErrMsg("Failed to render scene UI!");
+				ErrMsg("Failed to render scene hierarchy UI!");
 				return false;
 			}
 		}

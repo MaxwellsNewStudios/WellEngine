@@ -160,8 +160,9 @@ public:
 
 #ifdef USE_IMGUI
 	[[nodiscard]] bool RenderSelectionUI();
+	[[nodiscard]] bool RenderHierarchyMenuBarUI();
 	[[nodiscard]] bool RenderHierarchyContextMenuUI();
-	[[nodiscard]] bool RenderHierarchyUI();
+	[[nodiscard]] bool RenderHierarchyUI(bool skipCulling = false);
 	[[nodiscard]] bool RenderSceneUI();
 #endif
 #ifdef USE_IMGUIZMO

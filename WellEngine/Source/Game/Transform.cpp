@@ -1235,191 +1235,197 @@ bool Transform::RenderUI(ReferenceSpace space)
 		}
 	}
 
-	ImGui::Dummy(ImVec2(0, 4));
+	ImGui::Dummy(ImVec2(0, 1));
 
-	if (ImGui::TreeNode("Matrix##ShowMatrix"))
+	if (ImGui::TreeNode("Advanced"))
 	{
-		XMFLOAT4X4A entMat = GetMatrix(space);
-
-		ImGui::Text("R1: "); ImGui::SameLine();
-		if (ImGui::DragFloat4("##MatrixR1", entMat.m[0], 0.01f, 0.0f, 0.0f, "%.3f", floatInputFlags))
-			isChanged = true;
-		ImGuiUtils::LockMouseOnActive();
-
-		ImGui::Text("R2: "); ImGui::SameLine();
-		if (ImGui::DragFloat4("##MatrixR2", entMat.m[1], 0.01f, 0.0f, 0.0f, "%.3f", floatInputFlags))
-			isChanged = true;
-		ImGuiUtils::LockMouseOnActive();
-
-		ImGui::Text("R3: "); ImGui::SameLine();
-		if (ImGui::DragFloat4("##MatrixR3", entMat.m[2], 0.01f, 0.0f, 0.0f, "%.3f", floatInputFlags))
-			isChanged = true;
-		ImGuiUtils::LockMouseOnActive();
-
-		ImGui::Text("R4: "); ImGui::SameLine();
-		if (ImGui::DragFloat4("##MatrixR4", entMat.m[3], 0.01f, 0.0f, 0.0f, "%.3f", floatInputFlags))
-			isChanged = true;
-		ImGuiUtils::LockMouseOnActive();
-
-		if (isChanged)
+		if (ImGui::TreeNode("Matrix##ShowMatrix"))
 		{
-			SetMatrix(entMat, space);
-			isChanged = false;
-		}
-		
-		ImGui::TreePop();
-	}
-	ImGui::Dummy(ImVec2(0, 4));
+			XMFLOAT4X4A entMat = GetMatrix(space);
 
-	ImGui::PushID("Transform Catalogue");
-	if (ImGui::TreeNode("Transform Catalogue"))
-	{
-		ImGuiChildFlags childFlags = 0;
-		childFlags |= ImGuiChildFlags_Border;
-		childFlags |= ImGuiChildFlags_ResizeY;
+			ImGui::Text("R1: "); ImGui::SameLine();
+			if (ImGui::DragFloat4("##MatrixR1", entMat.m[0], 0.01f, 0.0f, 0.0f, "%.3f", floatInputFlags))
+				isChanged = true;
+			ImGuiUtils::LockMouseOnActive();
 
-		ImGui::BeginChild("Transform Catalogue", ImVec2(0, 150), childFlags);
-		ImGui::Text(
-			"Note: Getters write to input. Setters read from input.\n"
-			"Methods with an additional float parameter use the w-value.\n"
-			"The reference space selected above is used for all methods."
-		);
+			ImGui::Text("R2: "); ImGui::SameLine();
+			if (ImGui::DragFloat4("##MatrixR2", entMat.m[1], 0.01f, 0.0f, 0.0f, "%.3f", floatInputFlags))
+				isChanged = true;
+			ImGuiUtils::LockMouseOnActive();
 
-		static XMFLOAT4A parameter = { 0, 0, 0, 0 };
-		ImGui::Text("Input: "); ImGui::SameLine();
-		ImGui::DragFloat4("", &parameter.x, 0.01f, 0.0f, 0.0f, "%.4f", floatInputFlags);
-		ImGuiUtils::LockMouseOnActive();
+			ImGui::Text("R3: "); ImGui::SameLine();
+			if (ImGui::DragFloat4("##MatrixR3", entMat.m[2], 0.01f, 0.0f, 0.0f, "%.3f", floatInputFlags))
+				isChanged = true;
+			ImGuiUtils::LockMouseOnActive();
 
-		XMFLOAT4A *vec4 = &parameter;
-		XMFLOAT3A *vec3 = reinterpret_cast<XMFLOAT3A *>(&parameter);
-		float *vec1 = &parameter.w;
+			ImGui::Text("R4: "); ImGui::SameLine();
+			if (ImGui::DragFloat4("##MatrixR4", entMat.m[3], 0.01f, 0.0f, 0.0f, "%.3f", floatInputFlags))
+				isChanged = true;
+			ImGuiUtils::LockMouseOnActive();
 
-		if (ImGui::TreeNode("Getters"))
-		{
-			if (ImGui::Button("Vec3 GetRight()"))
+			if (isChanged)
 			{
-				XMFLOAT3A vec = GetRight(space);
-				std::memcpy(vec3, &vec, sizeof(XMFLOAT3));
-			}
-
-			if (ImGui::Button("Vec3 GetUp()"))
-			{
-				XMFLOAT3A vec = GetUp(space);
-				std::memcpy(vec3, &vec, sizeof(XMFLOAT3));
-			}
-
-			if (ImGui::Button("Vec3 GetForward()"))
-			{
-				XMFLOAT3A vec = GetForward(space);
-				std::memcpy(vec3, &vec, sizeof(XMFLOAT3));
-			}
-
-			if (ImGui::Button("Vec3 GetPosition()"))
-			{
-				XMFLOAT3A vec = GetPosition(space);
-				std::memcpy(vec3, &vec, sizeof(XMFLOAT3));
-			}
-
-			if (ImGui::Button("Quat GetRotation()"))
-			{
-				XMFLOAT4A vec = GetRotation(space);
-				std::memcpy(vec4, &vec, sizeof(XMFLOAT4));
-			}
-
-			if (ImGui::Button("Vec3 GetScale()"))
-			{
-				XMFLOAT3A vec = GetScale(space);
-				std::memcpy(vec3, &vec, sizeof(XMFLOAT3));
-			}
-
-			if (ImGui::Button("Vec3 GetEuler()"))
-			{
-				XMFLOAT3A vec = GetEuler(space);
-				vec = {
-					vec.x * RAD_TO_DEG,
-					vec.y * RAD_TO_DEG,
-					vec.z * RAD_TO_DEG
-				};
-				std::memcpy(vec3, &vec, sizeof(XMFLOAT3));
+				SetMatrix(entMat, space);
+				isChanged = false;
 			}
 
 			ImGui::TreePop();
 		}
+		ImGui::Dummy(ImVec2(0, 2));
 
-		if (ImGui::TreeNode("Setters"))
+		ImGui::PushID("Transform Catalogue");
+		if (ImGui::TreeNode("Transform Catalogue"))
 		{
-			if (ImGui::Button("SetPosition(Vec3)"))
-				SetPosition(*vec3, space);
+			ImGuiChildFlags childFlags = 0;
+			childFlags |= ImGuiChildFlags_Border;
+			childFlags |= ImGuiChildFlags_ResizeY;
 
-			if (ImGui::Button("SetRotation(Quat)"))
-				SetRotation(*vec4, space);
+			ImGui::BeginChild("Transform Catalogue", ImVec2(0, 150), childFlags);
+			ImGui::Text(
+				"Note: Getters write to input. Setters read from input.\n"
+				"Methods with an additional float parameter use the w-value.\n"
+				"The reference space selected above is used for all methods."
+			);
 
-			if (ImGui::Button("SetScale(Vec3)"))
-				SetScale(*vec3, space);
+			static XMFLOAT4A parameter = { 0, 0, 0, 0 };
+			ImGui::Text("Input: "); ImGui::SameLine();
+			ImGui::DragFloat4("", &parameter.x, 0.01f, 0.0f, 0.0f, "%.4f", floatInputFlags);
+			ImGuiUtils::LockMouseOnActive();
 
-			if (ImGui::Button("Move(Vec3)"))
-				Move(*vec3, space);
+			XMFLOAT4A* vec4 = &parameter;
+			XMFLOAT3A* vec3 = reinterpret_cast<XMFLOAT3A*>(&parameter);
+			float* vec1 = &parameter.w;
 
-			if (ImGui::Button("Rotate(Vec3)"))
+			if (ImGui::TreeNode("Getters"))
 			{
-				XMFLOAT3A vec = {
-					vec3->x * DEG_TO_RAD,
-					vec3->y * DEG_TO_RAD,
-					vec3->z * DEG_TO_RAD
-				};
-				Rotate(vec, space);
+				if (ImGui::Button("Vec3 GetRight()"))
+				{
+					XMFLOAT3A vec = GetRight(space);
+					std::memcpy(vec3, &vec, sizeof(XMFLOAT3));
+				}
+
+				if (ImGui::Button("Vec3 GetUp()"))
+				{
+					XMFLOAT3A vec = GetUp(space);
+					std::memcpy(vec3, &vec, sizeof(XMFLOAT3));
+				}
+
+				if (ImGui::Button("Vec3 GetForward()"))
+				{
+					XMFLOAT3A vec = GetForward(space);
+					std::memcpy(vec3, &vec, sizeof(XMFLOAT3));
+				}
+
+				if (ImGui::Button("Vec3 GetPosition()"))
+				{
+					XMFLOAT3A vec = GetPosition(space);
+					std::memcpy(vec3, &vec, sizeof(XMFLOAT3));
+				}
+
+				if (ImGui::Button("Quat GetRotation()"))
+				{
+					XMFLOAT4A vec = GetRotation(space);
+					std::memcpy(vec4, &vec, sizeof(XMFLOAT4));
+				}
+
+				if (ImGui::Button("Vec3 GetScale()"))
+				{
+					XMFLOAT3A vec = GetScale(space);
+					std::memcpy(vec3, &vec, sizeof(XMFLOAT3));
+				}
+
+				if (ImGui::Button("Vec3 GetEuler()"))
+				{
+					XMFLOAT3A vec = GetEuler(space);
+					vec = {
+						vec.x * RAD_TO_DEG,
+						vec.y * RAD_TO_DEG,
+						vec.z * RAD_TO_DEG
+					};
+					std::memcpy(vec3, &vec, sizeof(XMFLOAT3));
+				}
+
+				ImGui::TreePop();
 			}
 
-			if (ImGui::Button("Scale(Vec3)"))
-				Scale(*vec3, space);
-
-			if (ImGui::Button("MoveRelative(Vec3)"))
-				MoveRelative(*vec3, space);
-
-			if (ImGui::Button("RotateAxis(Vec3, float)"))
-				RotateAxis(*vec3, *vec1 * DEG_TO_RAD, space);
-
-			if (ImGui::Button("RotateQuaternion(Quat)"))
-				RotateQuaternion(*vec4, space);
-
-			if (ImGui::Button("SetEuler(Vec3)"))
+			if (ImGui::TreeNode("Setters"))
 			{
-				XMFLOAT3A vec = {
-					vec3->x * DEG_TO_RAD,
-					vec3->y * DEG_TO_RAD,
-					vec3->z * DEG_TO_RAD
-				};
-				SetEuler(vec, space);
+				if (ImGui::Button("SetPosition(Vec3)"))
+					SetPosition(*vec3, space);
+
+				if (ImGui::Button("SetRotation(Quat)"))
+					SetRotation(*vec4, space);
+
+				if (ImGui::Button("SetScale(Vec3)"))
+					SetScale(*vec3, space);
+
+				if (ImGui::Button("Move(Vec3)"))
+					Move(*vec3, space);
+
+				if (ImGui::Button("Rotate(Vec3)"))
+				{
+					XMFLOAT3A vec = {
+						vec3->x * DEG_TO_RAD,
+						vec3->y * DEG_TO_RAD,
+						vec3->z * DEG_TO_RAD
+					};
+					Rotate(vec, space);
+				}
+
+				if (ImGui::Button("Scale(Vec3)"))
+					Scale(*vec3, space);
+
+				if (ImGui::Button("MoveRelative(Vec3)"))
+					MoveRelative(*vec3, space);
+
+				if (ImGui::Button("RotateAxis(Vec3, float)"))
+					RotateAxis(*vec3, *vec1 * DEG_TO_RAD, space);
+
+				if (ImGui::Button("RotateQuaternion(Quat)"))
+					RotateQuaternion(*vec4, space);
+
+				if (ImGui::Button("SetEuler(Vec3)"))
+				{
+					XMFLOAT3A vec = {
+						vec3->x * DEG_TO_RAD,
+						vec3->y * DEG_TO_RAD,
+						vec3->z * DEG_TO_RAD
+					};
+					SetEuler(vec, space);
+				}
+
+				if (ImGui::Button("SetLookDir(Vec3)"))
+				{
+					XMFLOAT3A vec = {
+						vec3->x,
+						vec3->y,
+						vec3->z
+					};
+					SetLookDir(vec, space);
+				}
+
+				if (ImGui::Button("RotatePitch(float)"))
+					RotatePitch(*vec1 * DEG_TO_RAD);
+
+				if (ImGui::Button("RotateYaw(float)"))
+					RotateYaw(*vec1 * DEG_TO_RAD);
+
+				if (ImGui::Button("RotateRoll(float)"))
+					RotateRoll(*vec1 * DEG_TO_RAD);
+
+				ImGui::TreePop();
 			}
 
-			if (ImGui::Button("SetLookDir(Vec3)"))
-			{
-				XMFLOAT3A vec = {
-					vec3->x,
-					vec3->y,
-					vec3->z
-				};
-				SetLookDir(vec, space);
-			}
-
-			if (ImGui::Button("RotatePitch(float)"))
-				RotatePitch(*vec1 * DEG_TO_RAD);
-
-			if (ImGui::Button("RotateYaw(float)"))
-				RotateYaw(*vec1 * DEG_TO_RAD);
-
-			if (ImGui::Button("RotateRoll(float)"))
-				RotateRoll(*vec1 * DEG_TO_RAD);
-
+			ImGui::EndChild();
 			ImGui::TreePop();
 		}
+		ImGui::PopID();
 
-		ImGui::EndChild();
 		ImGui::TreePop();
 	}
-	ImGui::PopID();
 
 	ImGui::Dummy(ImVec2(0, 2));
+
 	return true;
 }
 #endif

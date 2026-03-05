@@ -757,6 +757,41 @@ bool Scene::RenderSelectionHierarchyUI(bool skipCulling)
 	return true;
 }
 
+bool Scene::RenderHierarchyMenuBarUI()
+{
+	if (ImGui::BeginMenu("Settings"))
+	{
+		ImGui::Text("Objects: %d", _sceneHolder.GetEntityCount());
+
+		ImGui::Checkbox("Show Hidden", &DebugData::Get().hierarchyShowHidden);
+
+		if (!ImGuiUtils::Utils::GetWindow(_sceneName + "Hierarchy", nullptr))
+		{
+			if (ImGui::Button("Undock Hierarchy"))
+			{
+				std::function<bool()> renderFunc = [this]() -> bool {
+					return RenderHierarchyUI(true);
+				};
+
+				if (!ImGuiUtils::Utils::OpenWindow(std::format("'{}' Hierarchy", _sceneName), _sceneName + "Hierarchy", renderFunc))
+				{
+					ErrMsg("Failed to open scene window!");
+					return false;
+				}
+			}
+
+			if (ImGui::IsItemHovered())
+			{
+				ImGui::SetTooltip("Keep this hierarchy open after\nswitching to another scene.");
+			}
+		}
+
+		ImGui::EndMenu();
+	}
+
+	return true;
+}
+
 bool Scene::RenderHierarchyContextMenuUI()
 {
 	if (ImGui::MenuItem("New Entity"))
@@ -778,71 +813,21 @@ bool Scene::RenderHierarchyContextMenuUI()
 	return true;
 }
 
-bool Scene::RenderHierarchyUI()
+bool Scene::RenderHierarchyUI(bool skipCulling)
 {
-	if (TreeNode("Advanced"))
-	{
-		Text("Objects: %d", _sceneHolder.GetEntityCount());
-
-		Checkbox("Show Hidden", &DebugData::Get().hierarchyShowHidden);
-
-		if (!ImGuiUtils::Utils::GetWindow(_sceneName + "Hierarchy", nullptr))
-		{
-			if (Button("Keep Open Through Scene Switch"))
-			{
-				if (!ImGuiUtils::Utils::OpenWindow(
-					std::format("'{}' Hierarchy", _sceneName),
-					_sceneName + "Hierarchy",
-					std::bind(&Scene::RenderHierarchyUI, this)))
-				{
-					ErrMsg("Failed to open scene window!");
-					return false;
-				}
-			}
-		}
-
-		RadioButton("Hovering Window", _isHoveringHierarchy);
-		RadioButton("Hovering Item", _isHoveringHierarchyItem);
-
-		TreePop();
-	}
-
 	if (!BeginTabBar("HierarchyTab"))
 		return true;
 
 	_isHoveringHierarchyItem = false;
 	_isHoveringHierarchy = false;
 
-	if (BeginTabItem("Scene"))
+	if (BeginTabItem(GetName().c_str()))
 	{
 		PushID("Scene Hierarchy");
 
 		const std::string windowID = std::format("Scene'{}'", GetName());
 
-		// Check if scene hierarchy is undocked
-		if (!ImGuiUtils::Utils::GetWindow(windowID, nullptr))
-		{
-			if (Button("Undock"))
-			{
-				const std::string windowName = std::format("'{}' Scene Hierarchy", GetName());
-
-				std::function<bool()> renderFunc = [this]() -> bool { 
-					return RenderSceneHierarchyUI(true); 
-				};
-
-				if (!ImGuiUtils::Utils::OpenWindow(windowName, windowID, renderFunc))
-				{
-					PopID();
-					EndTabItem();
-					ErrMsg("Failed to undock scene hierarchy window!");
-					return false;
-				}
-			}
-
-			SameLine();
-		}
-
-		if (!RenderSceneHierarchyUI(false))
+		if (!RenderSceneHierarchyUI(skipCulling))
 		{
 			PopID();
 			EndTabItem();
@@ -859,29 +844,6 @@ bool Scene::RenderHierarchyUI()
 		PushID("Selection Hierarchy");
 
 		const std::string windowID = std::format("Selection'{}'", GetName());
-
-		// Check if scene hierarchy is undocked
-		if (!ImGuiUtils::Utils::GetWindow(windowID, nullptr))
-		{
-			if (Button("Undock"))
-			{
-				const std::string windowName = std::format("'{}' Selection Hierarchy", GetName());
-
-				std::function<bool()> renderFunc = [this]() -> bool {
-					return RenderSelectionHierarchyUI(true);
-				};
-
-				if (!ImGuiUtils::Utils::OpenWindow(windowName, windowID, renderFunc))
-				{
-					PopID();
-					EndTabItem();
-					ErrMsg("Failed to undock selection hierarchy window!");
-					return false;
-				}
-			}
-
-			SameLine();
-		}
 
 		if (!RenderSelectionHierarchyUI(true))
 		{
