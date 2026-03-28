@@ -2357,6 +2357,20 @@ bool Scene::RenderSceneUI()
 			TreePop();
 		}
 
+		if (TreeNode("Curve Editor Tests"))
+		{
+			// Use custom curve editor
+			static std::vector<BezierPoint> points = {
+				{ { 0.2f, 0.2f }, { 0.1f, 0.2f }, { 0.5f, 0.2f } },
+				{ { 0.8f, 0.8f }, { 0.5f, 0.8f }, { 0.9f, 0.8f } }
+			};
+
+			CurveEdit("Curve Editor", &points, {350, 350}, ImRect(0, 0, 1, 1), 3.0f, ImGuiCurveEditFlags_None);
+
+			Separator();
+			TreePop();
+		}
+
 		static bool displayCullingRects = false;
 		Checkbox("Show Culling Rects", &displayCullingRects);
 

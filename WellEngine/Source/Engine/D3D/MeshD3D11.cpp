@@ -100,6 +100,8 @@ bool MeshD3D11::GenerateCollider()
 		ErrMsg("Failed to initialize mesh collider!");
 		return false;
 	}
+
+	return true;
 }
 
 void MeshD3D11::Reset()
