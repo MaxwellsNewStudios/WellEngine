@@ -43,19 +43,131 @@ static void MoveCP(ImVec2 &cp, ImVec2 &cpM, const ImVec2 &p, const ImVec2 &newPo
 		cpM = p * 2.0f - cp; // Set mirror control point to be symmetric across the main point
 }
 
-bool ImGui::CurveEdit(const char *label, std::vector<BezierPoint> *points, const ImVec2 &size, const ImRect &pointBounds, float thickness, ImRect padding, ImVec2i gridLines, ImGuiCurveEditFlags flags)
+static bool IsXMonotonic(const ImVec2 &p0, const ImVec2 &p1, const ImVec2 &p2, const ImVec2 &p3)
+{
+	// Compute coefficients of the quadratic derivative x'(t)/3
+	float a = 3 * (p0.x - 3 * p1.x + 3 * p2.x - p3.x);
+	float b = 6 * (p1.x - 2 * p2.x + p3.x);
+	float c = 3 * (p1.x - p0.x);
+
+	// Standard expanded quadratic for dx/dt:
+	float A = -3 * p0.x + 9 * p1.x - 9 * p2.x + 3 * p3.x;
+	float B = 6 * p0.x - 12 * p1.x + 6 * p2.x;
+	float C = -3 * p0.x + 3 * p1.x;
+
+	// Discriminant
+	float disc = B * B - 4 * A * C;
+	if (disc < 0)
+		return true; // No real roots = quadratic doesn't cross zero
+
+	// Roots
+	float sqrtD = sqrtf(disc);
+	float t1 = (-B - sqrtD) / (2 * A);
+	float t2 = (-B + sqrtD) / (2 * A);
+
+	// Check if any root lies strictly inside (0,1)
+	bool hasInteriorRoot = false;
+
+	if (A != 0) 
+	{  
+		// Quadratic case
+		if (t1 > 0 && t1 < 1) hasInteriorRoot = true;
+		if (t2 > 0 && t2 < 1) hasInteriorRoot = true;
+	}
+	else if (B != 0) 
+	{  
+		// Linear case (degenerate)
+		float t = -C / B;
+		if (t > 0 && t < 1) hasInteriorRoot = true;
+	}
+
+	return !hasInteriorRoot;
+}
+
+static bool IsInjective(const ImGui::BezierPoint &lP, const ImGui::BezierPoint &rP, ImGuiCurveEditFlags flags)
+{
+	bool linear			= (flags & ImGuiCurveEditFlags_Linear) != 0;
+	bool quadratic		= (flags & ImGuiCurveEditFlags_Quadratic) != 0;
+
+	if (lP.position.x >= rP.position.x)
+		return false;
+	
+	if (linear)
+		return true;
+
+	if (quadratic)
+	{
+		// For a quadratic Bezier curve defined by points P0, P1, P2, 
+		// the curve is non-injective if P1.x is not between P0.x and P2.x.
+		ImVec2 p0 = lP.position;
+		ImVec2 p1 = lP.controlPoint1;
+		ImVec2 p2 = rP.position;
+
+		if (p1.x < p0.x)
+			return false;
+
+		if (p1.x > p2.x)
+			return false;
+	}
+	else // Cubic
+	{
+		// For a cubic Bezier curve defined by points P0, P1, P2, P3,
+		// the curve is non-injective if P1.x is less than P0.x or P2.x is greater than P3.x.
+		// The curve may be non-injective if P1.x is greater than P3.x or P2.x is less than P0.x, depending on the x-value of the other control point.
+		ImVec2 p0 = lP.position;
+		ImVec2 p1 = lP.controlPoint2;
+		ImVec2 p2 = rP.controlPoint1;
+		ImVec2 p3 = rP.position;
+
+		if (p1.x < p0.x)
+			return false;
+
+		if (p2.x > p3.x)
+			return false;
+
+		if (p1.x > p3.x || p2.x < p0.x)
+		{
+			// Possibly non-injective
+
+			if (!IsXMonotonic(p0, p1, p2, p3))
+				return false;
+		}
+	}
+
+	return true;
+}
+
+static bool IsInjective(const ImGui::BezierPoint *points, int c, ImGuiCurveEditFlags flags)
+{
+	if (c <= 1)
+		return true;
+
+	for (int i = 1; i < c; i++)
+	{
+		const ImGui::BezierPoint &lP = points[i-1];
+		const ImGui::BezierPoint &rP = points[i];
+
+		if (!IsInjective(lP, rP, flags))
+			return false;
+	}
+
+	return true;
+}
+
+bool ImGui::CurveEdit(const char *label, std::vector<BezierPoint> *points, const ImVec2 &size, const ImRect &pointBounds, float thickness, ImRect padding, ImVec2i gridLines, ImGuiCurveEditFlags flags, ImGuiChildFlags childFlags, ImGuiWindowFlags windowFlags)
 {
 	bool linear			= (flags & ImGuiCurveEditFlags_Linear) != 0;
 	bool quadratic		= (flags & ImGuiCurveEditFlags_Quadratic) != 0;
 	bool jointed		= (flags & ImGuiCurveEditFlags_Jointed) != 0;
 	bool forceSpanWidth = (flags & ImGuiCurveEditFlags_ForceSpanWidth) != 0;
+	bool forceInjective = (flags & ImGuiCurveEditFlags_ForceInjective) != 0;
 	bool readOnly		= (flags & ImGuiCurveEditFlags_ReadOnly) != 0;
 	bool noLabels		= (flags & ImGuiCurveEditFlags_NoLabels) != 0;
 	bool noPoints		= (flags & ImGuiCurveEditFlags_NoPoints) != 0;
 	bool clampX			= (flags & ImGuiCurveEditFlags_ClampX) != 0;
 	bool clampY			= (flags & ImGuiCurveEditFlags_ClampY) != 0;
 
-	ImGui::BeginChild(label, size, true);
+	ImGui::BeginChild(label, size, childFlags, windowFlags);
 	ImGuiWindow *window = GetCurrentWindow();
 	ImGuiStorage *storage = ImGui::GetStateStorage();
 	ImDrawList *drawList = ImGui::GetWindowDrawList();
@@ -190,11 +302,100 @@ bool ImGui::CurveEdit(const char *label, std::vector<BezierPoint> *points, const
 		}
 	}
 		
+	if (forceInjective)
+	{
+		for (int i = 1; i < pointCount; i++)
+		{
+			BezierPoint &lP = (*points)[i - 1ll];
+			BezierPoint &rP = (*points)[i];
+
+			if (lP.position.x >= rP.position.x)
+			{
+				// Shift the right point to be just to the right of the left point
+				float newX = lP.position.x + 1e-6f; // Small epsilon to ensure separation
+				float deltaX = newX - rP.position.x;
+				rP.position.x = newX;
+				rP.controlPoint1.x += deltaX;
+				rP.controlPoint2.x += deltaX;
+				changed = true;
+			}
+
+			if (linear)
+				continue;
+
+			if (quadratic)
+			{
+				// Ensure control point is between the main points
+				if (lP.controlPoint1.x < lP.position.x)
+				{
+					lP.controlPoint1.x = lP.position.x;
+					changed = true;
+				}
+				else if (lP.controlPoint1.x > rP.position.x)
+				{
+					lP.controlPoint1.x = rP.position.x;
+					changed = true;
+				}
+			}
+			else // Cubic
+			{ 
+				// Ensure control points are in a valid configuration
+				if (lP.controlPoint2.x < lP.position.x)
+				{
+					lP.controlPoint2.x = lP.position.x;
+					changed = true;
+				}
+
+				if (rP.controlPoint1.x > rP.position.x)
+				{
+					rP.controlPoint1.x = rP.position.x;
+					changed = true;
+				}
+
+				int attempts = 0;
+				while (attempts++ < 32) // Prevent infinite loop in extreme cases
+				{
+					bool monotonic = true;
+
+					if (lP.controlPoint2.x > rP.position.x)
+					{
+						if (!IsXMonotonic(lP.position, lP.controlPoint1, rP.controlPoint1, rP.position))
+						{
+							ImVec2 pToCp = lP.controlPoint2 - lP.position;
+							pToCp *= 0.995f; // Scale back slightly to ensure monotonicity
+
+							MoveCP(lP.controlPoint2, lP.controlPoint1, lP.position, lP.position + pToCp, jointed);
+							changed = true;
+							monotonic = false;
+						}
+					}
+
+					if (rP.controlPoint1.x < lP.position.x)
+					{
+						int attempts = 0;
+						if (!IsXMonotonic(lP.position, lP.controlPoint2, rP.controlPoint2, rP.position))
+						{
+							ImVec2 pToCp = rP.controlPoint1 - rP.position;
+							pToCp *= 0.995f; // Scale back slightly to ensure monotonicity
+
+							MoveCP(rP.controlPoint1, rP.controlPoint2, rP.position, rP.position + pToCp, jointed);
+							changed = true;
+							monotonic = false;
+						}
+					}
+
+					if (monotonic)
+						break;
+				}
+			}
+		}
+	}
+
 	bool multiSelect = ImGui::IsKeyDown(ImGuiMod_Shift);
 	bool snapping = ImGui::IsKeyDown(ImGuiMod_Ctrl);
 
-	static BezierPoint unSnappedPos = BezierPoint(ImVec2(0, 0), ImVec2(0, 0), ImVec2(0, 0));
-	static ImVec2 deltaBuffer = ImVec2(0, 0);
+	static BezierPoint unSnappedPos = BezierPoint();
+	static ImVec2 deltaBuffer = ImVec2();
 
 	for (int i = 0; i < pointCount; i++)
 	{
@@ -209,7 +410,7 @@ bool ImGui::CurveEdit(const char *label, std::vector<BezierPoint> *points, const
 		int pointPrevSelectState = storage->GetInt(pointPrevID);
 		int pointDragState = storage->GetInt(pointDragID);
 
-		if (!mouseAbsorbed && ImGui::IsMouseHoveringRect(pPos - ImVec2(thickness, thickness) * 1.5f, pPos + ImVec2(thickness, thickness) * 1.5f))
+		if (!mouseAbsorbed && ImGui::IsMouseHoveringRect(pPos - ImVec2(thickness, thickness) * 2.5f, pPos + ImVec2(thickness, thickness) * 2.5f))
 		{
 			ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
 			if (ImGui::IsMouseClicked(ImGuiMouseButton_Left))
@@ -371,13 +572,37 @@ bool ImGui::CurveEdit(const char *label, std::vector<BezierPoint> *points, const
 				std::string cpLabel = std::format("##CP{}:{}", j + 1, i);
 				ImVec2 *cp = (j == 0) ? (&(*points)[i].controlPoint1) : (&(*points)[i].controlPoint2);
 				ImVec2 *cpMirror = (j == 0) ? (&(*points)[i].controlPoint2) : (&(*points)[i].controlPoint1);
-				ImColor cpColor = (j == 0) ? ImColor(192, 64, 64, 255) : ImColor(64, 64, 192, 255);
+				ImColor cpColor = (j == 0) ? ImColor(255, 64, 64, 255) : ImColor(64, 64, 255, 255);
 
-				ImVec2 cpPos = (*cp) * pScale + pOffset;
+				// If the control point is too close to the main point, add a visual offset to make it easier to select
+				ImVec2 unOverlapOffset = ImVec2(0, 0);
+				float distSq = ImLengthSqr((*cp) - (*points)[i].position);
+
+				float overlapThreshold = 0.005f * thickness * (pointBounds.GetWidth() + pointBounds.GetHeight());
+				float overlapThresholdSqr = overlapThreshold * overlapThreshold;
+
+				if (distSq < overlapThresholdSqr)
+				{
+					ImVec2 dir;
+					if (distSq < 1e-6)
+					{
+						dir = ImVec2((quadratic || j != 0) ? 1 : -1, 0);
+					}
+					else
+					{
+						float dist = sqrtf(distSq);
+						dir = ((*cp) - (*points)[i].position) * (1.0f / dist);
+					}
+
+					unOverlapOffset = dir * overlapThreshold;
+					unOverlapOffset += (*points)[i].position - (*cp);
+				}
+
+				ImVec2 cpPos = ((*cp) + unOverlapOffset) * pScale + pOffset;
 				static ImVec2 unSnappedCpPos = ImVec2(0, 0);
 
 				drawList->AddLine(cpPos, pPos, IM_COL32(255, 255, 255, 255), thickness * 0.5f);
-				drawList->AddCircleFilled(cpPos, thickness, cpColor);
+				drawList->AddCircleFilled(cpPos + unOverlapOffset, thickness, cpColor);
 
 				// Handle control point dragging
 				ImGuiID cpID = window->GetID(cpLabel.c_str());

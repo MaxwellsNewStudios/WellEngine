@@ -15,13 +15,14 @@ enum ImGuiCurveEditFlags_
 	ImGuiCurveEditFlags_Quadratic		= 1 << 1,			// Use quadratic Bezier curves instead of cubic (only one control point per segment, controlPoint1 is used and controlPoint2 is ignored)
 	ImGuiCurveEditFlags_Jointed			= 1 << 2,			// Control points are automatically mirrored around the main point when editing
 	ImGuiCurveEditFlags_ForceSpanWidth	= 1 << 3,			// Ensure line spans the entire bound width, by setting x-value of first and last points to bounds min and max
+	ImGuiCurveEditFlags_ForceInjective	= 1 << 4,			// Ensure curve has exactly one y-value for each x-value
 
 	// UI Interaction flags
-	ImGuiCurveEditFlags_ReadOnly		= 1 << 4,			// Disable editing of points and control points, but still display them
-	ImGuiCurveEditFlags_NoLabels		= 1 << 5,			// Disable point number labels (drawn near each point) for better visibility when there are many points
-	ImGuiCurveEditFlags_NoPoints		= 1 << 6,			// Don't draw the main points
-	ImGuiCurveEditFlags_ClampX			= 1 << 7,			// Clamp points to bounds on x-axis while editing
-	ImGuiCurveEditFlags_ClampY			= 1 << 8,			// Clamp points to bounds on y-axis while editing
+	ImGuiCurveEditFlags_ReadOnly		= 1 << 5,			// Disable editing of points and control points, but still display them
+	ImGuiCurveEditFlags_NoLabels		= 1 << 6,			// Disable point number labels (drawn near each point) for better visibility when there are many points
+	ImGuiCurveEditFlags_NoPoints		= 1 << 7,			// Don't draw the main points
+	ImGuiCurveEditFlags_ClampX			= 1 << 8,			// Clamp points to bounds on x-axis while editing
+	ImGuiCurveEditFlags_ClampY			= 1 << 9,			// Clamp points to bounds on y-axis while editing
 
 	// Convenience flags
 	ImGuiCurveEditFlags_ClampPoints		= ImGuiCurveEditFlags_ClampX | ImGuiCurveEditFlags_ClampY,	// Clamp points to bounds on both axes while editing
@@ -34,12 +35,12 @@ namespace ImGui
 {
 	struct BezierPoint
 	{
-		ImVec2 position;
-		ImVec2 controlPoint1;
-		ImVec2 controlPoint2;
+		ImVec2 position = { };
+		ImVec2 controlPoint1 = { };
+		ImVec2 controlPoint2 = { };
 	};
 
-	bool CurveEdit(const char* label, std::vector<BezierPoint>* points, const ImVec2& size, const ImRect& pointBounds, float thickness = 2, ImRect padding = {48, 24, 20, 24}, ImVec2i gridLines = {4, 4}, ImGuiCurveEditFlags flags = ImGuiCurveEditFlags_None);
+	bool CurveEdit(const char* label, std::vector<BezierPoint>* points, const ImVec2& size, const ImRect& pointBounds, float thickness = 2, ImRect padding = {48, 24, 20, 24}, ImVec2i gridLines = {4, 4}, ImGuiCurveEditFlags flags = 0, ImGuiChildFlags childFlags = 1, ImGuiWindowFlags windowFlags = 0);
 };
 
 #endif // !IMGUI_DISABLE

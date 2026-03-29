@@ -2361,8 +2361,8 @@ bool Scene::RenderSceneUI()
 		{
 			// Use custom curve editor
 			static std::vector<BezierPoint> points = {
-				{ { 0.2f, 0.2f }, { 0.1f, 0.2f }, { 0.5f, 0.2f } },
-				{ { 0.8f, 0.8f }, { 0.5f, 0.8f }, { 0.9f, 0.8f } }
+				{ { 0.0f, 0.0f }, { 0.5f, 0.0f }, { 0.5f, 0.0f } },
+				{ { 1.0f, 1.0f }, { 0.5f, 1.0f }, { 0.5f, 1.0f } }
 			};
 
 			static ImGuiCurveEditFlags flags = ImGuiCurveEditFlags_None;
@@ -2373,22 +2373,27 @@ bool Scene::RenderSceneUI()
 			static ImVec2i gridLines(4, 4);
 			static float thickness = 3.0f;
 
-			std::vector<std::string> flagNames = { 
-				"Linear", "Quadratic", "Jointed", "Force Span Width", 
-				"Read Only", "No Labels", "No Points", "Clamp X", "Clamp Y" 
-			};
-
-			// Flag checkboxes
-			for (int i = 0; i < flagNames.size(); i++)
+			if (TreeNode("Flags"))
 			{
-				bool flagSet = (flags & (1 << i)) != 0;
-				if (Checkbox(flagNames[i].c_str(), &flagSet))
+				std::vector<std::string> flagNames = {
+					"Linear", "Quadratic", "Jointed", "Force Span Width", "Force Injective",
+					"Read Only", "No Labels", "No Points", "Clamp X", "Clamp Y"
+				};
+
+				// Flag checkboxes
+				for (int i = 0; i < flagNames.size(); i++)
 				{
-					if (flagSet)
-						flags |= (1 << i);
-					else
-						flags &= ~(1 << i);
+					bool flagSet = (flags & (1 << i)) != 0;
+					if (Checkbox(flagNames[i].c_str(), &flagSet))
+					{
+						if (flagSet)
+							flags |= (1 << i);
+						else
+							flags &= ~(1 << i);
+					}
 				}
+
+				TreePop();
 			}
 
 			SliderFloat("Thickness##CurveEditor", &thickness, 0.1f, 10.0f);
