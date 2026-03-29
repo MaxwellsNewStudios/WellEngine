@@ -2373,7 +2373,10 @@ bool Scene::RenderSceneUI()
 			static ImVec2i gridLines(4, 4);
 			static float thickness = 3.0f;
 
-			std::vector<std::string> flagNames = { "Quadratic", "Jointed", "Read Only", "No Labels", "No Points", "Force Span Width", "Clamp X", "Clamp Y" };
+			std::vector<std::string> flagNames = { 
+				"Linear", "Quadratic", "Jointed", "Force Span Width", 
+				"Read Only", "No Labels", "No Points", "Clamp X", "Clamp Y" 
+			};
 
 			// Flag checkboxes
 			for (int i = 0; i < flagNames.size(); i++)
