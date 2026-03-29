@@ -2365,7 +2365,35 @@ bool Scene::RenderSceneUI()
 				{ { 0.8f, 0.8f }, { 0.5f, 0.8f }, { 0.9f, 0.8f } }
 			};
 
-			CurveEdit("Curve Editor", &points, {350, 350}, ImRect(0, 0, 1, 1), 3.0f, ImGuiCurveEditFlags_None);
+			static ImGuiCurveEditFlags flags = ImGuiCurveEditFlags_None;
+
+			static ImVec2 curveSize(350, 350);
+			static ImRect curveRect(0, 0, 1, 1);
+			static float thickness = 3.0f;
+
+			std::vector<std::string> flagNames = { "Quadratic", "Jointed", "Read Only", "No Labels", "No Points"};
+
+			// Flag checkboxes
+			for (int i = 0; i < flagNames.size(); i++)
+			{
+				bool flagSet = (flags & (1 << i)) != 0;
+				if (Checkbox(flagNames[i].c_str(), &flagSet))
+				{
+					if (flagSet)
+						flags |= (1 << i);
+					else
+						flags &= ~(1 << i);
+				}
+			}
+
+			DragFloat2("Size##CurveEditor", &curveSize.x, 1.0f, 1.0f, 0.0f, "%.0f");
+			ImGuiUtils::LockMouseOnActive();
+			DragFloat4("Bounds##CurveEditor", &curveRect.Min.x, 1.0f, 0.0f, 0.0f, "%.1f", ImGuiSliderFlags_AlwaysClamp);
+			ImGuiUtils::LockMouseOnActive();
+			SliderFloat("Thickness##CurveEditor", &thickness, 0.1f, 10.0f);
+
+			Separator();
+			CurveEdit("Curve Editor", &points, curveSize, curveRect, thickness, flags);
 
 			Separator();
 			TreePop();

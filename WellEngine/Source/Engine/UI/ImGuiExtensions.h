@@ -8,8 +8,12 @@ typedef int ImGuiCurveEditFlags;
 
 enum ImGuiCurveEditFlags_
 {
-	ImGuiCurveEditFlags_None		= 0,
-    ImGuiCurveEditFlags_TODO        = 1 << 0,   // Description
+	ImGuiCurveEditFlags_None			= 0,
+	ImGuiCurveEditFlags_Quadratic		= 1 << 0,   // Use quadratic Bezier curves instead of cubic (only one control point per segment, controlPoint1 is used and controlPoint2 is ignored)
+	ImGuiCurveEditFlags_Jointed			= 1 << 1,   // Control points are automatically mirrored around the main point when editing
+	ImGuiCurveEditFlags_ReadOnly		= 1 << 2,   // Disable editing of points and control points, but still display them
+	ImGuiCurveEditFlags_NoLabels		= 1 << 3,   // Disable point number labels (drawn near each point) for better visibility when there are many points
+	ImGuiCurveEditFlags_NoPoints		= 1 << 4    // Don't draw the main points.
 };
 
 
