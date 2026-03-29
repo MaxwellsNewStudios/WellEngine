@@ -2368,10 +2368,12 @@ bool Scene::RenderSceneUI()
 			static ImGuiCurveEditFlags flags = ImGuiCurveEditFlags_None;
 
 			static ImVec2 curveSize(350, 350);
+			static ImRect padding(48, 24, 20, 24);
 			static ImRect curveRect(0, 0, 1, 1);
+			static ImVec2i gridLines(4, 4);
 			static float thickness = 3.0f;
 
-			std::vector<std::string> flagNames = { "Quadratic", "Jointed", "Read Only", "No Labels", "No Points"};
+			std::vector<std::string> flagNames = { "Quadratic", "Jointed", "Read Only", "No Labels", "No Points", "Force Span Width", "Clamp X", "Clamp Y" };
 
 			// Flag checkboxes
 			for (int i = 0; i < flagNames.size(); i++)
@@ -2386,14 +2388,22 @@ bool Scene::RenderSceneUI()
 				}
 			}
 
+			SliderFloat("Thickness##CurveEditor", &thickness, 0.1f, 10.0f);
 			DragFloat2("Size##CurveEditor", &curveSize.x, 1.0f, 1.0f, 0.0f, "%.0f");
 			ImGuiUtils::LockMouseOnActive();
-			DragFloat4("Bounds##CurveEditor", &curveRect.Min.x, 1.0f, 0.0f, 0.0f, "%.1f", ImGuiSliderFlags_AlwaysClamp);
+			if (DragInt2("Grid Lines##CurveEditor", &gridLines.x, 0.05f))
+			{
+				gridLines.x = max(gridLines.x, 0);
+				gridLines.y = max(gridLines.y, 0);
+			}
 			ImGuiUtils::LockMouseOnActive();
-			SliderFloat("Thickness##CurveEditor", &thickness, 0.1f, 10.0f);
+			DragFloat4("Padding##CurveEditor", &padding.Min.x, 0.01f, 0.0f, 0.0f, "%.2f");
+			ImGuiUtils::LockMouseOnActive();
+			DragFloat4("Bounds##CurveEditor", &curveRect.Min.x, 0.01f, 0.0f, 0.0f, "%.2f");
+			ImGuiUtils::LockMouseOnActive();
 
 			Separator();
-			CurveEdit("Curve Editor", &points, curveSize, curveRect, thickness, flags);
+			CurveEdit("Curve Editor", &points, curveSize, curveRect, thickness, padding, gridLines, flags);
 
 			Separator();
 			TreePop();

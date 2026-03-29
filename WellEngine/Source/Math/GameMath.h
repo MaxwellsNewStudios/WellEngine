@@ -12,6 +12,7 @@ namespace dx = DirectX;
 
 #pragma region Defines
 #define SIGN(x)	(x > 0 ? 1 : -1)
+#define CLAMP(x, a, b) min(max(x, a), b)
 
 static constexpr float DEG_TO_RAD = (dx::XM_PI / 180.0f);
 static constexpr float RAD_TO_DEG = (180.0f / dx::XM_PI);
