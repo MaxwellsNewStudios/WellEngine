@@ -283,7 +283,7 @@ bool Scene::RenderEntityHierarchyUI(Entity *root, UINT depth, bool skipCulling, 
 
 			if (IsItemHovered())
 			{
-				SetTooltip("Prefab Instance '%s'", root->GetPrefabName().c_str());
+				SetTooltip("'%s' Prefab Instance", root->GetPrefabName().c_str());
 				_isHoveringHierarchyItem = true;
 			}
 		}
@@ -297,7 +297,21 @@ bool Scene::RenderEntityHierarchyUI(Entity *root, UINT depth, bool skipCulling, 
 
 			if (IsItemHovered())
 			{
-				SetTooltip("Hidden Entity");
+				SetTooltip("Hidden");
+				_isHoveringHierarchyItem = true;
+			}
+		}
+
+		if (!root->IsSerializable())
+		{
+			SameLine();
+			ImGuiUtils::BeginFont(FONT_ICON_FILE_NAME_LC, 14.0f);
+			Text(ICON_LC_PEN_OFF);
+			ImGuiUtils::EndFont();
+
+			if (IsItemHovered())
+			{
+				SetTooltip("Non-Serialized");
 				_isHoveringHierarchyItem = true;
 			}
 		}
