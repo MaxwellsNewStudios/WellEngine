@@ -101,6 +101,7 @@ namespace json = rapidjson;
 #include "Source/Math/GameMath.h"
 #include "Source/Math/ConstRand.h"
 #include "Source/Math/Primitives.h"
+#include "Source/Math/Curves.h"
 
 // Engine
 #include "Source/Engine/Utils/UIDHelper.h"

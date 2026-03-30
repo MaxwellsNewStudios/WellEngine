@@ -2427,6 +2427,52 @@ bool Scene::RenderSceneUI()
 			Separator();
 			CurveEdit("Curve Editor", &points, curveSize, curveRect, thickness, padding, gridLines, flags);
 
+			// Test sampling using Curves.h
+			if (TreeNode("Sampling"))
+			{
+				using namespace Curves;
+
+				Curve curve;
+				curve.type = (flags & ImGuiCurveEditFlags_Linear) ? CurveType::Linear : ((flags & ImGuiCurveEditFlags_Quadratic) ? CurveType::BezierQuadratic : CurveType::BezierCubic);
+
+				curve.points.resize(points.size());
+				std::memcpy(curve.points.data(), points.data(), points.size() * sizeof(BezierPoint));
+
+				static bool injective = false;
+				static float sampleT = 0.5f;
+
+				BeginChild("Curve Sampling", curveSize, true);
+				{
+					dx::XMFLOAT2 sampleValue;
+
+					if (injective)
+					{
+						float sampleY = curve.SampleInjective(sampleT);
+						sampleValue = { sampleT, sampleY };
+					}
+					else
+					{
+						sampleValue = curve.SamplePoint(sampleT);
+					}
+
+					ImVec2 windowPos = ImGui::GetWindowPos();
+					ImDrawList* drawList = ImGui::GetWindowDrawList();
+
+					ImVec2 samplePos = { sampleValue.x, 1.0f - sampleValue.y };
+					samplePos *= curveSize;
+
+					drawList->AddCircleFilled(windowPos + samplePos, thickness * 1.6f, IM_COL32(255, 255, 255, 255));
+				}
+				EndChild();
+
+				// Sample slider, same width as child window
+				SetNextItemWidth(curveSize.x);
+				SliderFloat("##Sample T", &sampleT, 0.0f, 1.0f);
+				Checkbox("Injective Sampling##CurveSampling", &injective);
+
+				TreePop();
+			}
+
 			Separator();
 			TreePop();
 		}

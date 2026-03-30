@@ -468,6 +468,7 @@
     <ClInclude Include="Source\Game\Transform.h" />
     <ClInclude Include="Source\Math\Bezier.h" />
     <ClInclude Include="Source\Math\ConstRand.h" />
+    <ClInclude Include="Source\Math\Curves.h" />
     <ClInclude Include="Source\Math\EasingFunctions.h" />
     <ClInclude Include="Source\Math\GameMath.h" />
     <ClInclude Include="Source\Math\Primitives.h" />
@@ -661,6 +662,7 @@
     <ClCompile Include="Source\Game\Scenes\SceneSerialization.cpp" />
     <ClCompile Include="Source\Game\Scenes\SceneUI.cpp" />
     <ClCompile Include="Source\Game\Transform.cpp" />
+    <ClCompile Include="Source\Math\Curves.cpp" />
     <ClCompile Include="Source\Math\EasingFunctions.cpp" />
     <ClCompile Include="Source\Math\Primitives.cpp" />
     <ClCompile Include="stdafx.cpp">

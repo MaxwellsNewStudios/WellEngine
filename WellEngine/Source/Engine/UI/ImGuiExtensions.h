@@ -28,9 +28,6 @@ enum ImGuiCurveEditFlags_
 	ImGuiCurveEditFlags_ClampPoints		= ImGuiCurveEditFlags_ClampX | ImGuiCurveEditFlags_ClampY,	// Clamp points to bounds on both axes while editing
 };
 
-
-void ImDrawCallback_ImplDX11_SetSampler(const ImDrawList *parent_list, const ImDrawCmd *cmd);
-
 namespace ImGui
 {
 	struct BezierPoint
@@ -42,6 +39,8 @@ namespace ImGui
 
 	bool CurveEdit(const char* label, std::vector<BezierPoint>* points, const ImVec2& size, const ImRect& pointBounds, float thickness = 2, ImRect padding = {48, 24, 20, 24}, ImVec2i gridLines = {4, 4}, ImGuiCurveEditFlags flags = 0, ImGuiChildFlags childFlags = 1, ImGuiWindowFlags windowFlags = 0);
 };
+
+void ImDrawCallback_ImplDX11_SetSampler(const ImDrawList *parent_list, const ImDrawCmd *cmd);
 
 #endif // !IMGUI_DISABLE
 

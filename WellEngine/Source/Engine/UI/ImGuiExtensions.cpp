@@ -5,13 +5,6 @@
 #define new			DEBUG_NEW
 #endif
 
-void ImDrawCallback_ImplDX11_SetSampler(const ImDrawList *parent_list, const ImDrawCmd *cmd)
-{
-	ImGui_ImplDX11_RenderState *state = (ImGui_ImplDX11_RenderState *)ImGui::GetPlatformIO().Renderer_RenderState;
-	ID3D11SamplerState *sampler = cmd->UserCallbackData ? (ID3D11SamplerState *)cmd->UserCallbackData : state->SamplerDefault;
-	state->DeviceContext->PSSetSamplers(0, 1, &sampler);
-}
-
 
 static bool IsMouseHoveringLine(const ImVec2 &p1, const ImVec2 &p2, float thickness)
 {
@@ -861,4 +854,12 @@ bool ImGui::CurveEdit(const char *label, std::vector<BezierPoint> *points, const
 
 	ImGui::EndChild();
 	return changed;
+}
+
+
+void ImDrawCallback_ImplDX11_SetSampler(const ImDrawList *parent_list, const ImDrawCmd *cmd)
+{
+	ImGui_ImplDX11_RenderState *state = (ImGui_ImplDX11_RenderState *)ImGui::GetPlatformIO().Renderer_RenderState;
+	ID3D11SamplerState *sampler = cmd->UserCallbackData ? (ID3D11SamplerState *)cmd->UserCallbackData : state->SamplerDefault;
+	state->DeviceContext->PSSetSamplers(0, 1, &sampler);
 }
