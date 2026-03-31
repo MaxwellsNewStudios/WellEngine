@@ -2425,7 +2425,7 @@ bool Scene::RenderSceneUI()
 			ImGuiUtils::LockMouseOnActive();
 
 			Separator();
-			CurveEdit("Curve Editor", &points, curveSize, curveRect, thickness, padding, gridLines, flags);
+			CurveEdit("##CurveEditor", &points, curveSize, curveRect, thickness, padding, gridLines, flags);
 
 			// Test sampling using Curves.h
 			if (TreeNode("Sampling"))

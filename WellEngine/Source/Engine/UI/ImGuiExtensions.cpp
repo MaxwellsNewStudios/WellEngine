@@ -5,6 +5,7 @@
 #define new			DEBUG_NEW
 #endif
 
+using namespace ImGui;
 
 static bool IsMouseHoveringLine(const ImVec2 &p1, const ImVec2 &p2, float thickness)
 {
@@ -16,7 +17,7 @@ static bool IsMouseHoveringLine(const ImVec2 &p1, const ImVec2 &p2, float thickn
 	lineDir.x /= lineLength;
 	lineDir.y /= lineLength;
 
-	ImVec2 mousePos = ImGui::GetIO().MousePos;
+	ImVec2 mousePos = GetIO().MousePos;
 	ImVec2 toMouse = mousePos - p1;
 
 	float t = toMouse.x * lineDir.x + toMouse.y * lineDir.y;
@@ -77,7 +78,7 @@ static bool IsXMonotonic(const ImVec2 &p0, const ImVec2 &p1, const ImVec2 &p2, c
 	return !hasInteriorRoot;
 }
 
-static bool IsInjective(const ImGui::BezierPoint &lP, const ImGui::BezierPoint &rP, ImGuiCurveEditFlags flags)
+static bool IsInjective(const BezierPoint &lP, const BezierPoint &rP, ImGuiCurveEditFlags flags)
 {
 	bool linear			= (flags & ImGuiCurveEditFlags_Linear) != 0;
 	bool quadratic		= (flags & ImGuiCurveEditFlags_Quadratic) != 0;
@@ -130,15 +131,15 @@ static bool IsInjective(const ImGui::BezierPoint &lP, const ImGui::BezierPoint &
 	return true;
 }
 
-static bool IsInjective(const ImGui::BezierPoint *points, int c, ImGuiCurveEditFlags flags)
+static bool IsInjective(const BezierPoint *points, int c, ImGuiCurveEditFlags flags)
 {
 	if (c <= 1)
 		return true;
 
 	for (int i = 1; i < c; i++)
 	{
-		const ImGui::BezierPoint &lP = points[i-1];
-		const ImGui::BezierPoint &rP = points[i];
+		const BezierPoint &lP = points[i-1];
+		const BezierPoint &rP = points[i];
 
 		if (!IsInjective(lP, rP, flags))
 			return false;
@@ -147,7 +148,9 @@ static bool IsInjective(const ImGui::BezierPoint *points, int c, ImGuiCurveEditF
 	return true;
 }
 
-bool ImGui::CurveEdit(const char *label, std::vector<BezierPoint> *points, const ImVec2 &size, const ImRect &pointBounds, float thickness, ImRect padding, ImVec2i gridLines, ImGuiCurveEditFlags flags, ImGuiChildFlags childFlags, ImGuiWindowFlags windowFlags)
+bool ImGui::CurveEdit(const char *label, std::vector<BezierPoint> *points, 
+	ImVec2 size, ImRect pointBounds, float thickness, ImRect padding, ImVec2i gridLines, 
+	ImGuiCurveEditFlags flags, ImGuiChildFlags childFlags, ImGuiWindowFlags windowFlags)
 {
 	bool linear			= (flags & ImGuiCurveEditFlags_Linear) != 0;
 	bool quadratic		= (flags & ImGuiCurveEditFlags_Quadratic) != 0;
@@ -160,20 +163,32 @@ bool ImGui::CurveEdit(const char *label, std::vector<BezierPoint> *points, const
 	bool clampX			= (flags & ImGuiCurveEditFlags_ClampX) != 0;
 	bool clampY			= (flags & ImGuiCurveEditFlags_ClampY) != 0;
 
-	ImGui::BeginChild(label, size, childFlags, windowFlags);
+	if (CalcTextSize(label, 0, true).x > 0.0f)
+	{
+		Text(label);
+		SameLine(0.0f, GetStyle().ItemSpacing.x);
+	}
+
+	if (size.x <= 0)
+		size.x = GetContentRegionAvail().x;
+	if (size.y <= 0)
+		size.y = GetContentRegionAvail().y;
+
+	BeginChild(label, size, childFlags, windowFlags);
 	ImGuiWindow *window = GetCurrentWindow();
-	ImGuiStorage *storage = ImGui::GetStateStorage();
-	ImDrawList *drawList = ImGui::GetWindowDrawList();
+	ImGuiStorage *storage = GetStateStorage();
+	ImDrawList *drawList = GetWindowDrawList();
+	ImGuiIO &io = GetIO();
 
 	if (window->SkipItems)
 	{
-		ImGui::EndChild();
+		EndChild();
 		return false;
 	}
 
 	if (!points)
 	{
-		ImGui::EndChild();
+		EndChild();
 		return false;
 	}
 
@@ -181,11 +196,11 @@ bool ImGui::CurveEdit(const char *label, std::vector<BezierPoint> *points, const
 
 	if (pointCount <= 1)
 	{
-		ImGui::EndChild();
+		EndChild();
 		return false;
 	}
 
-	ImVec2 windowPos = ImGui::GetWindowPos();
+	ImVec2 windowPos = GetWindowPos();
 	ImRect drawArea = ImRect(windowPos, windowPos + size);
 	ImRect contentArea = ImRect(drawArea.Min + ImVec2(padding.Min.x, padding.Max.y), drawArea.Max - ImVec2(padding.Max.x, padding.Min.y));
 	ImVec2 contentSize = contentArea.GetSize();
@@ -213,7 +228,7 @@ bool ImGui::CurveEdit(const char *label, std::vector<BezierPoint> *points, const
 			{
 				char label[32];
 				snprintf(label, 32, "%.1f", pointBounds.Min.x + t * pointBounds.GetWidth());
-				ImVec2 textSize = ImGui::CalcTextSize(label);
+				ImVec2 textSize = CalcTextSize(label);
 				drawList->AddText(ImVec2(p1.x - textSize.x * 0.5f, contentArea.Max.y + 8), IM_COL32(255, 255, 255, 255), label);
 			}
 		}
@@ -232,7 +247,7 @@ bool ImGui::CurveEdit(const char *label, std::vector<BezierPoint> *points, const
 			{
 				char label[32];
 				snprintf(label, 32, "%.1f", pointBounds.Max.y - t * pointBounds.GetHeight());
-				ImVec2 textSize = ImGui::CalcTextSize(label);
+				ImVec2 textSize = CalcTextSize(label);
 				drawList->AddText(ImVec2(contentArea.Min.x - textSize.x - 8, p1.y - textSize.y * 0.5f), IM_COL32(255, 255, 255, 255), label);
 			}
 		}
@@ -384,8 +399,8 @@ bool ImGui::CurveEdit(const char *label, std::vector<BezierPoint> *points, const
 		}
 	}
 
-	bool multiSelect = ImGui::IsKeyDown(ImGuiMod_Shift);
-	bool snapping = ImGui::IsKeyDown(ImGuiMod_Ctrl);
+	bool multiSelect = IsKeyDown(ImGuiMod_Shift);
+	bool snapping = IsKeyDown(ImGuiMod_Ctrl);
 
 	static BezierPoint unSnappedPos = BezierPoint();
 	static ImVec2 deltaBuffer = ImVec2();
@@ -403,10 +418,10 @@ bool ImGui::CurveEdit(const char *label, std::vector<BezierPoint> *points, const
 		int pointPrevSelectState = storage->GetInt(pointPrevID);
 		int pointDragState = storage->GetInt(pointDragID);
 
-		if (!mouseAbsorbed && ImGui::IsMouseHoveringRect(pPos - ImVec2(thickness, thickness) * 2.5f, pPos + ImVec2(thickness, thickness) * 2.5f))
+		if (!mouseAbsorbed && IsMouseHoveringRect(pPos - ImVec2(thickness, thickness) * 2.5f, pPos + ImVec2(thickness, thickness) * 2.5f))
 		{
-			ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
-			if (ImGui::IsMouseClicked(ImGuiMouseButton_Left))
+			SetMouseCursor(ImGuiMouseCursor_Hand);
+			if (IsMouseClicked(ImGuiMouseButton_Left))
 			{
 				storage->SetInt(pointID, 2);
 				storage->SetInt(pointPrevID, (pointSelectState > 0) ? 1 : 0);
@@ -416,7 +431,7 @@ bool ImGui::CurveEdit(const char *label, std::vector<BezierPoint> *points, const
 				unSnappedPos = (*points)[i];
 				mouseAbsorbed = true;
 			}
-			else if (!readOnly && pointCount > 2 && ImGui::IsMouseClicked(ImGuiMouseButton_Right))
+			else if (!readOnly && pointCount > 2 && IsMouseClicked(ImGuiMouseButton_Right))
 			{
 				// Handle point deletion
 				points->erase(points->begin() + i--);
@@ -433,7 +448,7 @@ bool ImGui::CurveEdit(const char *label, std::vector<BezierPoint> *points, const
 		{
 			mouseAbsorbed = true;
 
-			if (!ImGui::IsMouseDown(ImGuiMouseButton_Left))
+			if (!IsMouseDown(ImGuiMouseButton_Left))
 			{
 				if (pointDragState == 0 && !multiSelect)
 					storage->Clear(); // Clear other selections
@@ -444,13 +459,13 @@ bool ImGui::CurveEdit(const char *label, std::vector<BezierPoint> *points, const
 			else if (!readOnly)
 			{
 				// Handle point dragging
-				if (ImGui::IsMouseDragging(ImGuiMouseButton_Left, thickness) && !isDragging)
+				if (IsMouseDragging(ImGuiMouseButton_Left, thickness) && !isDragging)
 				{
 					storage->SetInt(pointDragID, 1);
 					isDragging = true;
 					changed = true;
 
-					ImVec2 mouseDelta = ImGui::GetIO().MouseDelta;
+					ImVec2 mouseDelta = io.MouseDelta;
 					ImVec2 delta = mouseDelta / pScale; // Convert back to curve space
 
 					// Delta must be used to neutralize buffer before the point can move again
@@ -534,7 +549,7 @@ bool ImGui::CurveEdit(const char *label, std::vector<BezierPoint> *points, const
 						// While dragging, draw vector coords to bottom right
 						char label[64];
 						snprintf(label, 64, "X%.3f\nY%.3f", (*points)[i].position.x, (*points)[i].position.y);
-						ImVec2 textSize = ImGui::CalcTextSize(label);
+						ImVec2 textSize = CalcTextSize(label);
 						drawList->AddText(ImVec2(contentArea.Max.x - textSize.x - 8, contentArea.Max.y - textSize.y - 8), IM_COL32(255, 255, 255, 255), label);
 					}
 				}
@@ -606,17 +621,17 @@ bool ImGui::CurveEdit(const char *label, std::vector<BezierPoint> *points, const
 				if (!mouseAbsorbed)
 				{
 					bool isHoveringLine = IsMouseHoveringLine(pPos, cpPos, thickness);
-					bool isHoveringRect = ImGui::IsMouseHoveringRect(cpPos - ImVec2(thickness, thickness) * 2.0f, cpPos + ImVec2(thickness, thickness) * 2.0f);
+					bool isHoveringRect = IsMouseHoveringRect(cpPos - ImVec2(thickness, thickness) * 2.0f, cpPos + ImVec2(thickness, thickness) * 2.0f);
 
 					if (isHoveringLine || isHoveringRect)
 					{
-						ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
-						if (ImGui::IsMouseClicked(ImGuiMouseButton_Left))
+						SetMouseCursor(ImGuiMouseCursor_Hand);
+						if (IsMouseClicked(ImGuiMouseButton_Left))
 						{
 							if (!readOnly && isHoveringLine && !isHoveringRect)
 							{
 								// Snap control point to mouse when clicking on line
-								ImVec2 mousePos = ImGui::GetIO().MousePos;
+								ImVec2 mousePos = io.MousePos;
 								mousePos = (mousePos - pOffset) / pScale; // Convert to curve space
 
 								MoveCP(*cp, *cpMirror, (*points)[i].position, mousePos, jointed);
@@ -633,13 +648,13 @@ bool ImGui::CurveEdit(const char *label, std::vector<BezierPoint> *points, const
 				
 				if (isCPSelected)
 				{
-					if (!ImGui::IsMouseDown(ImGuiMouseButton_Left))
+					if (!IsMouseDown(ImGuiMouseButton_Left))
 					{
 						storage->SetInt(cpID, 0);
 					}
-					else if (!readOnly && ImGui::IsMouseDragging(ImGuiMouseButton_Left, thickness))
+					else if (!readOnly && IsMouseDragging(ImGuiMouseButton_Left, thickness))
 					{
-						ImVec2 mouseDelta = ImGui::GetIO().MouseDelta;
+						ImVec2 mouseDelta = io.MouseDelta;
 						ImVec2 delta = mouseDelta / pScale; // Convert back to curve space
 
 						unSnappedCpPos += delta;
@@ -660,7 +675,7 @@ bool ImGui::CurveEdit(const char *label, std::vector<BezierPoint> *points, const
 							// While dragging, draw vector coords to bottom right
 							char label[64];
 							snprintf(label, 64, "X%.3f\nY%.3f", newCpPos.x, newCpPos.y);
-							ImVec2 textSize = ImGui::CalcTextSize(label);
+							ImVec2 textSize = CalcTextSize(label);
 							drawList->AddText(ImVec2(contentArea.Max.x - textSize.x - 8, contentArea.Max.y - textSize.y - 8), IM_COL32(255, 255, 255, 255), label);
 						}
 					}
@@ -676,17 +691,17 @@ bool ImGui::CurveEdit(const char *label, std::vector<BezierPoint> *points, const
 		if (!noLabels)
 		{
 			// Draw point number label
-			ImVec2 labelSize = ImGui::CalcTextSize(std::to_string(i).c_str());
+			ImVec2 labelSize = CalcTextSize(std::to_string(i).c_str());
 			drawList->AddText(pPos + ImVec2(thickness * 3.0f, -thickness * 3.0f) - labelSize * 0.65f, IM_COL32(255, 255, 255, 255), std::to_string(i + 1).c_str());
 		}
 	}
 
 	if (!readOnly && !mouseAbsorbed)
 	{
-		if (ImGui::IsMouseClicked(ImGuiMouseButton_Left))
+		if (IsMouseClicked(ImGuiMouseButton_Left))
 		{
 			// Check if user has clicked on a curve and add a new point if so
-			ImVec2 mousePos = ImGui::GetIO().MousePos;
+			ImVec2 mousePos = io.MousePos;
 
 			for (int i = 0; i < pointCount - 1; i++)
 			{
@@ -730,7 +745,7 @@ bool ImGui::CurveEdit(const char *label, std::vector<BezierPoint> *points, const
 					ImVec2 p3 = (*points)[i + 1ll].controlPoint1 * pScale + pOffset;
 					ImVec2 p4 = (*points)[i + 1ll].position * pScale + pOffset;
 
-					ImVec2 closestPoint = ImBezierCubicClosestPointCasteljau(p1, p2, p3, p4, mousePos, ImGui::GetStyle().CurveTessellationTol);
+					ImVec2 closestPoint = ImBezierCubicClosestPointCasteljau(p1, p2, p3, p4, mousePos, GetStyle().CurveTessellationTol);
 					float distanceSq = ImLengthSqr(mousePos - closestPoint);
 
 					if (distanceSq > thickness * thickness * 2.5f + 1.0f)
@@ -840,9 +855,9 @@ bool ImGui::CurveEdit(const char *label, std::vector<BezierPoint> *points, const
 	// Clear selections if user clicks outside of any points or control points while not holding multi-select
 	if (!mouseAbsorbed && !multiSelect)
 	{
-		if (ImGui::IsMouseClicked(ImGuiMouseButton_Left))
+		if (IsMouseClicked(ImGuiMouseButton_Left))
 		{
-			if (ImGui::IsMouseHoveringRect(contentArea.Min, contentArea.Max, true))
+			if (IsMouseHoveringRect(contentArea.Min, contentArea.Max, true))
 			{
 				storage->Clear(); 
 				mouseAbsorbed = true;
@@ -852,7 +867,7 @@ bool ImGui::CurveEdit(const char *label, std::vector<BezierPoint> *points, const
 
 	drawList->PopClipRect();
 
-	ImGui::EndChild();
+	EndChild();
 	return changed;
 }
 

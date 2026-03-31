@@ -37,7 +37,7 @@ namespace ImGui
 		ImVec2 controlPoint2 = { };
 	};
 
-	bool CurveEdit(const char* label, std::vector<BezierPoint>* points, const ImVec2& size, const ImRect& pointBounds, float thickness = 2, ImRect padding = {48, 24, 20, 24}, ImVec2i gridLines = {4, 4}, ImGuiCurveEditFlags flags = 0, ImGuiChildFlags childFlags = 1, ImGuiWindowFlags windowFlags = 0);
+	bool CurveEdit(const char* label, std::vector<BezierPoint>* points, ImVec2 size = {0, 150}, ImRect pointBounds = {0, 0, 1, 1}, float thickness = 2, ImRect padding = {48, 24, 20, 24}, ImVec2i gridLines = {4, 4}, ImGuiCurveEditFlags flags = 0, ImGuiChildFlags childFlags = 1, ImGuiWindowFlags windowFlags = 0);
 };
 
 void ImDrawCallback_ImplDX11_SetSampler(const ImDrawList *parent_list, const ImDrawCmd *cmd);
