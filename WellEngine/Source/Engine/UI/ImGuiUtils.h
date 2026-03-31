@@ -1,11 +1,16 @@
 #pragma once
+#include "Dependencies/ImGui/imgui.h"
+#include "Dependencies/ImGui/imgui_internal.h"
+
 #include <functional>
 #include <string>
+#include <map>
+
+#ifdef USE_IMGUI
 
 // ImGui utilities for simplifying window management, setting style presets
 namespace ImGuiUtils
 {
-#ifdef USE_IMGUI
 	void WrapMousePosEx(int axises_mask, const ImRect &wrap_rect);
 	void WrapMousePos(int axises_mask);
 	void LockMouseOnActive();
@@ -131,5 +136,6 @@ namespace ImGuiUtils
 
 		TESTABLE()
 	};
-#endif
 }
+
+#endif // USE_IMGUI

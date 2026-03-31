@@ -382,7 +382,9 @@
     <ClInclude Include="Source\Engine\UI\Fonts\IconsLucide.h" />
     <ClInclude Include="Source\Engine\UI\Fonts\IconsMaterialDesignIcons.h" />
     <ClInclude Include="Source\Engine\UI\Fonts\IconsMaterialSymbols.h" />
+    <ClInclude Include="Source\Engine\UI\ImGuiCurve.h" />
     <ClInclude Include="Source\Engine\UI\ImGuiExtensions.h" />
+    <ClInclude Include="Source\Engine\UI\ImGuiNodeGraph.h" />
     <ClInclude Include="Source\Engine\UI\ImGuiUtils.h" />
     <ClInclude Include="Source\Engine\Debug\TrackedAlloc.h" />
     <ClInclude Include="Source\Engine\EngineCore.h" />
@@ -584,7 +586,9 @@
     <ClCompile Include="Source\Engine\Debug\DebugDrawer.cpp" />
     <ClCompile Include="Source\Engine\Debug\ErrMsg.cpp" />
     <ClCompile Include="Source\Engine\Input\KeyboardWinHook.cpp" />
+    <ClCompile Include="Source\Engine\UI\ImGuiCurve.cpp" />
     <ClCompile Include="Source\Engine\UI\ImGuiExtensions.cpp" />
+    <ClCompile Include="Source\Engine\UI\ImGuiNodeGraph.cpp" />
     <ClCompile Include="Source\Engine\UI\ImGuiUtils.cpp" />
     <ClCompile Include="Source\Engine\Debug\TrackedAlloc.cpp" />
     <ClCompile Include="Source\Engine\EngineCore.cpp" />
