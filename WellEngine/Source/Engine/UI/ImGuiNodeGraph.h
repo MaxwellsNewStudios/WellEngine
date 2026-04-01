@@ -1,5 +1,8 @@
 #pragma once
 #include "Dependencies/ImGui/imgui.h"
+#include <vector>
+#include <string>
+#include <functional>
 
 #ifdef USE_IMGUI
 
@@ -7,64 +10,357 @@ typedef int ImGuiNodeGraphFlags;
 
 enum ImGuiNodeGraphFlags_
 {
-	ImGuiNodeGraphFlags_None = 0,
-	ImGuiNodeGraphFlags_ = 1 << 0,
+	ImGuiNodeGraphFlags_None          = 0,
+	ImGuiNodeGraphFlags_EnableGrid    = 1 << 0,
 };
 
-namespace ImGui::NodeGraph
+
+namespace ImGui
 {
-	// forward decls
-	struct Pin;
-	struct Node;
-
-
-	struct PinPreset
+	namespace NodeGraph
 	{
-		// I/O type
-		// Data type (by name)
-	};
+		namespace Internal
+		{
+			constexpr float		NodeRounding = 3.0f;
+			constexpr ImVec2	NodeHeaderPadding = ImVec2(8.0f, 4.0f);
+			constexpr float		NodeHeaderTextSize = 15.0f;
+			constexpr ImVec2	NodeBodyPadding = ImVec2(4.0f, 4.0f);
 
-	struct NodePreset
-	{
-		// Name
-		// Size
-		// I/O pin presets
-		// Callbacks (e.g. rendering body, execution)
-	};
+			constexpr float		PinSize = 12.0f;
+			constexpr float		PinOutlineThickness = 3.0f;
+			constexpr ImVec2	PinPadding = ImVec2(8.0f, 6.0f);
+			constexpr float		PinTextSize = 13.0f;
+
+			constexpr float		LinkThickness = 3.0f;
+		}
+
+		// Forward decls
+		struct Pin;
+		struct Node;
+		struct Link;
+		class GraphInstance;
+
+		using NodeId = int32_t;
+		using PinId = int32_t;
+		using LinkId = int32_t;
+
+		enum class PinGender : uint8_t
+		{
+			Input,
+			Output
+		};
+
+		enum class PinType : uint8_t
+		{
+			Flow,      // execution flow
+			Bool,
+			Int,
+			Float,
+			Vec2,
+			Vec3,
+			Vec4,
+			String,
+			Custom
+		};
 
 
-	struct Pin
-	{
-		// Preset ref
-		// Owner node ref
-		// Linked pin ref
-		// I/O data location ptr
-		// Signal state (waiting / has signal)
-		// Callbacks (e.g. signal transfer)
-	};
+		struct PinPreset
+		{
+			std::string name;
+			std::string customTypeName; // if type is Custom, connecting pins must have the same customTypeName
+			ImColor color;
+			PinType type;
+		};
 
-	struct Node
-	{
-		// Preset ref
-		// Pos
-		// I/O pins
-		// I/O data locations
-	};
+		struct NodePreset
+		{
+			std::string name;
 
-	
-	struct GraphContext
-	{
-		// Node presets
-	};
+			ImVec2 size;
+			ImVec2 headerSize;
+			ImVec4 inPinsRect;
+			ImVec4 outPinsRect;
+			ImVec4 bodyRect;
 
-	class GraphInstance
-	{
-		// Context ref
-		// Nodes
-	};
+			std::vector<PinPreset> inputs;
+			std::vector<PinPreset> outputs;
+
+			std::function<void(Node&)> execFunc; // Function that gets called when the node is executed
+
+			// Optional: custom draw callback for node body (inside the header)
+			// Parameters: node reference, body size
+			std::function<void(Node&, ImVec2)> drawBodyFunc;
 
 
-	bool NodeGraph(const char* label, GraphInstance &instance, ImVec2 size = { 0, 0 }, ImGuiNodeGraphFlags flags = 0);
+			void CalcSize()
+			{
+				/*
+						____________________________
+						|        HeaderText        |
+						|--------------------------|
+						o InPin1Text   OutPin1Text o
+						o InPin2Text               |
+						| ________________________ |
+						| |         Body         | |
+						| ------------------------ |
+						----------------------------
+				*/
+
+				ImVec2 headerArea = ImVec2(0, 0);		// Header text size + header padding * 2
+				ImVec2 inputPinsArea = ImVec2(0, 0);	// In Pins * (pin size + pin padding * 2 + pin text size.x)
+				ImVec2 outputPinsArea = ImVec2(0, 0);	// Out Pins * (pin size + pin padding * 2 + pin text size.x)
+				ImVec2 bodyArea = ImVec2(0, 0);			// hasBody * (Body padding * 2)
+
+				ImVec2 totalArea = ImVec2(0, 0);
+				// Width: max(header, input pins + output pins, body)
+				// Height: header + max(input pins, output pins) + body
+			
+				ImFont* font = ImGui::GetFont();
+				bool hasBody = drawBodyFunc != nullptr;
+
+				// Header area
+				ImVec2 headerTextSize = font->CalcTextSizeA(Internal::NodeHeaderTextSize, FLT_MAX, 0.0f, name.c_str());
+				headerArea = headerTextSize;
+				headerArea += Internal::NodeHeaderPadding * 2;
+
+				// Input pins area
+				inputPinsArea.y += Internal::PinPadding.y;
+
+				for (const PinPreset& pin : inputs)
+				{
+					ImVec2 pinTextSize = font->CalcTextSizeA(Internal::PinTextSize, FLT_MAX, 0.0f, pin.name.c_str());
+					inputPinsArea.x = max(inputPinsArea.x, Internal::PinSize * 0.5f + Internal::PinPadding.x * 2 + pinTextSize.x);
+					inputPinsArea.y += max(Internal::PinSize, pinTextSize.y) + Internal::PinPadding.y;
+				}
+
+				// Output pins area
+				outputPinsArea.y += Internal::PinPadding.y;
+
+				for (const PinPreset& pin : outputs)
+				{
+					ImVec2 pinTextSize = font->CalcTextSizeA(Internal::PinTextSize, FLT_MAX, 0.0f, pin.name.c_str());
+					outputPinsArea.x = max(outputPinsArea.x, Internal::PinSize * 0.5f + Internal::PinPadding.x * 2 + pinTextSize.x);
+					outputPinsArea.y += max(Internal::PinSize, pinTextSize.y) + Internal::PinPadding.y;
+				}
+
+				// Body area
+				if (hasBody)
+				{
+					bodyArea += Internal::NodeBodyPadding * 2;
+				}
+
+				totalArea.x = max(headerArea.x, max(inputPinsArea.x + outputPinsArea.x + Internal::PinPadding.x, bodyArea.x));
+				totalArea.y = headerArea.y + max(inputPinsArea.y, outputPinsArea.y) + bodyArea.y;
+
+				if (size.x < totalArea.x)
+					size.x = totalArea.x;
+				if (size.y < totalArea.y)
+					size.y = totalArea.y;
+
+				headerSize = ImVec2(max(headerArea.x, size.x), headerArea.y);
+				inPinsRect = ImVec4(0, headerArea.y, inputPinsArea.x, headerArea.y + inputPinsArea.y);
+				outPinsRect = ImVec4(size.x - outputPinsArea.x, headerArea.y, size.x, headerArea.y + outputPinsArea.y);
+				bodyRect = ImVec4(
+					bodyArea.x * 0.5f, 
+					max(inPinsRect.w, outPinsRect.w) + bodyArea.y * 0.5f,
+					size.x - bodyArea.x * 0.5f, 
+					size.y - bodyArea.y * 0.5f
+				);
+			}
+		};
+
+
+		struct Pin
+		{
+			const PinId id;
+			const NodeId nodeId;
+			const PinPreset &preset;
+
+			const ImVec2 pos; // Node-space
+			const PinGender gender;
+
+			LinkId linkId = -1;
+
+			Pin(PinId id, NodeId nodeId, const PinPreset &preset, const ImVec2 &pos, PinGender gender) : id(id), nodeId(nodeId), preset(preset), pos(pos), gender(gender) {}
+
+			void DrawUI(GraphInstance &instance);
+		};
+
+		struct Node
+		{
+			const NodeId id;
+			const NodePreset &preset;
+
+			std::vector<PinId> inputPinIds;
+			std::vector<PinId> outputPinIds;
+
+			ImVec2 pos = ImVec2(0, 0); // Cached
+
+			Node(NodeId id, const NodePreset &preset, ImVec2 pos = ImVec2(0, 0)) : id(id), preset(preset), pos(pos) { }
+
+			void DrawUI(GraphInstance &instance);
+		};
+
+		struct Link
+		{
+			const LinkId id;
+			const PinId inPinId;
+			const PinId outPinId;
+
+			ImVec2 cp1, cp2; // Window-space, cached positions for bezier curve
+
+			Link(LinkId id, const PinId &inPinId, const PinId &outPinId) : id(id), inPinId(inPinId), outPinId(outPinId) { }
+
+			void UpdateControlPoints(GraphInstance &instance);
+
+			void DrawUI(GraphInstance &instance);
+		};
+
+
+		struct GraphContext
+		{
+			std::vector<NodePreset> nodePresets;
+		};
+
+		class GraphInstance
+		{
+			friend struct Node;
+			friend struct Pin;
+			friend struct Link;
+
+		private:
+			const GraphContext &context;
+
+			std::unordered_map<NodeId, Node> nodes;
+			std::unordered_map<PinId, Pin> pins;
+			std::unordered_map<LinkId, Link> links;
+
+			// ID generators
+			NodeId  nextNodeId = 1;
+			PinId  nextPinId = 1;
+			LinkId  nextLinkId = 1;
+
+			// Interaction state
+			ImVec2 viewPos = ImVec2(0, 0);
+			ImVec2 viewSize = ImVec2(0, 0);
+
+			Node *selectedNode = nullptr;
+			Pin *linkingPin = nullptr;
+
+		public:
+			GraphInstance(const GraphContext &ctx) : context(ctx) {}
+
+			// Construction
+
+			NodeId AddNode(int presetIndex, const ImVec2 &pos)
+			{
+				if (presetIndex < 0 || presetIndex >= context.nodePresets.size())
+					return 0;
+
+				const NodePreset &preset = context.nodePresets[presetIndex];
+
+				NodeId nodeId = nextNodeId++;
+				nodes.emplace(nodeId, Node(nodeId, preset, pos));
+				Node &node = nodes.at(nodeId);
+
+				// Create pins for node
+				{
+					float pinPosY = preset.inPinsRect.y + Internal::PinPadding.y + Internal::PinSize * 0.5f;
+					float pinStrideY = Internal::PinPadding.y + Internal::PinSize;
+
+					node.inputPinIds.reserve(preset.inputs.size());
+					for (const PinPreset &pinPreset : preset.inputs)
+					{
+						ImVec2 pinPos = ImVec2(preset.inPinsRect.x, pinPosY);
+						pinPosY += pinStrideY;
+
+						PinId pinId = nextPinId++;
+						pins.emplace(pinId, Pin(pinId, nodeId, pinPreset, pinPos, PinGender::Input));
+
+						node.inputPinIds.push_back(pinId);
+					}
+
+					pinPosY = preset.outPinsRect.y + Internal::PinPadding.y + Internal::PinSize * 0.5f;
+
+					node.outputPinIds.reserve(preset.outputs.size());
+					for (const PinPreset &pinPreset : preset.outputs)
+					{
+						ImVec2 pinPos = ImVec2(preset.outPinsRect.z, pinPosY);
+						pinPosY += pinStrideY;
+
+						PinId pinId = nextPinId++;
+						pins.emplace(pinId, Pin(pinId, nodeId, pinPreset, pinPos, PinGender::Output));
+
+						node.outputPinIds.push_back(pinId);
+					}
+				}
+
+				return nodeId;
+			}
+
+			LinkId AddLink(PinId outPinId, PinId inPinId)
+			{
+				if (pins.find(outPinId) == pins.end() || pins.find(inPinId) == pins.end())
+					return 0;
+
+				Pin &inPin = pins.at(inPinId);
+				Pin &outPin = pins.at(outPinId);
+
+				if (inPin.nodeId == outPin.nodeId)
+					return 0;
+
+				if (inPin.gender == PinGender::Output || outPin.gender == PinGender::Input)
+					return 0;
+
+				if (inPin.linkId > 0 || outPin.linkId > 0)
+					return 0;
+
+				if (inPin.preset.type != outPin.preset.type)
+					return 0;
+
+				if (inPin.preset.type == PinType::Custom)
+					if (inPin.preset.customTypeName != outPin.preset.customTypeName)
+						return 0;
+
+				// TODO: also check if link would create a cycle
+
+				LinkId linkId = nextLinkId++;
+				links.emplace(linkId, Link(linkId, inPinId, outPinId));
+
+				inPin.linkId = linkId;
+				outPin.linkId = linkId;
+
+				return linkId;
+			}
+
+			// Helpers
+
+			PinId GetNodePin(NodeId nodeId, int pinIndex, PinGender gender)
+			{
+				if (gender == PinGender::Input)
+				{
+					const Node &node = nodes.at(nodeId);
+					if (pinIndex < 0 || pinIndex >= node.inputPinIds.size())
+						return 0;
+
+					return node.inputPinIds[pinIndex];
+				}
+				else
+				{
+					const Node &node = nodes.at(nodeId);
+					if (pinIndex < 0 || pinIndex >= node.outputPinIds.size())
+						return 0;
+
+					return node.outputPinIds[pinIndex];
+				}
+			}
+
+			// UI
+			bool Open(ImVec2 size = ImVec2(0, 0), ImGuiNodeGraphFlags flags = 0);
+		};
+	}
+
+	bool OpenNodeGraph(const char* label, NodeGraph::GraphInstance &instance, ImVec2 size = ImVec2(0, 0), ImGuiNodeGraphFlags flags = 0);
 };
 
 #endif // USE_IMGUI

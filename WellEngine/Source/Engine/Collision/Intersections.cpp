@@ -8,10 +8,6 @@
 using namespace DirectX;
 using namespace Collisions;
 
-#define MIN(A, B) (((A) < (B)) ? (A) : (B))
-#define MAX(A, B) (((A) > (B)) ? (A) : (B))
-#define CLAMP(A, min, max) (MIN(MAX((x), (minVal)), (maxVal)))
-
 bool Collisions::CheckIntersection(const Collider *c1, const Collider *c2, CollisionData& data)
 {
 	if (!c1 || !c2)
@@ -959,7 +955,7 @@ bool Collisions::OBBOBBIntersection(const OBB &obb1, const OBB &obb2, XMFLOAT3 &
 			return false;
 
 		// Get overlap
-		float overlap = MIN(max1, max2) - MAX(min1, min2);
+		float overlap = min(max1, max2) - max(min1, min2);
 		if (overlap < depth)
 		{
 			depth = overlap;
@@ -1371,7 +1367,7 @@ bool Collisions::TerrainRayIntersection(const Terrain &t, const Ray &r, dx::XMFL
         tFactorX = (x - start.x) / static_cast<float>(end.x - start.x + 1);
         tFactorZ = (y - start.y) / static_cast<float>(end.y - start.y + 1);
         
-        float tFactor = MAX(tFactorX, tFactorZ);
+        float tFactor = max(tFactorX, tFactorZ);
         refY = r.origin.y + tFactor * r.dir.y * r.length;
 
         if (t.GetHeight(x, y, height))

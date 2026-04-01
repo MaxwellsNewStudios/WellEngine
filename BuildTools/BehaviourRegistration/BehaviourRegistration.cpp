@@ -5,6 +5,13 @@
 #include <format>
 #include <filesystem>
 
+#ifdef _DEBUG
+#define DBG_MSG(msg) std::cout << msg
+#else
+#define DBG_MSG(msg)
+#endif
+
+
 const std::string SolutionDir = SOLUTION_DIR;
 const std::string RegistryDir = SolutionDir + "WellEngine\\Source\\Game\\";
 const std::string BehavioursDir = RegistryDir + "Behaviours\\";
@@ -79,9 +86,7 @@ static std::vector<std::string> ScanHeaderFileForBehaviours(const std::filesyste
 			size_t commentPos = headerCode.find("//", lineStart == std::string::npos ? 0 : lineStart);
             if (commentPos != std::string::npos && commentPos < pos)
             {
-#ifdef _DEBUG
-			std::cout << "Skipping commented-out attribute in file: '" << filePath << "', Pos: " << pos << ".\n";
-#endif
+                DBG_MSG("Skipping commented-out attribute in file: '" << filePath << "', Pos: " << pos << ".\n");
                 continue; // Attribute is in a comment, skip it
             }
 
@@ -91,9 +96,7 @@ static std::vector<std::string> ScanHeaderFileForBehaviours(const std::filesyste
                 size_t blockCommentEnd = headerCode.rfind("*/", pos);
                 if (blockCommentEnd == std::string::npos || blockCommentEnd < blockCommentStart)
                 {
-#ifdef _DEBUG
-                    std::cout << "Skipping commented-out attribute in file: '" << filePath << "', Pos: " << pos << ".\n";
-#endif
+                    DBG_MSG("Skipping commented-out attribute in file: '" << filePath << "', Pos: " << pos << ".\n");
                     continue; // Attribute is in a block comment, skip it
                 }
             }
@@ -144,17 +147,14 @@ static void RecursiveHeaderSearch(const std::string &recursedPath, std::filesyst
 
             // Add include for this header file
             std::string newInclude = recursedPath + name;
-#ifdef _DEBUG
-			std::cout << "Including '" << newInclude << "'\n";
-#endif
+            DBG_MSG("Including '" << newInclude << "'\n");
             info.includes.emplace_back(std::move(newInclude));
 
             // Add each behaviour class found
             for (auto &behaviourName : behaviourNames)
             {
-#ifdef _DEBUG
-                std::cout << "Registering '" << behaviourName << "'\n";
-#endif
+                DBG_MSG("Registering '" << behaviourName << "'\n");
+
 				std::pair<std::string, std::string> behaviourEntry;
 				behaviourEntry.first = std::move(behaviourName);
 

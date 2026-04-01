@@ -2477,6 +2477,69 @@ bool Scene::RenderSceneUI()
 			TreePop();
 		}
 
+		if (TreeNode("Node Graph Tests"))
+		{
+			using namespace ImGui::NodeGraph;
+
+			static GraphContext gCtx;
+			static GraphInstance gInstance(gCtx);
+
+			static bool firstTime = true;
+			if (firstTime)
+			{
+				// TODO: Create context, then add some nodes to instance
+
+				PinPreset pinFloatPreset;
+				pinFloatPreset.name = "Float Pin";
+				pinFloatPreset.color = ImColor(100, 200, 100);
+				pinFloatPreset.type = ImGui::NodeGraph::PinType::Float;
+
+				PinPreset pinVec3Preset;
+				pinVec3Preset.name = "Vec3 Pin";
+				pinVec3Preset.color = ImColor(200, 100, 100);
+				pinVec3Preset.type = ImGui::NodeGraph::PinType::Vec3;
+
+				PinPreset pinBoolPreset;
+				pinBoolPreset.name = "Bool Pin";
+				pinBoolPreset.color = ImColor(100, 100, 200);
+				pinBoolPreset.type = ImGui::NodeGraph::PinType::Bool;
+
+
+				NodePreset nodePreset;
+				nodePreset.name = "Test Node";
+				nodePreset.inputs.push_back(pinFloatPreset);
+				nodePreset.inputs.push_back(pinVec3Preset);
+				nodePreset.outputs.push_back(pinVec3Preset);
+				nodePreset.outputs.push_back(pinBoolPreset);
+				nodePreset.outputs.push_back(pinBoolPreset);
+				nodePreset.outputs.push_back(pinFloatPreset);
+
+				nodePreset.CalcSize();
+
+				gCtx.nodePresets.emplace_back(nodePreset);
+
+				NodeId nodeId1 = gInstance.AddNode(0, ImVec2(40, 30));
+				NodeId nodeId2 = gInstance.AddNode(0, ImVec2(350, 90));
+
+				gInstance.AddLink(
+					gInstance.GetNodePin(nodeId1, 0, PinGender::Output), 
+					gInstance.GetNodePin(nodeId2, 1, PinGender::Input)
+				);
+
+				gInstance.AddLink(
+					gInstance.GetNodePin(nodeId1, 3, PinGender::Output), 
+					gInstance.GetNodePin(nodeId2, 0, PinGender::Input)
+				);
+
+				firstTime = false;
+			}
+
+			OpenNodeGraph("Graph", gInstance, ImVec2(0, 0), ImGuiNodeGraphFlags_EnableGrid);
+
+			Separator();
+			TreePop();
+		}
+
 		static bool displayCullingRects = false;
 		Checkbox("Show Culling Rects", &displayCullingRects);
 
