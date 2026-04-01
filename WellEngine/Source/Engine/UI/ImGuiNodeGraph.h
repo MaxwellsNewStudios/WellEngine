@@ -32,6 +32,7 @@ namespace ImGui
 			constexpr float		PinTextSize = 13.0f;
 
 			constexpr float		LinkThickness = 3.0f;
+			constexpr float		MinLinkCPDist = 100.0f;
 		}
 
 		// Forward decls
@@ -207,11 +208,7 @@ namespace ImGui
 			const PinId inPinId;
 			const PinId outPinId;
 
-			ImVec2 cp1, cp2; // Window-space, cached positions for bezier curve
-
 			Link(LinkId id, const PinId &inPinId, const PinId &outPinId) : id(id), inPinId(inPinId), outPinId(outPinId) { }
-
-			void UpdateControlPoints(GraphInstance &instance);
 
 			void DrawUI(GraphInstance &instance);
 		};
@@ -244,13 +241,36 @@ namespace ImGui
 			ImVec2 viewPos = ImVec2(0, 0);
 			ImVec2 viewSize = ImVec2(0, 0);
 
-			Node *selectedNode = nullptr;
-			Pin *linkingPin = nullptr;
+			NodeId selectedNode = -1;
+			PinId linkingPin = -1;
 
 		public:
 			GraphInstance(const GraphContext &ctx) : context(ctx) {}
 
-			// Construction
+			// Helpers
+
+			PinId GetNodePin(NodeId nodeId, int pinIndex, PinGender gender)
+			{
+				if (gender == PinGender::Input)
+				{
+					const Node &node = nodes.at(nodeId);
+					if (pinIndex < 0 || pinIndex >= node.inputPinIds.size())
+						return 0;
+
+					return node.inputPinIds[pinIndex];
+				}
+				else
+				{
+					const Node &node = nodes.at(nodeId);
+					if (pinIndex < 0 || pinIndex >= node.outputPinIds.size())
+						return 0;
+
+					return node.outputPinIds[pinIndex];
+				}
+			}
+
+
+			// Editor API
 
 			NodeId AddNode(int presetIndex, const ImVec2 &pos)
 			{
@@ -333,26 +353,17 @@ namespace ImGui
 				return linkId;
 			}
 
-			// Helpers
-
-			PinId GetNodePin(NodeId nodeId, int pinIndex, PinGender gender)
+			void RemoveLink(LinkId linkId)
 			{
-				if (gender == PinGender::Input)
-				{
-					const Node &node = nodes.at(nodeId);
-					if (pinIndex < 0 || pinIndex >= node.inputPinIds.size())
-						return 0;
+				if (links.find(linkId) == links.end())
+					return;
 
-					return node.inputPinIds[pinIndex];
-				}
-				else
-				{
-					const Node &node = nodes.at(nodeId);
-					if (pinIndex < 0 || pinIndex >= node.outputPinIds.size())
-						return 0;
-
-					return node.outputPinIds[pinIndex];
-				}
+				Link &link = links.at(linkId);
+				Pin &inPin = pins.at(link.inPinId);
+				Pin &outPin = pins.at(link.outPinId);
+				inPin.linkId = -1;
+				outPin.linkId = -1;
+				links.erase(linkId);
 			}
 
 			// UI
