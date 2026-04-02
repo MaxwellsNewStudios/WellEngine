@@ -2487,36 +2487,92 @@ bool Scene::RenderSceneUI()
 			static bool firstTime = true;
 			if (firstTime)
 			{
-				// TODO: Create context, then add some nodes to instance
+				// Create context, then add some nodes to instance
 
-				PinPreset pinFloatPreset;
-				pinFloatPreset.name = "Float Pin";
-				pinFloatPreset.color = ImColor(100, 200, 100);
+				PinPreset pinFloatPreset = {};
+				pinFloatPreset.name = "Float";
+				pinFloatPreset.color = ImColor(115, 240, 115);
 				pinFloatPreset.type = ImGui::NodeGraph::PinType::Float;
 
-				PinPreset pinVec3Preset;
-				pinVec3Preset.name = "Vec3 Pin";
-				pinVec3Preset.color = ImColor(200, 100, 100);
+				PinPreset pinVec3Preset = {};
+				pinVec3Preset.name = "Vec3";
+				pinVec3Preset.color = ImColor(240, 115, 115);
 				pinVec3Preset.type = ImGui::NodeGraph::PinType::Vec3;
 
-				PinPreset pinBoolPreset;
-				pinBoolPreset.name = "Bool Pin";
-				pinBoolPreset.color = ImColor(100, 100, 200);
+				PinPreset pinBoolPreset = {};
+				pinBoolPreset.name = "Bool";
+				pinBoolPreset.color = ImColor(115, 115, 240);
 				pinBoolPreset.type = ImGui::NodeGraph::PinType::Bool;
 
+				PinPreset pinBitPreset = {};
+				pinBitPreset.name = "Bit";
+				pinBitPreset.color = ImColor(115, 115, 240);
+				pinBitPreset.type = ImGui::NodeGraph::PinType::Bool;
 
-				NodePreset nodePreset;
-				nodePreset.name = "Test Node";
+				PinPreset pinCustomEntPreset = {};
+				pinCustomEntPreset.name = "Entity";
+				pinCustomEntPreset.color = ImColor(240, 240, 115);
+				pinCustomEntPreset.type = ImGui::NodeGraph::PinType::Custom;
+				pinCustomEntPreset.customTypeName = "Entity";
+
+				PinPreset pinCustomBehPreset = {};
+				pinCustomBehPreset.name = "Behaviour";
+				pinCustomBehPreset.color = ImColor(115, 240, 240);
+				pinCustomBehPreset.type = ImGui::NodeGraph::PinType::Custom;
+				pinCustomBehPreset.customTypeName = "Behaviour";
+
+				PinPreset pinFlowPreset = {};
+				pinFlowPreset.name = "";
+				pinFlowPreset.color = ImColor(255, 255, 255);
+				pinFlowPreset.type = ImGui::NodeGraph::PinType::Flow;
+
+
+				NodePreset nodePreset = {};
+				nodePreset.name = "Test Node A";
 				nodePreset.inputs.push_back(pinFloatPreset);
 				nodePreset.inputs.push_back(pinVec3Preset);
+				nodePreset.inputs.push_back(pinBoolPreset);
 				nodePreset.outputs.push_back(pinVec3Preset);
 				nodePreset.outputs.push_back(pinBoolPreset);
 				nodePreset.outputs.push_back(pinBoolPreset);
 				nodePreset.outputs.push_back(pinFloatPreset);
-
 				nodePreset.CalcSize();
-
 				gCtx.nodePresets.emplace_back(nodePreset);
+
+				nodePreset = {};
+				nodePreset.name = "Test Node B";
+				nodePreset.inputs.push_back(pinBoolPreset);
+				nodePreset.inputs.push_back(pinCustomEntPreset);
+				nodePreset.inputs.push_back(pinCustomBehPreset);
+				nodePreset.outputs.push_back(pinCustomEntPreset);
+				nodePreset.CalcSize();
+				gCtx.nodePresets.emplace_back(nodePreset);
+
+				nodePreset = {};
+				nodePreset.name = "Test Node C";
+				nodePreset.outputs.push_back(pinCustomEntPreset);
+				nodePreset.outputs.push_back(pinCustomBehPreset);
+				nodePreset.CalcSize();
+				gCtx.nodePresets.emplace_back(nodePreset);
+
+				nodePreset = {};
+				nodePreset.name = "Bit";
+				nodePreset.bodySize = ImVec2(35, 35);
+				nodePreset.outputs.push_back(pinBitPreset);
+				nodePreset.drawBodyFunc = [](Node &node, ImVec2 bodySize) {
+					static bool hi = false;
+					ImGui::Checkbox("##Checkbox", &hi);
+				};
+				nodePreset.CalcSize();
+				gCtx.nodePresets.emplace_back(nodePreset);
+
+				nodePreset = {};
+				nodePreset.name = "Flow";
+				nodePreset.inputs.push_back(pinFlowPreset);
+				nodePreset.outputs.push_back(pinFlowPreset);
+				nodePreset.CalcSize();
+				gCtx.nodePresets.emplace_back(nodePreset);
+
 
 				NodeId nodeId1 = gInstance.AddNode(0, ImVec2(40, 30));
 				NodeId nodeId2 = gInstance.AddNode(0, ImVec2(350, 90));
@@ -2530,6 +2586,15 @@ bool Scene::RenderSceneUI()
 					gInstance.GetNodePin(nodeId1, 3, PinGender::Output), 
 					gInstance.GetNodePin(nodeId2, 0, PinGender::Input)
 				);
+
+				gInstance.AddNode(1, ImVec2(60, 200));
+				gInstance.AddNode(2, ImVec2(400, 220));
+				gInstance.AddNode(0, ImVec2(100, 350));
+				gInstance.AddNode(3, ImVec2(400, 400));
+
+				for (int i = 0; i < 5; i++)
+					gInstance.AddNode(4, ImVec2(0, -50));
+
 
 				firstTime = false;
 			}

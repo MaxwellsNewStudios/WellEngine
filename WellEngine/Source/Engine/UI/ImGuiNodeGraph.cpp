@@ -14,9 +14,14 @@ using namespace ImGui::NodeGraph;
 
 static void DrawCurve(const ImVec2 &p1, const ImVec2 &p2, ImColor color)
 {
+	float xDiff = (p2.x - p1.x);
+	float yDiff = (p2.y - p1.y);
+	float dist = std::sqrtf(xDiff * xDiff + yDiff * yDiff);
+	float t = min(dist / (Internal::MinLinkCPDist), 1.0f);
+
 	float xMid = (p1.x + p2.x) * 0.5f;
-	ImVec2 cp1 = ImVec2(max(xMid, p1.x + Internal::MinLinkCPDist), p1.y);
-	ImVec2 cp2 = ImVec2(min(xMid, p2.x - Internal::MinLinkCPDist), p2.y);
+	ImVec2 cp1 = ImVec2(max(xMid, p1.x + Internal::MinLinkCPDist * t), p1.y);
+	ImVec2 cp2 = ImVec2(min(xMid, p2.x - Internal::MinLinkCPDist * t), p2.y);
 	ImGui::GetWindowDrawList()->AddBezierCubic(p1, cp1, cp2, p2, color, Internal::LinkThickness);
 }
 
@@ -30,8 +35,8 @@ void ImGui::NodeGraph::Link::DrawUI(GraphInstance &instance)
 	Node &outNode = instance.nodes.at(outPin.nodeId);
 	Node &inNode = instance.nodes.at(inPin.nodeId);
 
-	ImVec2 p1 = outPin.pos + outNode.pos + instance.viewPos;
-	ImVec2 p2 = inPin.pos + inNode.pos + instance.viewPos;
+	ImVec2 p1 = outPin.pos + outNode.pos + instance.windowPos + instance.viewPos;
+	ImVec2 p2 = inPin.pos + inNode.pos + instance.windowPos + instance.viewPos;
 
 	DrawCurve(p1, p2, outPin.preset.color);
 }
@@ -42,11 +47,13 @@ void ImGui::NodeGraph::Pin::DrawUI(GraphInstance &instance)
 	// Draw pin as a circle with text label, side depending on whether it's input or output
 	// Circle is filled if connected, hollow if not
 	// Also draw a small circle in the center if it's currently being linked from/to
+	PushID(std::format("Pin{}", id).c_str());
+
 	ImDrawList *drawList = GetWindowDrawList();
 	ImGuiWindow *window = GetCurrentWindow();
 
 	Node &node = instance.nodes.at(nodeId);
-	ImVec2 nodePos = instance.viewPos + node.pos;
+	ImVec2 nodePos = instance.windowPos + instance.viewPos + node.pos;
 	ImVec2 pinCenter = nodePos + pos;
 
 	// Circle
@@ -60,16 +67,14 @@ void ImGui::NodeGraph::Pin::DrawUI(GraphInstance &instance)
 	}
 	else
 	{
-		ImColor fadedPinColor(pinColor.Value * ImVec4(0.6f, 0.6f, 0.6f, 0.8f));
+		ImColor fadedPinColor(pinColor.Value * ImVec4(0.66f, 0.66f, 0.66f, 0.9f));
 
 		drawList->AddCircleFilled(pinCenter, Internal::PinSize * 0.5f, fadedPinColor);
 		drawList->AddCircle(pinCenter + ImVec2(1, 1), Internal::PinSize * 0.5f, GetColorU32(ImGuiCol_BorderShadow), 0, Internal::PinOutlineThickness);
 		drawList->AddCircle(pinCenter, Internal::PinSize * 0.5f, GetColorU32(ImGuiCol_Border), 0, Internal::PinOutlineThickness);
 
 		if (instance.linkingPin == id)
-		{
-			drawList->AddCircleFilled(pinCenter, Internal::PinSize * 0.25f, pinColor);
-		}
+			drawList->AddCircleFilled(pinCenter, Internal::PinSize * 0.3f, pinColor);
 	}
 
 
@@ -92,71 +97,46 @@ void ImGui::NodeGraph::Pin::DrawUI(GraphInstance &instance)
 	drawList->AddText(font, Internal::PinTextSize, textPos, GetColorU32(ImGuiCol_Text), preset.name.c_str());
 
 	// Interaction
-	// Drag-Drop source + target
+	float pinInteractSize = Internal::PinSize + Internal::PinPadding.y;
+	SetCursorPos(pinCenter - ImVec2(pinInteractSize, pinInteractSize) * 0.5f - instance.windowPos);
+	SetNextItemAllowOverlap();
+	InvisibleButton("##PinInvisButton", ImVec2(pinInteractSize, pinInteractSize));
 
-	std::string payloadType = "Pin";
-	if (preset.type == PinType::Custom)
-		payloadType += preset.customTypeName;
-	else
-		payloadType += std::to_string((int)preset.type);
-
-	PushID(std::format("Pin{}", id).c_str());
-	SetCursorPos(pinCenter - ImVec2(Internal::PinSize, Internal::PinSize) * 0.5f - instance.viewPos);
-	InvisibleButton("DragDropField", ImVec2(Internal::PinSize, Internal::PinSize));
-
-	// Source
-	if (instance.linkingPin <= 0 && BeginDragDropSource(ImGuiDragDropFlags_SourceNoPreviewTooltip | ImGuiDragDropFlags_PayloadNoCrossContext))
+	if (instance.linkingPin > 0) // Target
 	{
-		// If already linked, we want to undo it and begin a linking with the other pin instead of this one
-		if (linkId > 0)
+		Pin &linkPin = instance.pins.at(instance.linkingPin);
+
+		bool compatible = true;
+		compatible &= linkPin.nodeId != nodeId;
+		compatible &= linkPin.gender != gender;
+		compatible &= linkPin.preset.type == preset.type;
+
+		if (compatible && preset.type == PinType::Custom)
+			compatible &= linkPin.preset.customTypeName == preset.customTypeName;
+
+		if (compatible)
 		{
-			Link &link = instance.links.at(linkId);
-			PinId otherPinId = (link.inPinId == id) ? link.outPinId : link.inPinId;
-
-			instance.RemoveLink(linkId);
-
-			instance.linkingPin = otherPinId;
-			SetDragDropPayload(payloadType.c_str(), &otherPinId, sizeof(PinId));
-		}
-		else
-		{
-			instance.linkingPin = id;
-			SetDragDropPayload(payloadType.c_str(), &id, sizeof(PinId));
-		}
-
-		EndDragDropSource();
-	}
-
-	// Target
-	if (instance.linkingPin > 0 && BeginDragDropTarget())
-	{
-		const ImGuiPayload *payload = GetDragDropPayload();
-
-		if (payload && payload->IsDataType(payloadType.c_str()))
-		{
-			PinId payloadPinId = *(PinId*)payload->Data;
-			Pin &payloadPin = instance.pins.at(payloadPinId);
-
-			bool allowDrop = (payloadPin.nodeId != nodeId) && (payloadPin.gender != gender);
-
-			if (allowDrop)
+			if (IsItemHovered(ImGuiHoveredFlags_RectOnly))
 			{
-				if (AcceptDragDropPayload(payloadType.c_str(), ImGuiDragDropFlags_PayloadNoCrossContext))
+				// Draw highlight
+				drawList->AddCircle(pinCenter, (Internal::PinSize * 0.5f) + Internal::PinOutlineThickness + 1.0f, GetColorU32(ImGuiCol_DragDropTarget), 0, 3.0f);
+
+				if (IsMouseReleased(ImGuiMouseButton_Left))
 				{
 					PinId outPinId, inPinId;
 
 					if (gender == PinGender::Output)
 					{
 						outPinId = id;
-						inPinId = payloadPinId;
+						inPinId = instance.linkingPin;
 					}
 					else
 					{
-						outPinId = payloadPinId;
+						outPinId = instance.linkingPin;
 						inPinId = id;
 					}
 
-					// if the payload pin is already linked, remove that link
+					// If this pin is already linked, remove that link first
 					if (linkId > 0)
 						instance.RemoveLink(linkId);
 
@@ -165,8 +145,33 @@ void ImGui::NodeGraph::Pin::DrawUI(GraphInstance &instance)
 				}
 			}
 		}
+	}
+	else // Source
+	{
+		if (IsItemHovered())
+		{
+			// Draw highlight
+			ImColor highlightColor = pinColor;
+			highlightColor.Value.w *= 0.5f;
+			drawList->AddCircle(pinCenter, (Internal::PinSize * 0.5f) + 1.0f, highlightColor, 0, 3.0f);
 
-		EndDragDropTarget();
+			if (IsMouseDragging(ImGuiMouseButton_Left, Internal::PinDragThreshold))
+			{
+				// If already linked, we want to undo it and begin a linking with the other pin instead of this one
+				if (linkId > 0)
+				{
+					Link &link = instance.links.at(linkId);
+					PinId otherPinId = (link.inPinId == id) ? link.outPinId : link.inPinId;
+
+					instance.RemoveLink(linkId);
+					instance.linkingPin = otherPinId;
+				}
+				else
+				{
+					instance.linkingPin = id;
+				}
+			}
+		}
 	}
 
 	PopID();
@@ -176,9 +181,11 @@ void ImGui::NodeGraph::Pin::DrawUI(GraphInstance &instance)
 void ImGui::NodeGraph::Node::DrawUI(GraphInstance &instance)
 {
 	// Draw body, header, then call draw for all pins
+	PushID(std::format("Node{}", id).c_str());
+
 	ImDrawList *drawList = GetWindowDrawList();
 
-	ImVec2 nodePos = instance.viewPos + pos;
+	ImVec2 nodePos = instance.windowPos + instance.viewPos + pos;
 	ImVec4 nodePosVec4 = ImVec4(nodePos.x, nodePos.y, nodePos.x, nodePos.y);
 
 	ImRect nodeRect(nodePos, nodePos + preset.size);
@@ -187,13 +194,58 @@ void ImGui::NodeGraph::Node::DrawUI(GraphInstance &instance)
 	ImRect outPinsRect(preset.outPinsRect + nodePosVec4);
 	ImRect bodyRect(preset.bodyRect + nodePosVec4);
 
+	// Interaction
+	SetCursorPos(nodeRect.Min - instance.windowPos);
+	SetNextItemAllowOverlap();
+	InvisibleButton("##NodeInvisButton", nodeRect.GetSize());
+
+	bool isHovered = IsItemHovered();
+	bool isDragged = false;
+
+	if (isHovered)
+	{
+		if (IsMouseClicked(ImGuiMouseButton_Left))
+			instance.selectedNode = id;
+
+		if (instance.selectedNode == id && instance.linkingPin < 0 && !instance.isDraggingNode)
+			instance.isDraggingNode = IsMouseDragging(ImGuiMouseButton_Left, 2.0f);
+	}
+
+	if (instance.selectedNode == id && instance.isDraggingNode)
+	{
+		if (IsMouseDragging(ImGuiMouseButton_Left, 2.0f))
+		{
+			isDragged = true;
+			ImVec2 delta = GetIO().MouseDelta;
+			pos += delta;
+
+			// Recalculate pin positions
+			nodePos = instance.windowPos + instance.viewPos + pos;
+			nodePosVec4 = ImVec4(nodePos.x, nodePos.y, nodePos.x, nodePos.y);
+			nodeRect = ImRect(nodePos, nodePos + preset.size);
+			headerRect = ImRect(nodePos, nodePos + preset.headerSize);
+			inPinsRect = ImRect(preset.inPinsRect + nodePosVec4);
+			outPinsRect = ImRect(preset.outPinsRect + nodePosVec4);
+			bodyRect = ImRect(preset.bodyRect + nodePosVec4);
+		}
+	}
+
+	// Draw
 	drawList->AddRectFilled(nodeRect.Min, nodeRect.Max, GetColorU32(ImGuiCol_FrameBg), Internal::NodeRounding);
 	drawList->AddRectFilled(headerRect.Min, headerRect.Max, GetColorU32(ImGuiCol_Header), Internal::NodeRounding);
+	
+	// Draw signifiers for hovered, selected and dragging states
+	if (isDragged)
+		drawList->AddRect(nodeRect.Min, nodeRect.Max, GetColorU32(ImGuiCol_DragDropTarget, 0.6f), Internal::NodeRounding, 0, 4.0f);
+	else if (instance.selectedNode == id)
+		drawList->AddRect(nodeRect.Min, nodeRect.Max, GetColorU32(ImGuiCol_HeaderActive, 0.5f), Internal::NodeRounding, 0, 3.0f);
+	else if (isHovered)
+		drawList->AddRect(nodeRect.Min, nodeRect.Max, GetColorU32(ImGuiCol_HeaderHovered, 0.4f), Internal::NodeRounding, 0, 2.0f);
 
 	if (preset.drawBodyFunc)
 	{
-		SetCursorPos(bodyRect.Min);
-		BeginChild(("NodeBody" + std::to_string(id)).c_str(), bodyRect.GetSize(), false, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse);
+		SetCursorPos(bodyRect.Min - instance.windowPos);
+		BeginChild(("NodeBody" + std::to_string(id)).c_str(), bodyRect.GetSize(), true, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse);
 		preset.drawBodyFunc(*this, bodyRect.GetSize());
 		EndChild();
 	}
@@ -210,79 +262,87 @@ void ImGui::NodeGraph::Node::DrawUI(GraphInstance &instance)
 	{
 		instance.pins.at(pinId).DrawUI(instance);
 	}
+
+	PopID();
 }
 
 
 bool ImGui::NodeGraph::GraphInstance::Open(ImVec2 size, ImGuiNodeGraphFlags flags)
 {
-	// Draw order:
-	// - Grid
-	// - Links
-	// - Linking Pin (if any)
-	// - Nodes -> Pins
-	// - Graph UI
-
 	ImGuiWindow *window = GetCurrentWindow();
 	ImGuiStorage *storage = GetStateStorage();
 	ImDrawList *drawList = GetWindowDrawList();
 	ImGuiIO &io = GetIO();
 	
-	ImVec2 windowPos = GetWindowPos();
-	viewPos = windowPos;
+	windowPos = GetWindowPos();
 	viewSize = size;
 
 	ImRect drawArea = ImRect(windowPos, windowPos + size);
-
 	drawList->PushClipRect(drawArea.Min, drawArea.Max, true);
+
+	SetCursorPos({0,0});
+	SetNextItemAllowOverlap();
+	if (InvisibleButton("##BackgroundInvisButton", viewSize) && !isPanning)
+		selectedNode = -1; // If pressed, deselect nodes
+
+	if (IsItemHovered())
+	{
+		if (IsMouseDragging(ImGuiMouseButton_Left, 1.0f))
+		{
+			isPanning = true;
+			ImVec2 delta = io.MouseDelta;
+			viewPos += delta;
+		}
+	}
 
 	// Grid
 
+
 	// Links
 	for (auto &linkIt : links)
-	{
 		linkIt.second.DrawUI((*this));
-	}
+
 
 	// Linking Pin
 	if (linkingPin > 0)
 	{
-		// Ensure that pin is still being linked (if no drag-drop payload, reset linkingPin)
-		if (GetDragDropPayload() == nullptr)
+		Pin &pin = pins.at(linkingPin);
+		ImVec2 pinPos = windowPos + viewPos + pin.pos + nodes.at(pin.nodeId).pos;
+		ImVec2 mousePos = io.MousePos;
+
+		ImVec2 outPos, inPos;
+		if (pin.gender == PinGender::Output)
 		{
-			linkingPin = -1;
+			outPos = pinPos;
+			inPos = mousePos;
 		}
 		else
 		{
-			Pin &pin = pins.at(linkingPin);
-			ImVec2 pinPos = viewPos + pin.pos + nodes.at(pin.nodeId).pos;
-			ImVec2 mousePos = io.MousePos;
-
-			ImVec2 outPos, inPos;
-			if (pin.gender == PinGender::Output)
-			{
-				outPos = pinPos;
-				inPos = mousePos;
-			}
-			else
-			{
-				outPos = mousePos;
-				inPos = pinPos;
-			}
-
-			DrawCurve(outPos, inPos, pin.preset.color);
+			outPos = mousePos;
+			inPos = pinPos;
 		}
+
+		DrawCurve(outPos, inPos, pin.preset.color);
 	}
+
 
 	// Nodes
 	for (auto &nodeIt : nodes)
-	{
 		nodeIt.second.DrawUI((*this));
-	}
+
 
 	// Graph UI
 
-	drawList->PopClipRect();
 
+	if (IsMouseReleased(ImGuiMouseButton_Left))
+	{
+		linkingPin = -1; // Cancel linking if released mouse button and no pin caught it
+		isDraggingNode = false;
+		isPanning = false;
+	}
+
+	drawList->PopClipRect();
+	firstFrame = false;
 	return false;
 }
 
@@ -291,7 +351,7 @@ bool ImGui::OpenNodeGraph(const char* label, GraphInstance& instance, ImVec2 siz
 	if (size.x <= 0) size.x = GetContentRegionAvail().x;
 	if (size.y <= 0) size.y = GetContentRegionAvail().y;
 
-	BeginChild(label, size, true);
+	BeginChild(label, size, true, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoScrollWithMouse);
 	ImGuiWindow *window = GetCurrentWindow();
 
 	if (window->SkipItems)

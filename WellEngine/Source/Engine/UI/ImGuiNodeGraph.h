@@ -30,9 +30,10 @@ namespace ImGui
 			constexpr float		PinOutlineThickness = 3.0f;
 			constexpr ImVec2	PinPadding = ImVec2(8.0f, 6.0f);
 			constexpr float		PinTextSize = 13.0f;
+			constexpr float		PinDragThreshold = 1.0f;
 
 			constexpr float		LinkThickness = 3.0f;
-			constexpr float		MinLinkCPDist = 100.0f;
+			constexpr float		MinLinkCPDist = 80.0f;
 		}
 
 		// Forward decls
@@ -78,10 +79,12 @@ namespace ImGui
 			std::string name;
 
 			ImVec2 size;
-			ImVec2 headerSize;
-			ImVec4 inPinsRect;
-			ImVec4 outPinsRect;
-			ImVec4 bodyRect;
+			ImVec2 bodySize;
+
+			ImVec2 headerSize; // Internal
+			ImVec4 inPinsRect; // Internal
+			ImVec4 outPinsRect; // Internal
+			ImVec4 bodyRect; // Internal
 
 			std::vector<PinPreset> inputs;
 			std::vector<PinPreset> outputs;
@@ -125,32 +128,38 @@ namespace ImGui
 				headerArea += Internal::NodeHeaderPadding * 2;
 
 				// Input pins area
-				inputPinsArea.y += Internal::PinPadding.y;
-
-				for (const PinPreset& pin : inputs)
+				if (!inputs.empty())
 				{
-					ImVec2 pinTextSize = font->CalcTextSizeA(Internal::PinTextSize, FLT_MAX, 0.0f, pin.name.c_str());
-					inputPinsArea.x = max(inputPinsArea.x, Internal::PinSize * 0.5f + Internal::PinPadding.x * 2 + pinTextSize.x);
-					inputPinsArea.y += max(Internal::PinSize, pinTextSize.y) + Internal::PinPadding.y;
+					inputPinsArea.y += Internal::PinPadding.y;
+
+					for (const PinPreset &pin : inputs)
+					{
+						ImVec2 pinTextSize = font->CalcTextSizeA(Internal::PinTextSize, FLT_MAX, 0.0f, pin.name.c_str());
+						inputPinsArea.x = max(inputPinsArea.x, Internal::PinSize * 0.5f + Internal::PinPadding.x * 2 + pinTextSize.x);
+						inputPinsArea.y += max(Internal::PinSize, pinTextSize.y) + Internal::PinPadding.y;
+					}
 				}
 
 				// Output pins area
-				outputPinsArea.y += Internal::PinPadding.y;
-
-				for (const PinPreset& pin : outputs)
+				if (!outputs.empty())
 				{
-					ImVec2 pinTextSize = font->CalcTextSizeA(Internal::PinTextSize, FLT_MAX, 0.0f, pin.name.c_str());
-					outputPinsArea.x = max(outputPinsArea.x, Internal::PinSize * 0.5f + Internal::PinPadding.x * 2 + pinTextSize.x);
-					outputPinsArea.y += max(Internal::PinSize, pinTextSize.y) + Internal::PinPadding.y;
+					outputPinsArea.y += Internal::PinPadding.y;
+
+					for (const PinPreset &pin : outputs)
+					{
+						ImVec2 pinTextSize = font->CalcTextSizeA(Internal::PinTextSize, FLT_MAX, 0.0f, pin.name.c_str());
+						outputPinsArea.x = max(outputPinsArea.x, Internal::PinSize * 0.5f + Internal::PinPadding.x * 2 + pinTextSize.x);
+						outputPinsArea.y += max(Internal::PinSize, pinTextSize.y) + Internal::PinPadding.y;
+					}
 				}
 
 				// Body area
 				if (hasBody)
-				{
-					bodyArea += Internal::NodeBodyPadding * 2;
-				}
+					bodyArea += bodySize + Internal::NodeBodyPadding * 2;
 
-				totalArea.x = max(headerArea.x, max(inputPinsArea.x + outputPinsArea.x + Internal::PinPadding.x, bodyArea.x));
+				float extraPinPadding = (inputs.empty() || outputs.empty()) ? 0 : Internal::PinPadding.x;
+
+				totalArea.x = max(headerArea.x, max(inputPinsArea.x + outputPinsArea.x + extraPinPadding, bodyArea.x));
 				totalArea.y = headerArea.y + max(inputPinsArea.y, outputPinsArea.y) + bodyArea.y;
 
 				if (size.x < totalArea.x)
@@ -162,10 +171,10 @@ namespace ImGui
 				inPinsRect = ImVec4(0, headerArea.y, inputPinsArea.x, headerArea.y + inputPinsArea.y);
 				outPinsRect = ImVec4(size.x - outputPinsArea.x, headerArea.y, size.x, headerArea.y + outputPinsArea.y);
 				bodyRect = ImVec4(
-					bodyArea.x * 0.5f, 
-					max(inPinsRect.w, outPinsRect.w) + bodyArea.y * 0.5f,
-					size.x - bodyArea.x * 0.5f, 
-					size.y - bodyArea.y * 0.5f
+					Internal::NodeBodyPadding.x, 
+					max(inPinsRect.w, outPinsRect.w) + Internal::NodeBodyPadding.y,
+					size.x - Internal::NodeBodyPadding.x,
+					size.y - Internal::NodeBodyPadding.y
 				);
 			}
 		};
@@ -238,9 +247,13 @@ namespace ImGui
 			LinkId  nextLinkId = 1;
 
 			// Interaction state
+			ImVec2 windowPos = ImVec2(0, 0);
 			ImVec2 viewPos = ImVec2(0, 0);
 			ImVec2 viewSize = ImVec2(0, 0);
 
+			bool firstFrame = true;
+			bool isPanning = false;
+			bool isDraggingNode = false;
 			NodeId selectedNode = -1;
 			PinId linkingPin = -1;
 
@@ -329,7 +342,7 @@ namespace ImGui
 				if (inPin.nodeId == outPin.nodeId)
 					return 0;
 
-				if (inPin.gender == PinGender::Output || outPin.gender == PinGender::Input)
+				if (inPin.gender != PinGender::Input || outPin.gender != PinGender::Output)
 					return 0;
 
 				if (inPin.linkId > 0 || outPin.linkId > 0)
