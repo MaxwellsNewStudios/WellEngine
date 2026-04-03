@@ -26,6 +26,89 @@ static void DrawCurve(const ImVec2 &p1, const ImVec2 &p2, ImColor color)
 }
 
 
+void ImGui::NodeGraph::NodePreset::CalcSize()
+{
+	/*
+	____________________________
+	|        HeaderText        |
+	|--------------------------|
+	o InPin1Text   OutPin1Text o
+	o InPin2Text               |
+	| ________________________ |
+	| |         Body         | |
+	| ------------------------ |
+	----------------------------
+	*/
+
+	ImVec2 headerArea = ImVec2(0, 0);		// Header text size + header padding * 2
+	ImVec2 inputPinsArea = ImVec2(0, 0);	// In Pins * (pin size + pin padding * 2 + pin text size.x)
+	ImVec2 outputPinsArea = ImVec2(0, 0);	// Out Pins * (pin size + pin padding * 2 + pin text size.x)
+	ImVec2 bodyArea = ImVec2(0, 0);			// hasBody * (Body padding * 2)
+
+	ImVec2 totalArea = ImVec2(0, 0);
+	// Width: max(header, input pins + output pins, body)
+	// Height: header + max(input pins, output pins) + body
+
+	ImFont *font = ImGui::GetFont();
+	bool hasBody = drawBodyFunc != nullptr;
+
+	// Header area
+	ImVec2 headerTextSize = font->CalcTextSizeA(Internal::NodeHeaderTextSize, FLT_MAX, 0.0f, name.c_str());
+	headerArea = headerTextSize;
+	headerArea += Internal::NodeHeaderPadding * 2;
+
+	// Input pins area
+	if (!inputs.empty())
+	{
+		inputPinsArea.y += Internal::PinPadding.y;
+
+		for (const PinPreset &pin : inputs)
+		{
+			ImVec2 pinTextSize = font->CalcTextSizeA(Internal::PinTextSize, FLT_MAX, 0.0f, pin.name.c_str());
+			inputPinsArea.x = max(inputPinsArea.x, Internal::PinSize * 0.5f + Internal::PinPadding.x * 2 + pinTextSize.x);
+			inputPinsArea.y += max(Internal::PinSize, pinTextSize.y) + Internal::PinPadding.y;
+		}
+	}
+
+	// Output pins area
+	if (!outputs.empty())
+	{
+		outputPinsArea.y += Internal::PinPadding.y;
+
+		for (const PinPreset &pin : outputs)
+		{
+			ImVec2 pinTextSize = font->CalcTextSizeA(Internal::PinTextSize, FLT_MAX, 0.0f, pin.name.c_str());
+			outputPinsArea.x = max(outputPinsArea.x, Internal::PinSize * 0.5f + Internal::PinPadding.x * 2 + pinTextSize.x);
+			outputPinsArea.y += max(Internal::PinSize, pinTextSize.y) + Internal::PinPadding.y;
+		}
+	}
+
+	// Body area
+	if (hasBody)
+		bodyArea += bodySize + Internal::NodeBodyPadding * 2;
+
+	float extraPinPadding = (inputs.empty() || outputs.empty()) ? 0 : Internal::PinPadding.x;
+
+	totalArea.x = max(headerArea.x, max(inputPinsArea.x + outputPinsArea.x + extraPinPadding, bodyArea.x));
+	totalArea.y = headerArea.y + max(inputPinsArea.y, outputPinsArea.y) + bodyArea.y;
+
+	if (size.x < totalArea.x)
+		size.x = totalArea.x;
+	if (size.y < totalArea.y)
+		size.y = totalArea.y;
+
+	headerSize = ImVec2(max(headerArea.x, size.x), headerArea.y);
+	inPinsRect = ImVec4(0, headerArea.y, inputPinsArea.x, headerArea.y + inputPinsArea.y);
+	outPinsRect = ImVec4(size.x - outputPinsArea.x, headerArea.y, size.x, headerArea.y + outputPinsArea.y);
+	bodyRect = ImVec4(
+		Internal::NodeBodyPadding.x,
+		max(inPinsRect.w, outPinsRect.w) + Internal::NodeBodyPadding.y,
+		size.x - Internal::NodeBodyPadding.x,
+		size.y - Internal::NodeBodyPadding.y
+	);
+}
+
+
 void ImGui::NodeGraph::Link::DrawUI(GraphInstance &instance)
 {
 	// Draw bezier curve from outPin to inPin
@@ -42,7 +125,6 @@ void ImGui::NodeGraph::Link::DrawUI(GraphInstance &instance)
 
 	DrawCurve(p1, p2, middleColor);
 }
-
 
 void ImGui::NodeGraph::Pin::DrawUI(GraphInstance &instance)
 {
@@ -179,7 +261,6 @@ void ImGui::NodeGraph::Pin::DrawUI(GraphInstance &instance)
 	PopID();
 }
 
-
 void ImGui::NodeGraph::Node::DrawUI(GraphInstance &instance)
 {
 	// Draw body, header, then call draw for all pins
@@ -272,6 +353,183 @@ void ImGui::NodeGraph::Node::DrawUI(GraphInstance &instance)
 }
 
 
+const NodePreset *ImGui::NodeGraph::GraphContext::GetNodePreset(size_t index) const
+{
+	if (index < nodePresets.size())
+		return &nodePresets[index];
+	return nullptr;
+}
+
+const NodePreset *ImGui::NodeGraph::GraphContext::GetNodePreset(const std::string &category, const std::string &name) const
+{
+	std::string key = category + "/" + name;
+	auto it = sortedPresets.find(key);
+	if (it != sortedPresets.end())
+		return &nodePresets[it->second];
+	return nullptr;
+}
+
+void ImGui::NodeGraph::GraphContext::AddNodePreset(const NodePreset &preset)
+{
+	nodePresets.push_back(preset);
+	sortedPresets.emplace(preset.category + "/" + preset.name, nodePresets.size() - 1);
+}
+
+void ImGui::NodeGraph::GraphContext::RemoveNodePreset(size_t index)
+{
+	if (index >= nodePresets.size())
+		return;
+	sortedPresets.erase(nodePresets[index].category + "/" + nodePresets[index].name);
+	nodePresets.erase(nodePresets.begin() + index);
+
+	// Update sortedPresets indices by decrementing those greater than the removed index
+	for (auto it = sortedPresets.begin(); it != sortedPresets.end();)
+	{
+		if (it->second > index)
+			it->second--;
+		it++;
+	}
+}
+
+
+PinId ImGui::NodeGraph::GraphInstance::GetNodePin(NodeId nodeId, int pinIndex, PinGender gender)
+{
+	if (gender == PinGender::Input)
+	{
+		const Node &node = nodes.at(nodeId);
+		if (pinIndex < 0 || pinIndex >= node.inputPinIds.size())
+			return 0;
+
+		return node.inputPinIds[pinIndex];
+	}
+	else
+	{
+		const Node &node = nodes.at(nodeId);
+		if (pinIndex < 0 || pinIndex >= node.outputPinIds.size())
+			return 0;
+
+		return node.outputPinIds[pinIndex];
+	}
+}
+
+int ImGui::NodeGraph::GraphInstance::GetLinkOutIndex(PinId outPinId, PinId inPinId)
+{
+	if (pins.find(outPinId) == pins.end() || pins.find(inPinId) == pins.end())
+		return false;
+
+	const Pin &outPin = pins.at(outPinId);
+	const Pin &inPin = pins.at(inPinId);
+
+	if (inPin.linkIds.empty() || outPin.linkIds.empty())
+		return false;
+
+	for (int i = 0; i < outPin.linkIds.size(); i++)
+	{
+		if (outPin.linkIds[i] == inPin.linkIds[0])
+			return i;
+	}
+
+	return -1;
+}
+
+NodeId ImGui::NodeGraph::GraphInstance::AddNode(int presetIndex, const ImVec2 &pos)
+{
+	if (presetIndex < 0 || presetIndex >= context.GetNodePresetCount())
+		return 0;
+
+	const NodePreset &preset = context.GetNodePresets()[presetIndex];
+
+	NodeId nodeId = nextNodeId++;
+	nodes.emplace(nodeId, Node(nodeId, preset, pos));
+	Node &node = nodes.at(nodeId);
+
+	// Create pins for node
+	{
+		float pinPosY = preset.inPinsRect.y + Internal::PinPadding.y + Internal::PinSize * 0.5f;
+		float pinStrideY = Internal::PinPadding.y + Internal::PinSize;
+
+		node.inputPinIds.reserve(preset.inputs.size());
+		for (const PinPreset &pinPreset : preset.inputs)
+		{
+			ImVec2 pinPos = ImVec2(preset.inPinsRect.x, pinPosY);
+			pinPosY += pinStrideY;
+
+			PinId pinId = nextPinId++;
+			pins.emplace(pinId, Pin(pinId, nodeId, pinPreset, pinPos, PinGender::Input));
+
+			node.inputPinIds.push_back(pinId);
+		}
+
+		pinPosY = preset.outPinsRect.y + Internal::PinPadding.y + Internal::PinSize * 0.5f;
+
+		node.outputPinIds.reserve(preset.outputs.size());
+		for (const PinPreset &pinPreset : preset.outputs)
+		{
+			ImVec2 pinPos = ImVec2(preset.outPinsRect.z, pinPosY);
+			pinPosY += pinStrideY;
+
+			PinId pinId = nextPinId++;
+			pins.emplace(pinId, Pin(pinId, nodeId, pinPreset, pinPos, PinGender::Output));
+
+			node.outputPinIds.push_back(pinId);
+		}
+	}
+
+	return nodeId;
+}
+
+LinkId ImGui::NodeGraph::GraphInstance::AddLink(PinId outPinId, PinId inPinId)
+{
+	if (pins.find(outPinId) == pins.end() || pins.find(inPinId) == pins.end())
+		return 0;
+
+	Pin &inPin = pins.at(inPinId);
+	Pin &outPin = pins.at(outPinId);
+
+	if (inPin.nodeId == outPin.nodeId)
+		return 0;
+
+	if (inPin.gender != PinGender::Input || outPin.gender != PinGender::Output)
+		return 0;
+
+	if (!inPin.linkIds.empty())
+		return 0;
+
+	if (inPin.preset.type != outPin.preset.type)
+		return 0;
+
+	if (inPin.preset.type == PinType::Custom)
+		if (inPin.preset.customTypeName != outPin.preset.customTypeName)
+			return 0;
+
+	// TODO: also check if link would create a cycle
+
+	LinkId linkId = nextLinkId++;
+	links.emplace(linkId, Link(linkId, inPinId, outPinId));
+
+	inPin.linkIds.emplace_back(linkId);
+	outPin.linkIds.emplace_back(linkId);
+
+	return linkId;
+}
+
+void ImGui::NodeGraph::GraphInstance::RemoveLink(LinkId linkId)
+{
+	if (links.find(linkId) == links.end())
+		return;
+
+	Link &link = links.at(linkId);
+	Pin &inPin = pins.at(link.inPinId);
+	Pin &outPin = pins.at(link.outPinId);
+
+	int outPinLinkIndex = GetLinkOutIndex(outPin.id, inPin.id);
+
+	inPin.linkIds.clear();
+	outPin.linkIds.erase(outPin.linkIds.begin() + outPinLinkIndex);
+
+	links.erase(linkId);
+}
+
 static void DrawMenuUI(GraphInstance &instance)
 {
 	// eg. Node creation, global i/o, settings, etc.
@@ -280,7 +538,6 @@ static void DrawMenuUI(GraphInstance &instance)
 
 	// Right-click node list
 }
-
 
 bool ImGui::NodeGraph::GraphInstance::Open(ImVec2 size, ImGuiNodeGraphFlags flags)
 {
@@ -295,20 +552,19 @@ bool ImGui::NodeGraph::GraphInstance::Open(ImVec2 size, ImGuiNodeGraphFlags flag
 	ImRect drawArea = ImRect(windowPos, windowPos + size);
 	drawList->PushClipRect(drawArea.Min, drawArea.Max, true);
 
-	SetCursorPos({0,0});
+	//SetCursorPos({0,0});
 	SetNextItemAllowOverlap();
-	if (InvisibleButton("##BackgroundInvisButton", viewSize) && !isPanning)
+	if (InvisibleButton("##BackgroundInvisButton", GetContentRegionAvail()) && !isPanning)
 		selectedNode = -1; // If pressed, deselect nodes
 
 	if (IsItemHovered())
 	{
 		if (IsMouseDragging(ImGuiMouseButton_Left, 1.0f))
-		{
 			isPanning = true;
-			ImVec2 delta = io.MouseDelta;
-			viewPos += delta;
-		}
 	}
+
+	if (isPanning)
+		viewPos += io.MouseDelta;
 
 	// Grid
 
@@ -362,6 +618,7 @@ bool ImGui::NodeGraph::GraphInstance::Open(ImVec2 size, ImGuiNodeGraphFlags flag
 	return false;
 }
 
+
 bool ImGui::OpenNodeGraph(const char* label, GraphInstance& instance, ImVec2 size, ImGuiNodeGraphFlags flags)
 {
 	if (size.x <= 0) size.x = GetContentRegionAvail().x;
@@ -379,9 +636,7 @@ bool ImGui::OpenNodeGraph(const char* label, GraphInstance& instance, ImVec2 siz
 	bool result = instance.Open(size, flags);
 	
 	EndChild();
-
 	return result;
 }
 
 #endif // USE_IMGUI
-
