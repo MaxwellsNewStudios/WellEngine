@@ -38,7 +38,9 @@ void ImGui::NodeGraph::Link::DrawUI(GraphInstance &instance)
 	ImVec2 p1 = outPin.pos + outNode.pos + instance.windowPos + instance.viewPos;
 	ImVec2 p2 = inPin.pos + inNode.pos + instance.windowPos + instance.viewPos;
 
-	DrawCurve(p1, p2, outPin.preset.color);
+	ImColor middleColor = ImColor((outPin.preset.color.Value + inPin.preset.color.Value) * 0.5f);
+
+	DrawCurve(p1, p2, middleColor);
 }
 
 
@@ -59,13 +61,7 @@ void ImGui::NodeGraph::Pin::DrawUI(GraphInstance &instance)
 	// Circle
 	ImColor pinColor = preset.color;
 
-	if (linkId > 0)
-	{
-		drawList->AddCircleFilled(pinCenter, Internal::PinSize * 0.5f, pinColor);
-		drawList->AddCircle(pinCenter + ImVec2(1, 1), Internal::PinSize * 0.5f, GetColorU32(ImGuiCol_BorderShadow), 0, Internal::PinOutlineThickness);
-		drawList->AddCircle(pinCenter, Internal::PinSize * 0.5f, GetColorU32(ImGuiCol_Border), 0, Internal::PinOutlineThickness);
-	}
-	else
+	if (linkIds.empty())
 	{
 		ImColor fadedPinColor(pinColor.Value * ImVec4(0.66f, 0.66f, 0.66f, 0.9f));
 
@@ -75,6 +71,12 @@ void ImGui::NodeGraph::Pin::DrawUI(GraphInstance &instance)
 
 		if (instance.linkingPin == id)
 			drawList->AddCircleFilled(pinCenter, Internal::PinSize * 0.3f, pinColor);
+	}
+	else
+	{
+		drawList->AddCircleFilled(pinCenter, Internal::PinSize * 0.5f, pinColor);
+		drawList->AddCircle(pinCenter + ImVec2(1, 1), Internal::PinSize * 0.5f, GetColorU32(ImGuiCol_BorderShadow), 0, Internal::PinOutlineThickness);
+		drawList->AddCircle(pinCenter, Internal::PinSize * 0.5f, GetColorU32(ImGuiCol_Border), 0, Internal::PinOutlineThickness);
 	}
 
 
@@ -134,11 +136,11 @@ void ImGui::NodeGraph::Pin::DrawUI(GraphInstance &instance)
 					{
 						outPinId = instance.linkingPin;
 						inPinId = id;
-					}
 
-					// If this pin is already linked, remove that link first
-					if (linkId > 0)
-						instance.RemoveLink(linkId);
+						// If this pin is an input and already linked, remove that link first
+						if (!linkIds.empty())
+							instance.RemoveLink(linkIds[0]);
+					}
 
 					instance.AddLink(outPinId, inPinId);
 					instance.linkingPin = -1;
@@ -157,13 +159,13 @@ void ImGui::NodeGraph::Pin::DrawUI(GraphInstance &instance)
 
 			if (IsMouseDragging(ImGuiMouseButton_Left, Internal::PinDragThreshold))
 			{
-				// If already linked, we want to undo it and begin a linking with the other pin instead of this one
-				if (linkId > 0)
+				// If this is an already linked input, we want to undo it and begin a linking with the other pin instead of this one
+				if (gender == PinGender::Input && !linkIds.empty())
 				{
-					Link &link = instance.links.at(linkId);
+					Link &link = instance.links.at(linkIds[0]);
 					PinId otherPinId = (link.inPinId == id) ? link.outPinId : link.inPinId;
 
-					instance.RemoveLink(linkId);
+					instance.RemoveLink(linkIds[0]);
 					instance.linkingPin = otherPinId;
 				}
 				else
@@ -231,8 +233,8 @@ void ImGui::NodeGraph::Node::DrawUI(GraphInstance &instance)
 	}
 
 	// Draw
-	drawList->AddRectFilled(nodeRect.Min, nodeRect.Max, GetColorU32(ImGuiCol_FrameBg), Internal::NodeRounding);
-	drawList->AddRectFilled(headerRect.Min, headerRect.Max, GetColorU32(ImGuiCol_Header), Internal::NodeRounding);
+	drawList->AddRectFilled(nodeRect.Min, nodeRect.Max, Internal::NodeBgColor, Internal::NodeRounding);
+	drawList->AddRectFilled(headerRect.Min, headerRect.Max, preset.headerColor, Internal::NodeRounding);
 	
 	// Draw signifiers for hovered, selected and dragging states
 	if (isDragged)
@@ -251,7 +253,10 @@ void ImGui::NodeGraph::Node::DrawUI(GraphInstance &instance)
 	}
 
 	ImFont *font = GetFont();
-	drawList->AddText(font, Internal::NodeHeaderTextSize, headerRect.Min + Internal::NodeHeaderPadding, GetColorU32(ImGuiCol_Text), preset.name.c_str());
+	ImVec2 headerTextSize = font->CalcTextSizeA(Internal::NodeHeaderTextSize, FLT_MAX, 0.0f, preset.name.c_str());
+	if (Internal::NodeHeaderTextShadow)
+		drawList->AddText(font, Internal::NodeHeaderTextSize, headerRect.GetCenter() - headerTextSize * 0.5f + ImVec2(1,1), IM_COL32(12, 13, 16, 192), preset.name.c_str());
+	drawList->AddText(font, Internal::NodeHeaderTextSize, headerRect.GetCenter() - headerTextSize * 0.5f, GetColorU32(ImGuiCol_Text), preset.name.c_str());
 
 	for (PinId pinId : inputPinIds)
 	{

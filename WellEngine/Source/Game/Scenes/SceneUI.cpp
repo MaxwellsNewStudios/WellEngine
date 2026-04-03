@@ -2506,7 +2506,7 @@ bool Scene::RenderSceneUI()
 
 				PinPreset pinBitPreset = {};
 				pinBitPreset.name = "Bit";
-				pinBitPreset.color = ImColor(115, 115, 240);
+				pinBitPreset.color = ImColor(240, 115, 240);
 				pinBitPreset.type = ImGui::NodeGraph::PinType::Bool;
 
 				PinPreset pinCustomEntPreset = {};
@@ -2529,6 +2529,7 @@ bool Scene::RenderSceneUI()
 
 				NodePreset nodePreset = {};
 				nodePreset.name = "Test Node A";
+				nodePreset.headerColor = ImColor(96, 164, 96);
 				nodePreset.inputs.push_back(pinFloatPreset);
 				nodePreset.inputs.push_back(pinVec3Preset);
 				nodePreset.inputs.push_back(pinBoolPreset);
@@ -2541,6 +2542,7 @@ bool Scene::RenderSceneUI()
 
 				nodePreset = {};
 				nodePreset.name = "Test Node B";
+				nodePreset.headerColor = ImColor(164, 96, 164);
 				nodePreset.inputs.push_back(pinBoolPreset);
 				nodePreset.inputs.push_back(pinCustomEntPreset);
 				nodePreset.inputs.push_back(pinCustomBehPreset);
@@ -2550,6 +2552,7 @@ bool Scene::RenderSceneUI()
 
 				nodePreset = {};
 				nodePreset.name = "Test Node C";
+				nodePreset.headerColor = ImColor(128, 128, 64);
 				nodePreset.outputs.push_back(pinCustomEntPreset);
 				nodePreset.outputs.push_back(pinCustomBehPreset);
 				nodePreset.CalcSize();
@@ -2557,10 +2560,11 @@ bool Scene::RenderSceneUI()
 
 				nodePreset = {};
 				nodePreset.name = "Bit";
+				nodePreset.headerColor = ImColor(96, 96, 164);
 				nodePreset.bodySize = ImVec2(35, 35);
 				nodePreset.outputs.push_back(pinBitPreset);
 				nodePreset.drawBodyFunc = [](Node &node, ImVec2 bodySize) {
-					static bool hi = false;
+					static bool hi = false; // this would instead be some storage location in node
 					ImGui::Checkbox("##Checkbox", &hi);
 				};
 				nodePreset.CalcSize();
