@@ -2538,7 +2538,7 @@ bool Scene::RenderSceneUI()
 				nodePreset.outputs.push_back(pinBoolPreset);
 				nodePreset.outputs.push_back(pinFloatPreset);
 				nodePreset.CalcSize();
-				gCtx.nodePresets.emplace_back(nodePreset);
+				gCtx.AddNodePreset(nodePreset);
 
 				nodePreset = {};
 				nodePreset.name = "Test Node B";
@@ -2548,7 +2548,7 @@ bool Scene::RenderSceneUI()
 				nodePreset.inputs.push_back(pinCustomBehPreset);
 				nodePreset.outputs.push_back(pinCustomEntPreset);
 				nodePreset.CalcSize();
-				gCtx.nodePresets.emplace_back(nodePreset);
+				gCtx.AddNodePreset(nodePreset);
 
 				nodePreset = {};
 				nodePreset.name = "Test Node C";
@@ -2556,7 +2556,7 @@ bool Scene::RenderSceneUI()
 				nodePreset.outputs.push_back(pinCustomEntPreset);
 				nodePreset.outputs.push_back(pinCustomBehPreset);
 				nodePreset.CalcSize();
-				gCtx.nodePresets.emplace_back(nodePreset);
+				gCtx.AddNodePreset(nodePreset);
 
 				nodePreset = {};
 				nodePreset.name = "Bit";
@@ -2568,14 +2568,14 @@ bool Scene::RenderSceneUI()
 					ImGui::Checkbox("##Checkbox", &hi);
 				};
 				nodePreset.CalcSize();
-				gCtx.nodePresets.emplace_back(nodePreset);
+				gCtx.AddNodePreset(nodePreset);
 
 				nodePreset = {};
 				nodePreset.name = "Flow";
 				nodePreset.inputs.push_back(pinFlowPreset);
 				nodePreset.outputs.push_back(pinFlowPreset);
 				nodePreset.CalcSize();
-				gCtx.nodePresets.emplace_back(nodePreset);
+				gCtx.AddNodePreset(nodePreset);
 
 
 				NodeId nodeId1 = gInstance.AddNode(0, ImVec2(40, 30));

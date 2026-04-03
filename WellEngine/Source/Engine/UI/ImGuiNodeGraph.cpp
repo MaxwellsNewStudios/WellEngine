@@ -272,6 +272,16 @@ void ImGui::NodeGraph::Node::DrawUI(GraphInstance &instance)
 }
 
 
+static void DrawMenuUI(GraphInstance &instance)
+{
+	// eg. Node creation, global i/o, settings, etc.
+
+	// Menu bar
+
+	// Right-click node list
+}
+
+
 bool ImGui::NodeGraph::GraphInstance::Open(ImVec2 size, ImGuiNodeGraphFlags flags)
 {
 	ImGuiWindow *window = GetCurrentWindow();
@@ -337,6 +347,7 @@ bool ImGui::NodeGraph::GraphInstance::Open(ImVec2 size, ImGuiNodeGraphFlags flag
 
 
 	// Graph UI
+	DrawMenuUI(*this);
 
 
 	if (IsMouseReleased(ImGuiMouseButton_Left))

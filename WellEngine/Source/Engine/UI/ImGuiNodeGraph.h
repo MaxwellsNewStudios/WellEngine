@@ -80,6 +80,7 @@ namespace ImGui
 		struct NodePreset
 		{
 			std::string name;
+			std::string category; // Separated by '/' for subcategories, optional
 			ImColor headerColor = Internal::NodeHeaderDefaultColor; // Should ideally be dark, keep channels below 164 for good contrast with white text
 
 			ImVec2 size;
@@ -229,7 +230,51 @@ namespace ImGui
 
 		struct GraphContext
 		{
+		private:
 			std::vector<NodePreset> nodePresets;
+			std::map<std::string, size_t> sortedPresets;
+
+		public:
+			const std::vector<NodePreset> &GetNodePresets() const { return nodePresets; }
+			const std::map<std::string, size_t> &GetSortedPresets() const { return sortedPresets; }
+
+			size_t GetNodePresetCount() const { return nodePresets.size(); }
+
+			const NodePreset *GetNodePreset(size_t index) const
+			{
+				if (index < nodePresets.size())
+					return &nodePresets[index];
+				return nullptr;
+			}
+			const NodePreset *GetNodePreset(const std::string &category, const std::string &name) const
+			{
+				std::string key = category + "/" + name;
+				auto it = sortedPresets.find(key);
+				if (it != sortedPresets.end())
+					return &nodePresets[it->second];
+				return nullptr;
+			}
+
+			void AddNodePreset(const NodePreset &preset)
+			{
+				nodePresets.push_back(preset);
+				sortedPresets.emplace(preset.category + "/" + preset.name, nodePresets.size() - 1);
+			}
+			void RemoveNodePreset(size_t index)
+			{
+				if (index >= nodePresets.size())
+					return;
+				sortedPresets.erase(nodePresets[index].category + "/" + nodePresets[index].name);
+				nodePresets.erase(nodePresets.begin() + index);
+
+				// Update sortedPresets indices by decrementing those greater than the removed index
+				for (auto it = sortedPresets.begin(); it != sortedPresets.end();)
+				{
+					if (it->second > index)
+						it->second--;
+					it++;
+				}
+			}
 		};
 
 		class GraphInstance
@@ -310,10 +355,10 @@ namespace ImGui
 
 			NodeId AddNode(int presetIndex, const ImVec2 &pos)
 			{
-				if (presetIndex < 0 || presetIndex >= context.nodePresets.size())
+				if (presetIndex < 0 || presetIndex >= context.GetNodePresetCount())
 					return 0;
 
-				const NodePreset &preset = context.nodePresets[presetIndex];
+				const NodePreset &preset = context.GetNodePresets()[presetIndex];
 
 				NodeId nodeId = nextNodeId++;
 				nodes.emplace(nodeId, Node(nodeId, preset, pos));
