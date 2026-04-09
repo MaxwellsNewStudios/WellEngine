@@ -94,7 +94,21 @@ using Microsoft::WRL::ComPtr;
 #include "rapidjson/stringbuffer.h"
 #include "rapidjson/filereadstream.h"
 #include "rapidjson/filewritestream.h"
-namespace json = rapidjson;
+namespace json = rapidjson; 
+
+#include "Jolt/Jolt.h"
+JPH_SUPPRESS_WARNING_PUSH
+#include "Jolt/RegisterTypes.h"
+#include "Jolt/Core/Factory.h"
+#include "Jolt/Core/TempAllocator.h"
+#include "Jolt/Core/JobSystemThreadPool.h"
+#include "Jolt/Physics/PhysicsSettings.h"
+#include "Jolt/Physics/PhysicsSystem.h"
+#include "Jolt/Physics/Collision/Shape/BoxShape.h"
+#include "Jolt/Physics/Collision/Shape/SphereShape.h"
+#include "Jolt/Physics/Body/BodyCreationSettings.h"
+#include "Jolt/Physics/Body/BodyActivationListener.h"
+JPH_SUPPRESS_WARNING_POP
 
 
 // Math
