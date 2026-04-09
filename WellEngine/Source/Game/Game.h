@@ -1,8 +1,10 @@
 #pragma once
-
+#include <thread>
+#include <semaphore>
 #include <d3d11.h>
 #include <wrl/client.h>
 #include "Scenes/Scene.h"
+#include "Source/Engine/Physics/JoltManager.h"
 #include "Source/Engine/Rendering/Graphics.h"
 #include "Source/Engine/Content/Content.h"
 #include "Source/Engine/Timing/TimeUtils.h"
@@ -27,9 +29,11 @@ private:
 
 	Graphics _graphics;
 	Content _content;
-	std::vector<std::unique_ptr<Scene>> _scenes;
-	UINT _activeSceneIndex = -1;
 	Window _window;
+	JoltManager _joltManager;
+	std::vector<std::unique_ptr<Scene>> _scenes;
+
+	UINT _activeSceneIndex = -1;
 	std::string _pendingSceneChange = "";
 	std::vector<std::string> _pendingSceneRemovals{};
 
@@ -96,7 +100,7 @@ public:
 	void SetGameVolume(float volume);
 
 	[[nodiscard]] Graphics *GetGraphics() noexcept;
-
+	[[nodiscard]] JoltManager *GetJoltManager() noexcept;
 	[[nodiscard]] Window &GetWindow() noexcept;
 
 	[[nodiscard]] bool Update(TimeUtils &time, const Input &input);

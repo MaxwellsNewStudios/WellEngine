@@ -108,6 +108,7 @@ int EngineCore::Init()
 	}
 	LogIndentDecr();
 	DbgMsgF("Loading content took {} s", time.CompareSnapshots("LoadContent"));
+	DbgMsgF("Loading Jolt took {} s", time.CompareSnapshots("InitJoltManager"));
 	DbgMsgF("Loading Scenes took {} s", time.CompareSnapshots("AddScenes"));
 
 	_game.GetWindow().UpdateWindowSize();
