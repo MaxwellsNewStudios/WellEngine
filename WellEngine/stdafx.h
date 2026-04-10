@@ -22,6 +22,7 @@
 #include <cmath>
 #include <filesystem>
 #include <cstdlib>
+#include <cstdarg>
 #include <functional>
 #include <Windows.h>
 #include <atomic>
@@ -34,6 +35,7 @@
 #include <random>
 #include <float.h>
 #include <intsafe.h>
+
 
 // DirectX & SDL
 #include <wrl/client.h>

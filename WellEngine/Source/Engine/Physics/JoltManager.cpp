@@ -5,34 +5,34 @@
 #define new			DEBUG_NEW
 #endif
 
-namespace JPH
-{
-	/*
-	static void TraceImpl(const char *inFMT, ...)
-	{
-		// Format the message
-		va_list list;
-		va_start(list, inFMT);
-		char buffer[1024];
-		vsnprintf(buffer, sizeof(buffer), inFMT, list);
-		va_end(list);
 
-		// Print to the TTY
-		DbgMsg(buffer);
-	}
+static void TraceImpl(const char *inFMT, ...)
+{
+	// Format the message
+	va_list list;
+	va_start(list, inFMT);
+	char buffer[1024];
+	vsnprintf(buffer, sizeof(buffer), inFMT, list);
+	va_end(list);
+
+	// Print
+	DbgMsg(buffer);
+}
+JPH::TraceFunction JPH::Trace = TraceImpl;
 
 #ifdef JPH_ENABLE_ASSERTS
-	// Callback for asserts, connect this to your own assert handler if you have one
-	static bool AssertFailedImpl(const char *inExpression, const char *inMessage, const char *inFile, uint inLine)
-	{
-		// Print to the TTY
-		ErrMsgF("{}:{}: ({}) {}", inFile, inLine, inExpression, inMessage != nullptr ? inMessage : "");
-
-		// Breakpoint
-		return true;
-	};
+// Callback for asserts, connect this to your own assert handler if you have one
+static bool AssertFailedImpl(const char *inExpression, const char *inMessage, const char *inFile, uint32_t inLine)
+{
+	ErrMsgF("{}:{}: ({}) {}", inFile, inLine, inExpression, inMessage != nullptr ? inMessage : "");
+	return true;
+}
+JPH::AssertFailedFunction JPH::AssertFailed = AssertFailedImpl;
 #endif // JPH_ENABLE_ASSERTS
 
+
+namespace JPH
+{
 	bool ObjectLayerPairFilterImpl::ShouldCollide(ObjectLayer inObject1, ObjectLayer inObject2) const
 	{
 		switch (inObject1)
@@ -60,7 +60,8 @@ namespace JPH
 		{
 		case (BroadPhaseLayer::Type)BroadPhaseLayers::NON_MOVING:	return "NON_MOVING";
 		case (BroadPhaseLayer::Type)BroadPhaseLayers::MOVING:		return "MOVING";
-		default:													JPH_ASSERT(false); return "INVALID";
+		default:													JPH_ASSERT(false); 
+			return "INVALID";
 		}
 	}
 #endif // JPH_EXTERNAL_PROFILE || JPH_PROFILE_ENABLED
@@ -78,43 +79,42 @@ namespace JPH
 			return false;
 		}
 	}
-	*/
 }
 
 
-JoltManager::JoltManager() //: _jobSystem(JPH::cMaxPhysicsJobs, JPH::cMaxPhysicsBarriers, std::thread::hardware_concurrency() - 2)
+JoltManager::JoltData::JoltData(uint32_t maxJobs, uint32_t maxBarriers, uint32_t numThreads) : jobSystem(maxJobs, maxBarriers, numThreads) { }
+
+JoltManager::JoltManager()
 {
+	ZoneScopedC(RandomUniqueColor());
+
+	JPH::RegisterDefaultAllocator();
+
+	JPH::Factory::sInstance = new JPH::Factory();
+
+	_d = std::make_unique<JoltData>(JPH::cMaxPhysicsJobs, JPH::cMaxPhysicsBarriers, std::thread::hardware_concurrency() - 2);
+
+	JPH::RegisterTypes();
 }
 
 JoltManager::~JoltManager()
 {
+	ZoneScopedC(RandomUniqueColor());
+
 	JPH::UnregisterTypes();
 
-	/*
 	delete JPH::Factory::sInstance;
 	JPH::Factory::sInstance = nullptr;
-	*/
 }
 
 bool JoltManager::Initialize()
 {
 	ZoneScopedC(RandomUniqueColor());
 
-	JPH::RegisterDefaultAllocator();
-
-	/*
-	JPH::Trace = JPH::TraceImpl;
-	JPH_IF_ENABLE_ASSERTS(JPH::AssertFailed = JPH::AssertFailedImpl;)
-
-	JPH::Factory::sInstance = new JPH::Factory();
-
-	JPH::RegisterTypes();
-
-	_physicsSystem.Init(
+	_d->physicsSystem.Init(
 		cMaxBodies, cNumBodyMutexes, cMaxBodyPairs, cMaxContactConstraints, 
-		_broadPhaseLayerInterface, _objectVsBroadPhaseLayerFilter, _objectVsObjectLayerFilter
+		_d->broadPhaseLayerInterface, _d->objectVsBroadPhaseLayerFilter, _d->objectVsObjectLayerFilter
 	);
-	*/
 
 	return true;
 }

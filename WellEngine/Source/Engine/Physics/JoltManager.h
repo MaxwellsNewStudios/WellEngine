@@ -29,7 +29,6 @@ namespace JPH
 		static constexpr uint NUM_LAYERS(2);
 	};
 
-	/*
 	/// Class that determines if two object layers can collide
 	class ObjectLayerPairFilterImpl : public ObjectLayerPairFilter
 	{
@@ -68,18 +67,24 @@ namespace JPH
 	public:
 		virtual bool ShouldCollide(ObjectLayer inLayer1, BroadPhaseLayer inLayer2) const override;
 	};
-	*/
 }
 
 class JoltManager
 {
 private:
-	//JPH::TempAllocatorMalloc _tempAllocator;
-	//JPH::JobSystemThreadPool _jobSystem;
-	//JPH::BPLayerInterfaceImpl _broadPhaseLayerInterface;
-	//JPH::ObjectVsBroadPhaseLayerFilterImpl _objectVsBroadPhaseLayerFilter;
-	//JPH::ObjectLayerPairFilterImpl _objectVsObjectLayerFilter;
-	//JPH::PhysicsSystem _physicsSystem;
+	struct JoltData
+	{
+		JPH::TempAllocatorMalloc				tempAllocator;
+		JPH::JobSystemThreadPool				jobSystem;
+		JPH::BPLayerInterfaceImpl				broadPhaseLayerInterface;
+		JPH::ObjectVsBroadPhaseLayerFilterImpl	objectVsBroadPhaseLayerFilter;
+		JPH::ObjectLayerPairFilterImpl			objectVsObjectLayerFilter;
+		JPH::PhysicsSystem						physicsSystem;
+
+		JoltData(uint32_t maxJobs, uint32_t maxBarriers, uint32_t numThreads);
+	};
+
+	std::unique_ptr<JoltData> _d;
 
 public:
 	const uint32_t cMaxBodies = 65536u;
