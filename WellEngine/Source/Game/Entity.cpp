@@ -1436,6 +1436,275 @@ bool Entity::InitialRenderUI()
 
 		ImGui::SetItemTooltip("Entity Name");
 
+		// Buttons
+		{
+			// Dock/Undock button
+			{
+				const std::string windowID = std::format("Ent#{}:{}", entID, _scene->GetUID());
+
+				// Check if entity is undocked
+				if (ImGuiUtils::Utils::GetWindow(windowID, nullptr))
+				{
+					// If undocked, show dock button
+					if (ImGuiUtils::ButtonWithFont(ICON_LC_SQUARE_ARROW_OUT_DOWN_LEFT "##Dock", FONT_ICON_FILE_NAME_LC, 16.0f))
+					{
+						if (!ImGuiUtils::Utils::CloseWindow(windowID))
+						{
+							ErrMsg("Failed to dock entity window!");
+							return false;
+						}
+					}
+
+					ImGui::SetItemTooltip("Dock Entity Inspector Window");
+				}
+				else
+				{
+					// If docked, show undock button
+					if (ImGuiUtils::ButtonWithFont(ICON_LC_SQUARE_ARROW_OUT_UP_RIGHT "##Undock", FONT_ICON_FILE_NAME_LC, 16.0f))
+					{
+						const std::string windowName = std::format("Entity '{}'", GetName());
+						if (!ImGuiUtils::Utils::OpenWindow(windowName, windowID, std::bind(&Entity::InitialRenderUI, this)))
+						{
+							ErrMsg("Failed to undock entity window!");
+							return false;
+						}
+					}
+
+					ImGui::SetItemTooltip("Undock Entity Inspector Window");
+				}
+			}
+
+			ImGui::SameLine();
+
+			// Copy button
+			{
+				if (ImGuiUtils::ButtonWithFont(ICON_LC_COPY "##Copy", FONT_ICON_FILE_NAME_LC, 16.0f))
+				{
+					Entity *ent = debugPlayer->DuplicateEntity(this);
+					debugPlayer->Select(ent, ImGui::GetIO().KeyShift);
+				}
+
+				ImGui::SetItemTooltip("Duplicate");
+			}
+
+			ImGui::SameLine();
+
+			// Save as prefab button
+			{
+				static std::string prefabName = "";
+				bool doSave = false;
+
+				if (ImGuiUtils::ButtonWithFont(ICON_LC_BOOK_MARKED "##SavePrefab", FONT_ICON_FILE_NAME_LC, 16.0f))
+				{
+					ImGui::OpenPopup("Save as Prefab");
+					prefabName = GetName();
+				}
+
+				ImGui::SetItemTooltip("Save as Prefab");
+
+				if (ImGui::BeginPopup("Save as Prefab"))
+				{
+					ImGui::Text("Prefab Name:");
+					ImGui::SameLine();
+					ImGui::InputText("##PrefabName", &prefabName);
+
+					if (ImGui::Button("Save"))
+					{
+						if (!prefabName.empty())
+						{
+							std::vector<std::string> prefabs;
+							_scene->GetPrefabNames(prefabs);
+
+							bool nameCollision = false;
+							for (const auto &name : prefabs)
+							{
+								if (name != prefabName)
+									continue;
+
+								nameCollision = true;
+							}
+
+							if (nameCollision)
+							{
+								ImGui::OpenPopup("Confirm Overwrite Prefab");
+							}
+							else 
+							{
+								doSave = true;
+								ImGui::CloseCurrentPopup();
+							}
+						}
+					}
+					ImGui::SameLine();
+
+					if (ImGui::Button("Cancel"))
+						ImGui::CloseCurrentPopup();
+
+					bool closeSavePrefabPopup = false;
+					if (ImGui::BeginPopup("Confirm Overwrite Prefab"))
+					{
+						ImGui::Text("This prefab already exists.\nOverwrite it?", prefabName.c_str());
+						ImGui::Separator();
+
+						if (ImGui::Button("Yes"))
+						{
+							doSave = true;
+							closeSavePrefabPopup = true;
+							ImGui::CloseCurrentPopup();
+						}
+
+						static float noButtonWidth = 30.0f;
+						ImGui::SameLine(ImGui::GetWindowContentRegionMax().x - noButtonWidth);
+
+						if (ImGui::Button("No"))
+							ImGui::CloseCurrentPopup();
+						noButtonWidth = ImGui::GetItemRectSize().x;
+
+						ImGui::EndPopup();
+					}
+
+					if (closeSavePrefabPopup)
+						ImGui::CloseCurrentPopup();
+
+					ImGui::EndPopup();
+				}
+
+				if (doSave)
+				{
+					if (!_scene->SaveAsPrefab(prefabName, this))
+						WarnF("Failed to save entity '{}' as prefab '{}'!", _name, prefabName);
+				}
+			}
+
+			ImGui::SameLine();
+
+			// Replace with prefab button
+			{
+				if (ImGuiUtils::ButtonWithFont(ICON_LC_BOOK_COPY "##ReplaceWithPrefab", FONT_ICON_FILE_NAME_LC, 16.0f))
+					ImGui::OpenPopup("Replace With Prefab");
+
+				ImGui::SetItemTooltip("Replace With Prefab");
+
+				if (ImGui::BeginPopup("Replace With Prefab", NULL))
+				{
+					std::vector<std::string> prefabs;
+					_scene->GetPrefabNames(prefabs);
+
+					static std::string selectedPrefab = "";
+
+					ImGui::Text("Selected: '%s'", selectedPrefab.c_str());
+					ImGui::Separator();
+
+					// Search filter
+					{
+						static std::string search = "";
+						if (ImGui::Button("Clear"))
+							search.clear();
+						ImGui::SameLine();
+
+						if (ImGui::InputText("##PrefabSearch", &search))
+							std::transform(search.begin(), search.end(), search.begin(), ::tolower);
+
+						for (int i = 0; i < prefabs.size(); i++)
+						{
+							std::string prefabLower = prefabs[i];
+							std::transform(prefabLower.begin(), prefabLower.end(), prefabLower.begin(), ::tolower);
+
+							if (prefabLower.find(search) == std::string::npos)
+							{
+								prefabs.erase(prefabs.begin() + i);
+								i--;
+							}
+						}
+					}
+
+					ImGuiChildFlags childFlags = ImGuiChildFlags_None;
+					childFlags |= ImGuiChildFlags_Borders;
+					childFlags |= ImGuiChildFlags_ResizeY;
+
+					ImGuiWindowFlags windowFlags = ImGuiWindowFlags_None;
+					windowFlags |= ImGuiWindowFlags_AlwaysVerticalScrollbar;
+
+					if (ImGui::BeginChild("Prefab List", ImVec2(0, 300), childFlags, windowFlags))
+					{
+						for (int i = 0; i < prefabs.size(); i++)
+						{
+							std::string &prefab = prefabs[i];
+
+							if (ImGui::Selectable(prefab.c_str(), selectedPrefab == prefab))
+								selectedPrefab = std::move(prefab);
+						}
+					}
+					ImGui::EndChild();
+					ImGui::Separator();
+
+					if (ImGui::Button("Confirm") && !selectedPrefab.empty())
+					{
+						Entity *ent = _scene->SpawnPrefab(selectedPrefab);
+
+						if (ent)
+						{
+							// Set parent to this entity's parent
+							ent->SetParent(_parent);
+
+							// Copy transform from this entity to the new prefab instance
+							const dx::XMFLOAT4X4A &localMatrix = _transform.GetMatrix(Local);
+							ent->GetTransform()->SetMatrix(localMatrix, Local);
+
+							if (_parent != nullptr)
+								_parent->ReorderChild(ent, this);
+
+							_scene->GetSceneHolder()->ReorderEntity(ent, this);
+
+							// Transfer references from this entity to the new prefab instance
+							ent->ReplaceTarget(*this);
+
+							// Delete this entity
+							if (!sceneHolder->RemoveEntity(this))
+							{
+								ErrMsg("Failed to remove entity!");
+								ImGui::CloseCurrentPopup();
+								return false;
+							}
+
+							debugPlayer->Select(ent, true);
+						}
+						else
+							WarnF("Failed to spawn prefab '{}'", selectedPrefab);
+
+						ImGui::CloseCurrentPopup();
+					}
+
+					static float cancelButtonWidth = 30.0f;
+					ImGui::SameLine(ImGui::GetWindowContentRegionMax().x - cancelButtonWidth);
+
+					if (ImGui::Button("Cancel"))
+						ImGui::CloseCurrentPopup();
+					cancelButtonWidth = ImGui::GetItemRectSize().x;
+
+					ImGui::EndPopup();
+				}
+			}
+
+			ImGui::SameLine();
+
+			// Delete button
+			{
+				if (ImGuiUtils::ButtonWithFont(ICON_LC_X "##Delete", FONT_ICON_FILE_NAME_LC, 16.0f))
+				{
+					debugPlayer->Deselect(this);
+
+					if (!sceneHolder->RemoveEntity(entIndex))
+					{
+						ErrMsg("Failed to remove entity!");
+						return false;
+					}
+				}
+
+				ImGui::SetItemTooltip("Delete");
+			}
+		}
+
 		if (IsPrefab())
 		{
 			ImGui::TextColored({ 1.0f, 0.95f, 0.65f, 1.0f }, "Prefab Instance: %s", GetPrefabName().c_str());
@@ -1448,383 +1717,53 @@ bool Entity::InitialRenderUI()
 				UnlinkFromPrefab();
 			ImGui::PopStyleColor(3);
 		}
-	}
 
-	ImGui::Separator();
-
-	// Buttons
-	{
-		// Dock/Undock button
+		// Properties
+		if (ImGui::TreeNode("Properties"))
 		{
-			ImGui::PushStyleColor(ImGuiCol_Button, (ImVec4)ImColor::HSV(0.6f, 0.55f, 0.5f));
-			ImGui::PushStyleColor(ImGuiCol_ButtonHovered, (ImVec4)ImColor::HSV(0.6f, 0.65f, 0.6f));
-			ImGui::PushStyleColor(ImGuiCol_ButtonActive, (ImVec4)ImColor::HSV(0.6f, 0.75f, 0.7f));
-
-			const std::string windowID = std::format("Ent#{}:{}", entID, _scene->GetUID());
-
-			// Check if entity is undocked
-			if (ImGuiUtils::Utils::GetWindow(windowID, nullptr))
+			ImGui::Text("Parent:"); ImGui::SameLine();
+			Entity *parent = GetParent();
+			if (parent)
 			{
-				// If undocked, show dock button
-				if (ImGui::Button("Dock", { 60, 20 }))
+				UINT parentIndex = sceneHolder->GetEntityIndex(parent);
+
+				if (ImGui::SmallButton(std::format("{} ({})", parent->GetName(), parentIndex).c_str()))
 				{
-					if (!ImGuiUtils::Utils::CloseWindow(windowID))
-					{
-						ImGui::PopStyleColor(3);
-						ErrMsg("Failed to dock entity window!");
-						return false;
-					}
+					if (!ImGui::GetIO().KeyShift)
+						debugPlayer->Deselect(this);
+
+					debugPlayer->Select(parent, true);
 				}
-			}
-			else
-			{
-				// If docked, show undock button
-				if (ImGui::Button("Undock", { 60, 20 }))
-				{
-					const std::string windowName = std::format("Entity '{}'", GetName());
-					if (!ImGuiUtils::Utils::OpenWindow(windowName, windowID, std::bind(&Entity::InitialRenderUI, this)))
-					{
-						ImGui::PopStyleColor(3);
-						ErrMsg("Failed to undock entity window!");
-						return false;
-					}
-				}
-			}
 
-			ImGui::PopStyleColor(3);
-		}
-
-		ImGui::SameLine();
-
-		// Copy button
-		{
-			ImGui::PushStyleColor(ImGuiCol_Button, (ImVec4)ImColor::HSV(0.3f, 0.55f, 0.5f));
-			ImGui::PushStyleColor(ImGuiCol_ButtonHovered, (ImVec4)ImColor::HSV(0.3f, 0.65f, 0.6f));
-			ImGui::PushStyleColor(ImGuiCol_ButtonActive, (ImVec4)ImColor::HSV(0.3f, 0.75f, 0.7f));
-			if (ImGui::Button("Copy", { 60, 20 }))
-			{
-				Entity *ent = debugPlayer->DuplicateEntity(this);
-				debugPlayer->Select(ent, ImGui::GetIO().KeyShift);
-			}
-			ImGui::PopStyleColor(3);
-		}
-
-		ImGui::SameLine();
-
-		// Delete button
-		{
-			ImGui::PushStyleColor(ImGuiCol_Button, (ImVec4)ImColor::HSV(0.0f, 0.55f, 0.5f));
-			ImGui::PushStyleColor(ImGuiCol_ButtonHovered, (ImVec4)ImColor::HSV(0.0f, 0.65f, 0.6f));
-			ImGui::PushStyleColor(ImGuiCol_ButtonActive, (ImVec4)ImColor::HSV(0.0f, 0.75f, 0.7f));
-			if (ImGui::Button("Delete", { 60, 20 }))
-			{
-				debugPlayer->Deselect(this);
-
-				if (!sceneHolder->RemoveEntity(entIndex))
-				{
-					ErrMsg("Failed to remove entity!");
-					ImGui::PopStyleColor(3);
-					return false;
-				}
-			}
-			ImGui::PopStyleColor(3);
-		}
-
-		// Duplicate bind button
-		{
-			ImVec2 buttonSize = { 196, 20 };
-
-			ImGui::PushStyleColor(ImGuiCol_Button, (ImVec4)ImColor::HSV(0.15f, 0.55f, 0.5f));
-			ImGui::PushStyleColor(ImGuiCol_ButtonHovered, (ImVec4)ImColor::HSV(0.15f, 0.65f, 0.6f));
-			ImGui::PushStyleColor(ImGuiCol_ButtonActive, (ImVec4)ImColor::HSV(0.15f, 0.75f, 0.7f));
-			if (debugPlayer->HasDuplicateBind(entID))
-			{
-				if (ImGui::Button("Clear Duplicate Bind", buttonSize))
-					debugPlayer->RemoveDuplicateBind(entID);
-
+				ImGui::SameLine();
+				ImGui::PushStyleColor(ImGuiCol_Button, (ImVec4)ImColor::HSV(0.0f, 0.55f, 0.6f));
+				ImGui::PushStyleColor(ImGuiCol_ButtonHovered, (ImVec4)ImColor::HSV(0.0f, 0.65f, 0.7f));
+				ImGui::PushStyleColor(ImGuiCol_ButtonActive, (ImVec4)ImColor::HSV(0.0f, 0.75f, 0.8f));
+				if (ImGui::SmallButton("X"))
+					SetParent(parent->GetParent(), debugPlayer->GetEditSpace() == World);
 				ImGui::PopStyleColor(3);
-
-				KeyCode keyCode = debugPlayer->GetDuplicateBind(entID);
-				std::string keyCodeName = "?";
-
-				for (const auto &[key, value] : KeyCodeNames)
-				{
-					if (value == keyCode)
-					{
-						keyCodeName = key;
-						break;
-					}
-				}
-
-				ImGui::Text(("Duplicate Bind: " + keyCodeName).c_str());
 			}
 			else
 			{
-				if (debugPlayer->IsAssigningDuplicateToKey(entID))
-				{
-					if (ImGui::Button("Cancel Duplicate Bind", buttonSize))
-						debugPlayer->AssignDuplicateToKey(-1);
-					ImGui::PopStyleColor(3);
-
-					ImGui::Text("Press the key you want to assign...");
-				}
-				else if (ImGui::Button("Add Duplicate Bind", buttonSize))
-				{
-					debugPlayer->AssignDuplicateToKey(entID);
-					ImGui::PopStyleColor(3);
-				}
-				else
-					ImGui::PopStyleColor(3);
+				ImGui::Text("None");
 			}
+
+			ImGui::Text("Index: %d", entIndex);
+			ImGui::Text("ID: %d", entID);
+			ImGui::Text("References: %d", GetRefs().size());
+
+			ImGui::Separator();
+
+			bool hidden = !_showInHierarchy;
+			ImGui::Checkbox("Hidden", &hidden);
+			_showInHierarchy = !hidden;
+
+			ImGui::Checkbox("Static", &_isStatic);
+			ImGui::Checkbox("Selectable", &_isDebugSelectable);
+			ImGui::Checkbox("Serialized##EntSerialize", &_doSerialize);
+
+			ImGui::TreePop();
 		}
-
-		// Save as prefab button
-		{
-			static std::string prefabName = "";
-			bool doSave = false;
-
-			ImGui::PushStyleColor(ImGuiCol_Button, (ImVec4)ImColor::HSV(0.8f, 0.625f, 0.5f));
-			ImGui::PushStyleColor(ImGuiCol_ButtonHovered, (ImVec4)ImColor::HSV(0.8f, 0.725f, 0.6f));
-			ImGui::PushStyleColor(ImGuiCol_ButtonActive, (ImVec4)ImColor::HSV(0.8f, 0.825f, 0.7f));
-			if (ImGui::Button("Save as Prefab", { 196, 20 }))
-			{
-				ImGui::OpenPopup("Save as Prefab");
-				prefabName = GetName();
-			}
-			ImGui::PopStyleColor(3);
-
-			if (ImGui::BeginPopup("Save as Prefab"))
-			{
-				ImGui::Text("Prefab Name:");
-				ImGui::SameLine();
-				ImGui::InputText("##PrefabName", &prefabName);
-
-				if (ImGui::Button("Save"))
-				{
-					if (!prefabName.empty())
-					{
-						std::vector<std::string> prefabs;
-						_scene->GetPrefabNames(prefabs);
-
-						bool nameCollision = false;
-						for (const auto &name : prefabs)
-						{
-							if (name != prefabName)
-								continue;
-
-							nameCollision = true;
-						}
-
-						if (nameCollision)
-						{
-							ImGui::OpenPopup("Confirm Overwrite Prefab");
-						}
-						else 
-						{
-							doSave = true;
-							ImGui::CloseCurrentPopup();
-						}
-					}
-				}
-				ImGui::SameLine();
-
-				if (ImGui::Button("Cancel"))
-					ImGui::CloseCurrentPopup();
-
-				bool closeSavePrefabPopup = false;
-				if (ImGui::BeginPopup("Confirm Overwrite Prefab"))
-				{
-					ImGui::Text("This prefab already exists.\nOverwrite it?", prefabName.c_str());
-					ImGui::Separator();
-
-					if (ImGui::Button("Yes"))
-					{
-						doSave = true;
-						closeSavePrefabPopup = true;
-						ImGui::CloseCurrentPopup();
-					}
-
-					static float noButtonWidth = 30.0f;
-					ImGui::SameLine(ImGui::GetWindowContentRegionMax().x - noButtonWidth);
-
-					if (ImGui::Button("No"))
-						ImGui::CloseCurrentPopup();
-					noButtonWidth = ImGui::GetItemRectSize().x;
-
-					ImGui::EndPopup();
-				}
-
-				if (closeSavePrefabPopup)
-					ImGui::CloseCurrentPopup();
-
-				ImGui::EndPopup();
-			}
-
-			if (doSave)
-			{
-				if (!_scene->SaveAsPrefab(prefabName, this))
-					WarnF("Failed to save entity '{}' as prefab '{}'!", _name, prefabName);
-			}
-		}
-
-		// Replace with prefab button
-		{
-			ImGui::PushStyleColor(ImGuiCol_Button, (ImVec4)ImColor::HSV(0.1f, 0.55f, 0.5f));
-			ImGui::PushStyleColor(ImGuiCol_ButtonHovered, (ImVec4)ImColor::HSV(0.1f, 0.65f, 0.6f));
-			ImGui::PushStyleColor(ImGuiCol_ButtonActive, (ImVec4)ImColor::HSV(0.1f, 0.75f, 0.7f));
-			if (ImGui::Button("Replace With Prefab", { 196, 20 }))
-				ImGui::OpenPopup("Replace With Prefab");
-			ImGui::PopStyleColor(3);
-
-			if (ImGui::BeginPopup("Replace With Prefab", NULL))
-			{
-				std::vector<std::string> prefabs;
-				_scene->GetPrefabNames(prefabs);
-
-				static std::string selectedPrefab = "";
-
-				ImGui::Text("Selected: '%s'", selectedPrefab.c_str());
-				ImGui::Separator();
-
-				// Search filter
-				{
-					static std::string search = "";
-					if (ImGui::Button("Clear"))
-						search.clear();
-					ImGui::SameLine();
-
-					if (ImGui::InputText("##PrefabSearch", &search))
-						std::transform(search.begin(), search.end(), search.begin(), ::tolower);
-
-					for (int i = 0; i < prefabs.size(); i++)
-					{
-						std::string prefabLower = prefabs[i];
-						std::transform(prefabLower.begin(), prefabLower.end(), prefabLower.begin(), ::tolower);
-
-						if (prefabLower.find(search) == std::string::npos)
-						{
-							prefabs.erase(prefabs.begin() + i);
-							i--;
-						}
-					}
-				}
-
-				ImGuiChildFlags childFlags = ImGuiChildFlags_None;
-				childFlags |= ImGuiChildFlags_Borders;
-				childFlags |= ImGuiChildFlags_ResizeY;
-
-				ImGuiWindowFlags windowFlags = ImGuiWindowFlags_None;
-				windowFlags |= ImGuiWindowFlags_AlwaysVerticalScrollbar;
-
-				if (ImGui::BeginChild("Prefab List", ImVec2(0, 300), childFlags, windowFlags))
-				{
-					for (int i = 0; i < prefabs.size(); i++)
-					{
-						std::string &prefab = prefabs[i];
-
-						if (ImGui::Selectable(prefab.c_str(), selectedPrefab == prefab))
-							selectedPrefab = std::move(prefab);
-					}
-				}
-				ImGui::EndChild();
-				ImGui::Separator();
-
-				if (ImGui::Button("Confirm") && !selectedPrefab.empty())
-				{
-					Entity *ent = _scene->SpawnPrefab(selectedPrefab);
-
-					if (ent)
-					{
-						// Set parent to this entity's parent
-						ent->SetParent(_parent);
-
-						// Copy transform from this entity to the new prefab instance
-						const dx::XMFLOAT4X4A &localMatrix = _transform.GetMatrix(Local);
-						ent->GetTransform()->SetMatrix(localMatrix, Local);
-
-						if (_parent != nullptr)
-							_parent->ReorderChild(ent, this);
-
-						_scene->GetSceneHolder()->ReorderEntity(ent, this);
-
-						// Transfer references from this entity to the new prefab instance
-						ent->ReplaceTarget(*this);
-
-						// Delete this entity
-						if (!sceneHolder->RemoveEntity(this))
-						{
-							ErrMsg("Failed to remove entity!");
-							ImGui::CloseCurrentPopup();
-							return false;
-						}
-
-						debugPlayer->Select(ent, true);
-					}
-					else
-						WarnF("Failed to spawn prefab '{}'", selectedPrefab);
-
-					ImGui::CloseCurrentPopup();
-				}
-
-				static float cancelButtonWidth = 30.0f;
-				ImGui::SameLine(ImGui::GetWindowContentRegionMax().x - cancelButtonWidth);
-
-				if (ImGui::Button("Cancel"))
-					ImGui::CloseCurrentPopup();
-				cancelButtonWidth = ImGui::GetItemRectSize().x;
-
-				ImGui::EndPopup();
-			}
-		}
-	}
-
-	ImGui::Separator();
-
-	// Properties
-	if (ImGui::TreeNode("Properties"))
-	{
-		ImGui::Text("Parent:"); ImGui::SameLine();
-		Entity *parent = GetParent();
-		if (parent)
-		{
-			UINT parentIndex = sceneHolder->GetEntityIndex(parent);
-
-			if (ImGui::SmallButton(std::format("{} ({})", parent->GetName(), parentIndex).c_str()))
-			{
-				if (!ImGui::GetIO().KeyShift)
-					debugPlayer->Deselect(this);
-
-				debugPlayer->Select(parent, true);
-			}
-
-			ImGui::SameLine();
-			ImGui::PushStyleColor(ImGuiCol_Button, (ImVec4)ImColor::HSV(0.0f, 0.55f, 0.6f));
-			ImGui::PushStyleColor(ImGuiCol_ButtonHovered, (ImVec4)ImColor::HSV(0.0f, 0.65f, 0.7f));
-			ImGui::PushStyleColor(ImGuiCol_ButtonActive, (ImVec4)ImColor::HSV(0.0f, 0.75f, 0.8f));
-			if (ImGui::SmallButton("X"))
-				SetParent(parent->GetParent(), debugPlayer->GetEditSpace() == World);
-			ImGui::PopStyleColor(3);
-		}
-		else
-		{
-			ImGui::Text("None");
-		}
-
-		ImGui::Text("Index: %d", entIndex);
-		ImGui::Text("ID: %d", entID);
-		ImGui::Text("References: %d", GetRefs().size());
-
-		ImGui::Separator();
-
-		bool hidden = !_showInHierarchy;
-		ImGui::Checkbox("Hidden", &hidden);
-		_showInHierarchy = !hidden;
-
-		ImGui::Checkbox("Static", &_isStatic);
-		ImGui::Checkbox("Selectable", &_isDebugSelectable);
-		ImGui::Checkbox("Serialized##EntSerialize", &_doSerialize);
-
-		ImGui::TreePop();
 	}
 
 	ImGui::Separator();

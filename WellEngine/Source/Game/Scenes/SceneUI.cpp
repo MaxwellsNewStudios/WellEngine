@@ -339,7 +339,7 @@ bool Scene::RenderEntityHierarchyUI(Entity *root, UINT depth, bool skipCulling, 
 				// If undocked, show dock button
 				SetCursorPosY(GetCursorPosY() - 2.0f);
 				ImGuiUtils::BeginFont(FONT_ICON_FILE_NAME_LC, 14.0f);
-				if (Button(ICON_LC_EXTERNAL_LINK))
+				if (Button(ICON_LC_SQUARE_ARROW_OUT_DOWN_LEFT))
 				{
 					if (!ImGuiUtils::Utils::CloseWindow(windowID))
 					{
@@ -369,7 +369,7 @@ bool Scene::RenderEntityHierarchyUI(Entity *root, UINT depth, bool skipCulling, 
 				// If docked, show undock button
 				SetCursorPosY(GetCursorPosY() - 2.0f);
 				ImGuiUtils::BeginFont(FONT_ICON_FILE_NAME_LC, 14.0f);
-				if (Button(ICON_LC_EXTERNAL_LINK))
+				if (Button(ICON_LC_SQUARE_ARROW_OUT_UP_RIGHT))
 				{
 					SameLine();
 					ImRect rect = {

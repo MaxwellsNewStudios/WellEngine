@@ -27,8 +27,11 @@ namespace ImGuiUtils
 
 	bool BeginFont(const std::string &name, float scale = 0.0f);
 	void EndFont();
-
 	bool SetDefaultFont(const std::string &name);
+
+	void TextWithFont(const char *text, const std::string &font, float scale = 0.0f);
+	bool ButtonWithFont(const char *text, const std::string &font, float scale = 0.0f, ImVec2 size = ImVec2(0, 0));
+
 
 	// ImGui window, rendered at top level.
 	class ImGuiAutoWindow

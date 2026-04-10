@@ -171,6 +171,19 @@ bool ImGuiUtils::SetDefaultFont(const std::string &name)
 	return true;
 }
 
+void ImGuiUtils::TextWithFont(const char *text, const std::string &name, float scale)
+{
+	ImGuiUtils::BeginFont(name, scale);
+	ImGui::Text(text);
+	ImGuiUtils::EndFont();
+}
+bool ImGuiUtils::ButtonWithFont(const char *text, const std::string &font, float scale, ImVec2 size)
+{
+	ImGuiUtils::BeginFont(font, scale);
+	bool result = ImGui::Button(text, size);
+	ImGuiUtils::EndFont();
+	return result;
+}
 #pragma region ImGuiAutoWindow
 const std::string &ImGuiAutoWindow::GetID() const
 {

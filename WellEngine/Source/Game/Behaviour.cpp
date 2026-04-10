@@ -375,6 +375,29 @@ void Behaviour::SetUIDirty(bool state)
 	_uiSizeDirty = state;
 }
 
+
+struct WINDOWPROCESSINFO
+{
+	DWORD pid;
+	HWND hwnd;
+};
+
+static BOOL CALLBACK OnGetWindowByProcess(HWND hwnd, LPARAM lParam)
+{
+	WINDOWPROCESSINFO *infoPtr = (WINDOWPROCESSINFO *)lParam;
+	DWORD check = 0;
+	BOOL br = TRUE;
+	GetWindowThreadProcessId(hwnd, &check);
+
+	if (check == infoPtr->pid)
+	{
+		infoPtr->hwnd = hwnd;
+		br = FALSE;
+	}
+
+	return br;
+}
+
 bool Behaviour::InitialRenderUI()
 {
 	ImGuiUtils::BeginButtonStyle(ImGuiUtils::StyleType::Yellow);
@@ -392,7 +415,41 @@ bool Behaviour::InitialRenderUI()
 		DbgMsgF("Opening '{}'", scriptPath);
 
 		// Open script with default program
-		ShellExecuteA(nullptr, "open", scriptPath.c_str(), nullptr, nullptr, SW_SHOW);
+		SHELLEXECUTEINFOA sei = { 0 };
+		sei.cbSize = sizeof(SHELLEXECUTEINFOA);
+		sei.fMask = SEE_MASK_NOCLOSEPROCESS | SEE_MASK_NOASYNC | SEE_MASK_WAITFORINPUTIDLE;
+		sei.hwnd = nullptr;
+		sei.lpVerb = "open";
+		sei.lpFile = scriptPath.c_str();
+		sei.lpParameters = nullptr;
+		sei.lpDirectory = nullptr;
+		sei.nShow = SW_SHOWNORMAL;
+
+		if (!ShellExecuteExA(&sei))
+		{
+			WarnF("Failed to open script '{}' with error code {}", scriptPath, GetLastError());
+		}
+		else if (sei.hProcess)
+		{
+			// Sleep for a short time to allow the process to open the file and create a window
+			Sleep(200);
+
+			// Get the window handle of the opened process and set it to foreground
+			WINDOWPROCESSINFO info{};
+			info.pid = GetProcessId(sei.hProcess);
+			info.hwnd = 0; 
+			
+			AllowSetForegroundWindow(info.pid);
+
+			EnumWindows(OnGetWindowByProcess, (LPARAM)&info);
+			if (info.hwnd != 0)
+			{
+				SetForegroundWindow(info.hwnd);
+				SetActiveWindow(info.hwnd);
+			}
+
+			CloseHandle(sei.hProcess);
+		}
 	}
 	ImGuiUtils::EndFont();
 	ImGuiUtils::EndButtonStyle();
