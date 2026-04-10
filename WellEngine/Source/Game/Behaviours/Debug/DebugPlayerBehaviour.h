@@ -42,6 +42,8 @@ private:
 
 	std::vector<BillboardMeshBehaviour *> _gizmoBillboards = {};
 
+	[[nodiscard]] bool HandleCameraMovement(TimeUtils &time, const Input &input);
+
 	[[nodiscard]] bool UpdateGlobalEntities(TimeUtils &time, const Input &input);
 
 	// out contains entity and distance to entity from camera, pos is the coordinates for the ray hit

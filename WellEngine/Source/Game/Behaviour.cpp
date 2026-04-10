@@ -375,29 +375,6 @@ void Behaviour::SetUIDirty(bool state)
 	_uiSizeDirty = state;
 }
 
-
-struct WINDOWPROCESSINFO
-{
-	DWORD pid;
-	HWND hwnd;
-};
-
-static BOOL CALLBACK OnGetWindowByProcess(HWND hwnd, LPARAM lParam)
-{
-	WINDOWPROCESSINFO *infoPtr = (WINDOWPROCESSINFO *)lParam;
-	DWORD check = 0;
-	BOOL br = TRUE;
-	GetWindowThreadProcessId(hwnd, &check);
-
-	if (check == infoPtr->pid)
-	{
-		infoPtr->hwnd = hwnd;
-		br = FALSE;
-	}
-
-	return br;
-}
-
 bool Behaviour::InitialRenderUI()
 {
 	ImGuiUtils::BeginButtonStyle(ImGuiUtils::StyleType::Yellow);
@@ -425,14 +402,23 @@ bool Behaviour::InitialRenderUI()
 		sei.lpDirectory = nullptr;
 		sei.nShow = SW_SHOWNORMAL;
 
+
 		if (!ShellExecuteExA(&sei))
 		{
 			WarnF("Failed to open script '{}' with error code {}", scriptPath, GetLastError());
 		}
-		else if (sei.hProcess)
+		else
 		{
-			// Sleep for a short time to allow the process to open the file and create a window
-			Sleep(200);
+			if (!sei.hProcess)
+			{
+				std::this_thread::sleep_for(std::chrono::milliseconds(200));
+				ShellExecuteExA(&sei);
+			}
+
+			struct WINDOWPROCESSINFO {
+				DWORD pid;
+				HWND hwnd;
+			};
 
 			// Get the window handle of the opened process and set it to foreground
 			WINDOWPROCESSINFO info{};
@@ -441,7 +427,27 @@ bool Behaviour::InitialRenderUI()
 			
 			AllowSetForegroundWindow(info.pid);
 
-			EnumWindows(OnGetWindowByProcess, (LPARAM)&info);
+			// Sleep for a short time to allow the process to open the file and create a window
+			std::this_thread::sleep_for(std::chrono::milliseconds(500));
+
+			EnumWindows(
+				[](HWND hwnd, LPARAM lParam) -> BOOL {
+					WINDOWPROCESSINFO *infoPtr = (WINDOWPROCESSINFO *)lParam;
+					DWORD check = 0;
+					BOOL br = TRUE;
+					GetWindowThreadProcessId(hwnd, &check);
+
+					if (check == infoPtr->pid)
+					{
+						infoPtr->hwnd = hwnd;
+						br = FALSE;
+					}
+
+					return br;
+				}, 
+				(LPARAM)&info
+			);
+
 			if (info.hwnd != 0)
 			{
 				SetForegroundWindow(info.hwnd);

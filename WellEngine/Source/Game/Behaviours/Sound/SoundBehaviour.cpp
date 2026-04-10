@@ -81,43 +81,25 @@ bool SoundBehaviour::RenderUI()
 	Transform *viewCamTransform = scene->GetViewCamera()->GetTransform();
 	dx::XMFLOAT3A listenerPos = viewCamTransform->GetPosition(World);
 
-	// Playback
-	{
-		if (ImGui::Button("Play"))
-			Play();
-		ImGui::SameLine(); ImGui::Dummy({ 2.0f, 0.0f }); ImGui::SameLine();
-
-		if (ImGui::Button("Pause"))
-			Pause();
-		ImGui::SameLine(); ImGui::Dummy({ 2.0f, 0.0f }); ImGui::SameLine();
-
-		if (ImGui::Button("Reset"))
-			ResetSound();
-		ImGui::SameLine(); ImGui::Dummy({ 2.0f, 0.0f }); ImGui::SameLine();
-
-		ImGui::Checkbox("Loop", &_loop);
-
-		ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 1.0f), std::format("Duration: {} / {}", _duration, _length).c_str());
-	}
-	ImGui::Separator();
-
 	// Sound File
 	{
 		static std::string soundName = _fileName;
 		bool reinitialize = false;
 		bool foundFile = false;
 
-		ImGui::Text("Sound Name:");
-		ImGui::SameLine();
+		float inputWidth = ImGui::GetContentRegionAvail().x - 32.0f; // Leave space for Browse button
+		ImGui::SetNextItemWidth(inputWidth);
 		if (ImGui::InputText("##SoundName", &soundName))
 		{
 			std::string fileName = PATH_FILE_EXT(ASSET_PATH_SOUNDS, soundName, "wav");
 			struct stat buffer;
 			reinitialize = foundFile = stat(fileName.c_str(), &buffer) == 0;
 		}
+
 		ImGui::SetItemTooltip(std::format("Name of the sound file you want to use, located in {}.", ASSET_PATH_SOUNDS).c_str());
 
-		if (ImGui::Button("Browse"))
+		ImGui::SameLine();
+		if (ImGuiUtils::ButtonWithFont(ICON_LC_FOLDER_SEARCH "##Browse", FONT_ICON_FILE_NAME_LC, 14.0f))
 		{
 			const char *filterPatterns[] = { "*.wav" };
 			const char *selectedFiles = tinyfd_openFileDialog(
@@ -153,6 +135,8 @@ bool SoundBehaviour::RenderUI()
 			}
 		}
 
+		ImGui::SetItemTooltip("Open File Browser");
+
 		if (foundFile)
 		{
 			// Reinitialize sound source with new file name
@@ -160,6 +144,27 @@ bool SoundBehaviour::RenderUI()
 			if (!Start())
 				ErrMsg("Failed to reinitialize sound!")
 		}
+	}
+	ImGui::Dummy({ 0.0f, 1.0f });
+
+	// Playback
+	{
+		if (ImGui::Button("Play"))
+			Play();
+		ImGui::SameLine(0.0f, 8.0f);
+
+		if (ImGui::Button("Pause"))
+			Pause();
+		ImGui::SameLine(0.0f, 8.0f);
+
+		if (ImGui::Button("Reset"))
+			ResetSound();
+		ImGui::SameLine(0.0f, 8.0f);
+
+		ImGui::Checkbox("Loop", &_loop);
+		ImGui::Dummy({ 0.0f, 1.0f });
+
+		ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 1.0f), std::format("Duration: {} / {}", _duration, _length).c_str());
 	}
 	ImGui::Separator();
 
