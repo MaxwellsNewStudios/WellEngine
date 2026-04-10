@@ -103,7 +103,7 @@ namespace ImGui
 
 			// Optional: custom draw callback for node body (inside the header)
 			// Parameters: node reference, body size
-			std::function<void(Node&, ImVec2)> drawBodyFunc;
+			std::function<void(GraphInstance&, Node&, ImVec2)> drawBodyFunc;
 
 
 			void CalcSize();
@@ -202,6 +202,10 @@ namespace ImGui
 			bool isDraggingNode = false;
 			NodeId selectedNode = -1;
 			PinId linkingPin = -1;
+
+
+			void DrawMenuUI();
+			void DrawNodeListContextMenu();
 
 		public:
 			GraphInstance(const GraphContext &ctx) : context(ctx) {}

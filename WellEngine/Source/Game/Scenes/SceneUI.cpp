@@ -2563,9 +2563,13 @@ bool Scene::RenderSceneUI()
 				nodePreset.headerColor = ImColor(96, 96, 164);
 				nodePreset.bodySize = ImVec2(35, 35);
 				nodePreset.outputs.push_back(pinBitPreset);
-				nodePreset.drawBodyFunc = [](Node &node, ImVec2 bodySize) {
-					static bool hi = false; // this would instead be some storage location in node
-					ImGui::Checkbox("##Checkbox", &hi);
+				nodePreset.drawBodyFunc = [](GraphInstance &instance, Node &node, ImVec2 bodySize) {
+					// HACK: Store bool in ImGui storage, this would instead be some storage location in node
+					ImGuiStorage *storage = ImGui::GetStateStorage();
+					ImGuiID bitID = ImGui::GetID("##Bit");
+					bool bit = storage->GetBool(bitID, false);
+					if (ImGui::Checkbox("##Checkbox", &bit))
+						storage->SetBool(bitID, bit);
 				};
 				nodePreset.CalcSize();
 				gCtx.AddNodePreset(nodePreset);

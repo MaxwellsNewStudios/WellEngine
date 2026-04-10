@@ -329,7 +329,7 @@ void ImGui::NodeGraph::Node::DrawUI(GraphInstance &instance)
 	{
 		SetCursorPos(bodyRect.Min - instance.windowPos);
 		BeginChild(("NodeBody" + std::to_string(id)).c_str(), bodyRect.GetSize(), true, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse);
-		preset.drawBodyFunc(*this, bodyRect.GetSize());
+		preset.drawBodyFunc(instance, *this, bodyRect.GetSize());
 		EndChild();
 	}
 
@@ -530,13 +530,40 @@ void ImGui::NodeGraph::GraphInstance::RemoveLink(LinkId linkId)
 	links.erase(linkId);
 }
 
-static void DrawMenuUI(GraphInstance &instance)
+void ImGui::NodeGraph::GraphInstance::DrawNodeListContextMenu()
 {
+	// Set window position to mouse position if first frame of opening
+	ImVec2 mousePos = ImGui::GetIO().MousePos;
+	ImGui::SetNextWindowPos(mousePos, ImGuiCond_Appearing);
+
+	// Right-click on empty space to open context menu for creating nodes
+	if (ImGui::BeginPopup("NodeListContextMenu"))
+	{
+		// TODO: Add search-bar and list nodes in categories as nested TreeNodes
+		// See entity "Add Behaviour" popup for setup
+
+		for (size_t i = 0; i < context.GetNodePresetCount(); i++)
+		{
+			const NodePreset &preset = context.GetNodePresets()[i];
+			if (ImGui::MenuItem(preset.name.c_str()))
+			{
+				ImVec2 ctxMenuPos = ImGui::GetWindowPos();
+				ImVec2 spawnPos = ctxMenuPos - windowPos - viewPos;
+
+				AddNode(i, spawnPos);
+			}
+		}
+		ImGui::EndPopup();
+	}
+}
+
+void ImGui::NodeGraph::GraphInstance::DrawMenuUI()
+{
+	DrawNodeListContextMenu();
+
 	// eg. Node creation, global i/o, settings, etc.
 
 	// Menu bar
-
-	// Right-click node list
 }
 
 bool ImGui::NodeGraph::GraphInstance::Open(ImVec2 size, ImGuiNodeGraphFlags flags)
@@ -552,7 +579,6 @@ bool ImGui::NodeGraph::GraphInstance::Open(ImVec2 size, ImGuiNodeGraphFlags flag
 	ImRect drawArea = ImRect(windowPos, windowPos + size);
 	drawList->PushClipRect(drawArea.Min, drawArea.Max, true);
 
-	//SetCursorPos({0,0});
 	SetNextItemAllowOverlap();
 	if (InvisibleButton("##BackgroundInvisButton", GetContentRegionAvail()) && !isPanning)
 		selectedNode = -1; // If pressed, deselect nodes
@@ -561,6 +587,9 @@ bool ImGui::NodeGraph::GraphInstance::Open(ImVec2 size, ImGuiNodeGraphFlags flag
 	{
 		if (IsMouseDragging(ImGuiMouseButton_Left, 1.0f))
 			isPanning = true;
+
+		if (IsMouseClicked(ImGuiMouseButton_Right))
+			ImGui::OpenPopup("NodeListContextMenu");
 	}
 
 	if (isPanning)
@@ -603,7 +632,7 @@ bool ImGui::NodeGraph::GraphInstance::Open(ImVec2 size, ImGuiNodeGraphFlags flag
 
 
 	// Graph UI
-	DrawMenuUI(*this);
+	DrawMenuUI();
 
 
 	if (IsMouseReleased(ImGuiMouseButton_Left))
@@ -612,6 +641,32 @@ bool ImGui::NodeGraph::GraphInstance::Open(ImVec2 size, ImGuiNodeGraphFlags flag
 		isDraggingNode = false;
 		isPanning = false;
 	}
+
+
+	// If pressed delete and a node is selected, delete it
+	if (IsKeyPressed(ImGuiKey_Delete) && selectedNode > 0)
+	{
+		Node &node = nodes.at(selectedNode);
+
+		// Remove links
+		for (PinId pinId : node.inputPinIds)
+		{
+			Pin &pin = pins.at(pinId);
+			if (!pin.linkIds.empty())
+				RemoveLink(pin.linkIds[0]);
+		}
+
+		for (PinId pinId : node.outputPinIds)
+		{
+			Pin &pin = pins.at(pinId);
+			while (!pin.linkIds.empty())
+				RemoveLink(pin.linkIds[0]);
+		}
+
+		nodes.erase(selectedNode);
+		selectedNode = -1;
+	}
+
 
 	drawList->PopClipRect();
 	firstFrame = false;
