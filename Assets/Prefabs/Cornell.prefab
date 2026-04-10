@@ -1,0 +1,107 @@
+{
+    "Prefab": {
+        "Name": "Cornell",
+        "Entity": {
+            "Name": "Cornell",
+            "ID": 78,
+            "Enabled": true,
+            "Pos": [
+                6.0,
+                0.009999999776482582,
+                -20.0
+            ],
+            "Rot": [
+                -0.0,
+                0.0,
+                0.0
+            ],
+            "Scale": [
+                1.0,
+                1.0,
+                1.0
+            ],
+            "Static": false,
+            "Select": true,
+            "InTree": true,
+            "Hidden": false,
+            "Beh": [
+                {
+                    "Name": "MeshBehaviour",
+                    "Attributes": {
+                        "Mesh": "Cornell",
+                        "Transparent": false,
+                        "Shadow Caster": false,
+                        "Shadows Only": false,
+                        "Base Color": [
+                            0.3922652006149292,
+                            0.3922652006149292,
+                            0.3922652006149292,
+                            1.0
+                        ],
+                        "Alpha Cutoff": 0.0,
+                        "Normal Factor": 1.0,
+                        "Specular Factor": 1.0,
+                        "Glossiness Factor": 1.0,
+                        "Occlusion Factor": 0.0,
+                        "Reflectivity": 0.0,
+                        "Metallic": 0.0,
+                        "Tex": "Cornell",
+                        "Ambient": "Cornell_Light"
+                    }
+                }
+            ],
+            "Child": [
+                {
+                    "Name": "LightCover",
+                    "ID": 79,
+                    "Enabled": true,
+                    "Pos": [
+                        0.0,
+                        2.740000009536743,
+                        -2.799999237060547
+                    ],
+                    "Rot": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "Scale": [
+                        2.799999952316284,
+                        2.759999990463257,
+                        2.799999952316284
+                    ],
+                    "Static": false,
+                    "Select": false,
+                    "InTree": true,
+                    "Hidden": false,
+                    "Beh": [
+                        {
+                            "Name": "MeshBehaviour",
+                            "Attributes": {
+                                "Mesh": "Cube",
+                                "Transparent": false,
+                                "Shadow Caster": false,
+                                "Shadows Only": true,
+                                "Base Color": [
+                                    1.0,
+                                    1.0,
+                                    1.0,
+                                    1.0
+                                ],
+                                "Alpha Cutoff": 0.0,
+                                "Normal Factor": 1.0,
+                                "Specular Factor": 1.0,
+                                "Glossiness Factor": 1.0,
+                                "Occlusion Factor": 0.0,
+                                "Reflectivity": 0.0,
+                                "Metallic": 0.0,
+                                "Tex": "Black",
+                                "PS": "PS_DebugViewDiffuse"
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    }
+}

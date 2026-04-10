@@ -21,15 +21,17 @@
             "Cubemap": "BarrenFieldHDR",
             "Skybox": "PS_SkyboxEnvironment",
             "Ambient": [
-                0.3529411554336548,
-                0.3529411554336548,
-                0.3529411554336548
+                0.3529411852359772,
+                0.3529411852359772,
+                0.3529411852359772
             ],
             "Fog": {
                 "Thickness": 0.02500000037252903,
-                "Step Size": 0.0,
-                "Min Steps": 0,
-                "Max Steps": 64
+                "Sample Bias": 1.5,
+                "Max Steps": 64,
+                "Depth Fade Begin": 0.5,
+                "Depth Fade End": 1.0,
+                "Depth Fade Exp": 1.0
             },
             "Emission": {
                 "Strength": 1.149999976158142,
@@ -189,7 +191,7 @@
             ],
             "Rot": [
                 -0.0,
-                0.7440707087516785,
+                1.1402872800827026,
                 -0.0
             ],
             "Scale": [
@@ -251,7 +253,7 @@
             "Rot": [
                 -0.0,
                 0.0,
-                -0.0
+                0.0
             ],
             "Scale": [
                 0.019999999552965164,
@@ -1723,6 +1725,7 @@
                         "Update Frequency": 3,
                         "Falloff": 0.699999988079071,
                         "Fog Strength": 1.0,
+                        "Shadow Strength": 1.0,
                         "Near": -0.10000000149011612,
                         "Far": -20.15260887145996,
                         "Color": [
@@ -1764,6 +1767,7 @@
                         "Update Frequency": 2,
                         "Falloff": 0.4000000059604645,
                         "Fog Strength": 0.5550000071525574,
+                        "Shadow Strength": 1.0,
                         "Color": [
                             5.881486892700195,
                             15.600000381469727,
@@ -2587,6 +2591,27 @@
                 1.9999982118606567
             ],
             "Prefab": "Sponza"
+        },
+        {
+            "Name": "Cornell",
+            "ID": 78,
+            "Enabled": true,
+            "Pos": [
+                6.0,
+                0.009999999776482582,
+                -20.0
+            ],
+            "Rot": [
+                -0.0,
+                0.0,
+                0.0
+            ],
+            "Scale": [
+                1.0,
+                1.0,
+                1.0
+            ],
+            "Prefab": "Cornell"
         }
     ]
 }
