@@ -11,7 +11,7 @@ class JoltColliderBehaviour : public Behaviour
 {
 private:
 	JPH::BodyID _bodyID = JPH::BodyID(JPH::BodyID::cInvalidBodyID);
-	JPH::EMotionType _type;
+	JPH::EMotionType _motionType;
 	JPH::ObjectLayer _layer;
 
 	dx::XMFLOAT3A _lastEntPos = { 0, 0, 0 };
@@ -33,16 +33,23 @@ protected:
 	[[nodiscard]] JPH::BodyInterface &GetBodyInterface();
 
 	void SetBodyID(const JPH::BodyID &bodyID) { _bodyID = bodyID; }
-	void SetMotionType(JPH::EMotionType type) { _type = type; }
-	void SetLayer(JPH::ObjectLayer layer) { _layer = layer; }
 
 	void DestroyBody();
+	
+	// Apply entity transform to physics body
+	virtual void SyncPhysics() = 0; 
+	
+	// Apply physics body transform to entity
+	virtual void SyncTransform() = 0; 
 
 public:
-	JoltColliderBehaviour(JPH::EMotionType type = JPH::EMotionType::Dynamic, JPH::ObjectLayer layer = JPH::Layers::MOVING);
+	JoltColliderBehaviour(JPH::EMotionType motionType, JPH::ObjectLayer layer);
 	~JoltColliderBehaviour();
 
 	[[nodiscard]] const JPH::BodyID &GetBodyID() const { return _bodyID; }
-	[[nodiscard]] JPH::EMotionType GetMotionType() const { return _type; }
+	[[nodiscard]] JPH::EMotionType GetMotionType() const { return _motionType; }
 	[[nodiscard]] JPH::ObjectLayer GetLayer() const { return _layer; }
+
+	void SetMotionType(JPH::EMotionType motionType);
+	void SetLayer(JPH::ObjectLayer layer);
 };

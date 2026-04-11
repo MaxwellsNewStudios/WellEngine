@@ -7,14 +7,9 @@
 #endif
 
 
-JoltSphereColliderBehaviour::JoltSphereColliderBehaviour(float radius, JPH::EMotionType type, JPH::ObjectLayer layer) :
-	JoltColliderBehaviour(type, layer), _radius(radius)
+JoltSphereColliderBehaviour::JoltSphereColliderBehaviour(float radius, JPH::EMotionType motionType, JPH::ObjectLayer layer) :
+	JoltColliderBehaviour(motionType, layer), _radius(radius)
 { }
-
-JoltSphereColliderBehaviour::~JoltSphereColliderBehaviour()
-{
-
-}
 
 bool JoltSphereColliderBehaviour::Start()
 {
@@ -58,12 +53,32 @@ bool JoltSphereColliderBehaviour::Update(TimeUtils &time, const Input &input)
 	return true;
 }
 
-bool JoltSphereColliderBehaviour::LateUpdate(TimeUtils &time, const Input &input)
+void JoltSphereColliderBehaviour::SyncPhysics()
 {
-	if (!JoltColliderBehaviour::LateUpdate(time, input))
-		return false;
+	JPH::BodyInterface &bodyInterface = GetBodyInterface();
+	Transform *transform = GetEntity()->GetTransform();
+	const JPH::BodyID &bodyID = GetBodyID();
 
-	return true;
+	dx::XMFLOAT3A currPos = transform->GetPosition(World);
+	dx::XMFLOAT4A currRot = transform->GetRotation(World);
+
+	bodyInterface.SetPosition(bodyID, JPH::RVec3(currPos.x, currPos.y, currPos.z), JPH::EActivation::Activate);
+	bodyInterface.SetRotation(bodyID, JPH::Quat(currRot.x, currRot.y, currRot.z, currRot.w), JPH::EActivation::Activate);
+}
+void JoltSphereColliderBehaviour::SyncTransform()
+{
+	JPH::BodyInterface &bodyInterface = GetBodyInterface();
+	Transform *transform = GetEntity()->GetTransform();
+	const JPH::BodyID &bodyID = GetBodyID();
+
+	JPH::RVec3 joltPos = bodyInterface.GetCenterOfMassPosition(bodyID);
+	JPH::Quat joltRot = bodyInterface.GetRotation(bodyID);
+
+	dx::XMFLOAT3A newEntPos = dx::XMFLOAT3A(joltPos.GetX(), joltPos.GetY(), joltPos.GetZ());
+	dx::XMFLOAT4A newEntRot = dx::XMFLOAT4A(joltRot.GetX(), joltRot.GetY(), joltRot.GetZ(), joltRot.GetW());
+
+	transform->SetPosition(newEntPos, World);
+	transform->SetRotation(newEntRot, World);
 }
 
 #ifdef USE_IMGUI
@@ -76,10 +91,10 @@ bool JoltSphereColliderBehaviour::RenderUI()
 	JPH::BodyID bodyID = GetBodyID();
 
 	// Radius
-	if (ImGui::DragFloat("Radius", &_radius, 0.01f, 0.01f))
+	if (ImGui::DragFloat("Radius", &_radius, 0.01f))
 	{
 		_radius = max(0.001f, _radius);
-		bodyInterface.SetShape(bodyID, new JPH::SphereShape(_radius), false, JPH::EActivation::DontActivate);
+		bodyInterface.SetShape(bodyID, new JPH::SphereShape(_radius), false, JPH::EActivation::Activate);
 	}
 	ImGuiUtils::LockMouseOnActive();
 

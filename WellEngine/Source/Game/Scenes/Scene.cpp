@@ -1931,6 +1931,14 @@ bool Scene::FixedUpdate(float deltaTime, const Input &input)
 }
 bool Scene::PhysUpdate(float deltaTime)
 {
+	ZoneScopedC(RandomUniqueColor());
+
+	if (!_initialized)
+		return false;
+
+	if (!_physInstance.Update(deltaTime))
+		return false;
+
 	return true;
 }
 

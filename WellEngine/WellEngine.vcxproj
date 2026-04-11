@@ -709,6 +709,7 @@
     <ClInclude Include="Source\Game\Behaviour.h" />
     <ClInclude Include="Source\Game\BehaviourFactory.h" />
     <ClInclude Include="Source\Game\BehaviourRegistry.h" />
+    <ClInclude Include="Source\Game\Behaviours\Physics\Jolt\JoltBoxColliderBehaviour.h" />
     <ClInclude Include="Source\Game\Behaviours\Physics\Jolt\JoltColliderBehaviour.h" />
     <ClInclude Include="Source\Game\Behaviours\Physics\Jolt\JoltSphereColliderBehaviour.h" />
     <ClInclude Include="Source\Game\Behaviours\Rendering\Mesh\TextMeshBehaviour.h" />
@@ -1576,6 +1577,7 @@
     <ClCompile Include="Source\Game\Behaviour.cpp" />
     <ClCompile Include="Source\Game\BehaviourFactory.cpp" />
     <ClCompile Include="Source\Game\BehaviourRegistry.cpp" />
+    <ClCompile Include="Source\Game\Behaviours\Physics\Jolt\JoltBoxColliderBehaviour.cpp" />
     <ClCompile Include="Source\Game\Behaviours\Physics\Jolt\JoltColliderBehaviour.cpp" />
     <ClCompile Include="Source\Game\Behaviours\Physics\Jolt\JoltSphereColliderBehaviour.cpp" />
     <ClCompile Include="Source\Game\Behaviours\Rendering\Mesh\TextMeshBehaviour.cpp" />

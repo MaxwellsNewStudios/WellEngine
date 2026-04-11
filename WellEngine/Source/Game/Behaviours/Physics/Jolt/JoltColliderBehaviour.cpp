@@ -7,8 +7,8 @@
 #endif
 
 
-JoltColliderBehaviour::JoltColliderBehaviour(JPH::EMotionType type, JPH::ObjectLayer layer) :
-	_type(type), _layer(layer)
+JoltColliderBehaviour::JoltColliderBehaviour(JPH::EMotionType motionType, JPH::ObjectLayer layer) :
+	_motionType(motionType), _layer(layer)
 { }
 
 JoltColliderBehaviour::~JoltColliderBehaviour()
@@ -40,7 +40,6 @@ bool JoltColliderBehaviour::LateUpdate(TimeUtils &time, const Input &input)
 	// If entity transform has moved or rotated since the last frame, apply the new transform to the physics body.
 	// Otherwise, apply the current physics body transform to the entity to keep them in sync.
 
-	JPH::BodyInterface &bodyInterface = GetBodyInterface();
 	Transform *transform = GetEntity()->GetTransform();
 
 	dx::XMFLOAT3A currPos = transform->GetPosition(World);
@@ -50,8 +49,7 @@ bool JoltColliderBehaviour::LateUpdate(TimeUtils &time, const Input &input)
 		currRot.x != _lastEntRot.x || currRot.y != _lastEntRot.y || currRot.z != _lastEntRot.z || currRot.w != _lastEntRot.w)
 	{
 		// Entity transform has changed, apply it to the physics body.
-		bodyInterface.SetPosition(_bodyID, JPH::RVec3(currPos.x, currPos.y, currPos.z), JPH::EActivation::DontActivate);
-		bodyInterface.SetRotation(_bodyID, JPH::Quat(currRot.x, currRot.y, currRot.z, currRot.w), JPH::EActivation::DontActivate);
+		SyncPhysics();
 
 		_lastEntPos = currPos;
 		_lastEntRot = currRot;
@@ -59,17 +57,26 @@ bool JoltColliderBehaviour::LateUpdate(TimeUtils &time, const Input &input)
 	else
 	{
 		// Entity transform has not changed, apply physics body transform to entity.
-		JPH::RVec3 joltPos = bodyInterface.GetCenterOfMassPosition(_bodyID);
-		JPH::Quat joltRot = bodyInterface.GetRotation(_bodyID);
+		// This can be skipped if the body is static or inactive
 
-		dx::XMFLOAT3A newEntPos = dx::XMFLOAT3A(joltPos.GetX(), joltPos.GetY(), joltPos.GetZ());
-		dx::XMFLOAT4A newEntRot = dx::XMFLOAT4A(joltRot.GetX(), joltRot.GetY(), joltRot.GetZ(), joltRot.GetW());
+		JPH::BodyInterface &bodyInterface = GetBodyInterface();
+		bool doSkip = false;
 
-		transform->SetPosition(newEntPos, World);
-		transform->SetRotation(newEntRot, World);
+		if (bodyInterface.GetMotionType(_bodyID) == JPH::EMotionType::Static)
+			doSkip = true;
+		else if (!bodyInterface.IsActive(_bodyID))
+			doSkip = true;
 
-		_lastEntPos = newEntPos;
-		_lastEntRot = newEntRot;
+		if (!doSkip)
+		{
+			SyncTransform();
+
+			currPos = transform->GetPosition(World);
+			currRot = transform->GetRotation(World);
+
+			_lastEntPos = currPos;
+			_lastEntRot = currRot;
+		}
 	}
 
 	return true;
@@ -86,13 +93,15 @@ bool JoltColliderBehaviour::RenderUI()
 	if (ImGui::Combo("Motion Type", &motionTypeIndex, motionTypes, IM_ARRAYSIZE(motionTypes)))
 	{
 		SetMotionType((JPH::EMotionType)motionTypeIndex);
-
-		// Update body motion type in physics system
-		JPH::BodyInterface &bodyInterface = GetBodyInterface();
-		bodyInterface.SetMotionType(_bodyID, GetMotionType(), JPH::EActivation::DontActivate);
 	}
 
-	// TODO: Layer
+	// Layer
+	const char *layers[] = { "Non Moving", "Moving" };
+	int layerIndex = (int)GetLayer();
+	if (ImGui::Combo("Layer", &layerIndex, layers, IM_ARRAYSIZE(layers)))
+	{
+		SetLayer((JPH::ObjectLayer)layerIndex);
+	}
 
 	return true;
 }
@@ -109,4 +118,22 @@ void JoltColliderBehaviour::DestroyBody()
 	bodyInterface.RemoveBody(_bodyID);
 	bodyInterface.DestroyBody(_bodyID);
 	_bodyID = JPH::BodyID(JPH::BodyID::cInvalidBodyID);
+}
+
+void JoltColliderBehaviour::SetMotionType(JPH::EMotionType motionType)
+{
+	_motionType = motionType;
+
+	// Update body motion type in physics system
+	JPH::BodyInterface &bodyInterface = GetBodyInterface();
+	bodyInterface.SetMotionType(_bodyID, GetMotionType(), JPH::EActivation::Activate);
+}
+
+void JoltColliderBehaviour::SetLayer(JPH::ObjectLayer layer)
+{
+	_layer = layer;
+
+	// Update body layer in physics system
+	JPH::BodyInterface &bodyInterface = GetBodyInterface();
+	bodyInterface.SetObjectLayer(_bodyID, GetLayer());
 }

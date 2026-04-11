@@ -9,13 +9,14 @@ private:
 protected:
 	[[nodiscard]] bool Start() override;
 	[[nodiscard]] bool Update(TimeUtils &time, const Input &input) override;
-	[[nodiscard]] bool LateUpdate(TimeUtils &time, const Input &input) override;
 #ifdef USE_IMGUI
 	[[nodiscard]] bool RenderUI() override;
 #endif
 
+	void SyncPhysics() override;
+	void SyncTransform() override;
+
 public:
-	JoltSphereColliderBehaviour(float radius = 1.0f, JPH::EMotionType type = JPH::EMotionType::Dynamic, JPH::ObjectLayer layer = JPH::Layers::MOVING);
-	~JoltSphereColliderBehaviour();
+	JoltSphereColliderBehaviour(float radius = 1.0f, JPH::EMotionType motionType = JPH::EMotionType::Dynamic, JPH::ObjectLayer layer = JPH::Layers::MOVING);
 };
 
