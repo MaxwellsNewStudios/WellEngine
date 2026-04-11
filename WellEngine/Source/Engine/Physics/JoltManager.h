@@ -1,8 +1,6 @@
 #pragma once
 #include "Jolt/Jolt.h"
-JPH_SUPPRESS_WARNING_PUSH
 #include "Jolt/Physics/PhysicsSystem.h"
-JPH_SUPPRESS_WARNING_POP
 
 
 namespace JPH
@@ -70,10 +68,10 @@ private:
 	JPH::ObjectLayerPairFilterImpl			_objectVsObjectLayerFilter;
 
 public:
-	const uint32_t cMaxBodies = 65536u;
-	const uint32_t cNumBodyMutexes = 0u;
-	const uint32_t cMaxBodyPairs = 65536u;
-	const uint32_t cMaxContactConstraints = 10240u;
+	const JPH::uint cMaxBodies = 65536;
+	const JPH::uint cNumBodyMutexes = 0;
+	const JPH::uint cMaxBodyPairs = 65536;
+	const JPH::uint cMaxContactConstraints = 10240;
 
 	JoltManager();
 	~JoltManager();

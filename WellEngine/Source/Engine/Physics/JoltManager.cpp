@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "JoltManager.h"
-//#include "JoltPhysicsInstance.h"
+#include "Jolt/RegisterTypes.h"
 
 #ifdef LEAK_DETECTION
 #define new			DEBUG_NEW
@@ -23,7 +23,7 @@ JPH::TraceFunction JPH::Trace = TraceImpl;
 
 #ifdef JPH_ENABLE_ASSERTS
 // Callback for asserts, connect this to your own assert handler if you have one
-static bool AssertFailedImpl(const char *inExpression, const char *inMessage, const char *inFile, uint32_t inLine)
+static bool AssertFailedImpl(const char *inExpression, const char *inMessage, const char *inFile, JPH::uint inLine)
 {
 	ErrMsgF("{}:{}: ({}) {}", inFile, inLine, inExpression, inMessage != nullptr ? inMessage : "");
 	return true;

@@ -6,7 +6,7 @@
 #endif
 
 
-JoltPhysicsInstance::JoltSystemData::JoltSystemData(uint32_t maxJobs, uint32_t maxBarriers, uint32_t numThreads) : 
+JoltPhysicsInstance::JoltSystemData::JoltSystemData(JPH::uint maxJobs, JPH::uint maxBarriers, JPH::uint numThreads) :
 	tempAllocator(10 * 1024 * 1024), 
 	jobSystem(maxJobs, maxBarriers, numThreads) 
 {
@@ -21,7 +21,7 @@ bool JoltPhysicsInstance::Initialize(JoltManager *manager)
 		return false;
 	}
 
-	_sys = std::make_unique<JoltSystemData>(JPH::cMaxPhysicsJobs, JPH::cMaxPhysicsBarriers, max(std::thread::hardware_concurrency() - 2, 1u));
+	_sys = std::make_unique<JoltSystemData>(JPH::cMaxPhysicsJobs, JPH::cMaxPhysicsBarriers, max(std::thread::hardware_concurrency() - 2, 1));
 
 	_sys->physicsSystem.Init(
 		manager->cMaxBodies, manager->cNumBodyMutexes, manager->cMaxBodyPairs, manager->cMaxContactConstraints,
