@@ -7,8 +7,8 @@
 #endif
 
 
-JoltSphereColliderBehaviour::JoltSphereColliderBehaviour(float radius, dx::XMFLOAT3 offset, JPH::EMotionType type, JPH::ObjectLayer layer) :
-	JoltColliderBehaviour(type, layer), _radius(radius), _offset(offset)
+JoltSphereColliderBehaviour::JoltSphereColliderBehaviour(float radius, JPH::EMotionType type, JPH::ObjectLayer layer) :
+	JoltColliderBehaviour(type, layer), _radius(radius)
 { }
 
 JoltSphereColliderBehaviour::~JoltSphereColliderBehaviour()
@@ -23,20 +23,19 @@ bool JoltSphereColliderBehaviour::Start()
 
 	Transform *transform = GetEntity()->GetTransform();
 	dx::XMFLOAT3A wPos = transform->GetPosition(World);
+	dx::XMFLOAT4A wRot = transform->GetRotation(World);
 
 	JPH::BodyInterface &bodyInterface = GetBodyInterface();
 
 	JPH::BodyCreationSettings sphereSettings(
 		new JPH::SphereShape(_radius),
-		JPH::RVec3(wPos.x + _offset.x, wPos.y + _offset.y, wPos.z + _offset.z), 
-		JPH::Quat::sIdentity(),
+		JPH::RVec3(wPos.x, wPos.y, wPos.z), 
+		JPH::Quat(wRot.x, wRot.y, wRot.z, wRot.w),
 		GetMotionType(), GetLayer()
 	);
 	SetBodyID(bodyInterface.CreateAndAddBody(sphereSettings, JPH::EActivation::Activate));
 
-	QueueUpdate();
-
-	return true;
+	return JoltColliderBehaviour::Start();
 }
 
 bool JoltSphereColliderBehaviour::Update(TimeUtils &time, const Input &input)
@@ -44,20 +43,25 @@ bool JoltSphereColliderBehaviour::Update(TimeUtils &time, const Input &input)
 	if (!JoltColliderBehaviour::Update(time, input))
 		return false;
 
-	// Snap transform to physics body position
-	JPH::BodyInterface &bodyInterface = GetBodyInterface();
-	JPH::RVec3 joltPos = bodyInterface.GetCenterOfMassPosition(GetBodyID());
-	dx::XMFLOAT3A pos = dx::XMFLOAT3A(joltPos.GetX(), joltPos.GetY(), joltPos.GetZ());
-	dx::XMFLOAT3A entPos = dx::XMFLOAT3A(pos.x - _offset.x, pos.y - _offset.y, pos.z - _offset.z);
-	GetEntity()->GetTransform()->SetPosition(entPos, World);
-
 #ifdef USE_IMGUI
 	if (DoDebugDraw())
 	{
+		JPH::BodyInterface &bodyInterface = GetBodyInterface();
+		JPH::RVec3 joltPos = bodyInterface.GetCenterOfMassPosition(GetBodyID());
+		dx::XMFLOAT3A pos = dx::XMFLOAT3A(joltPos.GetX(), joltPos.GetY(), joltPos.GetZ());
+
 		DebugDrawer &drawer = DebugDrawer::Instance();
 		drawer.DrawSphere(pos, _radius, 3, dx::XMFLOAT4(1, 0, 0, 0.2f));
 	}
 #endif
+
+	return true;
+}
+
+bool JoltSphereColliderBehaviour::LateUpdate(TimeUtils &time, const Input &input)
+{
+	if (!JoltColliderBehaviour::LateUpdate(time, input))
+		return false;
 
 	return true;
 }
@@ -76,16 +80,6 @@ bool JoltSphereColliderBehaviour::RenderUI()
 	{
 		_radius = max(0.001f, _radius);
 		bodyInterface.SetShape(bodyID, new JPH::SphereShape(_radius), false, JPH::EActivation::DontActivate);
-	}
-	ImGuiUtils::LockMouseOnActive();
-
-	// Offset
-	if (ImGui::DragFloat3("Offset", &_offset.x, 0.01f))
-	{
-		Transform *transform = GetEntity()->GetTransform();
-		dx::XMFLOAT3A wPos = transform->GetPosition(World);
-		JPH::RVec3 newPos = JPH::RVec3(wPos.x + _offset.x, wPos.y + _offset.y, wPos.z + _offset.z);
-		bodyInterface.SetPosition(bodyID, newPos, JPH::EActivation::DontActivate);
 	}
 	ImGuiUtils::LockMouseOnActive();
 

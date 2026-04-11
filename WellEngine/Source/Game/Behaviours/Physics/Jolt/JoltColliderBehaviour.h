@@ -1,5 +1,4 @@
 #pragma once
-
 #include <d3d11.h>
 #include <DirectXMath.h>
 
@@ -15,12 +14,17 @@ private:
 	JPH::EMotionType _type;
 	JPH::ObjectLayer _layer;
 
+	dx::XMFLOAT3A _lastEntPos = { 0, 0, 0 };
+	dx::XMFLOAT4A _lastEntRot = { 0, 0, 0, 1 };
+
 #ifdef USE_IMGUI
 	bool _debugDraw = false;
 #endif
 
 protected:
+	[[nodiscard]] virtual bool Start() override;
 	[[nodiscard]] virtual bool Update(TimeUtils &time, const Input &input) override;
+	[[nodiscard]] virtual bool LateUpdate(TimeUtils &time, const Input &input) override;
 #ifdef USE_IMGUI
 	[[nodiscard]] virtual bool RenderUI() override;
 	[[nodiscard]] bool DoDebugDraw() const { return _debugDraw; }

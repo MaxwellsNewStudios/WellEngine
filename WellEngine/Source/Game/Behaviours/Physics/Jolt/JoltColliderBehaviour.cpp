@@ -22,8 +22,55 @@ JoltColliderBehaviour::~JoltColliderBehaviour()
 		DestroyBody();
 }
 
+bool JoltColliderBehaviour::Start()
+{
+	QueueUpdate();
+	QueueLateUpdate();
+
+	return true;
+}
+
 bool JoltColliderBehaviour::Update(TimeUtils &time, const Input &input)
 {
+	return true;
+}
+
+bool JoltColliderBehaviour::LateUpdate(TimeUtils &time, const Input &input)
+{
+	// If entity transform has moved or rotated since the last frame, apply the new transform to the physics body.
+	// Otherwise, apply the current physics body transform to the entity to keep them in sync.
+
+	JPH::BodyInterface &bodyInterface = GetBodyInterface();
+	Transform *transform = GetEntity()->GetTransform();
+
+	dx::XMFLOAT3A currPos = transform->GetPosition(World);
+	dx::XMFLOAT4A currRot = transform->GetRotation(World);
+
+	if (currPos.x != _lastEntPos.x || currPos.y != _lastEntPos.y || currPos.z != _lastEntPos.z ||
+		currRot.x != _lastEntRot.x || currRot.y != _lastEntRot.y || currRot.z != _lastEntRot.z || currRot.w != _lastEntRot.w)
+	{
+		// Entity transform has changed, apply it to the physics body.
+		bodyInterface.SetPosition(_bodyID, JPH::RVec3(currPos.x, currPos.y, currPos.z), JPH::EActivation::DontActivate);
+		bodyInterface.SetRotation(_bodyID, JPH::Quat(currRot.x, currRot.y, currRot.z, currRot.w), JPH::EActivation::DontActivate);
+
+		_lastEntPos = currPos;
+		_lastEntRot = currRot;
+	}
+	else
+	{
+		// Entity transform has not changed, apply physics body transform to entity.
+		JPH::RVec3 joltPos = bodyInterface.GetCenterOfMassPosition(_bodyID);
+		JPH::Quat joltRot = bodyInterface.GetRotation(_bodyID);
+
+		dx::XMFLOAT3A newEntPos = dx::XMFLOAT3A(joltPos.GetX(), joltPos.GetY(), joltPos.GetZ());
+		dx::XMFLOAT4A newEntRot = dx::XMFLOAT4A(joltRot.GetX(), joltRot.GetY(), joltRot.GetZ(), joltRot.GetW());
+
+		transform->SetPosition(newEntPos, World);
+		transform->SetRotation(newEntRot, World);
+
+		_lastEntPos = newEntPos;
+		_lastEntRot = newEntRot;
+	}
 
 	return true;
 }
