@@ -207,6 +207,7 @@ public:
 	[[nodiscard]] ID3D11DeviceContext *GetContext() const;
 	[[nodiscard]] Content *GetContent() const;
 	[[nodiscard]] SceneHolder *GetSceneHolder();
+	[[nodiscard]] JoltPhysicsInstance *GetPhysicsInstance();
 	[[nodiscard]] Graphics *GetGraphics() const;
 	[[nodiscard]] GraphManager *GetGraphManager();
 	[[nodiscard]] const Input *GetInput() const;

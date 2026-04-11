@@ -2569,6 +2569,10 @@ SceneHolder *Scene::GetSceneHolder()
 {
 	return &_sceneHolder;
 }
+JoltPhysicsInstance *Scene::GetPhysicsInstance()
+{
+	return &_physInstance;
+}
 CollisionHandler *Scene::GetCollisionHandler()
 {
 	return &_collisionHandler;

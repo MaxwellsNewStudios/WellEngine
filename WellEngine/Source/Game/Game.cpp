@@ -12,6 +12,10 @@ using namespace DirectX;
 
 Game::Game()
 {
+#ifndef _DEPLOY
+	_freezePhysics = true;
+#endif
+
 	_activeSceneIndex = -1;
 }
 Game::~Game()
@@ -1320,27 +1324,29 @@ bool Game::Update(TimeUtils &time, const Input& input)
 	}
 
 	// Physics update
-	static bool firstPhysUpdate = true;
-	_physTickTimer += time.GetDeltaTime();
-	while (_physTickTimer >= time.GetPhysDeltaTime())
+	if (!_freezePhysics)
 	{
+		static bool firstPhysUpdate = true;
+		_physTickTimer += time.GetDeltaTime();
 		time.TakeSnapshot("ScenePhysUpdateTime");
-		_physTickTimer -= time.GetPhysDeltaTime();
-		if (firstPhysUpdate)
+		while (_physTickTimer >= time.GetPhysDeltaTime())
 		{
-			firstPhysUpdate = false;
-			_physTickTimer = 0.0f;
-		}
-
-		if (ActiveSceneIsValid())
-		{
-			if (!_scenes[_activeSceneIndex]->PhysUpdate(time.GetPhysDeltaTime()))
+			_physTickTimer -= time.GetPhysDeltaTime();
+			if (firstPhysUpdate)
 			{
-				ErrMsg("Failed to update scene at physics step!");
-				return false;
+				firstPhysUpdate = false;
+				_physTickTimer = 0.0f;
+			}
+
+			if (ActiveSceneIsValid())
+			{
+				if (!_scenes[_activeSceneIndex]->PhysUpdate(time.GetPhysDeltaTime()))
+				{
+					ErrMsg("Failed to update scene at physics step!");
+					return false;
+				}
 			}
 		}
-
 		time.TakeSnapshot("ScenePhysUpdateTime");
 	}
 
@@ -2158,6 +2164,16 @@ bool Game::RenderUI(TimeUtils &time)
 		if (ImGui::DragFloat("Fixed Time Step", &fixedDeltaTime, 0.002f))
 			time.SetFixedDeltaTime(fixedDeltaTime);
 		ImGuiUtils::LockMouseOnActive();
+
+		float physDeltaTime = time.GetPhysDeltaTime();
+		if (ImGui::DragFloat("Phys Time Step", &physDeltaTime, 0.001f, 0, 0, "%.4f"))
+		{
+			physDeltaTime = max(0.001f, physDeltaTime);
+			time.SetPhysDeltaTime(physDeltaTime);
+		}
+		ImGuiUtils::LockMouseOnActive();
+
+		ImGui::Checkbox("Freeze Physics", &_freezePhysics);
 		ImGui::Dummy({ 0, 4 });
 
 		if (ImGui::TreeNode("Utility"))
