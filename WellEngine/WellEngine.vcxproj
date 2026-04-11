@@ -667,7 +667,9 @@
     <ClInclude Include="Source\Engine\Debug\DebugNew.h" />
     <ClInclude Include="Source\Engine\Debug\ErrMsg.h" />
     <ClInclude Include="Source\Engine\Input\KeyboardWinHook.h" />
+    <ClInclude Include="Source\Engine\Physics\JoltListeners.h" />
     <ClInclude Include="Source\Engine\Physics\JoltManager.h" />
+    <ClInclude Include="Source\Engine\Physics\JoltPhysicsInstance.h" />
     <ClInclude Include="Source\Engine\UI\Fonts\IconsCodicons.h" />
     <ClInclude Include="Source\Engine\UI\Fonts\IconsFontaudio.h" />
     <ClInclude Include="Source\Engine\UI\Fonts\IconsFontAwesome6.h" />
@@ -1544,7 +1546,9 @@
     <ClCompile Include="Source\Engine\Debug\DebugDrawer.cpp" />
     <ClCompile Include="Source\Engine\Debug\ErrMsg.cpp" />
     <ClCompile Include="Source\Engine\Input\KeyboardWinHook.cpp" />
+    <ClCompile Include="Source\Engine\Physics\JoltListeners.cpp" />
     <ClCompile Include="Source\Engine\Physics\JoltManager.cpp" />
+    <ClCompile Include="Source\Engine\Physics\JoltPhysicsInstance.cpp" />
     <ClCompile Include="Source\Engine\UI\ImGuiCurve.cpp" />
     <ClCompile Include="Source\Engine\UI\ImGuiExtensions.cpp" />
     <ClCompile Include="Source\Engine\UI\ImGuiNodeGraph.cpp" />

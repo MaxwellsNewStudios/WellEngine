@@ -42,6 +42,18 @@ Scene::~Scene()
 	_isDestroyed = true;
 }
 
+bool Scene::InitCommon()
+{
+	// Set up physics instance
+	if (!_physInstance.Initialize(_game->GetJoltManager()))
+	{
+		ErrMsg("Failed to initialize physics instance!");
+		return false;
+	}
+
+	return true;
+}
+
 bool Scene::InitializeNull(ID3D11Device *device, ID3D11DeviceContext *context, Game *game, Content *content, Graphics *graphics)
 {
 	ZoneScopedC(RandomUniqueColor());
@@ -55,6 +67,12 @@ bool Scene::InitializeNull(ID3D11Device *device, ID3D11DeviceContext *context, G
 	_context = context;
 	_content = content;
 	_graphics = graphics;
+
+	if (!InitCommon())
+	{
+		ErrMsg("Failed to initialize common scene data!");
+		return false;
+	}
 
 	// Create scene content holder
 	constexpr dx::BoundingBox sceneBounds = dx::BoundingBox(dx::XMFLOAT3(0, 0, 0), dx::XMFLOAT3(100.0f, 100.0f, 100.0f));
@@ -95,6 +113,12 @@ bool Scene::InitializeBase(std::string sceneName, ID3D11Device *device, ID3D11De
 	_content = content;
 	_graphics = graphics;
 	_sceneName = std::move(sceneName);
+
+	if (!InitCommon())
+	{
+		ErrMsg("Failed to initialize common scene data!");
+		return false;
+	}
 
 	dx::AUDIO_ENGINE_FLAGS audioFlags = dx::AudioEngine_Default;
 	audioFlags |= dx::AudioEngine_EnvironmentalReverb;
@@ -232,6 +256,12 @@ bool Scene::InitializeMenu(std::string sceneName, ID3D11Device *device, ID3D11De
 	_content = content;
 	_graphics = graphics;
 	_sceneName = std::move(sceneName);
+
+	if (!InitCommon())
+	{
+		ErrMsg("Failed to initialize common scene data!");
+		return false;
+	}
 
 	if (!_soundEngine.Initialize(dx::AudioEngine_EnvironmentalReverb | dx::AudioEngine_ReverbUseFilters, dx::Reverb_Cave, gameVolume))
 	{
@@ -660,9 +690,13 @@ bool Scene::InitializeEntr(std::string sceneName, ID3D11Device *device, ID3D11De
 	_graphics = graphics;
 	_sceneName = std::move(sceneName);
 
-	if (!_soundEngine.Initialize(
-		dx::AudioEngine_EnvironmentalReverb | dx::AudioEngine_ReverbUseFilters /*| dx::AudioEngine_UseMasteringLimiter*/,
-		dx::Reverb_Cave, gameVolume))
+	if (!InitCommon())
+	{
+		ErrMsg("Failed to initialize common scene data!");
+		return false;
+	}
+
+	if (!_soundEngine.Initialize(dx::AudioEngine_EnvironmentalReverb | dx::AudioEngine_ReverbUseFilters, dx::Reverb_Cave, gameVolume))
 	{
 		ErrMsg("Failed to initialize sound engine!");
 		return false;
@@ -875,8 +909,13 @@ bool Scene::InitializeCave(std::string sceneName, ID3D11Device *device, ID3D11De
 	_graphics = graphics;
 	_sceneName = std::move(sceneName);
 
-	if (!_soundEngine.Initialize(
-		dx::AudioEngine_EnvironmentalReverb | dx::AudioEngine_ReverbUseFilters, dx::Reverb_Cave, gameVolume))
+	if (!InitCommon())
+	{
+		ErrMsg("Failed to initialize common scene data!");
+		return false;
+	}
+
+	if (!_soundEngine.Initialize(dx::AudioEngine_EnvironmentalReverb | dx::AudioEngine_ReverbUseFilters, dx::Reverb_Cave, gameVolume))
 	{
 		ErrMsg("Failed to initialize sound engine!");
 		return false;
@@ -1175,6 +1214,7 @@ bool Scene::InitializeCave(std::string sceneName, ID3D11Device *device, ID3D11De
 	}
 
 	_collisionHandler.Initialize(this);
+
 	_initialized = true;
 
 #ifndef EDIT_MODE
@@ -1213,9 +1253,13 @@ bool Scene::InitializeCred(std::string sceneName, ID3D11Device *device, ID3D11De
 	_graphics = graphics;
 	_sceneName = std::move(sceneName);
 
-	if (!_soundEngine.Initialize(
-		dx::AudioEngine_EnvironmentalReverb | dx::AudioEngine_ReverbUseFilters /*| dx::AudioEngine_UseMasteringLimiter*/,
-		dx::Reverb_Cave, gameVolume))
+	if (!InitCommon())
+	{
+		ErrMsg("Failed to initialize common scene data!");
+		return false;
+	}
+
+	if (!_soundEngine.Initialize(dx::AudioEngine_EnvironmentalReverb | dx::AudioEngine_ReverbUseFilters, dx::Reverb_Cave, gameVolume))
 	{
 		ErrMsg("Failed to initialize sound engine!");
 		return false;

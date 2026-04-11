@@ -1,17 +1,9 @@
 #pragma once
 #include "Jolt/Jolt.h"
 JPH_SUPPRESS_WARNING_PUSH
-#include "Jolt/RegisterTypes.h"
-#include "Jolt/Core/Factory.h"
-#include "Jolt/Core/TempAllocator.h"
-#include "Jolt/Core/JobSystemThreadPool.h"
-#include "Jolt/Physics/PhysicsSettings.h"
 #include "Jolt/Physics/PhysicsSystem.h"
-#include "Jolt/Physics/Collision/Shape/BoxShape.h"
-#include "Jolt/Physics/Collision/Shape/SphereShape.h"
-#include "Jolt/Physics/Body/BodyCreationSettings.h"
-#include "Jolt/Physics/Body/BodyActivationListener.h"
 JPH_SUPPRESS_WARNING_POP
+
 
 namespace JPH
 {
@@ -69,22 +61,13 @@ namespace JPH
 	};
 }
 
+
 class JoltManager
 {
 private:
-	struct JoltData
-	{
-		JPH::TempAllocatorMalloc				tempAllocator;
-		JPH::JobSystemThreadPool				jobSystem;
-		JPH::BPLayerInterfaceImpl				broadPhaseLayerInterface;
-		JPH::ObjectVsBroadPhaseLayerFilterImpl	objectVsBroadPhaseLayerFilter;
-		JPH::ObjectLayerPairFilterImpl			objectVsObjectLayerFilter;
-		JPH::PhysicsSystem						physicsSystem;
-
-		JoltData(uint32_t maxJobs, uint32_t maxBarriers, uint32_t numThreads);
-	};
-
-	std::unique_ptr<JoltData> _d;
+	JPH::BPLayerInterfaceImpl				_broadPhaseLayerInterface;
+	JPH::ObjectVsBroadPhaseLayerFilterImpl	_objectVsBroadPhaseLayerFilter;
+	JPH::ObjectLayerPairFilterImpl			_objectVsObjectLayerFilter;
 
 public:
 	const uint32_t cMaxBodies = 65536u;
@@ -95,5 +78,7 @@ public:
 	JoltManager();
 	~JoltManager();
 
-	[[nodiscard]] bool Initialize();
+	[[nodiscard]] JPH::BPLayerInterfaceImpl &GetBroadPhaseLayerInterface() { return _broadPhaseLayerInterface; }
+	[[nodiscard]] JPH::ObjectVsBroadPhaseLayerFilterImpl &GetObjectVsBroadPhaseLayerFilter() { return _objectVsBroadPhaseLayerFilter; }
+	[[nodiscard]] JPH::ObjectLayerPairFilterImpl &GetObjectVsObjectLayerFilter() { return _objectVsObjectLayerFilter; }
 };

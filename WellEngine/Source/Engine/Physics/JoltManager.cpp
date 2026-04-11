@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "JoltManager.h"
+//#include "JoltPhysicsInstance.h"
 
 #ifdef LEAK_DETECTION
 #define new			DEBUG_NEW
@@ -60,7 +61,7 @@ namespace JPH
 		{
 		case (BroadPhaseLayer::Type)BroadPhaseLayers::NON_MOVING:	return "NON_MOVING";
 		case (BroadPhaseLayer::Type)BroadPhaseLayers::MOVING:		return "MOVING";
-		default:													JPH_ASSERT(false); 
+		default:													JPH_ASSERT(false);
 			return "INVALID";
 		}
 	}
@@ -82,8 +83,6 @@ namespace JPH
 }
 
 
-JoltManager::JoltData::JoltData(uint32_t maxJobs, uint32_t maxBarriers, uint32_t numThreads) : jobSystem(maxJobs, maxBarriers, numThreads) { }
-
 JoltManager::JoltManager()
 {
 	ZoneScopedC(RandomUniqueColor());
@@ -91,8 +90,6 @@ JoltManager::JoltManager()
 	JPH::RegisterDefaultAllocator();
 
 	JPH::Factory::sInstance = new JPH::Factory();
-
-	_d = std::make_unique<JoltData>(JPH::cMaxPhysicsJobs, JPH::cMaxPhysicsBarriers, std::thread::hardware_concurrency() - 2);
 
 	JPH::RegisterTypes();
 }
@@ -105,16 +102,4 @@ JoltManager::~JoltManager()
 
 	delete JPH::Factory::sInstance;
 	JPH::Factory::sInstance = nullptr;
-}
-
-bool JoltManager::Initialize()
-{
-	ZoneScopedC(RandomUniqueColor());
-
-	_d->physicsSystem.Init(
-		cMaxBodies, cNumBodyMutexes, cMaxBodyPairs, cMaxContactConstraints, 
-		_d->broadPhaseLayerInterface, _d->objectVsBroadPhaseLayerFilter, _d->objectVsObjectLayerFilter
-	);
-
-	return true;
 }

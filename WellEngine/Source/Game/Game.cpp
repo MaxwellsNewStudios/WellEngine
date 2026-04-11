@@ -904,15 +904,6 @@ bool Game::Setup(TimeUtils &time, Window window)
 	}
 	time.TakeSnapshot("LoadContent");
 
-	// Initialize Jolt Physics
-	time.TakeSnapshot("InitJoltManager");
-	if (!_joltManager.Initialize())
-	{
-		ErrMsg("Failed to initialize Jolt Manager!");
-		return false;
-	}
-	time.TakeSnapshot("InitJoltManager");
-
 	// Add all scenes & load the active scene
 	time.TakeSnapshot("AddScenes");
 	{
