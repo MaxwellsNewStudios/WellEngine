@@ -96,6 +96,8 @@ bool Scene::InitializeNull(ID3D11Device *device, ID3D11DeviceContext *context, G
 
 	_collisionHandler.Initialize(this);
 
+	_physInstance.GetSystem().OptimizeBroadPhase();
+
 	_initialized = true;
 	return true;
 }
@@ -238,6 +240,10 @@ bool Scene::InitializeBase(std::string sceneName, ID3D11Device *device, ID3D11De
 	}
 
 	_collisionHandler.Initialize(this);
+
+	_physInstance.GetSystem().OptimizeBroadPhase();
+
+	_physInstance.GetSystem().OptimizeBroadPhase();
 
 	_initialized = true;
 	return true;
@@ -672,6 +678,8 @@ bool Scene::InitializeMenu(std::string sceneName, ID3D11Device *device, ID3D11De
 
 	_collisionHandler.Initialize(this);
 
+	_physInstance.GetSystem().OptimizeBroadPhase();
+
 	_initialized = true;
 	return true;
 }
@@ -878,6 +886,8 @@ bool Scene::InitializeEntr(std::string sceneName, ID3D11Device *device, ID3D11De
 #endif
 
 	_collisionHandler.Initialize(this);
+
+	_physInstance.GetSystem().OptimizeBroadPhase();
 
 	_initialized = true;
 
@@ -1215,6 +1225,8 @@ bool Scene::InitializeCave(std::string sceneName, ID3D11Device *device, ID3D11De
 
 	_collisionHandler.Initialize(this);
 
+	_physInstance.GetSystem().OptimizeBroadPhase();
+
 	_initialized = true;
 
 #ifndef EDIT_MODE
@@ -1489,6 +1501,8 @@ bool Scene::InitializeCred(std::string sceneName, ID3D11Device *device, ID3D11De
 #endif
 
 	_collisionHandler.Initialize(this);
+
+	_physInstance.GetSystem().OptimizeBroadPhase();
 
 	_initialized = true;
 	return true;
@@ -1913,6 +1927,10 @@ bool Scene::FixedUpdate(float deltaTime, const Input &input)
 		}
 	}
 
+	return true;
+}
+bool Scene::PhysUpdate(float deltaTime)
+{
 	return true;
 }
 

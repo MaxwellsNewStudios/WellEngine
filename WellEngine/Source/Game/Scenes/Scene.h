@@ -150,6 +150,7 @@ public:
 	[[nodiscard]] bool Update(TimeUtils &time, const Input &input);
 	[[nodiscard]] bool LateUpdate(TimeUtils &time, const Input &input);
 	[[nodiscard]] bool FixedUpdate(float deltaTime, const Input &input);
+	[[nodiscard]] bool PhysUpdate(float deltaTime);
 
 	[[nodiscard]] bool UpdateCullingTree();
 

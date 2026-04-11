@@ -26,12 +26,13 @@
 	/// MIPS_DISCARDED discards a specified amount of higher resultion mipmaps for all textures.
 	/// This is used to reduce memory usage and bandwidth.
 	constexpr auto MIPS_DISCARDED = 0;
-
-	constexpr float FIXED_DELTA_TIME = 1.0f / 20.0f;
 #pragma endregion
 
 
 #pragma region Performance
+	constexpr float FIXED_DELTA_TIME = 1.0f / 20.0f;
+	constexpr float PHYS_DELTA_TIME = 1.0f / 60.0f;
+
 	constexpr auto LOD_DIST_MIN_MULT = 10.0f; // The depth to start considering lower LODs, as multiple of near-plane.
 	constexpr auto LOD_DIST_MAX_MULT = 0.9f; // The depth that the lowest LOD is picked, as multiple of far-plane.
 	constexpr auto LOD_DIST_DIM_SCALE_FACTOR = 0.6f; // Curve LOD falloff based on mesh size. Lower value means quicker LOD falloff.

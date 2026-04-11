@@ -37,7 +37,8 @@ private:
 	std::string _pendingSceneChange = "";
 	std::vector<std::string> _pendingSceneRemovals{};
 
-	float _tickTimer = 0.0f;
+	float _fixedTickTimer = 0.0f;
+	float _physTickTimer = 0.0f;
 	float _gameVolume = 10.0f;
 	bool _isExiting = false;
 

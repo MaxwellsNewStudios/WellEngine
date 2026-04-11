@@ -14,7 +14,7 @@ private:
 	{
 		//JPH::TempAllocatorImpl					tempAllocator;
 		JPH::TempAllocatorImplWithMallocFallback	tempAllocator;
-		JPH::JobSystemThreadPool					jobSystem;
+		JPH::JobSystemThreadPool					jobSystem; // TODO: Replace with custom job system
 		JPH::PhysicsSystem							physicsSystem;
 		JPH::MyBodyActivationListener				bodyActivationListener;
 		JPH::MyContactListener						contactListener;
@@ -35,4 +35,6 @@ public:
 
 	// For advanced use. GetBodyInterface() should be enough for most use cases.
 	[[nodiscard]] JPH::PhysicsSystem &GetSystem() { return _sys->physicsSystem; }
+
+	[[nodiscard]] bool Update(float deltaTime);
 };

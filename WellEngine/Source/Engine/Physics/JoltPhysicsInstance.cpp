@@ -35,3 +35,18 @@ bool JoltPhysicsInstance::Initialize(JoltManager *manager)
 
 	return true;
 }
+
+bool JoltPhysicsInstance::Update(float deltaTime)
+{
+	int cCollisionSteps = int(ceilf(deltaTime / (1.0f / 60.0f)));
+
+	// Step the world
+	JPH::EPhysicsUpdateError err = _sys->physicsSystem.Update(deltaTime, cCollisionSteps, &(_sys->tempAllocator), &(_sys->jobSystem));
+	if (err != JPH::EPhysicsUpdateError::None)
+	{
+		ErrMsgF("Failed to update physics system: {}", (int)err);
+		return false;
+	}
+
+	return true;
+}
