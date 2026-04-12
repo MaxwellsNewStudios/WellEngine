@@ -29,8 +29,8 @@
 #include "Behaviours/Navigation/GraphNodeBehaviour.h"
 #include "Behaviours/Physics/ColliderBehaviour.h"
 #include "Behaviours/Physics/ExampleCollisionBehaviour.h"
-#include "Behaviours/Physics/Jolt/JoltBoxColliderBehaviour.h"
-#include "Behaviours/Physics/Jolt/JoltSphereColliderBehaviour.h"
+#include "Behaviours/Physics/Jolt/BoxJoltColliderBehaviour.h"
+#include "Behaviours/Physics/Jolt/SphereJoltColliderBehaviour.h"
 #include "Behaviours/Physics/SolidObjectBehaviour.h"
 #include "Behaviours/Player/PlayerMovementBehaviour.h"
 #include "Behaviours/Player/PlayerViewBehaviour.h"
@@ -85,8 +85,8 @@ const std::map<std::string, std::function<Behaviour *(void)>> &BehaviourRegistry
 		{ "GraphNodeBehaviour",          []() { return new GraphNodeBehaviour(); }          },
 		{ "ColliderBehaviour",           []() { return new ColliderBehaviour(); }           },
 		{ "ExampleCollisionBehaviour",   []() { return new ExampleCollisionBehaviour(); }   },
-		{ "JoltBoxColliderBehaviour",    []() { return new JoltBoxColliderBehaviour(); }    },
-		{ "JoltSphereColliderBehaviour", []() { return new JoltSphereColliderBehaviour(); } },
+		{ "BoxJoltColliderBehaviour",    []() { return new BoxJoltColliderBehaviour(); }    },
+		{ "SphereJoltColliderBehaviour", []() { return new SphereJoltColliderBehaviour(); } },
 		{ "SolidObjectBehaviour",        []() { return new SolidObjectBehaviour(); }        },
 		{ "PlayerMovementBehaviour",     []() { return new PlayerMovementBehaviour(); }     },
 		{ "PlayerViewBehaviour",         []() { return new PlayerViewBehaviour(); }         },
@@ -141,8 +141,8 @@ const std::map<std::string, std::string> &BehaviourRegistry::GetCategories()
 		{ "GraphNodeBehaviour",          "Navigation/"         },
 		{ "ColliderBehaviour",           "Physics/"            },
 		{ "ExampleCollisionBehaviour",   "Physics/"            },
-		{ "JoltBoxColliderBehaviour",    "Physics/Jolt/"       },
-		{ "JoltSphereColliderBehaviour", "Physics/Jolt/"       },
+		{ "BoxJoltColliderBehaviour",    "Physics/Jolt/"       },
+		{ "SphereJoltColliderBehaviour", "Physics/Jolt/"       },
 		{ "SolidObjectBehaviour",        "Physics/"            },
 		{ "PlayerMovementBehaviour",     "Player/"             },
 		{ "PlayerViewBehaviour",         "Player/"             },

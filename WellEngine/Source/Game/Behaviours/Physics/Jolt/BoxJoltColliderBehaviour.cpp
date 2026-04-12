@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include "JoltBoxColliderBehaviour.h"
+#include "BoxJoltColliderBehaviour.h"
 #include "Source/Game/Scenes/Scene.h"
 
 #ifdef LEAK_DETECTION
@@ -7,14 +7,19 @@
 #endif
 
 
-JoltBoxColliderBehaviour::JoltBoxColliderBehaviour(const dx::XMFLOAT3A &halfExtents, const dx::XMFLOAT3A &offset, JPH::EMotionType motionType, JPH::ObjectLayer layer) :
-	JoltColliderBehaviour(motionType, layer), _halfExtents(halfExtents), _offset(offset)
+BoxJoltColliderBehaviour::BoxJoltColliderBehaviour(const dx::XMFLOAT3A &halfExtents, const dx::XMFLOAT3A &offset)
+	: JoltColliderBehaviour(), _halfExtents(halfExtents), _offset(offset)
 { }
 
-bool JoltBoxColliderBehaviour::Start()
+BoxJoltColliderBehaviour::BoxJoltColliderBehaviour(const dx::XMFLOAT3A &halfExtents, const dx::XMFLOAT3A &offset,
+	JPH::EMotionType motionType, JPH::ObjectLayer layer, float friction, float gravityFactor, float restitution) 
+	: JoltColliderBehaviour(motionType, layer, friction, gravityFactor, restitution), _halfExtents(halfExtents), _offset(offset)
+{ }
+
+bool BoxJoltColliderBehaviour::Start()
 {
 	if (_name.empty())
-		_name = "JoltBoxColliderBehaviour"; // For categorization in ImGui.
+		_name = "BoxJoltColliderBehaviour"; // For categorization in ImGui.
 
 	Transform *transform = GetEntity()->GetTransform();
 	dx::XMFLOAT3A wPos = transform->GetPosition(World);
@@ -37,17 +42,23 @@ bool JoltBoxColliderBehaviour::Start()
 	JPH::BodyInterface &bodyInterface = GetBodyInterface();
 
 	JPH::BodyCreationSettings boxSettings(
-		new JPH::BoxShape(JPH::Vec3Arg(_halfExtents.x * scale.x, _halfExtents.y * scale.y, _halfExtents.z * scale.z)),
+		new JPH::BoxShape(JPH::Vec3Arg(
+			max(0.0001f, _halfExtents.x * fabsf(scale.x)),
+			max(0.0001f, _halfExtents.y * fabsf(scale.y)),
+			max(0.0001f, _halfExtents.z * fabsf(scale.z))
+		)),
 		JPH::RVec3(wPos.x + offset.x, wPos.y + offset.y, wPos.z + offset.z),
 		JPH::Quat(wRot.x, wRot.y, wRot.z, wRot.w),
 		GetMotionType(), GetLayer()
 	);
+	boxSettings.mAllowDynamicOrKinematic = true;
 	SetBodyID(bodyInterface.CreateAndAddBody(boxSettings, JPH::EActivation::Activate));
 
 	return JoltColliderBehaviour::Start();
 }
 
-bool JoltBoxColliderBehaviour::Update(TimeUtils &time, const Input &input)
+
+bool BoxJoltColliderBehaviour::Update(TimeUtils &time, const Input &input)
 {
 	if (!JoltColliderBehaviour::Update(time, input))
 		return false;
@@ -75,7 +86,30 @@ bool JoltBoxColliderBehaviour::Update(TimeUtils &time, const Input &input)
 	return true;
 }
 
-void JoltBoxColliderBehaviour::RecalculatePhysicsBody()
+
+bool BoxJoltColliderBehaviour::Serialize(json::Document::AllocatorType &docAlloc, json::Value &obj)
+{
+	if (!JoltColliderBehaviour::Serialize(docAlloc, obj))
+		return false;
+
+	obj.AddMember("HalfExtents", SerializerUtils::SerializeVec(_halfExtents, docAlloc), docAlloc);
+	obj.AddMember("Offset", SerializerUtils::SerializeVec(_offset, docAlloc), docAlloc);
+
+	return true;
+}
+bool BoxJoltColliderBehaviour::Deserialize(const json::Value &obj, Scene *scene)
+{
+	if (!JoltColliderBehaviour::Deserialize(obj, scene))
+		return false;
+
+	SerializerUtils::DeserializeVec(_halfExtents, obj["HalfExtents"]);
+	SerializerUtils::DeserializeVec(_offset, obj["Offset"]);
+
+	return true;
+}
+
+
+void BoxJoltColliderBehaviour::RecalculatePhysicsBody()
 {
 	JPH::BodyInterface &bodyInterface = GetBodyInterface();
 	JPH::BodyID bodyID = GetBodyID();
@@ -97,12 +131,16 @@ void JoltBoxColliderBehaviour::RecalculatePhysicsBody()
 		offset.z *= scale.z;
 	}
 
-	JPH::Vec3Arg extents = JPH::Vec3Arg(_halfExtents.x * scale.x, _halfExtents.y * scale.y, _halfExtents.z * scale.z);
+	JPH::Vec3Arg extents = JPH::Vec3Arg(
+		max(0.0001f, _halfExtents.x * fabsf(scale.x)),
+		max(0.0001f, _halfExtents.y * fabsf(scale.y)),
+		max(0.0001f, _halfExtents.z * fabsf(scale.z))
+	);
+
 	bodyInterface.SetShape(bodyID, new JPH::BoxShape(extents), false, JPH::EActivation::DontActivate);
 	bodyInterface.SetPosition(bodyID, JPH::RVec3(wPos.x + offset.x, wPos.y + offset.y, wPos.z + offset.z), JPH::EActivation::Activate);
 }
-
-void JoltBoxColliderBehaviour::SyncPhysics()
+void BoxJoltColliderBehaviour::SyncPhysics()
 {
 	JPH::BodyInterface &bodyInterface = GetBodyInterface();
 	Transform *transform = GetEntity()->GetTransform();
@@ -127,7 +165,7 @@ void JoltBoxColliderBehaviour::SyncPhysics()
 	bodyInterface.SetPosition(bodyID, JPH::RVec3(currPos.x + offset.x, currPos.y + offset.y, currPos.z + offset.z), JPH::EActivation::Activate);
 	bodyInterface.SetRotation(bodyID, JPH::Quat(currRot.x, currRot.y, currRot.z, currRot.w), JPH::EActivation::Activate);
 }
-void JoltBoxColliderBehaviour::SyncTransform()
+void BoxJoltColliderBehaviour::SyncTransform()
 {
 	JPH::BodyInterface &bodyInterface = GetBodyInterface();
 	Transform *transform = GetEntity()->GetTransform();
@@ -159,8 +197,9 @@ void JoltBoxColliderBehaviour::SyncTransform()
 	transform->SetRotation(newEntRot, World);
 }
 
+
 #ifdef USE_IMGUI
-bool JoltBoxColliderBehaviour::RenderUI()
+bool BoxJoltColliderBehaviour::RenderUI()
 {
 	if (!JoltColliderBehaviour::RenderUI())
 		return false;

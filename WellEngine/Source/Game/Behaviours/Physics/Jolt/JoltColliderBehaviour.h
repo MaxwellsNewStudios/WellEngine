@@ -11,11 +11,12 @@ class JoltColliderBehaviour : public Behaviour
 {
 private:
 	JPH::BodyID _bodyID = JPH::BodyID(JPH::BodyID::cInvalidBodyID);
-	JPH::EMotionType _motionType;
-	JPH::ObjectLayer _layer;
 
-	float _friction = 0.05f;
+	JPH::EMotionType _motionType = JPH::EMotionType::Dynamic;
+	JPH::ObjectLayer _layer = JPH::Layers::MOVING;
+	float _friction = 0.2f;
 	float _gravityFactor = 1.0f;
+	float _restitution = 0.2f;
 
 	dx::XMFLOAT3A _lastEntPos = { 0, 0, 0 };
 	dx::XMFLOAT4A _lastEntRot = { 0, 0, 0, 1 };
@@ -50,8 +51,13 @@ protected:
 	virtual void SyncTransform() = 0; 
 
 public:
-	JoltColliderBehaviour(JPH::EMotionType motionType, JPH::ObjectLayer layer, float friction = 0.05f, float gravityFactor = 1.0f);
+	JoltColliderBehaviour();
+	JoltColliderBehaviour(JPH::EMotionType motionType, JPH::ObjectLayer layer, float friction, float gravityFactor, float restitution);
 	~JoltColliderBehaviour();
+
+	[[nodiscard]] virtual bool Serialize(json::Document::AllocatorType &docAlloc, json::Value &obj) override;
+	[[nodiscard]] virtual bool Deserialize(const json::Value &obj, Scene *scene) override;
+	virtual void PostDeserialize() override;
 
 	[[nodiscard]] const JPH::BodyID &GetBodyID() const { return _bodyID; }
 	[[nodiscard]] JPH::EMotionType GetMotionType() const { return _motionType; }

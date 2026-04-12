@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include "JoltSphereColliderBehaviour.h"
+#include "SphereJoltColliderBehaviour.h"
 #include "Source/Game/Scenes/Scene.h"
 
 #ifdef LEAK_DETECTION
@@ -7,14 +7,19 @@
 #endif
 
 
-JoltSphereColliderBehaviour::JoltSphereColliderBehaviour(float radius, JPH::EMotionType motionType, JPH::ObjectLayer layer) :
-	JoltColliderBehaviour(motionType, layer), _radius(radius)
+SphereJoltColliderBehaviour::SphereJoltColliderBehaviour(float radius)
+	: JoltColliderBehaviour(), _radius(radius)
 { }
 
-bool JoltSphereColliderBehaviour::Start()
+SphereJoltColliderBehaviour::SphereJoltColliderBehaviour(float radius,
+	JPH::EMotionType motionType, JPH::ObjectLayer layer, float friction, float gravityFactor, float restitution)
+	: JoltColliderBehaviour(motionType, layer, friction, gravityFactor, restitution), _radius(radius)
+{ }
+
+bool SphereJoltColliderBehaviour::Start()
 {
 	if (_name.empty())
-		_name = "JoltSphereColliderBehaviour"; // For categorization in ImGui.
+		_name = "SphereJoltColliderBehaviour"; // For categorization in ImGui.
 
 	Transform *transform = GetEntity()->GetTransform();
 	dx::XMFLOAT3A wPos = transform->GetPosition(World);
@@ -22,7 +27,7 @@ bool JoltSphereColliderBehaviour::Start()
 	dx::XMFLOAT3A scale = transform->GetScale();
 
 	// Get the maximum scale component to apply to the radius
-	float maxScale = max(scale.x, max(scale.y, scale.z));
+	float maxScale = max(0.0001f, max(fabsf(scale.x), max(fabsf(scale.y), fabsf(scale.z))));
 
 	JPH::BodyInterface &bodyInterface = GetBodyInterface();
 
@@ -32,12 +37,14 @@ bool JoltSphereColliderBehaviour::Start()
 		JPH::Quat(wRot.x, wRot.y, wRot.z, wRot.w),
 		GetMotionType(), GetLayer()
 	);
+	sphereSettings.mAllowDynamicOrKinematic = true;
 	SetBodyID(bodyInterface.CreateAndAddBody(sphereSettings, JPH::EActivation::Activate));
 
 	return JoltColliderBehaviour::Start();
 }
 
-bool JoltSphereColliderBehaviour::Update(TimeUtils &time, const Input &input)
+
+bool SphereJoltColliderBehaviour::Update(TimeUtils &time, const Input &input)
 {
 	if (!JoltColliderBehaviour::Update(time, input))
 		return false;
@@ -58,19 +65,40 @@ bool JoltSphereColliderBehaviour::Update(TimeUtils &time, const Input &input)
 	return true;
 }
 
-void JoltSphereColliderBehaviour::RecalculatePhysicsBody()
+
+bool SphereJoltColliderBehaviour::Serialize(json::Document::AllocatorType &docAlloc, json::Value &obj)
+{
+	if (!JoltColliderBehaviour::Serialize(docAlloc, obj))
+		return false;
+
+	obj.AddMember("Radius", _radius, docAlloc);
+
+	return true;
+}
+bool SphereJoltColliderBehaviour::Deserialize(const json::Value &obj, Scene *scene)
+{
+	if (!JoltColliderBehaviour::Deserialize(obj, scene))
+		return false;
+
+	_radius = obj["Radius"].GetFloat();
+
+	return true;
+}
+
+
+void SphereJoltColliderBehaviour::RecalculatePhysicsBody()
 {
 	Transform *transform = GetEntity()->GetTransform();
 	dx::XMFLOAT3A scale = transform->GetScale();
 
 	// Get the maximum scale component to apply to the radius
-	float maxScale = max(scale.x, max(scale.y, scale.z));
+	float maxScale = max(0.0001f, max(fabsf(scale.x), max(fabsf(scale.y), fabsf(scale.z))));
 
 	JPH::BodyInterface &bodyInterface = GetBodyInterface();
 	JPH::BodyID bodyID = GetBodyID();
 	bodyInterface.SetShape(bodyID, new JPH::SphereShape(_radius * maxScale), false, JPH::EActivation::Activate);
 }
-void JoltSphereColliderBehaviour::SyncPhysics()
+void SphereJoltColliderBehaviour::SyncPhysics()
 {
 	JPH::BodyInterface &bodyInterface = GetBodyInterface();
 	Transform *transform = GetEntity()->GetTransform();
@@ -82,7 +110,7 @@ void JoltSphereColliderBehaviour::SyncPhysics()
 	bodyInterface.SetPosition(bodyID, JPH::RVec3(currPos.x, currPos.y, currPos.z), JPH::EActivation::Activate);
 	bodyInterface.SetRotation(bodyID, JPH::Quat(currRot.x, currRot.y, currRot.z, currRot.w), JPH::EActivation::Activate);
 }
-void JoltSphereColliderBehaviour::SyncTransform()
+void SphereJoltColliderBehaviour::SyncTransform()
 {
 	JPH::BodyInterface &bodyInterface = GetBodyInterface();
 	Transform *transform = GetEntity()->GetTransform();
@@ -98,8 +126,9 @@ void JoltSphereColliderBehaviour::SyncTransform()
 	transform->SetRotation(newEntRot, World);
 }
 
+
 #ifdef USE_IMGUI
-bool JoltSphereColliderBehaviour::RenderUI()
+bool SphereJoltColliderBehaviour::RenderUI()
 {
 	if (!JoltColliderBehaviour::RenderUI())
 		return false;

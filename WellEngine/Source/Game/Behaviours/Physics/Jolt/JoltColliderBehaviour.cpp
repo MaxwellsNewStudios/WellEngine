@@ -7,8 +7,11 @@
 #endif
 
 
-JoltColliderBehaviour::JoltColliderBehaviour(JPH::EMotionType motionType, JPH::ObjectLayer layer, float friction, float gravityFactor) :
-	_motionType(motionType), _layer(layer), _friction(friction), _gravityFactor(gravityFactor)
+JoltColliderBehaviour::JoltColliderBehaviour()
+{ }
+
+JoltColliderBehaviour::JoltColliderBehaviour(JPH::EMotionType motionType, JPH::ObjectLayer layer, float friction, float gravityFactor, float restitution) :
+	_motionType(motionType), _layer(layer), _friction(friction), _gravityFactor(gravityFactor), _restitution(restitution)
 { }
 
 JoltColliderBehaviour::~JoltColliderBehaviour()
@@ -28,12 +31,14 @@ bool JoltColliderBehaviour::Start()
 	JPH::BodyInterface &bodyInterface = GetBodyInterface();
 	bodyInterface.SetFriction(_bodyID, _friction);
 	bodyInterface.SetGravityFactor(_bodyID, _gravityFactor);
+	bodyInterface.SetRestitution(_bodyID, _restitution);
 
 	QueueUpdate();
 	QueueLateUpdate();
 
 	return true;
 }
+
 
 bool JoltColliderBehaviour::Update(TimeUtils &time, const Input &input)
 {
@@ -71,12 +76,12 @@ bool JoltColliderBehaviour::LateUpdate(TimeUtils &time, const Input &input)
 	else
 	{
 		// Entity transform has not changed, apply physics body transform to entity.
-		// This can be skipped if the body is static or inactive
+		// This can be skipped if the body is not dynamic or is inactive.
 
 		JPH::BodyInterface &bodyInterface = GetBodyInterface();
 		bool doSkip = false;
 
-		if (bodyInterface.GetMotionType(_bodyID) == JPH::EMotionType::Static)
+		if (bodyInterface.GetMotionType(_bodyID) != JPH::EMotionType::Dynamic)
 			doSkip = true;
 		else if (!bodyInterface.IsActive(_bodyID))
 			doSkip = true;
@@ -95,6 +100,59 @@ bool JoltColliderBehaviour::LateUpdate(TimeUtils &time, const Input &input)
 
 	return true;
 }
+
+
+bool JoltColliderBehaviour::Serialize(json::Document::AllocatorType &docAlloc, json::Value &obj)
+{
+	obj.AddMember("MotionType", (UINT)_motionType, docAlloc);
+	obj.AddMember("Layer", (UINT)_layer, docAlloc);
+	obj.AddMember("Friction", _friction, docAlloc);
+	obj.AddMember("GravityFactor", _gravityFactor, docAlloc);
+	obj.AddMember("Restitution", _restitution, docAlloc);
+#ifdef USE_IMGUI
+	obj.AddMember("DebugDraw", _debugDraw, docAlloc);
+#endif
+	return true;
+}
+bool JoltColliderBehaviour::Deserialize(const json::Value &obj, Scene *scene)
+{
+	if (obj.HasMember("MotionType"))
+		_motionType = (JPH::EMotionType)obj["MotionType"].GetUint();
+
+	if (obj.HasMember("Layer"))
+		_layer = (JPH::ObjectLayer)obj["Layer"].GetUint();
+
+	if (obj.HasMember("Friction"))
+		_friction = obj["Friction"].GetFloat();
+
+	if (obj.HasMember("GravityFactor"))
+		_gravityFactor = obj["GravityFactor"].GetFloat();
+
+	if (obj.HasMember("Restitution"))
+		_restitution = obj["Restitution"].GetFloat();
+
+#ifdef USE_IMGUI
+	if (obj.HasMember("DebugDraw"))
+		_debugDraw = obj["DebugDraw"].GetBool();
+#endif
+
+	return true;
+}
+void JoltColliderBehaviour::PostDeserialize()
+{
+	JPH::BodyInterface &bodyInterface = GetBodyInterface();
+
+	SetMotionType(_motionType);
+	SetLayer(_layer);
+
+	bodyInterface.SetFriction(_bodyID, _friction);
+	bodyInterface.SetGravityFactor(_bodyID, _gravityFactor);
+	bodyInterface.SetRestitution(_bodyID, _restitution);
+
+	RecalculatePhysicsBody();
+	SyncPhysics();
+}
+
 
 [[nodiscard]] JPH::BodyInterface &JoltColliderBehaviour::GetBodyInterface() 
 { 
@@ -126,6 +184,7 @@ void JoltColliderBehaviour::SetLayer(JPH::ObjectLayer layer)
 	JPH::BodyInterface &bodyInterface = GetBodyInterface();
 	bodyInterface.SetObjectLayer(_bodyID, GetLayer());
 }
+
 
 #ifdef USE_IMGUI
 bool JoltColliderBehaviour::RenderUI()
@@ -162,6 +221,13 @@ bool JoltColliderBehaviour::RenderUI()
 		bodyInterface.SetGravityFactor(_bodyID, _gravityFactor);
 	}
 	ImGuiUtils::LockMouseOnActive();
+
+	// Restitution
+	if (ImGui::DragFloat("Restitution", &_restitution, 0.01f))
+	{
+		JPH::BodyInterface &bodyInterface = GetBodyInterface();
+		bodyInterface.SetRestitution(_bodyID, _restitution);
+	}
 
 	return true;
 }
