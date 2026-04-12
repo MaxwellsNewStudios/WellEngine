@@ -7,6 +7,14 @@
 #include "Jolt/Physics/PhysicsSystem.h"
 
 
+// TODO: 
+// - More collider shape behaviours (capsule, cylinder, triangle, convexHull, mesh, heightField, compound)
+// - Separate colliders and rigidbodies (currently the collider behaviour also creates a rigidbody)
+// - Collider events (enter, stay, exit, sleep, wake)
+// - Scene-wide physics settings UI
+// - Scene-wide raycast & intersection queries
+// 
+
 class JoltPhysicsInstance
 {
 private:
