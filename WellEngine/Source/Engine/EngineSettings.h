@@ -43,13 +43,6 @@
 	/// PARALLEL_THREADS sets the number of threads to use for parallel updates. This is only used if PARALLEL_UPDATE is enabled.
 	constexpr auto PARALLEL_THREADS = 3;
 
-	#ifdef PARALLEL_UPDATE
-		/// DEFERRED_CONTEXTS enables the use of deferred contexts for multithreaded rendering. The amount of contexts mimics PARALLEL_THREADS.
-		/// [DEPRECATED] Only ever used experimentally, did not give good results.
-		/// TODO: Remove references
-		//#define DEFERRED_CONTEXTS
-	#endif
-
 	/// Makes meshes generate colliders using lower LODs when available, or skip it entirely.
 	/// This option exists as it drastically increases load times with compiler optimizations turned off.
 	/// 0: Use highest LOD.  1: Use middle LOD (default).  2: Use lowest LOD.  3: Raycast with bounding boxes only.

@@ -22,10 +22,6 @@ private:
 
 	ComPtr<ID3D11Device>		_device;
 	ComPtr<ID3D11DeviceContext>	_immediateContext;
-#ifdef DEFERRED_CONTEXTS
-	// TODO: Implement deferred contexts in culling & rendering stages 
-	std::array<ComPtr<ID3D11DeviceContext>, PARALLEL_THREADS> _deferredContexts;
-#endif
 
 	Graphics _graphics;
 	Content _content;

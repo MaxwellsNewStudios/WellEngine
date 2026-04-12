@@ -235,8 +235,8 @@ bool SpotLightBehaviour::RenderUI()
 		_shadowCamera->SetPlanes(planes);
 	}
 
-	float step = 1.0f;
-	float stepFast = 5.0f;
+	UINT step = 1;
+	UINT stepFast = 5;
 	if (ImGui::InputScalar("Shadow Update Frequency", ImGuiDataType_U32, &_updateFrequency, &step, &stepFast))
 		_updateFrequency = max(_updateFrequency, 1);
 

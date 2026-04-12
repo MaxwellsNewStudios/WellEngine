@@ -56,9 +56,6 @@ bool Graphics::Setup(bool fullscreen, const UINT width, const UINT height, const
 	// Store references
 	_device = device;
 	_context = immediateContext;
-#ifdef DEFERRED_CONTEXTS
-	_deferredContexts = deferredContexts;
-#endif
 	_content = content;
 
 
@@ -298,9 +295,6 @@ bool Graphics::Setup(bool fullscreen, const UINT width, const UINT height, const
 	_content = content;
 	_device = device;
 	_context = immediateContext;
-#ifdef DEFERRED_CONTEXTS
-	_deferredContexts = deferredContexts;
-#endif
 
 	SetFogGaussianWeightsBuffer(_fogGaussWeights.data(), _fogGaussWeights.size());
 	SetEmissionGaussianWeightsBuffer(_emissionGaussWeights.data(), _emissionGaussWeights.size());
@@ -414,11 +408,7 @@ bool Graphics::ResizeWindowBuffers(bool fullscreen, UINT newWidth, UINT newHeigh
 
 		if (!ResizeD3D11(fullscreen, newWidth, newHeight,
 			_device, _context,
-#ifdef DEFERRED_CONTEXTS
-			_deferredContexts,
-#else
 			nullptr,
-#endif
 			* _swapChain.GetAddressOf(),
 			*_rtv.ReleaseAndGetAddressOf(),
 			* _dsTexture.ReleaseAndGetAddressOf(),

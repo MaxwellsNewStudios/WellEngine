@@ -165,9 +165,6 @@ private:
 
 	ID3D11Device *_device			= nullptr;
 	ID3D11DeviceContext	*_context	= nullptr;
-#ifdef DEFERRED_CONTEXTS
-	ID3D11DeviceContext **_deferredContexts = nullptr;
-#endif
 	Content	*_content				= nullptr;
 
 	ComPtr<IDXGISwapChain>				_swapChain = nullptr;

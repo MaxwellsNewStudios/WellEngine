@@ -20,14 +20,6 @@ Game::Game()
 }
 Game::~Game()
 {
-#ifdef DEFERRED_CONTEXTS
-	for (int i = 0; i < PARALLEL_THREADS; i++)
-	{
-		if (_deferredContexts[i])
-			_deferredContexts[i] = nullptr;
-	}
-#endif
-
 	_graphics.Shutdown();
 	_content.Shutdown();
 	DebugDrawer::Instance().Shutdowm();
@@ -458,16 +450,8 @@ bool Game::Setup(TimeUtils &time, Window window)
 	const UINT width = _window.GetWidth();
 	const UINT height = _window.GetHeight();
 
-#ifdef DEFERRED_CONTEXTS
-	ID3D11DeviceContext **deferredContexts[PARALLEL_THREADS]{};
-	for (int i = 0; i < PARALLEL_THREADS; i++)
-	{
-		deferredContexts[i] = (_deferredContexts[i]).ReleaseAndGetAddressOf();
-	}
-#else
 	ID3D11DeviceContext **intermediateDevicePtr = nullptr;
 	ID3D11DeviceContext ***deferredContexts = &intermediateDevicePtr;
-#endif
 
 	if (!_graphics.Setup(fullscreen, width, height, window,
 		*_device.ReleaseAndGetAddressOf(), 
@@ -1294,22 +1278,28 @@ bool Game::Update(TimeUtils &time, const Input& input)
 	}
 	time.TakeSnapshot("SceneUpdateTime");
 
+	float dTime = time.GetDeltaTime();
+	float absDTime = abs(dTime);
+
 	// Fixed update
+	float fixedDTime = time.GetFixedDeltaTime();
+
 	static bool firstFixedUpdate = true;
-	_fixedTickTimer += time.GetDeltaTime();
-	while (_fixedTickTimer >= time.GetFixedDeltaTime())
+	_fixedTickTimer += absDTime;
+
+	while (_fixedTickTimer >= fixedDTime)
 	{
 		time.TakeSnapshot("SceneFixedUpdateTime");
-		_fixedTickTimer -= time.GetFixedDeltaTime();
+		_fixedTickTimer -= fixedDTime;
 		if (firstFixedUpdate)
 		{
 			firstFixedUpdate = false;
-			_fixedTickTimer = 0.0f;
+			_fixedTickTimer = 0.0f; // Prevent a large fixed update on the first frame.
 		}
 
 		if (ActiveSceneIsValid())
 		{
-			if (!_scenes[_activeSceneIndex]->FixedUpdate(time.GetFixedDeltaTime(), input))
+			if (!_scenes[_activeSceneIndex]->FixedUpdate(fixedDTime, input))
 			{
 				ErrMsg("Failed to update scene at fixed step!");
 				return false;
@@ -1317,8 +1307,10 @@ bool Game::Update(TimeUtils &time, const Input& input)
 		}
 
 #ifdef _DEBUG
-		if (_fixedTickTimer >= time.GetFixedDeltaTime() * 16.0f)
-			_fixedTickTimer = time.GetFixedDeltaTime() * 16.0f;
+		// Prevent too many simultaneous fixed updates in case of a long hitch.
+		// Only for debug builds, as this is obviously a very faulty solution.
+		if (_fixedTickTimer >= fixedDTime * 16.0f)
+			_fixedTickTimer = fixedDTime * 16.0f;
 #endif
 		time.TakeSnapshot("SceneFixedUpdateTime");
 	}
@@ -1326,21 +1318,24 @@ bool Game::Update(TimeUtils &time, const Input& input)
 	// Physics update
 	if (!_freezePhysics)
 	{
+		float physDTime = time.GetPhysDeltaTime();
+
 		static bool firstPhysUpdate = true;
-		_physTickTimer += time.GetDeltaTime();
+		_physTickTimer += absDTime;
+
 		time.TakeSnapshot("ScenePhysUpdateTime");
-		while (_physTickTimer >= time.GetPhysDeltaTime())
+		while (_physTickTimer >= physDTime)
 		{
-			_physTickTimer -= time.GetPhysDeltaTime();
+			_physTickTimer -= physDTime;
 			if (firstPhysUpdate)
 			{
 				firstPhysUpdate = false;
-				_physTickTimer = 0.0f;
+				_physTickTimer = 0.0f; // Prevent a large physics update on the first frame.
 			}
 
 			if (ActiveSceneIsValid())
 			{
-				if (!_scenes[_activeSceneIndex]->PhysUpdate(time.GetPhysDeltaTime()))
+				if (!_scenes[_activeSceneIndex]->PhysUpdate(physDTime))
 				{
 					ErrMsg("Failed to update scene at physics step!");
 					return false;
@@ -1867,6 +1862,10 @@ bool Game::RenderUI(TimeUtils &time)
 
 		if (ImGui::BeginMenuBar())
 		{
+			ImVec2 menuBarScreenPos = ImGui::GetCursorScreenPos();
+			ImVec2 menuBarRegionMin = ImGui::GetCursorPos();
+			float menuBarRegionAvailX = ImGui::GetContentRegionAvail().x;
+
 			if (ImGui::BeginMenu("Settings##ViewViewMenu"))
 			{
 				bool sceneValid = ActiveSceneIsValid();
@@ -1931,11 +1930,12 @@ bool Game::RenderUI(TimeUtils &time)
 						debugData.windowSizeY
 					};
 
-					if (ImGui::InputInt2("##WindowResolutionInput", &windowResolution.x))
+					if (ImGui::DragInt2("##WindowResolutionInput", &windowResolution.x, 0.33f))
 					{
 						windowResolution.x = max(1, windowResolution.x);
 						windowResolution.y = max(1, windowResolution.y);
 					}
+					ImGuiUtils::LockMouseOnActive();
 
 					if (ImGui::Button("Apply##WindowResolutionApply"))
 					{
@@ -1963,11 +1963,12 @@ bool Game::RenderUI(TimeUtils &time)
 					debugData.sceneViewSizeY 
 				};
 
-				if (ImGui::InputInt2("##SceneResolutionInput", &sceneResolution.x))
+				if (ImGui::DragInt2("##SceneResolutionInput", &sceneResolution.x, 0.33f))
 				{
 					sceneResolution.x = max(1, sceneResolution.x);
 					sceneResolution.y = max(1, sceneResolution.y);
 				}
+				ImGuiUtils::LockMouseOnActive();
 
 				if (ImGui::Button("Apply##SceneResolutionApply"))
 				{
@@ -2017,6 +2018,28 @@ bool Game::RenderUI(TimeUtils &time)
 				ImGui::EndMenu();
 			}
 			
+			// Scene name
+			if (ActiveSceneIsValid())
+			{
+				Scene *scene = _scenes[_activeSceneIndex].get();
+				std::string_view title = scene->GetName();
+
+				ImVec2 textSize = ImGui::CalcTextSize(title.data());
+				ImVec2 namePos = menuBarRegionMin + ImVec2((menuBarRegionAvailX - textSize.x) * 0.5f, 0.0f);
+
+				float frameHeight = ImGui::GetFrameHeight();
+
+				ImVec2 borderSize = textSize + ImVec2(10, 3);
+				ImVec2 borderPos = menuBarScreenPos + (ImVec2(menuBarRegionAvailX, frameHeight) - borderSize) * 0.5f;
+
+				ImColor borderColor = ImGui::GetStyleColorVec4(ImGuiCol_TitleBgActive);
+
+				ImGui::GetWindowDrawList()->AddRectFilled(borderPos - ImVec2(0, frameHeight), borderPos + borderSize, borderColor, 4.0f);
+
+				ImGui::SetCursorPos(namePos);
+				ImGui::Text(title.data());
+			}
+
 			ImGui::EndMenuBar();
 		}
 
@@ -2115,7 +2138,6 @@ bool Game::RenderUI(TimeUtils &time)
 			ImGui::ShowStyleEditor();
 			ImGui::EndChild();
 		}
-
 		ImGui::Dummy({ 0, 2 });
 
 		if (ImGui::TreeNode("Fonts"))
@@ -2138,7 +2160,7 @@ bool Game::RenderUI(TimeUtils &time)
 		}
 		ImGui::Dummy({ 0, 2 });
 
-		if (ImGui::DragFloat("ImGui Font Scale", &imGuiFontScale, 0.05f))
+		if (ImGui::DragFloat("ImGui Font Scale", &imGuiFontScale, 0.01f))
 			imGuiFontScale = max(0.25f, imGuiFontScale);
 		ImGuiUtils::LockMouseOnActive();
 
@@ -2147,7 +2169,7 @@ bool Game::RenderUI(TimeUtils &time)
 		ImGui::Dummy({ 0, 4 });
 
 
-		if (ImGui::DragFloat("Volume", &_gameVolume, 0.05f, 0.0f))
+		if (ImGui::DragFloat("Volume", &_gameVolume, 0.01f))
 		{
 			_gameVolume = max(0, _gameVolume);
 			_scenes[_activeSceneIndex]->SetSceneVolume(_gameVolume);
@@ -2155,18 +2177,19 @@ bool Game::RenderUI(TimeUtils &time)
 		ImGuiUtils::LockMouseOnActive(); 
 		ImGui::Dummy({ 0, 4 });
 
+
 		float timeScale = time.GetTimeScale();
-		if (ImGui::DragFloat("Time Scale", &timeScale, 0.02f))
-			time.SetTimeScale(timeScale);
+		if (ImGui::DragFloat("Time Scale", &timeScale, 0.005f, 0, 0, "%.3f"))
+			time.SetTimeScale(max(timeScale, 0.0f));
 		ImGuiUtils::LockMouseOnActive();
 
 		float fixedDeltaTime = time.GetFixedDeltaTime();
-		if (ImGui::DragFloat("Fixed Time Step", &fixedDeltaTime, 0.002f))
+		if (ImGui::DragFloat("Fixed Time Step", &fixedDeltaTime, 0.001f, 0, 0, "%.3f"))
 			time.SetFixedDeltaTime(fixedDeltaTime);
 		ImGuiUtils::LockMouseOnActive();
 
 		float physDeltaTime = time.GetPhysDeltaTime();
-		if (ImGui::DragFloat("Phys Time Step", &physDeltaTime, 0.001f, 0, 0, "%.4f"))
+		if (ImGui::DragFloat("Phys Time Step", &physDeltaTime, 0.001f, 0, 0, "%.3f"))
 		{
 			physDeltaTime = max(0.001f, physDeltaTime);
 			time.SetPhysDeltaTime(physDeltaTime);
@@ -2175,6 +2198,7 @@ bool Game::RenderUI(TimeUtils &time)
 
 		ImGui::Checkbox("Freeze Physics", &_freezePhysics);
 		ImGui::Dummy({ 0, 4 });
+
 
 		if (ImGui::TreeNode("Utility"))
 		{
@@ -2202,6 +2226,7 @@ bool Game::RenderUI(TimeUtils &time)
 			ImGui::TreePop();
 		}
 		ImGui::Dummy({ 0, 4 });
+
 
 		if (ImGui::TreeNode("Version Info"))
 		{
@@ -2493,13 +2518,18 @@ bool Game::RenderUI(TimeUtils &time)
 					snprintf(timeStr, sizeof(timeStr), "%.6f", time.CompareSnapshots("SceneUpdateTime"));
 					ImGui::Text(std::format("{} Scene Update", timeStr).c_str());
 
-					snprintf(timeStr, sizeof(timeStr), "%.6f", time.CompareSnapshots("SceneLateUpdateTime"));
-					ImGui::Text(std::format("{} Scene Late Update", timeStr).c_str());
-
 					static float fixedUpdateTime = -1.0f;
 					time.TryCompareSnapshots("SceneFixedUpdateTime", &fixedUpdateTime);
 					snprintf(timeStr, sizeof(timeStr), "%.6f", fixedUpdateTime);
 					ImGui::Text(std::format("{} Scene Fixed Update", timeStr).c_str());
+
+					static float physUpdateTime = -1.0f;
+					time.TryCompareSnapshots("ScenePhysUpdateTime", &physUpdateTime);
+					snprintf(timeStr, sizeof(timeStr), "%.6f", physUpdateTime);
+					ImGui::Text(std::format("{} Scene Phys Update", timeStr).c_str());
+
+					snprintf(timeStr, sizeof(timeStr), "%.6f", time.CompareSnapshots("SceneLateUpdateTime"));
+					ImGui::Text(std::format("{} Scene Late Update", timeStr).c_str());
 
 					ImGui::TreePop();
 				}

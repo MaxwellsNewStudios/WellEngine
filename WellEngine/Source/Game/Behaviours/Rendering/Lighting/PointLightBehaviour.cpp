@@ -201,8 +201,8 @@ bool PointLightBehaviour::RenderUI()
 	if (recalculateReach && _shadowCameraCube)
 		_shadowCameraCube->SetFarZ(CalculateLightReach(_color, _falloff));
 
-	float step = 1.0f;
-	float stepFast = 5.0f;
+	UINT step = 1;
+	UINT stepFast = 5;
 	if (ImGui::InputScalar("Shadow Update Frequency", ImGuiDataType_U32, &_updateFrequency, &step, &stepFast))
 		_updateFrequency = max(_updateFrequency, 1);
 
