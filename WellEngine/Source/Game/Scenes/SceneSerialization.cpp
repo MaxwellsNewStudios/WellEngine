@@ -436,7 +436,7 @@ bool Scene::Deserialize(bool sceneReload)
 
 			UINT spotlightRes = 256;
 			if (sceneGraphicsObj.HasMember("Spotlight Resolution"))
-				pointlightRes = sceneGraphicsObj["Spotlight Resolution"].GetUint();
+				spotlightRes = sceneGraphicsObj["Spotlight Resolution"].GetUint();
 
 			if (!_spotlights->Initialize(_device, spotlightRes))
 			{

@@ -2034,7 +2034,7 @@ bool Game::RenderUI(TimeUtils &time)
 
 				ImColor borderColor = ImGui::GetStyleColorVec4(ImGuiCol_TitleBgActive);
 
-				ImGui::GetWindowDrawList()->AddRectFilled(borderPos - ImVec2(0, frameHeight), borderPos + borderSize, borderColor, 4.0f);
+				ImGui::GetWindowDrawList()->AddRectFilled(borderPos - ImVec2(0, frameHeight), borderPos + borderSize, borderColor, 6.0f);
 
 				ImGui::SetCursorPos(namePos);
 				ImGui::Text(title.data());
