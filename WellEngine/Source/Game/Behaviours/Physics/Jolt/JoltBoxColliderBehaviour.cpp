@@ -75,6 +75,33 @@ bool JoltBoxColliderBehaviour::Update(TimeUtils &time, const Input &input)
 	return true;
 }
 
+void JoltBoxColliderBehaviour::RecalculatePhysicsBody()
+{
+	JPH::BodyInterface &bodyInterface = GetBodyInterface();
+	JPH::BodyID bodyID = GetBodyID();
+
+	Transform *transform = GetEntity()->GetTransform();
+	dx::XMFLOAT3A wPos = transform->GetPosition(World);
+	dx::XMFLOAT4A wRot = transform->GetRotation(World);
+	dx::XMFLOAT3A scale = transform->GetScale();
+
+	dx::XMFLOAT3A offset = _offset;
+	{
+		dx::XMMATRIX rotMat = dx::XMMatrixRotationQuaternion(Load(wRot));
+		dx::XMVECTOR offsetVec = Load(offset);
+		offsetVec = dx::XMVector3Transform(offsetVec, rotMat);
+		Store(offset, offsetVec);
+
+		offset.x *= scale.x;
+		offset.y *= scale.y;
+		offset.z *= scale.z;
+	}
+
+	JPH::Vec3Arg extents = JPH::Vec3Arg(_halfExtents.x * scale.x, _halfExtents.y * scale.y, _halfExtents.z * scale.z);
+	bodyInterface.SetShape(bodyID, new JPH::BoxShape(extents), false, JPH::EActivation::DontActivate);
+	bodyInterface.SetPosition(bodyID, JPH::RVec3(wPos.x + offset.x, wPos.y + offset.y, wPos.z + offset.z), JPH::EActivation::Activate);
+}
+
 void JoltBoxColliderBehaviour::SyncPhysics()
 {
 	JPH::BodyInterface &bodyInterface = GetBodyInterface();
@@ -148,35 +175,14 @@ bool JoltBoxColliderBehaviour::RenderUI()
 		_halfExtents.y = max(0.0001f, _halfExtents.y);
 		_halfExtents.z = max(0.0001f, _halfExtents.z);
 
-		Transform *transform = GetEntity()->GetTransform();
-		dx::XMFLOAT3A scale = transform->GetScale();
-
-		JPH::Vec3Arg extents = JPH::Vec3Arg(_halfExtents.x * scale.x, _halfExtents.y * scale.y, _halfExtents.z * scale.z);
-		bodyInterface.SetShape(bodyID, new JPH::BoxShape(extents), false, JPH::EActivation::Activate);
+		RecalculatePhysicsBody();
 	}
 	ImGuiUtils::LockMouseOnActive();
 
 	// Offset
 	if (ImGui::DragFloat3("Offset", &_offset.x, 0.01f))
 	{
-		Transform *transform = GetEntity()->GetTransform();
-		dx::XMFLOAT3A wPos = transform->GetPosition(World);
-		dx::XMFLOAT4A wRot = transform->GetRotation(World);
-		dx::XMFLOAT3A scale = transform->GetScale();
-
-		dx::XMFLOAT3A offset = _offset;
-		{
-			dx::XMMATRIX rotMat = dx::XMMatrixRotationQuaternion(Load(wRot));
-			dx::XMVECTOR offsetVec = Load(offset);
-			offsetVec = dx::XMVector3Transform(offsetVec, rotMat);
-			Store(offset, offsetVec);
-
-			offset.x *= scale.x;
-			offset.y *= scale.y;
-			offset.z *= scale.z;
-		}
-
-		bodyInterface.SetPosition(bodyID, JPH::RVec3(wPos.x + offset.x, wPos.y + offset.y, wPos.z + offset.z), JPH::EActivation::Activate);
+		RecalculatePhysicsBody();
 	}
 	ImGuiUtils::LockMouseOnActive();
 

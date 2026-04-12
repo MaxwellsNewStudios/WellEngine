@@ -19,11 +19,15 @@ bool JoltSphereColliderBehaviour::Start()
 	Transform *transform = GetEntity()->GetTransform();
 	dx::XMFLOAT3A wPos = transform->GetPosition(World);
 	dx::XMFLOAT4A wRot = transform->GetRotation(World);
+	dx::XMFLOAT3A scale = transform->GetScale();
+
+	// Get the maximum scale component to apply to the radius
+	float maxScale = max(scale.x, max(scale.y, scale.z));
 
 	JPH::BodyInterface &bodyInterface = GetBodyInterface();
 
 	JPH::BodyCreationSettings sphereSettings(
-		new JPH::SphereShape(_radius),
+		new JPH::SphereShape(_radius * maxScale),
 		JPH::RVec3(wPos.x, wPos.y, wPos.z), 
 		JPH::Quat(wRot.x, wRot.y, wRot.z, wRot.w),
 		GetMotionType(), GetLayer()
@@ -44,15 +48,28 @@ bool JoltSphereColliderBehaviour::Update(TimeUtils &time, const Input &input)
 		JPH::BodyInterface &bodyInterface = GetBodyInterface();
 		JPH::RVec3 joltPos = bodyInterface.GetCenterOfMassPosition(GetBodyID());
 		dx::XMFLOAT3A pos = dx::XMFLOAT3A(joltPos.GetX(), joltPos.GetY(), joltPos.GetZ());
+		float joltRadius = ((JPH::SphereShape *)(bodyInterface.GetShape(GetBodyID()).GetPtr()))->GetRadius();
 
 		DebugDrawer &drawer = DebugDrawer::Instance();
-		drawer.DrawSphere(pos, _radius, 3, dx::XMFLOAT4(1, 0, 0, 0.2f));
+		drawer.DrawSphere(pos, joltRadius, 3, dx::XMFLOAT4(1, 0, 0, 0.2f));
 	}
 #endif
 
 	return true;
 }
 
+void JoltSphereColliderBehaviour::RecalculatePhysicsBody()
+{
+	Transform *transform = GetEntity()->GetTransform();
+	dx::XMFLOAT3A scale = transform->GetScale();
+
+	// Get the maximum scale component to apply to the radius
+	float maxScale = max(scale.x, max(scale.y, scale.z));
+
+	JPH::BodyInterface &bodyInterface = GetBodyInterface();
+	JPH::BodyID bodyID = GetBodyID();
+	bodyInterface.SetShape(bodyID, new JPH::SphereShape(_radius * maxScale), false, JPH::EActivation::Activate);
+}
 void JoltSphereColliderBehaviour::SyncPhysics()
 {
 	JPH::BodyInterface &bodyInterface = GetBodyInterface();
@@ -94,7 +111,7 @@ bool JoltSphereColliderBehaviour::RenderUI()
 	if (ImGui::DragFloat("Radius", &_radius, 0.01f))
 	{
 		_radius = max(0.001f, _radius);
-		bodyInterface.SetShape(bodyID, new JPH::SphereShape(_radius), false, JPH::EActivation::Activate);
+		RecalculatePhysicsBody();
 	}
 	ImGuiUtils::LockMouseOnActive();
 

@@ -34,6 +34,9 @@ bool JoltPhysicsInstance::Initialize(JoltManager *manager)
 	_sys->physicsSystem.SetContactListener(&_sys->contactListener);
 
 	_sys->physicsSystem.SetGravity(JPH::Vec3(0, -9.81f, 0));
+	
+	JPH::PhysicsSettings settings;
+	_sys->physicsSystem.SetPhysicsSettings(settings);
 
 	return true;
 }

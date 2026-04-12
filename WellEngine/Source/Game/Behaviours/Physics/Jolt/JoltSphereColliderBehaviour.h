@@ -13,6 +13,7 @@ protected:
 	[[nodiscard]] bool RenderUI() override;
 #endif
 
+	void RecalculatePhysicsBody() override;
 	void SyncPhysics() override;
 	void SyncTransform() override;
 

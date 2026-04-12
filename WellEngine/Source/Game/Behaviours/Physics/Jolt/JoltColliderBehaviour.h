@@ -14,8 +14,12 @@ private:
 	JPH::EMotionType _motionType;
 	JPH::ObjectLayer _layer;
 
+	float _friction = 0.05f;
+	float _gravityFactor = 1.0f;
+
 	dx::XMFLOAT3A _lastEntPos = { 0, 0, 0 };
 	dx::XMFLOAT4A _lastEntRot = { 0, 0, 0, 1 };
+	dx::XMFLOAT3A _lastEntScale = { 1, 1, 1 };
 
 #ifdef USE_IMGUI
 	bool _debugDraw = false;
@@ -36,6 +40,9 @@ protected:
 
 	void DestroyBody();
 	
+	// Recalculate the physics body proportions 
+	virtual void RecalculatePhysicsBody() = 0;
+	
 	// Apply entity transform to physics body
 	virtual void SyncPhysics() = 0; 
 	
@@ -43,7 +50,7 @@ protected:
 	virtual void SyncTransform() = 0; 
 
 public:
-	JoltColliderBehaviour(JPH::EMotionType motionType, JPH::ObjectLayer layer);
+	JoltColliderBehaviour(JPH::EMotionType motionType, JPH::ObjectLayer layer, float friction = 0.05f, float gravityFactor = 1.0f);
 	~JoltColliderBehaviour();
 
 	[[nodiscard]] const JPH::BodyID &GetBodyID() const { return _bodyID; }

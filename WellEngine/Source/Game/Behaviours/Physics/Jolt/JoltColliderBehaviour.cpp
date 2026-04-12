@@ -7,8 +7,8 @@
 #endif
 
 
-JoltColliderBehaviour::JoltColliderBehaviour(JPH::EMotionType motionType, JPH::ObjectLayer layer) :
-	_motionType(motionType), _layer(layer)
+JoltColliderBehaviour::JoltColliderBehaviour(JPH::EMotionType motionType, JPH::ObjectLayer layer, float friction, float gravityFactor) :
+	_motionType(motionType), _layer(layer), _friction(friction), _gravityFactor(gravityFactor)
 { }
 
 JoltColliderBehaviour::~JoltColliderBehaviour()
@@ -24,6 +24,11 @@ JoltColliderBehaviour::~JoltColliderBehaviour()
 
 bool JoltColliderBehaviour::Start()
 {
+	// Apply default properties
+	JPH::BodyInterface &bodyInterface = GetBodyInterface();
+	bodyInterface.SetFriction(_bodyID, _friction);
+	bodyInterface.SetGravityFactor(_bodyID, _gravityFactor);
+
 	QueueUpdate();
 	QueueLateUpdate();
 
@@ -44,6 +49,15 @@ bool JoltColliderBehaviour::LateUpdate(TimeUtils &time, const Input &input)
 
 	dx::XMFLOAT3A currPos = transform->GetPosition(World);
 	dx::XMFLOAT4A currRot = transform->GetRotation(World);
+	dx::XMFLOAT3A currScale = transform->GetScale();
+
+	if (currScale.x != _lastEntScale.x || currScale.y != _lastEntScale.y || currScale.z != _lastEntScale.z)
+	{
+		// Entity scale has changed, recalculate physics body.
+		RecalculatePhysicsBody();
+
+		_lastEntScale = currScale;
+	}
 
 	if (currPos.x != _lastEntPos.x || currPos.y != _lastEntPos.y || currPos.z != _lastEntPos.z ||
 		currRot.x != _lastEntRot.x || currRot.y != _lastEntRot.y || currRot.z != _lastEntRot.z || currRot.w != _lastEntRot.w)
@@ -82,31 +96,6 @@ bool JoltColliderBehaviour::LateUpdate(TimeUtils &time, const Input &input)
 	return true;
 }
 
-#ifdef USE_IMGUI
-bool JoltColliderBehaviour::RenderUI()
-{
-	ImGui::Checkbox("Debug Draw", &_debugDraw);
-
-	// Motion type
-	const char *motionTypes[] = { "Static", "Kinematic", "Dynamic" };
-	int motionTypeIndex = (int)GetMotionType();
-	if (ImGui::Combo("Motion Type", &motionTypeIndex, motionTypes, IM_ARRAYSIZE(motionTypes)))
-	{
-		SetMotionType((JPH::EMotionType)motionTypeIndex);
-	}
-
-	// Layer
-	const char *layers[] = { "Non Moving", "Moving" };
-	int layerIndex = (int)GetLayer();
-	if (ImGui::Combo("Layer", &layerIndex, layers, IM_ARRAYSIZE(layers)))
-	{
-		SetLayer((JPH::ObjectLayer)layerIndex);
-	}
-
-	return true;
-}
-#endif
-
 [[nodiscard]] JPH::BodyInterface &JoltColliderBehaviour::GetBodyInterface() 
 { 
 	return GetScene()->GetPhysicsInstance()->GetBodyInterface(); 
@@ -137,3 +126,43 @@ void JoltColliderBehaviour::SetLayer(JPH::ObjectLayer layer)
 	JPH::BodyInterface &bodyInterface = GetBodyInterface();
 	bodyInterface.SetObjectLayer(_bodyID, GetLayer());
 }
+
+#ifdef USE_IMGUI
+bool JoltColliderBehaviour::RenderUI()
+{
+	ImGui::Checkbox("Debug Draw", &_debugDraw);
+
+	// Motion type
+	const char *motionTypes[] = { "Static", "Kinematic", "Dynamic" };
+	int motionTypeIndex = (int)GetMotionType();
+	if (ImGui::Combo("Motion Type", &motionTypeIndex, motionTypes, IM_ARRAYSIZE(motionTypes)))
+	{
+		SetMotionType((JPH::EMotionType)motionTypeIndex);
+	}
+
+	// Layer
+	const char *layers[] = { "Non Moving", "Moving" };
+	int layerIndex = (int)GetLayer();
+	if (ImGui::Combo("Layer", &layerIndex, layers, IM_ARRAYSIZE(layers)))
+	{
+		SetLayer((JPH::ObjectLayer)layerIndex);
+	}
+
+	// Friction
+	if (ImGui::SliderFloat("Friction", &_friction, 0.0f, 1.0f))
+	{
+		JPH::BodyInterface &bodyInterface = GetBodyInterface();
+		bodyInterface.SetFriction(_bodyID, _friction);
+	}
+
+	// Gravity factor
+	if (ImGui::DragFloat("Gravity Factor", &_gravityFactor, 0.01f))
+	{
+		JPH::BodyInterface &bodyInterface = GetBodyInterface();
+		bodyInterface.SetGravityFactor(_bodyID, _gravityFactor);
+	}
+	ImGuiUtils::LockMouseOnActive();
+
+	return true;
+}
+#endif
