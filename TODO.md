@@ -21,7 +21,6 @@
  - Cascaded directional lights.
 
 ### Ideas:
- - Physics system. Ex: Jolt or custom (ew).
  - Support for a scripting language. Ex: Lua or C#.
  - Switch to OpenAL Soft for audio.
  - Decals.
