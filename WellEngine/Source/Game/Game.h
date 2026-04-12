@@ -1,8 +1,10 @@
 #pragma once
-
+#include <thread>
+#include <semaphore>
 #include <d3d11.h>
 #include <wrl/client.h>
 #include "Scenes/Scene.h"
+#include "Source/Engine/Physics/JoltManager.h"
 #include "Source/Engine/Rendering/Graphics.h"
 #include "Source/Engine/Content/Content.h"
 #include "Source/Engine/Timing/TimeUtils.h"
@@ -27,15 +29,19 @@ private:
 
 	Graphics _graphics;
 	Content _content;
-	std::vector<std::unique_ptr<Scene>> _scenes;
-	UINT _activeSceneIndex = -1;
 	Window _window;
+	JoltManager _joltManager;
+	std::vector<std::unique_ptr<Scene>> _scenes;
+
+	UINT _activeSceneIndex = -1;
 	std::string _pendingSceneChange = "";
 	std::vector<std::string> _pendingSceneRemovals{};
 
-	float _tickTimer = 0.0f;
+	float _fixedTickTimer = 0.0f;
+	float _physTickTimer = 0.0f;
 	float _gameVolume = 10.0f;
 	bool _isExiting = false;
+	bool _freezePhysics = false;
 
 	std::thread _workerThread;
 	std::binary_semaphore _mainSemaphore{0};
@@ -96,7 +102,7 @@ public:
 	void SetGameVolume(float volume);
 
 	[[nodiscard]] Graphics *GetGraphics() noexcept;
-
+	[[nodiscard]] JoltManager *GetJoltManager() noexcept;
 	[[nodiscard]] Window &GetWindow() noexcept;
 
 	[[nodiscard]] bool Update(TimeUtils &time, const Input &input);

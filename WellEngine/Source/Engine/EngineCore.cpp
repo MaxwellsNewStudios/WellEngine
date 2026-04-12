@@ -40,7 +40,14 @@ int EngineCore::Init()
 #pragma omp parallel for num_threads(threadCount)
 		for (int i = 0; i < threadCount; i++)
 		{
-			tracy::SetThreadNameWithHint("OpenMP Thread", 983464687);
+			if (i == 0)
+			{
+				TracySetThreadNameWithHint("Main Thread", 123456789);
+			}
+			else
+			{
+				TracySetThreadNameWithHint("OpenMP Thread", 983464687); // Magic number, who cares
+			}
 		}
 	}
 #endif
@@ -144,7 +151,14 @@ int EngineCore::Run()
 #pragma omp parallel for num_threads(PARALLEL_THREADS)
 		for (int i = 0; i < PARALLEL_THREADS; i++)
 		{
-			TracySetThreadNameWithHint("OpenMP Thread", 983464687); // Magic number, who cares
+			if (i == 0)
+			{
+				TracySetThreadNameWithHint("Main Thread", 123456789);
+			}
+			else
+			{
+				TracySetThreadNameWithHint("OpenMP Thread", 983464687); // Magic number, who cares
+			}
 		}
 
 		// Update time

@@ -28,6 +28,7 @@ private:
 	float _deltaTime = 1.0f / 60.0f;
 	float _realDeltaTime = 1.0f / 60.0f;
 	float _fixedDeltaTime = FIXED_DELTA_TIME;
+	float _physDeltaTime = PHYS_DELTA_TIME;
 
 public:
 	TimeUtils();
@@ -94,6 +95,12 @@ public:
 		return GetInstance()._fixedDeltaTime;
 	}
 
+	// Time between physics updates.
+	[[nodiscard]] static float GetPhysDeltaTime()
+	{
+		return GetInstance()._physDeltaTime;
+	}
+
 	static void SetTimeScale(float timeScale)
 	{
 		GetInstance()._timeScale = timeScale;
@@ -101,6 +108,10 @@ public:
 	static void SetFixedDeltaTime(float fixedDeltaTime)
 	{
 		GetInstance()._fixedDeltaTime = fixedDeltaTime;
+	}
+	static void SetPhysDeltaTime(float physDeltaTime)
+	{
+		GetInstance()._physDeltaTime = physDeltaTime;
 	}
 
 	TESTABLE()

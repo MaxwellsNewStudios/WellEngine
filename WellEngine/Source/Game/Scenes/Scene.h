@@ -16,6 +16,7 @@
 #include "Source/Engine/Collision/CollisionHandler.h"
 #include "Source/Engine/Debug/DebugDrawer.h"
 #include "Source/Engine/Timing/TimelineManager.h"
+#include "Source/Engine/Physics/JoltPhysicsInstance.h"
 
 namespace json = rapidjson;
 
@@ -49,6 +50,7 @@ private:
 	Graphics *_graphics = nullptr;
 	GraphManager _graphManager = {};
 	SceneHolder _sceneHolder;
+	JoltPhysicsInstance _physInstance;
 	const Input *_input = nullptr;
 
 	Ref<CameraBehaviour>
@@ -101,6 +103,8 @@ private:
 
 	std::vector<Behaviour *> _postDeserializeCallbacks;
 
+	[[nodiscard]] bool InitCommon();
+
 	[[nodiscard]] bool UpdateSound();
 	[[nodiscard]] bool MergeStaticEntities();
 
@@ -146,6 +150,7 @@ public:
 	[[nodiscard]] bool Update(TimeUtils &time, const Input &input);
 	[[nodiscard]] bool LateUpdate(TimeUtils &time, const Input &input);
 	[[nodiscard]] bool FixedUpdate(float deltaTime, const Input &input);
+	[[nodiscard]] bool PhysUpdate(float deltaTime);
 
 	[[nodiscard]] bool UpdateCullingTree();
 
@@ -202,6 +207,7 @@ public:
 	[[nodiscard]] ID3D11DeviceContext *GetContext() const;
 	[[nodiscard]] Content *GetContent() const;
 	[[nodiscard]] SceneHolder *GetSceneHolder();
+	[[nodiscard]] JoltPhysicsInstance *GetPhysicsInstance();
 	[[nodiscard]] Graphics *GetGraphics() const;
 	[[nodiscard]] GraphManager *GetGraphManager();
 	[[nodiscard]] const Input *GetInput() const;

@@ -136,6 +136,5 @@ bool BreadcrumbBehaviour::Serialize(json::Document::AllocatorType &docAlloc, jso
 bool BreadcrumbBehaviour::Deserialize(const json::Value &obj, Scene *scene)
 {
 	_color = (BreadcrumbColor)obj["Color"].GetUint();
-
 	return true;
 }

@@ -12,6 +12,10 @@ using namespace DirectX;
 
 Game::Game()
 {
+#ifndef _DEPLOY
+	_freezePhysics = true;
+#endif
+
 	_activeSceneIndex = -1;
 }
 Game::~Game()
@@ -1220,6 +1224,10 @@ Graphics *Game::GetGraphics() noexcept
 {
 	return &_graphics;
 }
+JoltManager *Game::GetJoltManager() noexcept
+{
+	return &_joltManager;
+}
 Window &Game::GetWindow() noexcept
 {
 	return _window;
@@ -1288,15 +1296,15 @@ bool Game::Update(TimeUtils &time, const Input& input)
 
 	// Fixed update
 	static bool firstFixedUpdate = true;
-	_tickTimer += time.GetDeltaTime();
-	while (_tickTimer >= time.GetFixedDeltaTime())
+	_fixedTickTimer += time.GetDeltaTime();
+	while (_fixedTickTimer >= time.GetFixedDeltaTime())
 	{
 		time.TakeSnapshot("SceneFixedUpdateTime");
-		_tickTimer -= time.GetFixedDeltaTime();
+		_fixedTickTimer -= time.GetFixedDeltaTime();
 		if (firstFixedUpdate)
 		{
 			firstFixedUpdate = false;
-			_tickTimer = 0.0f;
+			_fixedTickTimer = 0.0f;
 		}
 
 		if (ActiveSceneIsValid())
@@ -1309,10 +1317,37 @@ bool Game::Update(TimeUtils &time, const Input& input)
 		}
 
 #ifdef _DEBUG
-		if (_tickTimer >= time.GetFixedDeltaTime() * 16.0f)
-			_tickTimer = time.GetFixedDeltaTime() * 16.0f;
+		if (_fixedTickTimer >= time.GetFixedDeltaTime() * 16.0f)
+			_fixedTickTimer = time.GetFixedDeltaTime() * 16.0f;
 #endif
 		time.TakeSnapshot("SceneFixedUpdateTime");
+	}
+
+	// Physics update
+	if (!_freezePhysics)
+	{
+		static bool firstPhysUpdate = true;
+		_physTickTimer += time.GetDeltaTime();
+		time.TakeSnapshot("ScenePhysUpdateTime");
+		while (_physTickTimer >= time.GetPhysDeltaTime())
+		{
+			_physTickTimer -= time.GetPhysDeltaTime();
+			if (firstPhysUpdate)
+			{
+				firstPhysUpdate = false;
+				_physTickTimer = 0.0f;
+			}
+
+			if (ActiveSceneIsValid())
+			{
+				if (!_scenes[_activeSceneIndex]->PhysUpdate(time.GetPhysDeltaTime()))
+				{
+					ErrMsg("Failed to update scene at physics step!");
+					return false;
+				}
+			}
+		}
+		time.TakeSnapshot("ScenePhysUpdateTime");
 	}
 
 	// Late update
@@ -2129,6 +2164,16 @@ bool Game::RenderUI(TimeUtils &time)
 		if (ImGui::DragFloat("Fixed Time Step", &fixedDeltaTime, 0.002f))
 			time.SetFixedDeltaTime(fixedDeltaTime);
 		ImGuiUtils::LockMouseOnActive();
+
+		float physDeltaTime = time.GetPhysDeltaTime();
+		if (ImGui::DragFloat("Phys Time Step", &physDeltaTime, 0.001f, 0, 0, "%.4f"))
+		{
+			physDeltaTime = max(0.001f, physDeltaTime);
+			time.SetPhysDeltaTime(physDeltaTime);
+		}
+		ImGuiUtils::LockMouseOnActive();
+
+		ImGui::Checkbox("Freeze Physics", &_freezePhysics);
 		ImGui::Dummy({ 0, 4 });
 
 		if (ImGui::TreeNode("Utility"))
