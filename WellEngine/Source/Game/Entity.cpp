@@ -1422,20 +1422,26 @@ bool Entity::InitialRenderUI()
 
 	// Entity Header
 	{
+		ImGuiStorage *storage = ImGui::GetStateStorage();
+		ImGuiID headerButtonsWidthID = ImGui::GetID("HeaderButtonsWidth");
+		float buttonsWidth = storage->GetFloat(headerButtonsWidthID, 60.0f);
+
 		bool entEnabled = IsEnabledSelf();
 		if (ImGui::Checkbox("##EntEnabled", &entEnabled))
 			SetEnabledSelf(entEnabled);
 		ImGui::SetItemTooltip("Enable/Disable Entity");
 
 		ImGui::SameLine();
-		ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
+		ImGui::SetNextItemWidth(max(0, ImGui::GetContentRegionAvail().x - buttonsWidth));
 
 		std::string entName = GetName();
 		if (ImGui::InputText("##EntName", &entName, ImGuiInputTextFlags_AutoSelectAll))
 			SetName(entName);
-
 		ImGui::SetItemTooltip("Entity Name");
 
+		ImGui::SameLine();
+		float buttonStartX = ImGui::GetCursorScreenPos().x;
+		
 		// Buttons
 		{
 			// Dock/Undock button
@@ -1446,7 +1452,7 @@ bool Entity::InitialRenderUI()
 				if (ImGuiUtils::Utils::GetWindow(windowID, nullptr))
 				{
 					// If undocked, show dock button
-					if (ImGuiUtils::ButtonWithFont(ICON_LC_SQUARE_ARROW_OUT_DOWN_LEFT "##Dock", FONT_ICON_FILE_NAME_LC, 16.0f))
+					if (ImGuiUtils::ButtonWithFont(ICON_LC_SQUARE_ARROW_OUT_DOWN_LEFT "##Dock", FONT_ICON_FILE_NAME_LC, 14.0f))
 					{
 						if (!ImGuiUtils::Utils::CloseWindow(windowID))
 						{
@@ -1460,7 +1466,7 @@ bool Entity::InitialRenderUI()
 				else
 				{
 					// If docked, show undock button
-					if (ImGuiUtils::ButtonWithFont(ICON_LC_SQUARE_ARROW_OUT_UP_RIGHT "##Undock", FONT_ICON_FILE_NAME_LC, 16.0f))
+					if (ImGuiUtils::ButtonWithFont(ICON_LC_SQUARE_ARROW_OUT_UP_RIGHT "##Undock", FONT_ICON_FILE_NAME_LC, 14.0f))
 					{
 						const std::string windowName = std::format("Entity '{}'", GetName());
 						if (!ImGuiUtils::Utils::OpenWindow(windowName, windowID, std::bind(&Entity::InitialRenderUI, this)))
@@ -1478,7 +1484,7 @@ bool Entity::InitialRenderUI()
 
 			// Copy button
 			{
-				if (ImGuiUtils::ButtonWithFont(ICON_LC_COPY "##Copy", FONT_ICON_FILE_NAME_LC, 16.0f))
+				if (ImGuiUtils::ButtonWithFont(ICON_LC_COPY "##Copy", FONT_ICON_FILE_NAME_LC, 14.0f))
 				{
 					Entity *ent = debugPlayer->DuplicateEntity(this);
 					debugPlayer->Select(ent, ImGui::GetIO().KeyShift);
@@ -1494,7 +1500,7 @@ bool Entity::InitialRenderUI()
 				static std::string prefabName = "";
 				bool doSave = false;
 
-				if (ImGuiUtils::ButtonWithFont(ICON_LC_BOOK_MARKED "##SavePrefab", FONT_ICON_FILE_NAME_LC, 16.0f))
+				if (ImGuiUtils::ButtonWithFont(ICON_LC_BOOK_MARKED "##SavePrefab", FONT_ICON_FILE_NAME_LC, 14.0f))
 				{
 					ImGui::OpenPopup("Save as Prefab");
 					prefabName = GetName();
@@ -1580,7 +1586,7 @@ bool Entity::InitialRenderUI()
 
 			// Replace with prefab button
 			{
-				if (ImGuiUtils::ButtonWithFont(ICON_LC_BOOK_COPY "##ReplaceWithPrefab", FONT_ICON_FILE_NAME_LC, 16.0f))
+				if (ImGuiUtils::ButtonWithFont(ICON_LC_BOOK_COPY "##ReplaceWithPrefab", FONT_ICON_FILE_NAME_LC, 14.0f))
 					ImGui::OpenPopup("Replace With Prefab");
 
 				ImGui::SetItemTooltip("Replace With Prefab");
@@ -1690,20 +1696,27 @@ bool Entity::InitialRenderUI()
 
 			// Delete button
 			{
-				if (ImGuiUtils::ButtonWithFont(ICON_LC_X "##Delete", FONT_ICON_FILE_NAME_LC, 16.0f))
+				ImGuiUtils::BeginButtonStyle(ImGuiUtils::StyleType::Red);
+				if (ImGuiUtils::ButtonWithFont(ICON_LC_X "##Delete", FONT_ICON_FILE_NAME_LC, 14.0f))
 				{
 					debugPlayer->Deselect(this);
 
 					if (!sceneHolder->RemoveEntity(entIndex))
 					{
 						ErrMsg("Failed to remove entity!");
+						ImGuiUtils::EndButtonStyle();
 						return false;
 					}
 				}
+				ImGuiUtils::EndButtonStyle();
 
 				ImGui::SetItemTooltip("Delete");
 			}
 		}
+
+		float buttonEndX = ImGui::GetItemRectMax().x + ImGui::GetStyle().ItemSpacing.x;
+
+		storage->SetFloat(headerButtonsWidthID, buttonEndX - buttonStartX);
 
 		if (IsPrefab())
 		{
