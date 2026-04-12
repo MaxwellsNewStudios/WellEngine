@@ -42,6 +42,7 @@ bool JoltColliderBehaviour::Start()
 
 bool JoltColliderBehaviour::Update(TimeUtils &time, const Input &input)
 {
+
 	return true;
 }
 

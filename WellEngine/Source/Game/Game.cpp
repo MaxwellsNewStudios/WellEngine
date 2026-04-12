@@ -1382,34 +1382,6 @@ void Game::UpdateWorker()
 
 			if (ActiveSceneIsValid())
 			{
-				// Fixed update
-				/*static bool firstFixedUpdate = true;
-				_tickTimer += Time::GetInstance().deltaTime;
-				while (_tickTimer >= _tickRate)
-				{
-					Time::GetInstance().TakeSnapshot("SceneFixedUpdateTime");
-					_tickTimer -= _tickRate;
-					if (firstFixedUpdate)
-					{
-						firstFixedUpdate = false;
-						_tickTimer = 0.0f;
-					}
-
-					if (!_scenes[_activeSceneIndex]->FixedUpdate(_tickRate, *Input::GetInstance()))
-					{
-						ErrMsg("Failed to update scene at fixed step!");
-						_workerState = false;
-						return;
-					}
-
-#ifdef _DEBUG
-					if (_tickTimer >= _tickRate * 4.0f)
-						_tickTimer = _tickRate * 4.0f;
-#endif
-					Time::GetInstance().TakeSnapshot("SceneFixedUpdateTime");
-				}*/
-
-
 				if (!_scenes[_activeSceneIndex]->UpdateCullingTree())
 				{
 					_workerState = false;
