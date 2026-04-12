@@ -134,7 +134,7 @@ void UILayout::SaveLayout(const std::string &name)
 		ImGui::SaveIniSettingsToDisk(PATH_FILE_EXT(ASSETS_EDITOR_PATH_LAYOUTS, name, "ini").c_str());
 	}
 }
-void UILayout::LoadLayout(const std::string &name)
+bool UILayout::LoadLayout(const std::string &name)
 {
 	json::Document doc;
 	{
@@ -142,7 +142,7 @@ void UILayout::LoadLayout(const std::string &name)
 		std::ifstream layoutFile(PATH_FILE_EXT(ASSETS_EDITOR_PATH_LAYOUTS, name, "json"));
 
 		if (!layoutFile.is_open())
-			return; // No layout file exists, nothing to load.
+			return false; // No layout file exists, nothing to load.
 
 		std::string fileContents;
 		layoutFile.seekg(0, std::ios::beg);
@@ -154,7 +154,7 @@ void UILayout::LoadLayout(const std::string &name)
 		if (doc.HasParseError())
 		{
 			ErrMsgF("Failed to parse JSON file: {}", (UINT)doc.GetParseError());
-			return;
+			return false;
 		}
 	}
 
@@ -448,10 +448,12 @@ void UILayout::LoadLayout(const std::string &name)
 		// Check if the ini file exists.
 		std::ifstream iniFile(iniFilePath);
 		if (!iniFile.is_open())
-			return; // No ini file to copy over
+			return true; // No ini file to copy over, still success
 		iniFile.close();
 
 		ImGui::LoadIniSettingsFromDisk(iniFilePath.c_str());
 	}
+
+	return true;
 }
 #endif // USE_IMGUI

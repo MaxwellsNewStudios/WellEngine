@@ -11,6 +11,6 @@ public:
 	static void GetLayoutNames(std::vector<std::string> &layouts);
 
 	static void SaveLayout(const std::string &name);
-	static void LoadLayout(const std::string &name);
+	static bool LoadLayout(const std::string &name);
 };
 #endif // USE_IMGUI

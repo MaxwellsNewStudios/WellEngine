@@ -288,7 +288,11 @@ bool Graphics::Setup(bool fullscreen, const UINT width, const UINT height, const
 
 	ImGui::StyleColorsDark();
 
-	UILayout::LoadLayout(DebugData::Get().layoutName);
+	if (!UILayout::LoadLayout(DebugData::Get().layoutName))
+	{
+		DbgMsgF("Failed to load layout: '{}'. Fallback to default.", DebugData::Get().layoutName);
+		UILayout::LoadLayout("Default");
+	}
 #endif
 
 	_content = content;
