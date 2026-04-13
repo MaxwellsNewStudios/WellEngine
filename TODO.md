@@ -19,6 +19,7 @@
  - Give cameras their own render texture that they render to.
  - Skeletal meshes & animations.
  - Cascaded directional lights.
+ - Baked lighting.
 
 ### Ideas:
  - Support for a scripting language. Ex: Lua or C#.
