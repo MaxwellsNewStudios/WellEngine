@@ -23,6 +23,8 @@ bool JoltPhysicsInstance::Initialize(JoltManager *manager)
 	_paused = true;
 #endif
 
+	_settings.mBaumgarte = 0.5f;
+
 	_sys = std::make_unique<JoltSystemData>(JPH::cMaxPhysicsJobs, JPH::cMaxPhysicsBarriers, max(std::thread::hardware_concurrency() - 2, 1));
 
 	_sys->physicsSystem.Init(
@@ -72,9 +74,48 @@ bool JoltPhysicsInstance::RenderUI()
 {
 	ImGui::Checkbox("Pause Simulation", &_paused);
 
+	if (ImGui::Button("Wake All Bodies"))
+	{
+		JPH::BodyIDVector activeBodies;
+		_sys->physicsSystem.GetBodies(activeBodies);
+
+		JPH::BodyInterface &bodyInterface = _sys->physicsSystem.GetBodyInterface();
+
+		for (const JPH::BodyID &id : activeBodies)
+			bodyInterface.ActivateBody(id);
+	}
+
 	if (ImGui::DragFloat3("Gravity", &_gravity.x, 0.01f))
 		_sys->physicsSystem.SetGravity(JPH::Vec3(_gravity.x, _gravity.y, _gravity.z));
 	ImGuiUtils::LockMouseOnActive();
+
+	if (ImGui::TreeNode("Physics Settings"))
+	{
+		bool changed = false;
+
+		changed |= ImGui::SliderFloat("Baumgarte", &_settings.mBaumgarte, 0.0f, 1.0f);
+
+		changed |= ImGui::DragFloat("Speculative Contact Distance", &_settings.mSpeculativeContactDistance, 0.001f, 0.0f);
+		ImGuiUtils::LockMouseOnActive();
+
+		changed |= ImGui::DragFloat("Penetration Slop", &_settings.mPenetrationSlop, 0.001f, 0.0f);
+		ImGuiUtils::LockMouseOnActive();
+
+		changed |= ImGui::DragFloat("Linear Cast Threshold", &_settings.mLinearCastThreshold, 0.01f, 0.0f);
+		ImGuiUtils::LockMouseOnActive();
+
+		changed |= ImGui::DragFloat("Time Before Sleep", &_settings.mTimeBeforeSleep, 0.1f, 0.0f);
+		ImGuiUtils::LockMouseOnActive();
+
+		changed |= ImGui::Checkbox("Deterministic Simulation", &_settings.mDeterministicSimulation);
+
+		changed |= ImGui::Checkbox("Allow Sleeping", &_settings.mAllowSleeping);
+
+		if (changed)
+			_sys->physicsSystem.SetPhysicsSettings(_settings);
+
+		ImGui::TreePop();
+	}
 
 	return true;
 }
