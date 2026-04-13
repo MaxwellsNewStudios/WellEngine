@@ -111,6 +111,8 @@ bool BoxJoltColliderBehaviour::Deserialize(const json::Value &obj, Scene *scene)
 
 void BoxJoltColliderBehaviour::RecalculatePhysicsBody()
 {
+	ZoneScopedC(RandomUniqueColor());
+
 	JPH::BodyInterface &bodyInterface = GetBodyInterface();
 	JPH::BodyID bodyID = GetBodyID();
 
@@ -142,6 +144,8 @@ void BoxJoltColliderBehaviour::RecalculatePhysicsBody()
 }
 void BoxJoltColliderBehaviour::SyncPhysics()
 {
+	ZoneScopedC(RandomUniqueColor());
+
 	JPH::BodyInterface &bodyInterface = GetBodyInterface();
 	Transform *transform = GetEntity()->GetTransform();
 	const JPH::BodyID &bodyID = GetBodyID();
@@ -167,6 +171,8 @@ void BoxJoltColliderBehaviour::SyncPhysics()
 }
 void BoxJoltColliderBehaviour::SyncTransform()
 {
+	ZoneScopedC(RandomUniqueColor());
+
 	JPH::BodyInterface &bodyInterface = GetBodyInterface();
 	Transform *transform = GetEntity()->GetTransform();
 	const JPH::BodyID &bodyID = GetBodyID();

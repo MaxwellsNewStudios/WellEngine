@@ -5,6 +5,8 @@
 #include "Source/Engine/Debug/DebugNew.h"
 #include "Source/Engine/Rendering/Culling/Quadtree.h"
 
+namespace we = WellEngine;
+
 namespace SceneContents
 {
 	struct SceneEntity;
@@ -184,7 +186,7 @@ public:
 	[[nodiscard]] bool BoxCull(const dx::BoundingBox &box, std::vector<Entity *> &containingItems, bool mustFullyContain = false) const;
 
 	bool RaycastScene(const dx::XMFLOAT3A &origin, const dx::XMFLOAT3A &direction, RaycastOut &result, bool cheap = true) const;
-	bool RaycastScene(const Shape::Ray &ray, Shape::RayHit &hit, Entity *&ent) const;
+	bool RaycastScene(const we::Shape::Ray &ray, we::Shape::RayHit &hit, Entity *&ent) const;
 
 	bool GetRecalculateColliders() const;
 	void SetRecalculateColliders();

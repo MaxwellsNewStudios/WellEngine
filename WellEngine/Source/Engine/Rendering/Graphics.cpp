@@ -403,7 +403,7 @@ bool Graphics::ResizeWindowBuffers(bool fullscreen, UINT newWidth, UINT newHeigh
 	if (!skipResizeD3D11)
 	{
 #ifdef TRACY_SCREEN_CAPTURE
-		_tracyCaptureRT.Release();
+		_tracyCaptureRT.Reset();
 #endif
 
 		if (!ResizeD3D11(fullscreen, newWidth, newHeight,

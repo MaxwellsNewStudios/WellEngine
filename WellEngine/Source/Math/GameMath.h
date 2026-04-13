@@ -7,7 +7,9 @@
 #include "Source/Engine/Debug/ErrMsg.h"
 #include "Source/Engine/Collision/ColliderShapes.h"
 
+namespace we = WellEngine;
 namespace dx = DirectX;
+
 #pragma endregion
 
 #pragma region Defines
@@ -990,7 +992,7 @@ namespace DXMath
 
 namespace GameCollision
 {
-	static inline bool _IntersectsTriangleAABBSat(const Shape::Tri &tri, const DXMath::Vec3 &extent, const DXMath::Vec3 &axis)
+	static inline bool _IntersectsTriangleAABBSat(const we::Shape::Tri &tri, const DXMath::Vec3 &extent, const DXMath::Vec3 &axis)
 	{
 		using namespace DXMath;
 
@@ -1013,7 +1015,7 @@ namespace GameCollision
 
 		return !(max(-maxP, minP) > r);
 	}
-	static inline bool _IntersectsTriangleAABBB(const Shape::Tri &tri, const dx::BoundingBox &aabb)
+	static inline bool _IntersectsTriangleAABBB(const we::Shape::Tri &tri, const dx::BoundingBox &aabb)
 	{
 		using namespace DXMath;
 
@@ -1056,7 +1058,7 @@ namespace GameCollision
 		Vec3 a22 = Vec3(-caMem.y, caMem.x, 0);
 
 		a.ToMem(); b.ToMem(); c.ToMem();
-		Shape::Tri TranslatedTriangle(a.Get(), b.Get(), c.Get());
+		we::Shape::Tri TranslatedTriangle(a.Get(), b.Get(), c.Get());
 
 		return _IntersectsTriangleAABBSat(TranslatedTriangle, boxExtent, a00.ToOp()) &&
 			   _IntersectsTriangleAABBSat(TranslatedTriangle, boxExtent, a01.ToOp()) &&
@@ -1072,7 +1074,7 @@ namespace GameCollision
 			   _IntersectsTriangleAABBSat(TranslatedTriangle, boxExtent, Vec3::UnitZ().ToOp()) &&
 			   _IntersectsTriangleAABBSat(TranslatedTriangle, boxExtent, ab.Cross3(bc));
 	}
-	static inline bool BoxTriIntersect(const dx::BoundingBox &box, const Shape::Tri &tri)
+	static inline bool BoxTriIntersect(const dx::BoundingBox &box, const we::Shape::Tri &tri)
 	{
 		using namespace DXMath;
 

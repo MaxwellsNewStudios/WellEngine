@@ -88,6 +88,8 @@ bool SphereJoltColliderBehaviour::Deserialize(const json::Value &obj, Scene *sce
 
 void SphereJoltColliderBehaviour::RecalculatePhysicsBody()
 {
+	ZoneScopedC(RandomUniqueColor());
+
 	Transform *transform = GetEntity()->GetTransform();
 	dx::XMFLOAT3A scale = transform->GetScale();
 
@@ -100,6 +102,8 @@ void SphereJoltColliderBehaviour::RecalculatePhysicsBody()
 }
 void SphereJoltColliderBehaviour::SyncPhysics()
 {
+	ZoneScopedC(RandomUniqueColor());
+
 	JPH::BodyInterface &bodyInterface = GetBodyInterface();
 	Transform *transform = GetEntity()->GetTransform();
 	const JPH::BodyID &bodyID = GetBodyID();
@@ -112,6 +116,8 @@ void SphereJoltColliderBehaviour::SyncPhysics()
 }
 void SphereJoltColliderBehaviour::SyncTransform()
 {
+	ZoneScopedC(RandomUniqueColor());
+
 	JPH::BodyInterface &bodyInterface = GetBodyInterface();
 	Transform *transform = GetEntity()->GetTransform();
 	const JPH::BodyID &bodyID = GetBodyID();

@@ -12,6 +12,8 @@
 #include "Source/Engine/Window/Window.h"
 #include "Source/Engine/Debug/DebugDrawer.h"
 
+namespace we = WellEngine;
+
 /// Game handles loading content like textures and meshes, as well as managing the update and render steps of the main game loop.
 class Game
 {

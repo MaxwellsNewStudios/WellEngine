@@ -16,7 +16,7 @@ namespace TestUtils
 #else
 
 
-#define TESTABLE() 
+#define TESTABLE() ;
 
 
 #endif // _TESTING

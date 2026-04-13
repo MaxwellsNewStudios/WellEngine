@@ -9,14 +9,16 @@ namespace JPH
 	{
 		static constexpr ObjectLayer NON_MOVING = 0;
 		static constexpr ObjectLayer MOVING = 1;
-		static constexpr ObjectLayer NUM_LAYERS = 2;
+		static constexpr ObjectLayer SENSOR = 2;
+		static constexpr ObjectLayer NUM_LAYERS = 3;
 	};
 
 	namespace BroadPhaseLayers
 	{
 		static constexpr BroadPhaseLayer NON_MOVING(0);
 		static constexpr BroadPhaseLayer MOVING(1);
-		static constexpr uint NUM_LAYERS(2);
+		static constexpr BroadPhaseLayer SENSOR(2);
+		static constexpr uint NUM_LAYERS(3);
 	};
 
 	/// Class that determines if two object layers can collide
@@ -34,6 +36,7 @@ namespace JPH
 			// Create a mapping table from object to broad phase layer
 			mObjectToBroadPhase[Layers::NON_MOVING] = BroadPhaseLayers::NON_MOVING;
 			mObjectToBroadPhase[Layers::MOVING] = BroadPhaseLayers::MOVING;
+			mObjectToBroadPhase[Layers::SENSOR] = BroadPhaseLayers::SENSOR;
 		}
 
 		virtual uint GetNumBroadPhaseLayers() const override

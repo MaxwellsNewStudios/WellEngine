@@ -14,6 +14,8 @@
 #include "Source/Engine/Debug/DebugDrawer.h"
 #include "Source/Game/Behaviours/Rendering/Camera/CameraBehaviour.h"
 
+namespace we = WellEngine;
+
 enum class RenderType
 {
 	DEFAULT,

@@ -42,6 +42,8 @@ namespace JPH
 			return inObject2 == Layers::MOVING; // Non moving only collides with moving
 		case Layers::MOVING:
 			return true; // Moving collides with everything
+		case Layers::SENSOR:
+			return true; // Sensor collides with everything
 		default:
 			JPH_ASSERT(false);
 			return false;
@@ -61,6 +63,7 @@ namespace JPH
 		{
 		case (BroadPhaseLayer::Type)BroadPhaseLayers::NON_MOVING:	return "NON_MOVING";
 		case (BroadPhaseLayer::Type)BroadPhaseLayers::MOVING:		return "MOVING";
+		case (BroadPhaseLayer::Type)BroadPhaseLayers::SENSOR:		return "SENSOR";
 		default:													JPH_ASSERT(false);
 			return "INVALID";
 		}
@@ -74,6 +77,8 @@ namespace JPH
 		case Layers::NON_MOVING:
 			return inLayer2 == BroadPhaseLayers::MOVING;
 		case Layers::MOVING:
+			return true;
+		case Layers::SENSOR:
 			return true;
 		default:
 			JPH_ASSERT(false);

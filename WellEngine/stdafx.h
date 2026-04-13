@@ -160,6 +160,8 @@ namespace json = rapidjson;
 // Game
 #include "Source/Game/Transform.h"
 
+namespace we = WellEngine;
+
 
 
 

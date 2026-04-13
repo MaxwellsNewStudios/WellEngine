@@ -9,6 +9,7 @@
 #include "Source/Engine/Rendering/RenderQueuer.h"
 #include "Source/Engine/Collision/Colliders.h"
 
+namespace we = WellEngine;
 namespace dx = DirectX;
 
 // Forward declarations

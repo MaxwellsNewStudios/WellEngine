@@ -13,6 +13,8 @@
 #define new			DEBUG_NEW
 #endif
 
+namespace we = WellEngine;
+
 class Quadtree
 {
 private:
@@ -112,8 +114,28 @@ private:
 		{
 			ZoneScopedXC(RandomUniqueColor());
 
-			if (!bounds.Intersects(itemBounds))
-				return false;
+			// DirectXCollision OBB-AABB intersection seems to be impercise, causing entities to flicker in and out of nodes from tiny movements.
+			// HACK: To rely less on the faulty intersection check, we first check only if center point is within bounds.
+			// If it isn't, we check if any of the corners are within bounds. Only if all of these checks fail, we do the intersection check.
+			if (!bounds.Contains(Load(itemBounds.Center)))
+			{
+				dx::XMFLOAT3 corners[dx::BoundingOrientedBox::CORNER_COUNT];
+				itemBounds.GetCorners(corners);
+
+				bool anyCornerInside = false;
+				for (const dx::XMFLOAT3 &corner : corners)
+				{
+					if (bounds.Contains(Load(corner)))
+					{
+						anyCornerInside = true;
+						break;
+					}
+				}
+
+				if (!anyCornerInside)
+					if (!bounds.Intersects(itemBounds))
+						return false;
+			}
 
 			isDirty = true;
 			isEmpty = false;
@@ -122,6 +144,14 @@ private:
 			{
 				if (depth >= _maxDepth || data.size() < _maxItemsInNode)
 				{
+#ifdef TRACY_DETAILED
+					ZoneNamedXNC(emplaceInfoZone, "Emplaced Entity", RandomUniqueColor(), true);
+					const std::string boundsStr = std::format("C:({}, {}), E:({}, {})",
+						bounds.Center.x, bounds.Center.z,
+						bounds.Extents.x, bounds.Extents.z
+					);
+					ZoneTextXV(emplaceInfoZone, boundsStr.c_str(), boundsStr.size());
+#endif
 					data.emplace_back(item);
 					return true;
 				}
@@ -175,7 +205,18 @@ private:
 				});
 
 				if (num > 0)
+				{
+#ifdef TRACY_DETAILED
+					ZoneNamedXNC(eraseInfoZone, "Erased Entity", RandomUniqueColor(), true);
+					const std::string boundsStr = std::format("C:({}, {}), E:({}, {})", 
+						bounds.Center.x, bounds.Center.z, 
+						bounds.Extents.x, bounds.Extents.z
+					);
+					ZoneTextXV(eraseInfoZone, boundsStr.c_str(), boundsStr.size());
+#endif
+
 					isDirty = true;
+				}
 
 				return;
 			}
@@ -557,7 +598,7 @@ private:
 
 		bool RaycastNode(const dx::XMFLOAT3 &orig, const dx::XMFLOAT3 &dir, float &length, Entity *&entity, bool cheap) const;
 
-		bool RaycastNode(const Shape::Ray &ray, Shape::RayHit &hit, Entity *&ent) const;
+		bool RaycastNode(const we::Shape::Ray &ray, we::Shape::RayHit &hit, Entity *&ent) const;
 
 #ifdef USE_IMGUI
 		void DebugGetStructure(std::vector<dx::BoundingBox> &boxCollection, bool full, bool culling) const
@@ -655,7 +696,14 @@ public:
 	void Insert(Entity *data, const dx::BoundingOrientedBox &bounds) const
 	{
 		ZoneScopedC(RandomUniqueColor());
-		const std::string &name = data->GetName();
+		std::string name = std::format("{}:{}", data->GetName(), data->GetID());
+#ifdef TRACY_DETAILED
+		name += std::format(" [C:({}, {}, {}), E:({}, {}, {})), O:({}, {}, {}, {}]",
+			bounds.Center.x, bounds.Center.y, bounds.Center.z,
+			bounds.Extents.x, bounds.Extents.y, bounds.Extents.z,
+			bounds.Orientation.x, bounds.Orientation.y, bounds.Orientation.z, bounds.Orientation.w
+		);
+#endif
 		ZoneText(name.c_str(), name.size());
 
 		data->UpdateCullingBounds();
@@ -674,7 +722,7 @@ public:
 		// After this is done, removal could be exited early as soon as the entity being removed counts 0 containing nodes.
 
 		ZoneScopedC(RandomUniqueColor());
-		const std::string &name = data->GetName();
+		std::string name = std::format("{}:{}", data->GetName(), data->GetID());
 		ZoneText(name.c_str(), name.size());
 
 		if (_root == nullptr)
@@ -753,7 +801,7 @@ public:
 		return _root->RaycastNode(orig, dir, length, entity, cheap);
 	}
 
-	bool RaycastTree(const Shape::Ray &ray, Shape::RayHit &hit, Entity *&ent) const
+	bool RaycastTree(const we::Shape::Ray &ray, we::Shape::RayHit &hit, Entity *&ent) const
 	{
 		if (_root == nullptr)
 			return false;

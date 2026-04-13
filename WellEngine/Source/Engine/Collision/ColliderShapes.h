@@ -3,7 +3,7 @@
 #include <DirectXMath.h>
 #include <DirectXCollision.h>
 
-namespace Shape
+namespace WellEngine::Shape
 {
 	struct Ray
 	{
@@ -188,3 +188,5 @@ namespace Shape
 		}
 	};
 };
+
+namespace we = WellEngine;

@@ -18,6 +18,7 @@
 #include "Source/Engine/Timing/TimelineManager.h"
 #include "Source/Engine/Physics/JoltPhysicsInstance.h"
 
+namespace we = WellEngine;
 namespace json = rapidjson;
 
 // Forward declarations

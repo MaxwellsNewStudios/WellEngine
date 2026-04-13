@@ -6,6 +6,7 @@
 #include "Source/Math/GameMath.h"
 
 namespace dx = DirectX;
+namespace we = WellEngine;
 
 struct RaycastOut
 {
@@ -135,8 +136,8 @@ static bool Raycast(
 }
 
 static bool Raycast(
-	const Shape::Ray &ray, const Shape::Tri &tri, 
-	Shape::RayHit &hit)
+	const we::Shape::Ray &ray, const we::Shape::Tri &tri,
+	we::Shape::RayHit &hit)
 {
 	using namespace DXMath;
 	constexpr float MINVAL = 0.000025f;

@@ -1,6 +1,8 @@
 #pragma once
 #include <intsafe.h>
 
+namespace we = WellEngine;
+
 // Managed by the Content class. This will allow draw batching to be done much more cheaply.
 struct Material
 {

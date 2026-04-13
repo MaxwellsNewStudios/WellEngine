@@ -15,6 +15,8 @@
 #include "FontAtlas.h"
 #include "Tests/TestUtils.h"
 
+namespace we = WellEngine;
+
 inline constexpr UINT CONTENT_NULL = 0xFFFFFFFF;
 
 struct MaterialProperties

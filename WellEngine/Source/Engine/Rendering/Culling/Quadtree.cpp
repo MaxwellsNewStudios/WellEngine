@@ -31,7 +31,7 @@ bool Quadtree::Node::RaycastNode(const dx::XMFLOAT3 &orig, const dx::XMFLOAT3 &d
 
 			if (!cheap)
 			{
-				const Shape::Ray ray(orig, dir);
+				const we::Shape::Ray ray(orig, dir);
 
 				MeshBehaviour *meshBehaviour = nullptr;
 				if (item->GetBehaviourByType<MeshBehaviour>(meshBehaviour))
@@ -44,8 +44,8 @@ bool Quadtree::Node::RaycastNode(const dx::XMFLOAT3 &orig, const dx::XMFLOAT3 &d
 					const dx::XMFLOAT4X4A &meshMatrix = item->GetTransform()->GetMatrix(World);
 					dx::XMFLOAT4X4A meshMatrixInv; Store(meshMatrixInv, XMMatrixInverse(nullptr, Load(meshMatrix)));
 
-					const Shape::Ray localRay = ray.Transformed(meshMatrixInv);
-					Shape::RayHit localHit;
+					const we::Shape::Ray localRay = ray.Transformed(meshMatrixInv);
+					we::Shape::RayHit localHit;
 
 					if (meshCollider.RaycastMesh(localRay, localHit))
 					{
@@ -132,7 +132,7 @@ bool Quadtree::Node::RaycastNode(const dx::XMFLOAT3 &orig, const dx::XMFLOAT3 &d
 	return (entity != nullptr);
 }
 
-bool Quadtree::Node::RaycastNode(const Shape::Ray &ray, Shape::RayHit &hit, Entity *&ent) const
+bool Quadtree::Node::RaycastNode(const we::Shape::Ray &ray, we::Shape::RayHit &hit, Entity *&ent) const
 {
 	if (isEmpty)
 		return false;
@@ -165,8 +165,8 @@ bool Quadtree::Node::RaycastNode(const Shape::Ray &ray, Shape::RayHit &hit, Enti
 				const dx::XMFLOAT4X4A &meshMatrix = item->GetTransform()->GetMatrix(World);
 				dx::XMFLOAT4X4A meshMatrixInv; Store(meshMatrixInv, XMMatrixInverse(nullptr, Load(meshMatrix)));
 
-				const Shape::Ray localRay = ray.Transformed(meshMatrixInv);
-				Shape::RayHit localHit;
+				const we::Shape::Ray localRay = ray.Transformed(meshMatrixInv);
+				we::Shape::RayHit localHit;
 
 				if (meshCollider.RaycastMesh(localRay, localHit))
 				{
@@ -215,7 +215,7 @@ bool Quadtree::Node::RaycastNode(const Shape::Ray &ray, Shape::RayHit &hit, Enti
 	}
 
 	Entity *newEnt = nullptr;
-	Shape::RayHit newHit;
+	we::Shape::RayHit newHit;
 	newHit.length = hit.length;
 
 	// Check children in order of closest to furthest.

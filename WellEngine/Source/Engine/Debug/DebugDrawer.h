@@ -224,7 +224,7 @@ public:
 	/// Push a multi-colored triangle to the debug draw list. It will be drawn on the next render call, then discarded.
 	void DrawTri(const DD::Tri &tri, bool useDepth = true, bool twoSided = false);
 	/// Push a triangle to the debug draw list. It will be drawn on the next render call, then discarded.
-	void DrawTri(const Shape::Tri &tri, const dx::XMFLOAT4 &color, bool useDepth = true, bool twoSided = false);
+	void DrawTri(const we::Shape::Tri &tri, const dx::XMFLOAT4 &color, bool useDepth = true, bool twoSided = false);
 	/// Push a multi-colored triangle to the debug draw list. It will be drawn on the next render call, then discarded.
 	void DrawTri(const DD::Vertex &v0, const DD::Vertex &v1, const DD::Vertex &v2, bool useDepth = true, bool twoSided = false);
 	/// Push a triangle as three points to the debug draw list. It will be drawn on the next render call, then discarded.
