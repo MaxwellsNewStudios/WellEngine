@@ -8,6 +8,7 @@
 
 
 // TODO: 
+// - Fix issue where if physics update takes longer than physics time-step, the amount of physics updates per frame increases infinitely, causing massive stutter.
 // - More collider shape behaviours (capsule, cylinder, triangle, convexHull, mesh, heightField, compound)
 // - Separate colliders and rigidbodies (currently the collider behaviour also creates a rigidbody)
 // - Collider events (enter, stay, exit, sleep, wake)
