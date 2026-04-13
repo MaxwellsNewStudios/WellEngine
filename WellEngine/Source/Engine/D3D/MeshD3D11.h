@@ -10,6 +10,7 @@
 #include "IndexBufferD3D11.h"
 #include "Source/Engine/Collision/MeshCollider.h"
 
+
 struct MeshData
 {
 	struct VertexInfo
@@ -166,6 +167,10 @@ struct MeshData
 };
 
 
+// NOTE: 
+// WellEngine treats submeshes as LODs, so the submesh data is not trivial.
+// Non-LOD submeshes are not supported. If you render a mesh with extra submeshes, 
+// those submeshes will be drawn at certain distances instead of the base mesh.
 class MeshD3D11
 {
 private:

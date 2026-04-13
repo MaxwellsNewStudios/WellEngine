@@ -1997,16 +1997,19 @@ bool Game::RenderUI(TimeUtils &time)
 				std::string_view title = scene->GetName();
 
 				ImVec2 textSize = ImGui::CalcTextSize(title.data());
-				ImVec2 namePos = menuBarRegionMin + ImVec2((menuBarRegionAvailX - textSize.x) * 0.5f, 0.0f);
+				ImVec2 namePos = menuBarRegionMin + ImVec2((menuBarRegionAvailX - textSize.x) * 0.5f, -1.0f);
 
 				float frameHeight = ImGui::GetFrameHeight();
 
-				ImVec2 borderSize = textSize + ImVec2(10, 3);
+				ImVec2 borderSize = textSize + ImVec2(10, 0);
 				ImVec2 borderPos = menuBarScreenPos + (ImVec2(menuBarRegionAvailX, frameHeight) - borderSize) * 0.5f;
 
-				ImColor borderColor = ImGui::GetStyleColorVec4(ImGuiCol_TitleBgActive);
+				bool isFocused = ImGui::IsWindowFocused(ImGuiFocusedFlags_ChildWindows);
+				ImColor borderRimColor = ImGui::GetStyleColorVec4(isFocused ? ImGuiCol_TabSelected : ImGuiCol_TabDimmedSelected);
+				ImColor borderColor = ImGui::GetStyleColorVec4(isFocused ? ImGuiCol_TitleBgActive : ImGuiCol_TitleBg);
 
-				ImGui::GetWindowDrawList()->AddRectFilled(borderPos - ImVec2(0, frameHeight), borderPos + borderSize, borderColor, 6.0f);
+				ImGui::GetWindowDrawList()->AddRectFilled(borderPos - ImVec2(1, frameHeight), borderPos + borderSize + ImVec2(1, 1.5f), borderRimColor, 6.0f);
+				ImGui::GetWindowDrawList()->AddRectFilled(borderPos - ImVec2(0, frameHeight), borderPos + borderSize, borderColor, 5.0f);
 
 				ImGui::SetCursorPos(namePos);
 				ImGui::Text(title.data());
