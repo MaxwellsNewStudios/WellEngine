@@ -6,7 +6,7 @@ A D3D11-based 3D game + engine originally developed as a group project by six st
 
 ![Sponza](Docs/Images/Sponza.png)
 
-![Lighting](Docs/Images/VolumetricLighting.gif)
+![Physics](Docs/Images/PhysicsTest.gif)
 
 ![Performance Tools](Docs/Images/Overdraw.png)
 
