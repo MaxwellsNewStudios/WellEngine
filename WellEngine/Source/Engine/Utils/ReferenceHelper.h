@@ -152,7 +152,7 @@ public:
 		return _refs; 
 	}
 
-	TESTABLE()
+	TESTABLE();
 };
 
 
@@ -694,5 +694,5 @@ public:
 	}
 #endif
 
-	TESTABLE()
+	TESTABLE();
 };

@@ -18,7 +18,6 @@
 #include "Transform.h"
 #include "rapidjson/document.h"
 
-namespace we = WellEngine;
 namespace dx = DirectX;
 namespace json = rapidjson;
 

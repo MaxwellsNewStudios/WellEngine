@@ -168,5 +168,5 @@ public:
 	[[nodiscard]] bool RenderUI(ReferenceSpace space);
 #endif
 
-	TESTABLE()
+	TESTABLE();
 };

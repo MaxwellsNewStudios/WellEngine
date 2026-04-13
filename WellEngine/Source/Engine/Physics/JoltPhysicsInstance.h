@@ -12,7 +12,6 @@
 // - More collider shape behaviours (capsule, cylinder, triangle, convexHull, mesh, heightField, compound)
 // - Separate colliders and rigidbodies (currently the collider behaviour also creates a rigidbody)
 // - Collider events (enter, stay, exit, sleep, wake)
-// - Scene-wide physics settings UI
 // - Scene-wide raycast & intersection queries
 // 
 
@@ -21,23 +20,31 @@ class JoltPhysicsInstance
 private:
 	struct JoltSystemData
 	{
-		//JPH::TempAllocatorImpl					tempAllocator;
 		JPH::TempAllocatorImplWithMallocFallback	tempAllocator;
-		JPH::JobSystemThreadPool					jobSystem; // TODO: Replace with custom job system
+		JPH::JobSystemThreadPool					jobSystem;
 		JPH::PhysicsSystem							physicsSystem;
 		JPH::MyBodyActivationListener				bodyActivationListener;
 		JPH::MyContactListener						contactListener;
 
 		JoltSystemData(JPH::uint maxJobs, JPH::uint maxBarriers, JPH::uint numThreads);
 	};
-
 	std::unique_ptr<JoltSystemData> _sys;
+
+	JPH::PhysicsSettings _settings;
+	dx::XMFLOAT3 _gravity{ 0, -9.81f, 0 };
+	bool _paused = false;
 
 public:
 	JoltPhysicsInstance() = default;
 	~JoltPhysicsInstance() = default;
 
 	[[nodiscard]] bool Initialize(JoltManager *manager);
+
+	[[nodiscard]] bool GetPaused() const { return _paused; }
+	[[nodiscard]] const dx::XMFLOAT3 &GetGravity() const { return _gravity; }
+
+	void SetPaused(bool state) { _paused = state; }
+	void SetGravity(const dx::XMFLOAT3 &gravity);
 
 	[[nodiscard]] JPH::BodyInterface &GetBodyInterface() { return _sys->physicsSystem.GetBodyInterface(); }
 	[[nodiscard]] JPH::BodyInterface &GetBodyInterfaceNoLock() { return _sys->physicsSystem.GetBodyInterfaceNoLock(); }
@@ -46,4 +53,8 @@ public:
 	[[nodiscard]] JPH::PhysicsSystem &GetSystem() { return _sys->physicsSystem; }
 
 	[[nodiscard]] bool Update(float deltaTime);
+
+#ifdef USE_IMGUI
+	[[nodiscard]] bool RenderUI();
+#endif
 };

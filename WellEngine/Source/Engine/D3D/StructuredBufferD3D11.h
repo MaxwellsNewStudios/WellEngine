@@ -34,5 +34,5 @@ public:
 	[[nodiscard]] ID3D11ShaderResourceView *GetSRV() const;
 	[[nodiscard]] ID3D11UnorderedAccessView *GetUAV() const;
 
-	TESTABLE()
+	TESTABLE();
 };

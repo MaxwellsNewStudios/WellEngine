@@ -39,7 +39,6 @@ private:
 	float _physTickTimer = 0.0f;
 	float _gameVolume = 10.0f;
 	bool _isExiting = false;
-	bool _freezePhysics = false;
 
 	std::thread _workerThread;
 	std::binary_semaphore _mainSemaphore{0};

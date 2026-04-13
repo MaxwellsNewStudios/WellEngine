@@ -64,5 +64,5 @@ public:
 	bool IsDirty() const;
 	void MarkDirty(bool state);
 
-	TESTABLE()
+	TESTABLE();
 };

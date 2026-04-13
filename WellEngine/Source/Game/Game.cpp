@@ -12,10 +12,6 @@ using namespace DirectX;
 
 Game::Game()
 {
-#ifndef _DEPLOY
-	_freezePhysics = true;
-#endif
-
 	_activeSceneIndex = -1;
 }
 Game::~Game()
@@ -1282,14 +1278,14 @@ bool Game::Update(TimeUtils &time, const Input& input)
 	float absDTime = abs(dTime);
 
 	// Fixed update
-	float fixedDTime = time.GetFixedDeltaTime();
-
 	static bool firstFixedUpdate = true;
+	float fixedDTime = time.GetFixedDeltaTime();
 	_fixedTickTimer += absDTime;
 
 	while (_fixedTickTimer >= fixedDTime)
 	{
 		time.TakeSnapshot("SceneFixedUpdateTime");
+
 		_fixedTickTimer -= fixedDTime;
 		if (firstFixedUpdate)
 		{
@@ -1312,36 +1308,35 @@ bool Game::Update(TimeUtils &time, const Input& input)
 		if (_fixedTickTimer >= fixedDTime * 16.0f)
 			_fixedTickTimer = fixedDTime * 16.0f;
 #endif
+
 		time.TakeSnapshot("SceneFixedUpdateTime");
 	}
 
 	// Physics update
-	if (!_freezePhysics)
+	static bool firstPhysUpdate = true;
+	float physDTime = time.GetPhysDeltaTime();
+	_physTickTimer += absDTime;
+
+	while (_physTickTimer >= physDTime)
 	{
-		float physDTime = time.GetPhysDeltaTime();
-
-		static bool firstPhysUpdate = true;
-		_physTickTimer += absDTime;
-
 		time.TakeSnapshot("ScenePhysUpdateTime");
-		while (_physTickTimer >= physDTime)
-		{
-			_physTickTimer -= physDTime;
-			if (firstPhysUpdate)
-			{
-				firstPhysUpdate = false;
-				_physTickTimer = 0.0f; // Prevent a large physics update on the first frame.
-			}
 
-			if (ActiveSceneIsValid())
+		_physTickTimer -= physDTime;
+		if (firstPhysUpdate)
+		{
+			firstPhysUpdate = false;
+			_physTickTimer = 0.0f; // Prevent a large physics update on the first frame.
+		}
+
+		if (ActiveSceneIsValid())
+		{
+			if (!_scenes[_activeSceneIndex]->PhysUpdate(physDTime))
 			{
-				if (!_scenes[_activeSceneIndex]->PhysUpdate(physDTime))
-				{
-					ErrMsg("Failed to update scene at physics step!");
-					return false;
-				}
+				ErrMsg("Failed to update scene at physics step!");
+				return false;
 			}
 		}
+
 		time.TakeSnapshot("ScenePhysUpdateTime");
 	}
 
@@ -1509,6 +1504,8 @@ bool Game::RenderUI(TimeUtils &time)
 	ImGuiWindowFlags viewWindowFlags = defaultWindowFlags | ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoScrollbar;
 	float &imGuiFontScale = debugData.imGuiFontScale;
 	int stylesPushed = 0;
+
+	bool drawImGuizmo = false;
 
 	if (ImGui::BeginMainMenuBar())
 	{
@@ -2023,6 +2020,8 @@ bool Game::RenderUI(TimeUtils &time)
 			ErrMsg("Failed to render scene view!");
 			return false;
 		}
+
+		drawImGuizmo = true;
 	}
 	else
 		ImGui::PopStyleVar(stylesPushed);
@@ -2170,8 +2169,6 @@ bool Game::RenderUI(TimeUtils &time)
 			time.SetPhysDeltaTime(physDeltaTime);
 		}
 		ImGuiUtils::LockMouseOnActive();
-
-		ImGui::Checkbox("Freeze Physics", &_freezePhysics);
 		ImGui::Dummy({ 0, 4 });
 
 
@@ -2678,6 +2675,21 @@ bool Game::RenderUI(TimeUtils &time)
 	}
 	ImGui::End();
 
+	if (ImGui::Begin("Physics", nullptr, defaultWindowFlags))
+	{
+		if (ActiveSceneIsValid())
+		{
+			Scene *scene = _scenes[_activeSceneIndex].get();
+
+			if (!scene->GetPhysicsInstance()->RenderUI())
+			{
+				ErrMsg("Failed to render physics UI!");
+				return false;
+			}
+		}
+	}
+	ImGui::End();
+
 	stylesPushed = 0;
 	stylesPushed++; ImGui::PushStyleVarY(ImGuiStyleVar_WindowPadding, 0);
 	if (ImGui::Begin("Hierarchy", nullptr, defaultWindowFlags | ImGuiWindowFlags_MenuBar))
@@ -2759,7 +2771,7 @@ bool Game::RenderUI(TimeUtils &time)
 	ImGui::End();
 
 #ifdef USE_IMGUIZMO
-	if (ActiveSceneIsValid())
+	if (drawImGuizmo && ActiveSceneIsValid())
 	{
 		Scene *scene = _scenes[_activeSceneIndex].get();
 		if (!scene->RenderGizmoUI())
