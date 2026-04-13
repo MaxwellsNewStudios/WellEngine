@@ -14,9 +14,9 @@ private:
 
 	JPH::EMotionType _motionType = JPH::EMotionType::Dynamic;
 	JPH::ObjectLayer _layer = JPH::Layers::MOVING;
-	float _friction = 0.2f;
+	float _friction = 0.5f;
 	float _gravityFactor = 1.0f;
-	float _restitution = 0.2f;
+	float _restitution = 0.3f;
 
 	dx::XMFLOAT3A _lastEntPos = { 0, 0, 0 };
 	dx::XMFLOAT4A _lastEntRot = { 0, 0, 0, 1 };
