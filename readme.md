@@ -4,9 +4,9 @@ A D3D11-based 3D game + engine originally developed as a group project by six st
 
 ![Editor](Docs/Images/PrefabEditing.png)
 
-![Sponza](Docs/Images/Sponza.png)
-
 ![Physics](Docs/Images/PhysicsTest.gif)
+
+![Sponza](Docs/Images/Sponza.png)
 
 ![Performance Tools](Docs/Images/Overdraw.png)
 
