@@ -1782,7 +1782,7 @@ bool Entity::InitialRenderUI()
 	ImGui::Separator();
 
 	ImGui::PushID("Transform");
-	if (ImGui::CollapsingHeader("Transform"))
+	if (ImGui::CollapsingHeader("Transform", ImGuiTreeNodeFlags_AllowOverlap))
 	{
 		if (!_transform.RenderUI(debugPlayer->GetEditSpace()))
 		{
@@ -1799,13 +1799,21 @@ bool Entity::InitialRenderUI()
 		{
 			ImGui::PushID(("Behaviour " + std::to_string(i)).c_str());
 			auto behaviour = _behaviours[i]->AsRef();
+			std::string behName = behaviour.Get()->GetName();
 
 			int openState = behaviour.Get()->PopUIOpenState();
 			if (openState >= 0)
 				ImGui::SetNextItemOpen(openState == 1);
 
-			if (ImGui::CollapsingHeader(behaviour.Get()->GetName().c_str()))
+			const ImVec2 headerScreenPos = ImGui::GetCursorScreenPos();
+			const ImVec2 headerPos = ImGui::GetCursorPos();
+			const float headerWidth = ImGui::GetContentRegionAvail().x;
+
+			ImGui::PushStyleVarY(ImGuiStyleVar_FramePadding, 7.0f);
+			if (ImGui::CollapsingHeader(behName.c_str(), ImGuiTreeNodeFlags_AllowOverlap))
 			{
+				ImGui::PopStyleVar();
+
 				float maxSize = behaviour.Get()->GetUISize();
 				bool maximized = behaviour.Get()->GetUIMaximized();
 
@@ -1862,7 +1870,142 @@ bool Entity::InitialRenderUI()
 					behaviour.Get()->SetUISize(newMaxSize);
 				}
 			}
+			else
+				ImGui::PopStyleVar();
+			
+			const ImVec2 nextHeaderPos = ImGui::GetCursorPos();
+
+			// Header Buttons
+			{
+				static ImVec2 cachedButtonsMin = ImVec2(0, 0);
+				static ImVec2 cachedButtonsMax = ImVec2(0, 0);
+
+				const ImVec2 buttonSize = ImVec2(20.0f, 20.0f);
+				const ImVec2 buttonPadding = ImVec2(6.0f, 3.5f);
+
+				// Buttons background
+				{
+					const ImVec2 bgPadding = ImVec2(4.0f, 3.5f);
+
+					const ImVec2 bgMin = headerScreenPos + cachedButtonsMin - bgPadding;
+					const ImVec2 bgMax = headerScreenPos + cachedButtonsMax + bgPadding;
+
+					ImDrawList *drawList = ImGui::GetWindowDrawList();
+					drawList->AddRectFilled(bgMin, bgMax, ImGui::GetColorU32(ImGuiCol_WindowBg), 2.5f);
+					drawList->AddRect(bgMin, bgMax, ImGui::GetColorU32(ImGuiCol_Border), 2.5f);
+
+					// Add invisible button to occlude header
+					ImGui::SetCursorScreenPos(bgMin);
+					ImGui::InvisibleButton("HeaderButtonsBg", bgMax - bgMin, ImGuiButtonFlags_AllowOverlap);
+				}
+
+				ImVec2 nextPos = headerPos + ImVec2(headerWidth - buttonSize.x, buttonPadding.y);
+
+				// Delete
+				{
+					ImGui::SetCursorPos(nextPos);
+					nextPos.x -= buttonSize.x + buttonPadding.x;
+
+					ImGuiUtils::BeginButtonStyle(ImGuiUtils::StyleType::Red);
+					if (ImGuiUtils::ButtonWithFont(ICON_LC_X "##Delete", FONT_ICON_FILE_NAME_LC, 14.0f, buttonSize))
+						RemoveBehaviour(behaviour.Get());
+					ImGuiUtils::EndButtonStyle();
+
+					cachedButtonsMax = ImGui::GetItemRectMax() - headerScreenPos;
+				}
+
+				// Open Script
+				{
+					ImGui::SetCursorPos(nextPos);
+					nextPos.x -= buttonSize.x + buttonPadding.x;
+
+					ImGuiUtils::BeginButtonStyle(ImGuiUtils::StyleType::Yellow);
+					if (ImGuiUtils::ButtonWithFont(ICON_FA_FILE_CODE "##OpenScript", FONT_ICON_FILE_NAME_FAS, 16.0f, buttonSize))
+					{
+						// Get path from Behaviour Registry
+						const std::string &behCategory = BehaviourRegistry::GetCategories().at(behName);
+						std::string scriptPath = std::format(BEHAVIOURS_PATH "/{}{}.cpp", behCategory, behName);
+
+						// Replace all / with \ for Windows
+						std::replace(scriptPath.begin(), scriptPath.end(), '/', '\\');
+
+						DbgMsgF("Opening '{}'", scriptPath);
+
+						// Open script with default program
+						SHELLEXECUTEINFOA sei = { 0 };
+						sei.cbSize = sizeof(SHELLEXECUTEINFOA);
+						sei.fMask = SEE_MASK_NOCLOSEPROCESS | SEE_MASK_NOASYNC | SEE_MASK_WAITFORINPUTIDLE;
+						sei.hwnd = nullptr;
+						sei.lpVerb = "open";
+						sei.lpFile = scriptPath.c_str();
+						sei.lpParameters = nullptr;
+						sei.lpDirectory = nullptr;
+						sei.nShow = SW_SHOWNORMAL;
+
+						if (!ShellExecuteExA(&sei))
+						{
+							WarnF("Failed to open script '{}' with error code {}", scriptPath, GetLastError());
+						}
+						else
+						{
+							if (!sei.hProcess)
+							{
+								std::this_thread::sleep_for(std::chrono::milliseconds(200));
+								ShellExecuteExA(&sei);
+							}
+
+							struct WINDOWPROCESSINFO {
+								DWORD pid;
+								HWND hwnd;
+							};
+
+							// Get the window handle of the opened process and set it to foreground
+							WINDOWPROCESSINFO info{};
+							info.pid = GetProcessId(sei.hProcess);
+							info.hwnd = 0;
+
+							AllowSetForegroundWindow(info.pid);
+
+							// Sleep for a short time to allow the process to open the file and create a window
+							std::this_thread::sleep_for(std::chrono::milliseconds(500));
+
+							EnumWindows(
+								[](HWND hwnd, LPARAM lParam) -> BOOL {
+									WINDOWPROCESSINFO *infoPtr = (WINDOWPROCESSINFO *)lParam;
+									DWORD check = 0;
+									BOOL br = TRUE;
+									GetWindowThreadProcessId(hwnd, &check);
+
+									if (check == infoPtr->pid)
+									{
+										infoPtr->hwnd = hwnd;
+										br = FALSE;
+									}
+
+									return br;
+								},
+								(LPARAM)&info
+							);
+
+							if (info.hwnd != 0)
+							{
+								SetForegroundWindow(info.hwnd);
+								SetActiveWindow(info.hwnd);
+							}
+
+							CloseHandle(sei.hProcess);
+						}
+					}
+					ImGuiUtils::EndButtonStyle();
+
+					cachedButtonsMin = ImGui::GetItemRectMin() - headerScreenPos;
+
+					ImGui::SetItemTooltip("Open Script in Editor");
+				}
+			}
 			ImGui::PopID();
+
+			ImGui::SetCursorPos(nextHeaderPos);
 		}
 
 		ImGui::Dummy({ 0.0f, 3.0f });
