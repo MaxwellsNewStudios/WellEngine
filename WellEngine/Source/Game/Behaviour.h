@@ -1,5 +1,5 @@
 /*
-	Notice:
+	NOTE:
 		All non-abstract classes deriving from Behaviour should likely have the [[register_behaviour]] attribute.
 		This exposes the behaviour to the behaviour factory. Leaving out the attribute means the behaviour will 
 		not be serialized/deserialized, it will also be excluded from the "Add Behaviour" list in the editor.

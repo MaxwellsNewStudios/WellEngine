@@ -948,7 +948,7 @@ bool Entity::UIContextMenu()
 	if (ImGui::MenuItem("New Sibling"))
 	{
 		// Create new empty entity
-		Entity *ent;
+		Entity *ent = nullptr;
 		dx::BoundingOrientedBox defaultBounds = dx::BoundingOrientedBox();
 
 		if (!_scene->CreateEntity(&ent, "New Entity", defaultBounds, true))
@@ -975,7 +975,7 @@ bool Entity::UIContextMenu()
 	if (ImGui::MenuItem("New Child"))
 	{
 		// Create new empty entity
-		Entity *ent;
+		Entity *ent = nullptr;
 		dx::BoundingOrientedBox defaultBounds = dx::BoundingOrientedBox();
 
 		if (!_scene->CreateEntity(&ent, "New Entity", defaultBounds, true))
