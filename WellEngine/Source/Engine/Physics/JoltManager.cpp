@@ -19,7 +19,6 @@ static void TraceImpl(const char *inFMT, ...)
 	// Print
 	DbgMsg(buffer);
 }
-JPH::TraceFunction JPH::Trace = TraceImpl;
 
 #ifdef JPH_ENABLE_ASSERTS
 // Callback for asserts, connect this to your own assert handler if you have one
@@ -28,7 +27,6 @@ static bool AssertFailedImpl(const char *inExpression, const char *inMessage, co
 	ErrMsgF("{}:{}: ({}) {}", inFile, inLine, inExpression, inMessage != nullptr ? inMessage : "");
 	return true;
 }
-JPH::AssertFailedFunction JPH::AssertFailed = AssertFailedImpl;
 #endif // JPH_ENABLE_ASSERTS
 
 
@@ -93,6 +91,9 @@ JoltManager::JoltManager()
 	ZoneScopedC(RandomUniqueColor());
 
 	JPH::RegisterDefaultAllocator();
+
+	JPH::Trace = TraceImpl;
+	JPH_IF_ENABLE_ASSERTS(JPH::AssertFailed = AssertFailedImpl;)
 
 	JPH::Factory::sInstance = new JPH::Factory();
 
