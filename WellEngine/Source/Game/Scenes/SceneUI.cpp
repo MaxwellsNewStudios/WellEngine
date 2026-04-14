@@ -34,6 +34,8 @@ bool Scene::RenderEntityHierarchyUI(Entity *root, UINT depth, bool skipCulling, 
 	if (!search.empty() && entNameLower.find(search) == std::string::npos)
 		return true;
 
+	static ImVec4 dropSeparatorColor = (ImVec4)ImColor::HSV(0.0f, 0.0f, 0.8f, 0.3f);
+
 	float frameHeight = GetFrameHeight();
 	float arrowScale = 0.7f;
 	ImVec2 arrowSize = { frameHeight * arrowScale, frameHeight * arrowScale };
@@ -164,7 +166,6 @@ bool Scene::RenderEntityHierarchyUI(Entity *root, UINT depth, bool skipCulling, 
 		{
 			const char *dragDropTag = PayloadTags.at(PayloadType::ENTITY);
 
-			// Our buttons are both drag sources and drag targets
 			if (BeginDragDropSource(ImGuiDragDropFlags_None))
 			{
 				EntityPayload payload = { entID, GetUID() };
@@ -318,15 +319,14 @@ bool Scene::RenderEntityHierarchyUI(Entity *root, UINT depth, bool skipCulling, 
 
 		float rightEdgeX = GetContentRegionAvail().x - 6.0f;
 
-		static float dockButtonWidth = 20;
-		static float enableCheckmarkWidth = 20;
-		static float removeButtonWidth = 20;
+		static ImVec2 buttonSize = ImVec2(20, 20);
+		const ImVec2 buttonTextPadding = GetStyle().FramePadding - ImVec2(1.0f, 0.5f);
 
 		// Dock/Undock button
 		{
-			PushID(("Dock:" + std::to_string(entID)).c_str());
+			SameLine(rightEdgeX - 10.0f - frameHeight - (buttonSize.x * 2));
 
-			SameLine(rightEdgeX - 20.0f - frameHeight - removeButtonWidth - dockButtonWidth);
+			PushID(("Dock:" + std::to_string(entID)).c_str());
 			const std::string windowID = std::format("Ent#{}:{}", entID, GetUID());
 
 			// Check if entity is undocked
@@ -336,14 +336,16 @@ bool Scene::RenderEntityHierarchyUI(Entity *root, UINT depth, bool skipCulling, 
 				PushStyleColor(ImGuiCol_ButtonHovered, (ImVec4)ImColor::HSV(0.05f, 0.65f, 0.6f));
 				PushStyleColor(ImGuiCol_ButtonActive, (ImVec4)ImColor::HSV(0.05f, 0.75f, 0.7f));
 
+				PushStyleVar(ImGuiStyleVar_FramePadding, buttonTextPadding);
+
 				// If undocked, show dock button
-				SetCursorPosY(GetCursorPosY() - 2.0f);
 				ImGuiUtils::BeginFont(FONT_ICON_FILE_NAME_LC, 14.0f);
-				if (Button(ICON_LC_SQUARE_ARROW_OUT_DOWN_LEFT))
+				if (Button(ICON_LC_SQUARE_ARROW_OUT_DOWN_LEFT, buttonSize))
 				{
 					if (!ImGuiUtils::Utils::CloseWindow(windowID))
 					{
 						ImGuiUtils::EndFont();
+						PopStyleVar();
 						PopStyleColor(3);
 						PopID();
 						EndGroup();
@@ -353,6 +355,8 @@ bool Scene::RenderEntityHierarchyUI(Entity *root, UINT depth, bool skipCulling, 
 					}
 				}
 				ImGuiUtils::EndFont();
+
+				PopStyleVar();
 
 				if (IsItemHovered())
 				{
@@ -366,10 +370,11 @@ bool Scene::RenderEntityHierarchyUI(Entity *root, UINT depth, bool skipCulling, 
 				PushStyleColor(ImGuiCol_ButtonHovered, (ImVec4)ImColor::HSV(0.6f, 0.65f, 0.6f));
 				PushStyleColor(ImGuiCol_ButtonActive, (ImVec4)ImColor::HSV(0.6f, 0.75f, 0.7f));
 
+				PushStyleVar(ImGuiStyleVar_FramePadding, buttonTextPadding);
+
 				// If docked, show undock button
-				SetCursorPosY(GetCursorPosY() - 2.0f);
 				ImGuiUtils::BeginFont(FONT_ICON_FILE_NAME_LC, 14.0f);
-				if (Button(ICON_LC_SQUARE_ARROW_OUT_UP_RIGHT))
+				if (Button(ICON_LC_SQUARE_ARROW_OUT_UP_RIGHT, buttonSize))
 				{
 					SameLine();
 					ImRect rect = {
@@ -395,14 +400,14 @@ bool Scene::RenderEntityHierarchyUI(Entity *root, UINT depth, bool skipCulling, 
 				}
 				ImGuiUtils::EndFont();
 
+				PopStyleVar();
+
 				if (IsItemHovered())
 				{
 					SetTooltip("Undock Entity Window");
 					_isHoveringHierarchyItem = true;
 				}
 			}
-			
-			dockButtonWidth = GetItemRectSize().x;
 
 			PopStyleColor(3);
 			PopID();
@@ -410,13 +415,13 @@ bool Scene::RenderEntityHierarchyUI(Entity *root, UINT depth, bool skipCulling, 
 
 		// Enabled checkbox
 		{
-			SameLine(rightEdgeX - 10.0f - removeButtonWidth - frameHeight);
+			SameLine(rightEdgeX - 5.0f - frameHeight - buttonSize.x);
 
 			bool isEnabled = root->IsEnabledSelf();
 			if (Checkbox("##Enabled", &isEnabled))
 				root->SetEnabledSelf(isEnabled);
 
-			enableCheckmarkWidth = GetItemRectSize().x;
+			buttonSize = GetItemRectSize();
 
 			if (!_isHoveringHierarchyItem)
 				_isHoveringHierarchyItem = IsItemHovered();
@@ -424,17 +429,16 @@ bool Scene::RenderEntityHierarchyUI(Entity *root, UINT depth, bool skipCulling, 
 
 		// Remove button
 		{
-			SameLine(rightEdgeX - removeButtonWidth);
+			SameLine(rightEdgeX - buttonSize.x);
 
-			SetCursorPosY(GetCursorPosY() - 2.0f);
 			ImGuiUtils::BeginButtonStyle(ImGuiUtils::StyleType::Red);
 			ImGuiUtils::BeginFont(FONT_ICON_FILE_NAME_LC, 14.0f);
-			if (Button(ICON_LC_X "##RemoveEnt"))
+			PushStyleVar(ImGuiStyleVar_FramePadding, buttonTextPadding);
+			if (Button(ICON_LC_X "##RemoveEnt", buttonSize))
 				root->Destroy();
+			PopStyleVar();
 			ImGuiUtils::EndFont();
 			ImGuiUtils::EndButtonStyle();
-
-			removeButtonWidth = GetItemRectSize().x;
 
 			if (!_isHoveringHierarchyItem)
 				_isHoveringHierarchyItem = IsItemHovered();
@@ -539,7 +543,9 @@ bool Scene::RenderEntityHierarchyUI(Entity *root, UINT depth, bool skipCulling, 
 
 				SameLine(entityButtonPosX + addedIndenting, 0.0f);
 				SetCursorPosY(dummyDropTargetPosY + (0.5f * dummyDropTargetHeight));
+				PushStyleColor(ImGuiCol_Separator, dropSeparatorColor);
 				Separator();
+				PopStyleColor();
 
 				SetCursorPos(nextCursorPos);
 				Dummy({ 0, 0 });
@@ -664,7 +670,9 @@ bool Scene::RenderEntityHierarchyUI(Entity *root, UINT depth, bool skipCulling, 
 
 			SameLine(entityButtonPosX, 0.0f);
 			SetCursorPosY(dummyDropTargetPosY + (0.5f * dummyDropTargetHeight));
+			PushStyleColor(ImGuiCol_Separator, dropSeparatorColor);
 			Separator();
+			PopStyleColor();
 
 			SetCursorPos(nextCursorPos);
 			Dummy({ 0, 0 });
@@ -711,6 +719,8 @@ bool Scene::RenderSceneHierarchyUI(bool skipCulling)
 
 		SceneContents::SceneIterator entIter = _sceneHolder.GetEntities();
 
+		Dummy({ 0, 0 });
+
 		while (Entity *entity = entIter.Step())
 		{
 			if (entity->GetParent() != nullptr) // Skip non-root entities
@@ -753,6 +763,8 @@ bool Scene::RenderSelectionHierarchyUI(bool skipCulling)
 			_isHoveringHierarchy = IsWindowHovered();
 
 		auto &selection = _debugPlayer.Get()->GetSelection();
+
+		Dummy({ 0, 0 });
 
 		for (int i = 0; i < selection.size(); i++)
 		{
