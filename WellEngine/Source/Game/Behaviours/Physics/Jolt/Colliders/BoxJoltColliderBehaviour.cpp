@@ -52,6 +52,7 @@ bool BoxJoltColliderBehaviour::Start()
 		GetMotionType(), GetLayer()
 	);
 	boxSettings.mAllowDynamicOrKinematic = true;
+
 	SetBodyID(bodyInterface.CreateAndAddBody(boxSettings, JPH::EActivation::Activate));
 
 	return JoltColliderBehaviour::Start();
@@ -139,7 +140,7 @@ void BoxJoltColliderBehaviour::RecalculatePhysicsBody()
 		max(0.0001f, _halfExtents.z * fabsf(scale.z))
 	);
 
-	bodyInterface.SetShape(bodyID, new JPH::BoxShape(extents), false, JPH::EActivation::DontActivate);
+	bodyInterface.SetShape(bodyID, new JPH::BoxShape(extents), true, JPH::EActivation::DontActivate);
 	bodyInterface.SetPosition(bodyID, JPH::RVec3(wPos.x + offset.x, wPos.y + offset.y, wPos.z + offset.z), JPH::EActivation::Activate);
 }
 void BoxJoltColliderBehaviour::SyncPhysics()

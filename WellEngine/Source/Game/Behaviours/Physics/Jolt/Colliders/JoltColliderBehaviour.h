@@ -68,6 +68,7 @@ public:
 	[[nodiscard]] inline float GetFriction() const				{ return _friction; }
 	[[nodiscard]] inline float GetGravityFactor() const			{ return _gravityFactor; }
 	[[nodiscard]] inline float GetRestitution() const			{ return _restitution; }
+	[[nodiscard]] float GetMass() const;
 	[[nodiscard]] JPH::EBodyType GetBodyType() const;
 	[[nodiscard]] dx::XMFLOAT3 GetCenterOfMass() const;
 	[[nodiscard]] dx::XMFLOAT3 GetLinearVelocity() const;

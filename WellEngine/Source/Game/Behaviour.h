@@ -59,6 +59,9 @@ protected:
 	void QueueFixedUpdate();
 	void DequeueFixedUpdate();
 
+	void QueuePhysicsUpdate();
+	void DequeuePhysicsUpdate();
+
 	// Start runs once when the behaviour is created.
 	[[nodiscard]] virtual bool Start();
 
@@ -71,8 +74,11 @@ protected:
 	// Like Update, but later.
 	[[nodiscard]] virtual bool LateUpdate(TimeUtils &time, const Input &input);
 
-	// FixedUpdate runs every physics update (20hz by default).
-	[[nodiscard]] virtual bool FixedUpdate(float deltaTimeUtils, const Input &input);
+	// FixedUpdate runs every fixed update (20hz by default).
+	[[nodiscard]] virtual bool FixedUpdate(float deltaTime, const Input &input);
+
+	// PhysicsUpdate runs every physics update (60hz by default).
+	[[nodiscard]] virtual bool PhysicsUpdate(float deltaTime);
 
 	// Render runs for all objects queued for rendering before they are rendered.
 	[[nodiscard]] virtual bool BeforeRender();
@@ -136,6 +142,7 @@ public:
 	[[nodiscard]] bool InitialParallelUpdate(const TimeUtils &time, const Input &input);
 	[[nodiscard]] bool InitialLateUpdate(TimeUtils &time, const Input &input);
 	[[nodiscard]] bool InitialFixedUpdate(float deltaTime, const Input &input);
+	[[nodiscard]] bool InitialPhysicsUpdate(float deltaTime);
 	[[nodiscard]] bool InitialBeforeRender();
 	[[nodiscard]] bool InitialRender(const RenderQueuer &queuer, const RendererInfo &rendererInfo);
 

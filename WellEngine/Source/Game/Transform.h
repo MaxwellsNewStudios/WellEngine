@@ -164,6 +164,11 @@ public:
 	[[nodiscard]] const dx::XMFLOAT4X4A GetUnscaledWorldMatrix();
 	[[nodiscard]] const dx::XMFLOAT4X4A &GetMatrix(ReferenceSpace space);
 
+	[[nodiscard]] dx::XMFLOAT3A PointLocalToWorld(const dx::XMFLOAT3A &local);
+	[[nodiscard]] dx::XMFLOAT3A PointWorldToLocal(const dx::XMFLOAT3A &world);
+	[[nodiscard]] dx::XMFLOAT3A NormalLocalToWorld(const dx::XMFLOAT3A &local);
+	[[nodiscard]] dx::XMFLOAT3A NormalWorldToLocal(const dx::XMFLOAT3A &world);
+
 #ifdef USE_IMGUI
 	[[nodiscard]] bool RenderUI(ReferenceSpace space);
 #endif

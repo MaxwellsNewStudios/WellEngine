@@ -710,9 +710,10 @@
     <ClInclude Include="Source\Game\Behaviour.h" />
     <ClInclude Include="Source\Game\BehaviourFactory.h" />
     <ClInclude Include="Source\Game\BehaviourRegistry.h" />
-    <ClInclude Include="Source\Game\Behaviours\Physics\Jolt\BoxJoltColliderBehaviour.h" />
-    <ClInclude Include="Source\Game\Behaviours\Physics\Jolt\JoltColliderBehaviour.h" />
-    <ClInclude Include="Source\Game\Behaviours\Physics\Jolt\SphereJoltColliderBehaviour.h" />
+    <ClInclude Include="Source\Game\Behaviours\Physics\Jolt\Colliders\BoxJoltColliderBehaviour.h" />
+    <ClInclude Include="Source\Game\Behaviours\Physics\Jolt\Colliders\JoltColliderBehaviour.h" />
+    <ClInclude Include="Source\Game\Behaviours\Physics\Jolt\PhysicsForceBehaviour.h" />
+    <ClInclude Include="Source\Game\Behaviours\Physics\Jolt\Colliders\SphereJoltColliderBehaviour.h" />
     <ClInclude Include="Source\Game\Behaviours\Rendering\Mesh\TextMeshBehaviour.h" />
     <ClInclude Include="Source\Game\Behaviours\Sound\AmbientSoundBehaviour.h" />
     <ClInclude Include="Source\Game\Behaviours\Rendering\Mesh\BillboardMeshBehaviour.h" />
@@ -1578,9 +1579,10 @@
     <ClCompile Include="Source\Game\Behaviour.cpp" />
     <ClCompile Include="Source\Game\BehaviourFactory.cpp" />
     <ClCompile Include="Source\Game\BehaviourRegistry.cpp" />
-    <ClCompile Include="Source\Game\Behaviours\Physics\Jolt\BoxJoltColliderBehaviour.cpp" />
-    <ClCompile Include="Source\Game\Behaviours\Physics\Jolt\JoltColliderBehaviour.cpp" />
-    <ClCompile Include="Source\Game\Behaviours\Physics\Jolt\SphereJoltColliderBehaviour.cpp" />
+    <ClCompile Include="Source\Game\Behaviours\Physics\Jolt\Colliders\BoxJoltColliderBehaviour.cpp" />
+    <ClCompile Include="Source\Game\Behaviours\Physics\Jolt\Colliders\JoltColliderBehaviour.cpp" />
+    <ClCompile Include="Source\Game\Behaviours\Physics\Jolt\Colliders\SphereJoltColliderBehaviour.cpp" />
+    <ClCompile Include="Source\Game\Behaviours\Physics\Jolt\PhysicsForceBehaviour.cpp" />
     <ClCompile Include="Source\Game\Behaviours\Rendering\Mesh\TextMeshBehaviour.cpp" />
     <ClCompile Include="Source\Game\Behaviours\Sound\AmbientSoundBehaviour.cpp" />
     <ClCompile Include="Source\Game\Behaviours\Rendering\Mesh\BillboardMeshBehaviour.cpp" />

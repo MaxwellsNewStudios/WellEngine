@@ -20,6 +20,7 @@ Behaviour::~Behaviour()
 		DequeueParallelUpdate();
 		DequeueLateUpdate();
 		DequeueFixedUpdate();
+		DequeuePhysicsUpdate();
 	}
 }
 
@@ -127,6 +128,14 @@ void Behaviour::QueueFixedUpdate()
 void Behaviour::DequeueFixedUpdate()
 {
 	GetScene()->RemoveFixedUpdateCallback(this);
+}
+void Behaviour::QueuePhysicsUpdate()
+{
+	GetScene()->AddPhysicsUpdateCallback(this);
+}
+void Behaviour::DequeuePhysicsUpdate()
+{
+	GetScene()->RemovePhysicsUpdateCallback(this);
 }
 
 void Behaviour::SetSerialization(bool state)
@@ -301,6 +310,28 @@ bool Behaviour::InitialFixedUpdate(float deltaTime, const Input &input)
 	ZoneTextX(name.c_str(), name.size());
 
 	return FixedUpdate(deltaTime, input);
+}
+bool Behaviour::InitialPhysicsUpdate(float deltaTime)
+{
+	if (!IsEnabled())
+		return true;
+
+	if (_entity->IsRemoved())
+		return true;
+
+#ifdef DEBUG_BUILD
+	if (!_isInitialized)
+	{
+		Warn("Behaviour is not initialized!");
+		return true;
+	}
+#endif
+
+	ZoneScopedXC(RandomUniqueColor());
+	const std::string &name = GetName();
+	ZoneTextX(name.c_str(), name.size());
+
+	return PhysicsUpdate(deltaTime);
 }
 bool Behaviour::InitialBeforeRender()
 {
@@ -515,6 +546,7 @@ bool Behaviour::Update(TimeUtils &time, const Input &input) { return true; }
 bool Behaviour::ParallelUpdate(const TimeUtils &time, const Input &input) { return true; }
 bool Behaviour::LateUpdate(TimeUtils &time, const Input &input) { return true; }
 bool Behaviour::FixedUpdate(float deltaTime, const Input &input) { return true; }
+bool Behaviour::PhysicsUpdate(float deltaTime) { return true; }
 bool Behaviour::BeforeRender()
 {
 	return true;

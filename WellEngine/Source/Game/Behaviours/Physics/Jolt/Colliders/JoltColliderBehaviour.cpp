@@ -181,6 +181,12 @@ BodyInterface &JoltColliderBehaviour::GetBodyInterface()
 { 
 	return GetScene()->GetPhysicsInstance()->GetBodyInterface(); 
 }
+float JoltColliderBehaviour::GetMass() const
+{
+	const BodyInterface &bodyInterface = GetBodyInterface();
+	MassProperties massProps = bodyInterface.GetShape(_bodyID)->GetMassProperties();
+	return massProps.mMass;
+}
 JPH::EBodyType JoltColliderBehaviour::GetBodyType() const
 {
 	const BodyInterface &bodyInterface = GetBodyInterface();
@@ -407,6 +413,45 @@ void JoltColliderBehaviour::MoveKinematic(const dx::XMFLOAT3 &position, const dx
 #ifdef USE_IMGUI
 bool JoltColliderBehaviour::RenderUI()
 {
+	// Info
+
+	if (ImGui::TreeNode("Info"))
+	{
+		dx::XMFLOAT3 com = GetCenterOfMass();
+		dx::XMFLOAT3 linVel = GetLinearVelocity();
+		dx::XMFLOAT3 angVel = GetAngularVelocity();
+
+		float startPos = ImGui::GetCursorPosX();
+		float padding = 16.0f;
+
+		static float labelWidth = 120.0f;
+		float prevLabelWidth = startPos + labelWidth;
+		labelWidth = 0.0f;
+
+		ImGui::Text("Body ID");
+		labelWidth = max(labelWidth, ImGui::GetItemRectSize().x);
+		ImGui::SameLine(prevLabelWidth, padding);
+		ImGui::Text("%d", GetBodyID().GetIndex());
+
+		ImGui::Text("Mass (kg)");
+		labelWidth = max(labelWidth, ImGui::GetItemRectSize().x);
+		ImGui::SameLine(prevLabelWidth, padding);
+		ImGui::Text("%.4f", GetMass());
+
+		ImGui::Text("Lin Vel");
+		labelWidth = max(labelWidth, ImGui::GetItemRectSize().x);
+		ImGui::SameLine(prevLabelWidth, padding);
+		ImGui::Text("(%.3f, %.3f, %.3f)", linVel.x, linVel.y, linVel.z);
+
+		ImGui::Text("Ang Vel");
+		labelWidth = max(labelWidth, ImGui::GetItemRectSize().x);
+		ImGui::SameLine(prevLabelWidth, padding);
+		ImGui::Text("(%.3f, %.3f, %.3f)", angVel.x, angVel.y, angVel.z);
+
+		ImGui::Separator();
+		ImGui::TreePop();
+	}
+
 	ImGui::Checkbox("Debug Draw", &_debugDraw);
 
 	// Motion type

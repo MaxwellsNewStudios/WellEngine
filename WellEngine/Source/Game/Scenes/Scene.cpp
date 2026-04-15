@@ -1774,6 +1774,22 @@ void Scene::RemoveFixedUpdateCallback(Behaviour *beh)
 		_fixedUpdateCallbacks.erase(it);
 }
 
+void Scene::AddPhysicsUpdateCallback(Behaviour *beh)
+{
+	// Check if the callback already exists
+	if (std::find(_physicsUpdateCallbacks.begin(), _physicsUpdateCallbacks.end(), beh) != _physicsUpdateCallbacks.end())
+		return;
+
+	_physicsUpdateCallbacks.emplace_back(beh);
+}
+void Scene::RemovePhysicsUpdateCallback(Behaviour *beh)
+{
+	// Remove any callbacks from the same behaviour
+	auto it = std::remove(_physicsUpdateCallbacks.begin(), _physicsUpdateCallbacks.end(), beh);
+	if (it != _physicsUpdateCallbacks.end())
+		_physicsUpdateCallbacks.erase(it);
+}
+
 
 bool Scene::Update(TimeUtils &time, const Input &input)
 {
@@ -1938,6 +1954,15 @@ bool Scene::PhysUpdate(float deltaTime)
 
 	if (!_physInstance.Update(deltaTime))
 		return false;
+
+	for (UINT i = 0; i < _physicsUpdateCallbacks.size(); i++)
+	{
+		if (!_physicsUpdateCallbacks[i]->InitialPhysicsUpdate(deltaTime))
+		{
+			ErrMsgF("Failed to physics update entity '{}'!", _physicsUpdateCallbacks[i]->GetEntity()->GetName());
+			return false;
+		}
+	}
 
 	return true;
 }

@@ -1170,6 +1170,43 @@ const XMFLOAT4X4A &Transform::GetMatrix(ReferenceSpace space)
 	return (space == World) ? *WorldMatrix() : *LocalMatrix();
 }
 
+dx::XMFLOAT3A Transform::PointLocalToWorld(const dx::XMFLOAT3A &local)
+{
+	XMVECTOR localVec = Load(local);
+	XMVECTOR worldVec = XMVector3TransformCoord(localVec, Load(WorldMatrix()));
+	
+	XMFLOAT3A world;
+	Store(world, worldVec);
+	return world;
+}
+dx::XMFLOAT3A Transform::PointWorldToLocal(const dx::XMFLOAT3A &world)
+{
+	XMVECTOR worldVec = Load(world);
+	XMVECTOR localVec = XMVector3TransformCoord(worldVec, XMMatrixInverse(nullptr, Load(WorldMatrix())));
+	
+	XMFLOAT3A local;
+	Store(local, localVec);
+	return local;
+}
+dx::XMFLOAT3A Transform::NormalLocalToWorld(const dx::XMFLOAT3A &local)
+{
+	XMVECTOR localVec = Load(local);
+	XMVECTOR worldVec = XMVector3TransformNormal(localVec, Load(WorldMatrix()));
+	
+	XMFLOAT3A world;
+	Store(world, worldVec);
+	return world;
+}
+dx::XMFLOAT3A Transform::NormalWorldToLocal(const dx::XMFLOAT3A &world)
+{
+	XMVECTOR worldVec = Load(world);
+	XMVECTOR localVec = XMVector3TransformNormal(worldVec, XMMatrixInverse(nullptr, Load(WorldMatrix())));
+	
+	XMFLOAT3A local;
+	Store(local, localVec);
+	return local;
+}
+
 #ifdef USE_IMGUI
 bool Transform::RenderUI(ReferenceSpace space)
 {

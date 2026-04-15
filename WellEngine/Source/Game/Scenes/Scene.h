@@ -101,6 +101,7 @@ private:
 	std::vector<Behaviour *> _parallelUpdateCallbacks;
 	std::vector<Behaviour *> _lateUpdateCallbacks;
 	std::vector<Behaviour *> _fixedUpdateCallbacks;
+	std::vector<Behaviour *> _physicsUpdateCallbacks;
 
 	std::vector<Behaviour *> _postDeserializeCallbacks;
 
@@ -147,6 +148,8 @@ public:
 	void RemoveLateUpdateCallback(Behaviour *beh);
 	void AddFixedUpdateCallback(Behaviour *beh);
 	void RemoveFixedUpdateCallback(Behaviour *beh);
+	void AddPhysicsUpdateCallback(Behaviour *beh);
+	void RemovePhysicsUpdateCallback(Behaviour *beh);
 
 	[[nodiscard]] bool Update(TimeUtils &time, const Input &input);
 	[[nodiscard]] bool LateUpdate(TimeUtils &time, const Input &input);
