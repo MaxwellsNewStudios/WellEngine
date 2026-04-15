@@ -291,7 +291,6 @@ bool FontAtlas::Deserialize(std::string_view fileName, const Content *content)
 		atlasFile.close();
 
 		doc.Parse(fileContents.c_str());
-
 		if (doc.HasParseError())
 		{
 			ErrMsgF("Failed to parse JSON file: {}", (UINT)doc.GetParseError());

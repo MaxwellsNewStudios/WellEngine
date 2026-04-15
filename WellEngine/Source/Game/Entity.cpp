@@ -1397,12 +1397,56 @@ bool Entity::UIContextMenu()
 		}
 	}
 
-	ImGui::Dummy({1,0}); ImGui::Separator(); ImGui::Dummy({1,0}); // Copy / Remove
+	ImGui::Dummy({1,0}); ImGui::Separator(); ImGui::Dummy({1,0}); // Copy / Paste / Remove
 
 	if (ImGui::MenuItem("Copy"))
 	{
 		Entity *ent = debugPlayer->DuplicateEntity(this);
 		debugPlayer->Select(ent, ImGui::GetIO().KeyShift);
+	}
+
+	// If clipboard has behaviour data, show paste option
+	{
+		constexpr const char *behaviourDataPrefix = "[[BEHAVIOUR_JSON]] ";
+		std::string clipboardData = ImGui::GetClipboardText();
+		
+		// Check if clipboard data starts with behaviour data prefix
+		if (clipboardData.rfind(behaviourDataPrefix, 0) == 0)
+		{
+			if (ImGui::MenuItem("Paste Behaviour from Clipboard"))
+			{
+				clipboardData = clipboardData.substr(strlen(behaviourDataPrefix)); // Remove prefix
+
+				json::Document doc;
+				doc.Parse(clipboardData.c_str());
+				if (doc.HasParseError())
+				{
+					ErrMsg("Failed to parse behaviour JSON data!");
+					return false;
+				}
+
+				if (doc.HasMember("Name") && doc.HasMember("Attributes"))
+				{
+					const std::string behName = doc["Name"].GetString();
+					const json::Value &behAttributes = doc["Attributes"];
+
+					Behaviour *beh = BehaviourFactory::CreateBehaviour(behName);
+					if (beh && !beh->InitialDeserialize(behAttributes, GetScene()))
+					{
+						ErrMsg("Failed to deserialize behaviour!");
+						return false;
+					}
+
+					if (!beh->Initialize(this))
+					{
+						ErrMsg("Failed to bind behaviour to entity!");
+						return false;
+					}
+
+					GetScene()->RunPostDeserializeCallbacks();
+				}
+			}
+		}
 	}
 
 	if (ImGui::MenuItem("Remove"))
@@ -1998,10 +2042,41 @@ bool Entity::InitialRenderUI()
 					}
 					ImGuiUtils::EndButtonStyle();
 
-					cachedButtonsMin = ImGui::GetItemRectMin() - headerScreenPos;
-
 					ImGui::SetItemTooltip("Open Script in Editor");
 				}
+
+				// Copy to clipboard
+				{
+					ImGui::SetCursorPos(nextPos);
+					nextPos.x -= buttonSize.x + buttonPadding.x;
+
+					if (ImGuiUtils::ButtonWithFont(ICON_LC_CLIPBOARD_COPY "##CopyBehToClipboard", FONT_ICON_FILE_NAME_LC, 14.0f, buttonSize))
+					{
+						// Serialize behaviour to JSON and copy to clipboard
+						std::string behJSON = "[[BEHAVIOUR_JSON]] ";
+						{
+							json::Document doc;
+							json::Value behObj(json::kObjectType);
+
+							if (!behaviour.Get()->InitialSerialize(doc.GetAllocator(), behObj))
+							{
+								ErrMsg("Failed to serialize behaviour!");
+								return false;
+							}
+
+							json::StringBuffer buffer;
+							json::Writer<json::StringBuffer> writer(buffer);
+							behObj.Accept(writer);
+							behJSON += buffer.GetString();
+						}
+						ImGui::SetClipboardText(behJSON.c_str());
+					}
+
+					cachedButtonsMin = ImGui::GetItemRectMin() - headerScreenPos;
+
+					ImGui::SetItemTooltip("Copy Behaviour to Clipboard");
+				}
+
 			}
 			ImGui::PopID();
 
