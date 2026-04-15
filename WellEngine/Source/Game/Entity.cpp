@@ -2025,7 +2025,7 @@ bool Entity::InitialRenderUI()
 					ImGui::SetCursorPos(nextPos);
 					nextPos.x -= buttonSize.x + buttonPadding.x;
 
-					bool behEnabled = behaviour.Get()->IsEnabledSelf();
+					bool behEnabled = behaviour.IsValid() ? behaviour.Get()->IsEnabledSelf() : false;
 					if (ImGui::Checkbox("##BehEnabled", &behEnabled))
 						behaviour.Get()->SetEnabled(behEnabled);
 					ImGui::SetItemTooltip(behEnabled ? "Disable" : "Enable");
