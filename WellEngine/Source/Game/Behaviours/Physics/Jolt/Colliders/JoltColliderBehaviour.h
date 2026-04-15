@@ -22,6 +22,12 @@ private:
 	dx::XMFLOAT4A _lastEntRot = { 0, 0, 0, 1 };
 	dx::XMFLOAT3A _lastEntScale = { 1, 1, 1 };
 
+	float _lerpTime = 0.0f;
+	dx::XMFLOAT3A _lastPosLerpGoal = { 0, 0, 0 };
+	dx::XMFLOAT4A _lastRotLerpGoal = { 0, 0, 0, 1 };
+	dx::XMFLOAT3A _posLerpGoal = { 0, 0, 0 };
+	dx::XMFLOAT4A _rotLerpGoal = { 0, 0, 0, 1 };
+
 #ifdef USE_IMGUI
 	bool _debugDraw = false;
 #endif
@@ -30,6 +36,7 @@ protected:
 	[[nodiscard]] virtual bool Start() override;
 	[[nodiscard]] virtual bool Update(TimeUtils &time, const Input &input) override;
 	[[nodiscard]] virtual bool LateUpdate(TimeUtils &time, const Input &input) override;
+	[[nodiscard]] virtual bool PhysicsUpdate(float deltaTime) override;
 #ifdef USE_IMGUI
 	[[nodiscard]] virtual bool RenderUI() override;
 	[[nodiscard]] bool DoDebugDraw() const { return _debugDraw; }
@@ -48,6 +55,9 @@ protected:
 	void SetBodyID(const JPH::BodyID &bodyID) { _bodyID = bodyID; }
 	void DestroyBody();
 	
+	// Calculate physics body position & rotation in world-space
+	virtual void CalcBodyLocation(dx::XMFLOAT3A &pos, dx::XMFLOAT4A &rot) = 0; 
+	
 	// Recalculate the physics body proportions 
 	virtual void RecalculatePhysicsBody() = 0;
 	
@@ -56,6 +66,8 @@ protected:
 	
 	// Apply physics body transform to entity
 	virtual void SyncTransform() = 0; 
+
+	void SetLerpGoal(const dx::XMFLOAT3A &posGoal, const dx::XMFLOAT4A &rotGoal) { _posLerpGoal = posGoal; _rotLerpGoal = rotGoal; }
 
 public:
 	JoltColliderBehaviour();

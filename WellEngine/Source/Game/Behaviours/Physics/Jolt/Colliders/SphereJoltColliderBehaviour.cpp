@@ -86,6 +86,20 @@ bool SphereJoltColliderBehaviour::Deserialize(const json::Value &obj, Scene *sce
 }
 
 
+void SphereJoltColliderBehaviour::CalcBodyLocation(dx::XMFLOAT3A &pos, dx::XMFLOAT4A &rot)
+{
+	ZoneScopedC(RandomUniqueColor());
+
+	JPH::BodyInterface &bodyInterface = GetBodyInterface();
+	Transform *transform = GetEntity()->GetTransform();
+	const JPH::BodyID &bodyID = GetBodyID();
+
+	JPH::RVec3 joltPos = bodyInterface.GetCenterOfMassPosition(bodyID);
+	JPH::Quat joltRot = bodyInterface.GetRotation(bodyID);
+
+	pos = dx::XMFLOAT3A(joltPos.GetX(), joltPos.GetY(), joltPos.GetZ());
+	rot = dx::XMFLOAT4A(joltRot.GetX(), joltRot.GetY(), joltRot.GetZ(), joltRot.GetW());
+}
 void SphereJoltColliderBehaviour::RecalculatePhysicsBody()
 {
 	ZoneScopedC(RandomUniqueColor());
@@ -118,16 +132,11 @@ void SphereJoltColliderBehaviour::SyncTransform()
 {
 	ZoneScopedC(RandomUniqueColor());
 
-	JPH::BodyInterface &bodyInterface = GetBodyInterface();
-	Transform *transform = GetEntity()->GetTransform();
-	const JPH::BodyID &bodyID = GetBodyID();
+	dx::XMFLOAT3A newEntPos;
+	dx::XMFLOAT4A newEntRot;
+	CalcBodyLocation(newEntPos, newEntRot);
 
-	JPH::RVec3 joltPos = bodyInterface.GetCenterOfMassPosition(bodyID);
-	JPH::Quat joltRot = bodyInterface.GetRotation(bodyID);
-
-	dx::XMFLOAT3A newEntPos = dx::XMFLOAT3A(joltPos.GetX(), joltPos.GetY(), joltPos.GetZ());
-	dx::XMFLOAT4A newEntRot = dx::XMFLOAT4A(joltRot.GetX(), joltRot.GetY(), joltRot.GetZ(), joltRot.GetW());
-
+	Transform *transform = GetTransform();
 	transform->SetPosition(newEntPos, World);
 	transform->SetRotation(newEntRot, World);
 }

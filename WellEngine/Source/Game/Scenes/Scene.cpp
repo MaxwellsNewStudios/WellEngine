@@ -1952,8 +1952,8 @@ bool Scene::PhysUpdate(float deltaTime)
 	if (!_initialized)
 		return false;
 
-	if (!_physInstance.Update(deltaTime))
-		return false;
+	if (_physInstance.GetPaused())
+		return true;
 
 	for (UINT i = 0; i < _physicsUpdateCallbacks.size(); i++)
 	{
@@ -1963,6 +1963,9 @@ bool Scene::PhysUpdate(float deltaTime)
 			return false;
 		}
 	}
+
+	if (!_physInstance.Update(deltaTime))
+		return false;
 
 	return true;
 }

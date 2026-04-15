@@ -29,6 +29,11 @@ JoltColliderBehaviour::~JoltColliderBehaviour()
 bool JoltColliderBehaviour::Start()
 {
 	// Apply default properties
+	Transform *transform = GetTransform();
+	_lastEntPos = _lastPosLerpGoal = _posLerpGoal = transform->GetPosition(World);
+	_lastEntRot = _lastRotLerpGoal = _rotLerpGoal = transform->GetRotation(World);
+	_lerpTime = 0.0f;
+
 	BodyInterface &bodyInterface = GetBodyInterface();
 	bodyInterface.SetFriction(_bodyID, _friction);
 	bodyInterface.SetGravityFactor(_bodyID, _gravityFactor);
@@ -37,6 +42,7 @@ bool JoltColliderBehaviour::Start()
 
 	QueueUpdate();
 	QueueLateUpdate();
+	QueuePhysicsUpdate();
 
 	return true;
 }
@@ -50,13 +56,14 @@ bool JoltColliderBehaviour::LateUpdate(TimeUtils &time, const Input &input)
 	// If entity transform has moved or rotated since the last frame, apply the new transform to the physics body.
 	// Otherwise, apply the current physics body transform to the entity to keep them in sync.
 
-	Transform *transform = GetEntity()->GetTransform();
+	Transform *transform = GetTransform();
 
 	dx::XMFLOAT3A currPos = transform->GetPosition(World);
 	dx::XMFLOAT4A currRot = transform->GetRotation(World);
+
 	dx::XMFLOAT3A currScale = transform->GetScale();
 
-	if (currScale.x != _lastEntScale.x || currScale.y != _lastEntScale.y || currScale.z != _lastEntScale.z)
+	if (!EstEqual(currScale.x, _lastEntScale.x, 1e-3f) || !EstEqual(currScale.y, _lastEntScale.y, 1e-3f) || !EstEqual(currScale.z, _lastEntScale.z, 1e-3f))
 	{
 		// Entity scale has changed, recalculate physics body.
 		RecalculatePhysicsBody();
@@ -64,39 +71,68 @@ bool JoltColliderBehaviour::LateUpdate(TimeUtils &time, const Input &input)
 		_lastEntScale = currScale;
 	}
 
-	if (currPos.x != _lastEntPos.x || currPos.y != _lastEntPos.y || currPos.z != _lastEntPos.z ||
-		currRot.x != _lastEntRot.x || currRot.y != _lastEntRot.y || currRot.z != _lastEntRot.z || currRot.w != _lastEntRot.w)
+	if (!EstEqual(currPos.x, _lastEntPos.x, 1e-3f) || !EstEqual(currPos.y, _lastEntPos.y, 1e-3f) || !EstEqual(currPos.z, _lastEntPos.z, 1e-3f) ||
+		!EstEqual(currRot.x, _lastEntRot.x, 1e-3f) || !EstEqual(currRot.y, _lastEntRot.y, 1e-3f) || !EstEqual(currRot.z, _lastEntRot.z, 1e-3f) || !EstEqual(currRot.w, _lastEntRot.w, 1e-3f))
 	{
 		// Entity transform has changed, apply it to the physics body.
 		SyncPhysics();
 
-		_lastEntPos = currPos;
-		_lastEntRot = currRot;
+		_lastPosLerpGoal = _posLerpGoal = _lastEntPos = currPos;
+		_lastRotLerpGoal = _rotLerpGoal = _lastEntRot = currRot;
 	}
 	else
 	{
 		// Entity transform has not changed, apply physics body transform to entity.
-		// This can be skipped if the body is not dynamic or is inactive.
+		// This can be skipped if the body is static or inactive.
 
 		BodyInterface &bodyInterface = GetBodyInterface();
 		bool doSkip = false;
 
-		if (bodyInterface.GetMotionType(_bodyID) != EMotionType::Dynamic)
+		if (bodyInterface.GetMotionType(_bodyID) == EMotionType::Static)
 			doSkip = true;
 		else if (!bodyInterface.IsActive(_bodyID))
 			doSkip = true;
 
 		if (!doSkip)
 		{
-			SyncTransform();
+			dx::XMFLOAT3A newPos;
+			dx::XMFLOAT4A newRot;
 
-			currPos = transform->GetPosition(World);
-			currRot = transform->GetRotation(World);
+			float t = _lerpTime / TimeUtils::GetPhysDeltaTime();
+			Store(newPos, dx::XMVectorLerp(Load(_posLerpGoal), Load(_lastPosLerpGoal), t));
+			Store(newRot, dx::XMQuaternionSlerp(Load(_rotLerpGoal), Load(_lastRotLerpGoal), t));
 
-			_lastEntPos = currPos;
-			_lastEntRot = currRot;
+			transform->SetPosition(newPos, World);
+			transform->SetRotation(newRot, World);
+			
+			_lastEntPos = newPos;
+			_lastEntRot = newRot;
 		}
 	}
+
+	_lerpTime -= time.GetDeltaTime();
+	_lerpTime = max(_lerpTime, 0.0f);
+
+	return true;
+}
+bool JoltColliderBehaviour::PhysicsUpdate(float deltaTime)
+{
+	BodyInterface &bodyInterface = GetBodyInterface();
+
+	if (bodyInterface.GetMotionType(_bodyID) == EMotionType::Static)
+		return true;
+	else if (!bodyInterface.IsActive(_bodyID))
+		return true;
+
+	Transform *transform = GetTransform();
+	transform->SetPosition(_posLerpGoal, World);
+	transform->SetRotation(_rotLerpGoal, World);
+
+	_lastEntPos = _lastPosLerpGoal = _posLerpGoal;
+	_lastEntRot = _lastRotLerpGoal = _rotLerpGoal;
+	CalcBodyLocation(_posLerpGoal, _rotLerpGoal);
+
+	_lerpTime = deltaTime;
 
 	return true;
 }

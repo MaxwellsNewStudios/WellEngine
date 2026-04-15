@@ -15,6 +15,7 @@ protected:
 	[[nodiscard]] bool RenderUI() override;
 #endif
 
+	void CalcBodyLocation(dx::XMFLOAT3A &pos, dx::XMFLOAT4A &rot) override;
 	void RecalculatePhysicsBody() override;
 	void SyncPhysics() override;
 	void SyncTransform() override;

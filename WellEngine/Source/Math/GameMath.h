@@ -555,6 +555,11 @@ static inline void Clamp(int c, T *dest, const T *a, const T *b) noexcept
 
 
 #pragma region Misc
+[[nodiscard]] static inline bool EstEqual(float a, float b, float epsilon = 1e-5f) noexcept
+{
+	return fabsf(a - b) < epsilon;
+}
+
 template<typename T>
 [[nodiscard]] static inline size_t NumericLimit() noexcept
 {

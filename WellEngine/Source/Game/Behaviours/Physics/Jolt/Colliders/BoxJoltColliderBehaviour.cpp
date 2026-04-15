@@ -110,6 +110,40 @@ bool BoxJoltColliderBehaviour::Deserialize(const json::Value &obj, Scene *scene)
 }
 
 
+void BoxJoltColliderBehaviour::CalcBodyLocation(dx::XMFLOAT3A &pos, dx::XMFLOAT4A &rot)
+{
+	ZoneScopedC(RandomUniqueColor());
+
+	JPH::BodyInterface &bodyInterface = GetBodyInterface();
+	Transform *transform = GetEntity()->GetTransform();
+	const JPH::BodyID &bodyID = GetBodyID();
+
+	JPH::RVec3 joltPos = bodyInterface.GetCenterOfMassPosition(bodyID);
+	JPH::Quat joltRot = bodyInterface.GetRotation(bodyID);
+
+	dx::XMFLOAT3A newEntPos = dx::XMFLOAT3A(joltPos.GetX(), joltPos.GetY(), joltPos.GetZ());
+	dx::XMFLOAT4A newEntRot = dx::XMFLOAT4A(joltRot.GetX(), joltRot.GetY(), joltRot.GetZ(), joltRot.GetW());
+	dx::XMFLOAT3A scale = transform->GetScale();
+
+	dx::XMFLOAT3A offset = _offset;
+	{
+		dx::XMMATRIX rotMat = dx::XMMatrixRotationQuaternion(Load(newEntRot));
+		dx::XMVECTOR offsetVec = Load(offset);
+		offsetVec = dx::XMVector3Transform(offsetVec, rotMat);
+		Store(offset, offsetVec);
+
+		offset.x *= scale.x;
+		offset.y *= scale.y;
+		offset.z *= scale.z;
+	}
+	newEntPos.x -= offset.x;
+	newEntPos.y -= offset.y;
+	newEntPos.z -= offset.z;
+
+	pos = newEntPos;
+	rot = newEntRot;
+}
+
 void BoxJoltColliderBehaviour::RecalculatePhysicsBody()
 {
 	ZoneScopedC(RandomUniqueColor());
@@ -174,32 +208,11 @@ void BoxJoltColliderBehaviour::SyncTransform()
 {
 	ZoneScopedC(RandomUniqueColor());
 
-	JPH::BodyInterface &bodyInterface = GetBodyInterface();
-	Transform *transform = GetEntity()->GetTransform();
-	const JPH::BodyID &bodyID = GetBodyID();
+	dx::XMFLOAT3A newEntPos;
+	dx::XMFLOAT4A newEntRot;
+	CalcBodyLocation(newEntPos, newEntRot);
 
-	JPH::RVec3 joltPos = bodyInterface.GetCenterOfMassPosition(bodyID);
-	JPH::Quat joltRot = bodyInterface.GetRotation(bodyID);
-
-	dx::XMFLOAT3A newEntPos = dx::XMFLOAT3A(joltPos.GetX(), joltPos.GetY(), joltPos.GetZ());
-	dx::XMFLOAT4A newEntRot = dx::XMFLOAT4A(joltRot.GetX(), joltRot.GetY(), joltRot.GetZ(), joltRot.GetW());
-	dx::XMFLOAT3A scale = transform->GetScale();
-
-	dx::XMFLOAT3A offset = _offset;
-	{
-		dx::XMMATRIX rotMat = dx::XMMatrixRotationQuaternion(Load(newEntRot));
-		dx::XMVECTOR offsetVec = Load(offset);
-		offsetVec = dx::XMVector3Transform(offsetVec, rotMat);
-		Store(offset, offsetVec);
-
-		offset.x *= scale.x;
-		offset.y *= scale.y;
-		offset.z *= scale.z;
-	}
-	newEntPos.x -= offset.x;
-	newEntPos.y -= offset.y;
-	newEntPos.z -= offset.z;
-
+	Transform *transform = GetTransform();
 	transform->SetPosition(newEntPos, World);
 	transform->SetRotation(newEntRot, World);
 }

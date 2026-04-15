@@ -45,9 +45,6 @@ bool JoltPhysicsInstance::Initialize(JoltManager *manager)
 
 bool JoltPhysicsInstance::Update(float deltaTime)
 {
-	if (_paused)
-		return true;
-
 	int cCollisionSteps = int(ceilf(deltaTime / (1.0f / 60.0f)));
 
 	// Step the world
