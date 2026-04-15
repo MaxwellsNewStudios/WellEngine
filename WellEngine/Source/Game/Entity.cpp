@@ -1532,7 +1532,7 @@ bool Entity::InitialRenderUI()
 		bool entEnabled = IsEnabledSelf();
 		if (ImGui::Checkbox("##EntEnabled", &entEnabled))
 			SetEnabledSelf(entEnabled);
-		ImGui::SetItemTooltip("Enable/Disable Entity");
+		ImGui::SetItemTooltip(entEnabled ? "Disable" : "Enable");
 
 		ImGui::SameLine();
 		ImGui::SetNextItemWidth(max(0, ImGui::GetContentRegionAvail().x - buttonsWidth));
@@ -1991,8 +1991,8 @@ bool Entity::InitialRenderUI()
 				{
 					const ImVec2 bgPadding = ImVec2(4.0f, 3.5f);
 
-					const ImVec2 bgMin = headerScreenPos + cachedButtonsMin - bgPadding;
-					const ImVec2 bgMax = headerScreenPos + cachedButtonsMax + bgPadding;
+					const ImVec2 bgMin = headerScreenPos + cachedButtonsMin - bgPadding + ImVec2(headerWidth, 0);
+					const ImVec2 bgMax = headerScreenPos + cachedButtonsMax + bgPadding + ImVec2(headerWidth, 0);
 
 					ImDrawList *drawList = ImGui::GetWindowDrawList();
 					drawList->AddRectFilled(bgMin, bgMax, ImGui::GetColorU32(ImGuiCol_WindowBg), 2.5f);
@@ -2014,8 +2014,54 @@ bool Entity::InitialRenderUI()
 					if (ImGuiUtils::ButtonWithFont(ICON_LC_X "##Delete", FONT_ICON_FILE_NAME_LC, 14.0f, buttonSize))
 						RemoveBehaviour(behaviour.Get());
 					ImGuiUtils::EndButtonStyle();
+					ImGui::SetItemTooltip("Delete Behaviour");
+				}
 
-					cachedButtonsMax = ImGui::GetItemRectMax() - headerScreenPos;
+				cachedButtonsMax = ImGui::GetItemRectMax() - headerScreenPos;
+				cachedButtonsMax.x -= headerWidth;
+
+				// Active checkmark
+				{
+					ImGui::SetCursorPos(nextPos);
+					nextPos.x -= buttonSize.x + buttonPadding.x;
+
+					bool behEnabled = behaviour.Get()->IsEnabledSelf();
+					if (ImGui::Checkbox("##BehEnabled", &behEnabled))
+						behaviour.Get()->SetEnabled(behEnabled);
+					ImGui::SetItemTooltip(behEnabled ? "Disable" : "Enable");
+				}
+
+				// Copy to clipboard
+				{
+					ImGui::SetCursorPos(nextPos);
+					nextPos.x -= buttonSize.x + buttonPadding.x;
+
+					ImGuiUtils::BeginButtonStyle(ImGuiUtils::StyleType::Green);
+					if (ImGuiUtils::ButtonWithFont(ICON_LC_CLIPBOARD_COPY "##CopyBehToClipboard", FONT_ICON_FILE_NAME_LC, 14.0f, buttonSize))
+					{
+						// Serialize behaviour to JSON and copy to clipboard
+						std::string behJSON = "[[BEHAVIOUR_JSON]] ";
+						{
+							json::Document doc;
+							json::Value behObj(json::kObjectType);
+
+							if (!behaviour.Get()->InitialSerialize(doc.GetAllocator(), behObj))
+							{
+								ErrMsg("Failed to serialize behaviour!");
+								ImGuiUtils::EndButtonStyle();
+								return false;
+							}
+
+							json::StringBuffer buffer;
+							json::Writer<json::StringBuffer> writer(buffer);
+							behObj.Accept(writer);
+							behJSON += buffer.GetString();
+						}
+						ImGui::SetClipboardText(behJSON.c_str());
+					}
+					ImGuiUtils::EndButtonStyle();
+
+					ImGui::SetItemTooltip("Copy Behaviour to Clipboard");
 				}
 
 				// Open Script
@@ -2024,7 +2070,7 @@ bool Entity::InitialRenderUI()
 					nextPos.x -= buttonSize.x + buttonPadding.x;
 
 					ImGuiUtils::BeginButtonStyle(ImGuiUtils::StyleType::Yellow);
-					if (ImGuiUtils::ButtonWithFont(ICON_FA_FILE_CODE "##OpenScript", FONT_ICON_FILE_NAME_FAS, 16.0f, buttonSize))
+					if (ImGuiUtils::ButtonWithFont(ICON_FA_FILE_CODE "##OpenScript", FONT_ICON_FILE_NAME_FAS, 15.0f, buttonSize))
 					{
 						// Get path from Behaviour Registry
 						const std::string &behCategory = BehaviourRegistry::GetCategories().at(behName);
@@ -2105,38 +2151,8 @@ bool Entity::InitialRenderUI()
 					ImGui::SetItemTooltip("Open Script in Editor");
 				}
 
-				// Copy to clipboard
-				{
-					ImGui::SetCursorPos(nextPos);
-					nextPos.x -= buttonSize.x + buttonPadding.x;
-
-					if (ImGuiUtils::ButtonWithFont(ICON_LC_CLIPBOARD_COPY "##CopyBehToClipboard", FONT_ICON_FILE_NAME_LC, 14.0f, buttonSize))
-					{
-						// Serialize behaviour to JSON and copy to clipboard
-						std::string behJSON = "[[BEHAVIOUR_JSON]] ";
-						{
-							json::Document doc;
-							json::Value behObj(json::kObjectType);
-
-							if (!behaviour.Get()->InitialSerialize(doc.GetAllocator(), behObj))
-							{
-								ErrMsg("Failed to serialize behaviour!");
-								return false;
-							}
-
-							json::StringBuffer buffer;
-							json::Writer<json::StringBuffer> writer(buffer);
-							behObj.Accept(writer);
-							behJSON += buffer.GetString();
-						}
-						ImGui::SetClipboardText(behJSON.c_str());
-					}
-
-					cachedButtonsMin = ImGui::GetItemRectMin() - headerScreenPos;
-
-					ImGui::SetItemTooltip("Copy Behaviour to Clipboard");
-				}
-
+				cachedButtonsMin = ImGui::GetItemRectMin() - headerScreenPos;
+				cachedButtonsMin.x -= headerWidth;
 			}
 			ImGui::PopID();
 

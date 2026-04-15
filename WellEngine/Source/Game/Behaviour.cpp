@@ -428,16 +428,6 @@ void Behaviour::SetUIDirty(bool state)
 
 bool Behaviour::InitialRenderUI()
 {
-	bool behEnabled = IsEnabledSelf();
-	if (ImGui::Checkbox("Active##behActive", &behEnabled))
-	{
-		if (behEnabled)
-			SetEnabled(true);
-		else
-			SetEnabled(false);
-	}
-
-	ImGui::SameLine(0.0f, 10.0f);
 	ImGui::Checkbox("Serialized##behSerialize", &_doSerialize);
 
 	ImGui::SameLine();
