@@ -177,6 +177,8 @@ public:
 	[[nodiscard]] bool InitialBeforeRender();
 	[[nodiscard]] bool InitialRender(const RenderQueuer &queuer, const RendererInfo &rendererInfo);
 #ifdef USE_IMGUI
+	// Serialize entity to JSON and copy to clipboard
+	void CopyToClipboard();
 	[[nodiscard]] bool UIContextMenu();
 	[[nodiscard]] bool InitialRenderUI();
 	void SetVisibleInHierarchy(bool visible, float height) { _visibleInHierarchy = visible; _lastHeightInHierarchy = height; }
@@ -187,6 +189,9 @@ public:
 	[[nodiscard]] bool InitialOffHover();
 	[[nodiscard]] bool InitialOnSelect();
 	[[nodiscard]] bool InitialOnDebugSelect();
+
+	// For deserialization, use Scene::DeserializeEntity
+	[[nodiscard]] bool Serialize(json::Document::AllocatorType &docAlloc, json::Value &obj, bool forceSerialize = false);
 
 	TESTABLE()
 };

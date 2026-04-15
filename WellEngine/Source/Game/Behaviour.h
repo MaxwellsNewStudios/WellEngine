@@ -140,6 +140,9 @@ public:
 	[[nodiscard]] bool InitialRender(const RenderQueuer &queuer, const RendererInfo &rendererInfo);
 
 #ifdef USE_IMGUI
+	// Serialize behaviour to JSON and copy to clipboard
+	void CopyToClipboard();
+
 	[[nodiscard]] int PopUIOpenState();
 	void SetUIOpen(bool state);
 

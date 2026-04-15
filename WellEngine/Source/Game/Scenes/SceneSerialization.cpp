@@ -155,7 +155,7 @@ bool Scene::Serialize(bool asSaveFile)
 				continue; // Skip non-root entities
 
 			json::Value entObj(json::kObjectType);
-			if (!SerializeEntity(docAlloc, entObj, entity))
+			if (!entity->Serialize(docAlloc, entObj))
 			{
 				ErrMsgF("Failed to serialize entity '{}'!", entity->GetName());
 				return false;
@@ -226,105 +226,6 @@ bool Scene::Serialize(bool asSaveFile)
 		24.0f
 	);
 #endif
-
-	return true;
-}
-bool Scene::SerializeEntity(json::Document::AllocatorType &docAlloc, json::Value &obj, Entity *entity, bool forceSerialize)
-{
-	ZoneScopedXC(RandomUniqueColor());
-
-	if (!entity->IsSerializable() && !forceSerialize)
-		return true; // Skip non-serializable entities
-
-	Entity *parentEntity = entity->GetParent();
-	Transform *entTransform = entity->GetTransform();
-	dx::XMFLOAT3A pos = entTransform->GetPosition();
-	dx::XMFLOAT3A euler = entTransform->GetEuler();
-	dx::XMFLOAT3A scale = entTransform->GetScale();
-
-	json::Value nameStr(json::kStringType);
-	nameStr.SetString(entity->GetName().c_str(), docAlloc);
-	obj.AddMember("Name", nameStr, docAlloc);
-	obj.AddMember("ID", entity->GetID(), docAlloc);
-	obj.AddMember("Enabled", entity->IsEnabledSelf(), docAlloc);
-
-	json::Value posArr(json::kArrayType);
-	posArr.PushBack(pos.x, docAlloc);
-	posArr.PushBack(pos.y, docAlloc);
-	posArr.PushBack(pos.z, docAlloc);
-	obj.AddMember("Pos", posArr, docAlloc);
-
-	json::Value rotArr(json::kArrayType);
-	rotArr.PushBack(euler.x, docAlloc);
-	rotArr.PushBack(euler.y, docAlloc);
-	rotArr.PushBack(euler.z, docAlloc);
-	obj.AddMember("Rot", rotArr, docAlloc);
-
-	json::Value scaleArr(json::kArrayType);
-	scaleArr.PushBack(scale.x, docAlloc);
-	scaleArr.PushBack(scale.y, docAlloc);
-	scaleArr.PushBack(scale.z, docAlloc);
-	obj.AddMember("Scale", scaleArr, docAlloc);
-
-	if (entity->IsPrefab())
-	{
-		json::Value prefabStr(json::kStringType);
-		prefabStr.SetString(entity->GetPrefabName().c_str(), docAlloc);
-		obj.AddMember("Prefab", prefabStr, docAlloc);
-	}
-	else
-	{
-		obj.AddMember("Static", entity->IsStatic(), docAlloc);
-		obj.AddMember("Select", entity->IsDebugSelectable(), docAlloc);
-		obj.AddMember("InTree", _sceneHolder.IsEntityIncludedInTree(entity), docAlloc);
-		obj.AddMember("Hidden", !entity->GetShowInHierarchy(true), docAlloc);
-
-		json::Value behArr(json::kArrayType);
-		UINT count = entity->GetBehaviourCount();
-
-		for (int i = 0; i < count; i++)
-		{
-			Behaviour *beh = entity->GetBehaviour(i);
-			json::Value behObj(json::kObjectType);
-
-			if (!beh->InitialSerialize(docAlloc, behObj))
-			{
-				ErrMsgF("Failed to serialize behaviour '{}'!", beh->GetName());
-				return false;
-			}
-
-			// Add behaviour to the array if it isn't empty
-			if (behObj.MemberCount() > 0)
-				behArr.PushBack(behObj, docAlloc);
-		}
-		obj.AddMember("Beh", behArr, docAlloc);
-
-
-		json::Value childArr(json::kArrayType);
-		const std::vector<Entity *> *children = entity->GetChildren();
-
-		for (auto &child : *children)
-		{
-			if (!child)
-				continue;
-
-			// HACK: Does forceSerialize not being recursive cause problems?
-			json::Value childObj(json::kObjectType);
-			if (!SerializeEntity(docAlloc, childObj, child))
-			{
-				ErrMsgF("Failed to serialize child entity '{}'!", child->GetName());
-				return false;
-			}
-
-			// Add entity to the array if it isn't empty
-			if (childObj.MemberCount() > 0)
-				childArr.PushBack(childObj, docAlloc);
-		}
-
-		// Add the child arrat unless it is empty
-		if (!childArr.Empty())
-			obj.AddMember("Child", childArr, docAlloc);
-	}
 
 	return true;
 }
@@ -736,7 +637,7 @@ bool Scene::SaveAsPrefab(const std::string &name, Entity *entity)
 		prefabObj.AddMember("Name", SerializerUtils::SerializeString(name, docAlloc), docAlloc);
 
 		json::Value entObj(json::kObjectType);
-		if (!SerializeEntity(docAlloc, entObj, entity, true))
+		if (!entity->Serialize(docAlloc, entObj, true))
 		{
 			Warn("Failed to serialize root entity!");
 			return false;

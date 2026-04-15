@@ -205,8 +205,8 @@ bool Scene::RenderEntityHierarchyUI(Entity *root, UINT depth, bool skipCulling, 
 
 						json::Document doc;
 						json::Value entObj = json::Value(json::kObjectType);
-
-						if (!payloadScene->SerializeEntity(doc.GetAllocator(), entObj, payloadEnt, true))
+						
+						if (!payloadEnt->Serialize(doc.GetAllocator(), entObj, true))
 						{
 							ErrMsg("Failed to serialize entity from payload!");
 							EndDragDropTarget();
@@ -493,8 +493,8 @@ bool Scene::RenderEntityHierarchyUI(Entity *root, UINT depth, bool skipCulling, 
 
 							json::Document doc;
 							json::Value entObj = json::Value(json::kObjectType);
-
-							if (!payloadScene->SerializeEntity(doc.GetAllocator(), entObj, payloadEnt, true))
+							
+							if (!payloadEnt->Serialize(doc.GetAllocator(), entObj, true))
 							{
 								ErrMsg("Failed to serialize entity from payload!");
 								EndDragDropTarget();
@@ -607,8 +607,8 @@ bool Scene::RenderEntityHierarchyUI(Entity *root, UINT depth, bool skipCulling, 
 
 						json::Document doc;
 						json::Value entObj = json::Value(json::kObjectType);
-
-						if (!payloadScene->SerializeEntity(doc.GetAllocator(), entObj, payloadEnt, true))
+						
+						if (!payloadEnt->Serialize(doc.GetAllocator(), entObj, true))
 						{
 							ErrMsg("Failed to serialize entity from payload!");
 							EndDragDropTarget();
@@ -833,6 +833,46 @@ bool Scene::RenderHierarchyContextMenuUI()
 		{
 			if (_debugPlayer.IsValid())
 				_debugPlayer.Get()->Select(ent, false);
+		}
+	}
+
+	// Pasting
+	{
+		constexpr const char *entDataPrefix = "[[ENTITY_JSON]] ";
+		std::string clipboardData = ImGui::GetClipboardText();
+
+		// Check if clipboard data starts with behaviour data prefix
+		if (clipboardData.rfind(entDataPrefix, 0) == 0)
+		{
+			if (ImGui::MenuItem("Paste##PasteEnt"))
+			{
+				clipboardData = clipboardData.substr(strlen(entDataPrefix)); // Remove prefix
+
+				json::Document doc;
+				doc.Parse(clipboardData.c_str());
+				if (doc.HasParseError())
+				{
+					ErrMsg("Failed to parse entity JSON data!");
+					return false;
+				}
+
+#pragma push_macro("GetObject")
+#undef GetObject
+				Entity *childEntity = nullptr;
+				if (!DeserializeEntity(doc.GetObject(), &childEntity))
+				{
+					ErrMsg("Failed to deserialize entity!");
+					return false;
+				}
+#pragma pop_macro("GetObject")
+
+				RunPostDeserializeCallbacks();
+			}
+		}
+		else
+		{
+			// No valid clipboard data for pasting
+			ImGui::MenuItem("Paste##PasteNULL", nullptr, false, false);
 		}
 	}
 

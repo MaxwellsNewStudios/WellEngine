@@ -890,6 +890,27 @@ bool Entity::InitialRender(const RenderQueuer &queuer, const RendererInfo &rende
 }
 
 #ifdef USE_IMGUI
+void Entity::CopyToClipboard()
+{
+	std::string entJSON = "[[ENTITY_JSON]] ";
+	{
+		json::Document doc;
+		json::Value entObj(json::kObjectType);
+
+		if (!Serialize(doc.GetAllocator(), entObj, true))
+		{
+			ErrMsg("Failed to serialize entity!");
+			return;
+		}
+
+		json::StringBuffer buffer;
+		json::Writer<json::StringBuffer> writer(buffer);
+		entObj.Accept(writer);
+		entJSON += buffer.GetString();
+	}
+	ImGui::SetClipboardText(entJSON.c_str());
+}
+
 bool Entity::UIContextMenu()
 {
 	DebugPlayerBehaviour *debugPlayer = _scene->GetDebugPlayer();
@@ -1401,21 +1422,54 @@ bool Entity::UIContextMenu()
 
 	if (ImGui::MenuItem("Copy"))
 	{
-		Entity *ent = debugPlayer->DuplicateEntity(this);
-		debugPlayer->Select(ent, ImGui::GetIO().KeyShift);
+		CopyToClipboard();
 	}
 
-	// If clipboard has behaviour data, show paste option
+	// If clipboard has pastable data, show paste option
 	{
-		constexpr const char *behaviourDataPrefix = "[[BEHAVIOUR_JSON]] ";
+		constexpr const char *entDataPrefix = "[[ENTITY_JSON]] ";
+		constexpr const char *behDataPrefix = "[[BEHAVIOUR_JSON]] ";
 		std::string clipboardData = ImGui::GetClipboardText();
 		
 		// Check if clipboard data starts with behaviour data prefix
-		if (clipboardData.rfind(behaviourDataPrefix, 0) == 0)
+		if (clipboardData.rfind(entDataPrefix, 0) == 0)
 		{
-			if (ImGui::MenuItem("Paste Behaviour from Clipboard"))
+			if (ImGui::MenuItem("Paste##PasteEnt"))
 			{
-				clipboardData = clipboardData.substr(strlen(behaviourDataPrefix)); // Remove prefix
+				clipboardData = clipboardData.substr(strlen(entDataPrefix)); // Remove prefix
+
+				json::Document doc;
+				doc.Parse(clipboardData.c_str());
+				if (doc.HasParseError())
+				{
+					ErrMsg("Failed to parse entity JSON data!");
+					return false;
+				}
+
+#pragma push_macro("GetObject")
+#undef GetObject
+				Entity *childEntity = nullptr;
+				if (!_scene->DeserializeEntity(doc.GetObject(), &childEntity))
+				{
+					ErrMsg("Failed to deserialize entity!");
+					return false;
+				}
+#pragma pop_macro("GetObject")
+
+				if (childEntity)
+				{
+					// Set the parent of the child entity
+					childEntity->SetParent(this, false);
+				}
+
+				_scene->RunPostDeserializeCallbacks();
+			}
+		}
+		else if (clipboardData.rfind(behDataPrefix, 0) == 0)
+		{
+			if (ImGui::MenuItem("Paste##PasteBeh"))
+			{
+				clipboardData = clipboardData.substr(strlen(behDataPrefix)); // Remove prefix
 
 				json::Document doc;
 				doc.Parse(clipboardData.c_str());
@@ -1446,6 +1500,11 @@ bool Entity::UIContextMenu()
 					GetScene()->RunPostDeserializeCallbacks();
 				}
 			}
+		}
+		else
+		{
+			// No valid clipboard data for pasting
+			ImGui::MenuItem("Paste##PasteNULL", nullptr, false, false);
 		}
 	}
 
@@ -1845,6 +1904,7 @@ bool Entity::InitialRenderUI()
 			auto behaviour = _behaviours[i]->AsRef();
 			std::string behName = behaviour.Get()->GetName();
 
+			// Header
 			int openState = behaviour.Get()->PopUIOpenState();
 			if (openState >= 0)
 				ImGui::SetNextItemOpen(openState == 1);
@@ -2322,6 +2382,106 @@ bool Entity::InitialOnDebugSelect()
 			ErrMsgF("InitialOnDebugSelect() failed for behaviour '{}'!", behaviour->GetName());
 			return false;
 		}
+	}
+
+	return true;
+}
+
+bool Entity::Serialize(json::Document::AllocatorType &docAlloc, json::Value &obj, bool forceSerialize)
+{
+	ZoneScopedXC(RandomUniqueColor());
+
+	if (!IsSerializable() && !forceSerialize)
+		return true; // Skip non-serializable entities
+
+	Entity *parentEntity = GetParent();
+	Transform *entTransform = GetTransform();
+	dx::XMFLOAT3A pos = entTransform->GetPosition();
+	dx::XMFLOAT3A euler = entTransform->GetEuler();
+	dx::XMFLOAT3A scale = entTransform->GetScale();
+
+	json::Value nameStr(json::kStringType);
+	nameStr.SetString(GetName().c_str(), docAlloc);
+	obj.AddMember("Name", nameStr, docAlloc);
+	obj.AddMember("ID", GetID(), docAlloc);
+	obj.AddMember("Enabled", IsEnabledSelf(), docAlloc);
+
+	json::Value posArr(json::kArrayType);
+	posArr.PushBack(pos.x, docAlloc);
+	posArr.PushBack(pos.y, docAlloc);
+	posArr.PushBack(pos.z, docAlloc);
+	obj.AddMember("Pos", posArr, docAlloc);
+
+	json::Value rotArr(json::kArrayType);
+	rotArr.PushBack(euler.x, docAlloc);
+	rotArr.PushBack(euler.y, docAlloc);
+	rotArr.PushBack(euler.z, docAlloc);
+	obj.AddMember("Rot", rotArr, docAlloc);
+
+	json::Value scaleArr(json::kArrayType);
+	scaleArr.PushBack(scale.x, docAlloc);
+	scaleArr.PushBack(scale.y, docAlloc);
+	scaleArr.PushBack(scale.z, docAlloc);
+	obj.AddMember("Scale", scaleArr, docAlloc);
+
+	if (IsPrefab())
+	{
+		json::Value prefabStr(json::kStringType);
+		prefabStr.SetString(GetPrefabName().c_str(), docAlloc);
+		obj.AddMember("Prefab", prefabStr, docAlloc);
+	}
+	else
+	{
+		obj.AddMember("Static", IsStatic(), docAlloc);
+		obj.AddMember("Select", IsDebugSelectable(), docAlloc);
+		obj.AddMember("InTree", GetScene()->GetSceneHolder()->IsEntityIncludedInTree(this), docAlloc);
+		obj.AddMember("Hidden", !GetShowInHierarchy(true), docAlloc);
+
+		json::Value behArr(json::kArrayType);
+		UINT count = GetBehaviourCount();
+
+		for (int i = 0; i < count; i++)
+		{
+			Behaviour *beh = GetBehaviour(i);
+			json::Value behObj(json::kObjectType);
+
+			if (!beh->InitialSerialize(docAlloc, behObj))
+			{
+				ErrMsgF("Failed to serialize behaviour '{}'!", beh->GetName());
+				return false;
+			}
+
+			// Add behaviour to the array if it isn't empty
+			if (behObj.MemberCount() > 0)
+				behArr.PushBack(behObj, docAlloc);
+		}
+		obj.AddMember("Beh", behArr, docAlloc);
+
+
+		json::Value childArr(json::kArrayType);
+		const std::vector<Entity *> *children = GetChildren();
+
+		for (auto &child : *children)
+		{
+			if (!child)
+				continue;
+
+			// HACK: Does forceSerialize not being recursive cause problems?
+			json::Value childObj(json::kObjectType);
+			if (!child->Serialize(docAlloc, childObj))
+			{
+				ErrMsgF("Failed to serialize child entity '{}'!", child->GetName());
+				return false;
+			}
+
+			// Add entity to the array if it isn't empty
+			if (childObj.MemberCount() > 0)
+				childArr.PushBack(childObj, docAlloc);
+		}
+
+		// Add the child arrat unless it is empty
+		if (!childArr.Empty())
+			obj.AddMember("Child", childArr, docAlloc);
 	}
 
 	return true;

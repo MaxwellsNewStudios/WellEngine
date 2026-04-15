@@ -1681,8 +1681,8 @@ Entity *DebugPlayerBehaviour::DuplicateEntity(Entity *entity)
 
 	json::Document doc;
 	json::Value entObj = json::Value(json::kObjectType);
-
-	if (!scene->SerializeEntity(doc.GetAllocator(), entObj, entity, true))
+	
+	if (!entity->Serialize(doc.GetAllocator(), entObj, true))
 	{
 		Warn("Failed to serialize entity!");
 		return nullptr;

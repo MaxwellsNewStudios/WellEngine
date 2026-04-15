@@ -179,7 +179,6 @@ public:
 
 #pragma region Serialization
 	[[nodiscard]] bool Serialize(bool asSaveFile);
-	[[nodiscard]] bool SerializeEntity(json::Document::AllocatorType &docAlloc, json::Value &obj, Entity *entity, bool forceSerialize = false);
 
 	[[nodiscard]] bool Deserialize(bool sceneReload = false);
 	[[nodiscard]] bool DeserializeEntity(const json::Value &obj, Entity **out = nullptr);

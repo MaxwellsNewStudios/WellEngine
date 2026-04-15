@@ -332,6 +332,26 @@ bool Behaviour::InitialRender(const RenderQueuer &queuer, const RendererInfo &re
 	return Render(queuer, rendererInfo);
 }
 #ifdef USE_IMGUI
+void Behaviour::CopyToClipboard()
+{
+	std::string behJSON = "[[BEHAVIOUR_JSON]] ";
+	{
+		json::Document doc;
+		json::Value behObj(json::kObjectType);
+
+		if (!InitialSerialize(doc.GetAllocator(), behObj))
+		{
+			ErrMsg("Failed to serialize behaviour!");
+			return;
+		}
+
+		json::StringBuffer buffer;
+		json::Writer<json::StringBuffer> writer(buffer);
+		behObj.Accept(writer);
+		behJSON += buffer.GetString();
+	}
+	ImGui::SetClipboardText(behJSON.c_str());
+}
 int Behaviour::PopUIOpenState()
 {
 	int state = _uiOpen;

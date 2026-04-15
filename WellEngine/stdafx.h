@@ -24,7 +24,6 @@
 #include <cstdlib>
 #include <cstdarg>
 #include <functional>
-#include <Windows.h>
 #include <atomic>
 #include <thread>
 #include <execution>
@@ -35,7 +34,6 @@
 #include <random>
 #include <float.h>
 #include <intsafe.h>
-
 
 // DirectX & SDL
 #include <wrl/client.h>
@@ -60,7 +58,7 @@ namespace dx = DirectX;
 using Microsoft::WRL::ComPtr;
 
 // Dependencies
-#include "Dependencies/JoltPhysics/Jolt/Jolt.h"
+#include "Jolt/Jolt.h"
 JPH_SUPPRESS_WARNING_PUSH
 #include "Jolt/RegisterTypes.h"
 #include "Jolt/Core/Factory.h"
