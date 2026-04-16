@@ -15,23 +15,6 @@ enum class ShaderType
 	COMPUTE_SHADER	= 5,
 };
 
-/*namespace ShaderReflection
-{
-	struct BindingData
-	{
-		std::string name;
-		UINT registerIndex = 0;
-		D3D_SHADER_INPUT_TYPE type = D3D_SIT_TEXTURE; // Default to texture
-		D3D_RESOURCE_RETURN_TYPE returnType = D3D_RETURN_TYPE_UNORM; // Default to UNORM
-		D3D_SRV_DIMENSION dimension = D3D_SRV_DIMENSION_TEXTURE2D; // Default to 2D texture
-	};
-
-	struct ShaderData
-	{
-		std::vector<BindingData> bindings;
-	};
-};*/
-
 
 class ShaderD3D11
 {
