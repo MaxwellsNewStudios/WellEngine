@@ -103,6 +103,16 @@ protected:
 	// OnDirty runs when the Entity's transform is modified.
 	virtual void OnDirty();
 
+	// OnEditTransform runs when the Entity's transform is modified in the editor or in code.
+	// NOTE: Triggered manually by calling Entity::SignalTransformEdited(). 
+	// It is your responsibility to call after editing an entity.
+	virtual void OnEditTransform();
+
+	// OnEditTransformRec runs when the Entity's transform or any of its parents' transforms are modified in the editor or in code.
+	// NOTE: Triggered manually by calling Entity::SignalTransformEdited(). 
+	// It is your responsibility to call after editing an entity.
+	virtual void OnEditTransformRec();
+
 	// Serializes the behaviour to a string.
 	[[nodiscard]] virtual bool Serialize(json::Document::AllocatorType &docAlloc, json::Value &obj);
 
@@ -110,7 +120,6 @@ protected:
 	[[nodiscard]] virtual bool Deserialize(const json::Value &obj, Scene *scene);
 
 	virtual void PostDeserialize();
-
 	[[nodiscard]] virtual bool OnHover();
 	[[nodiscard]] virtual bool OffHover();
 	[[nodiscard]] virtual bool OnSelect();
@@ -173,6 +182,8 @@ public:
 	[[nodiscard]] bool InitialOffHover();
 	[[nodiscard]] bool InitialOnSelect();
 	[[nodiscard]] bool InitialOnDebugSelect();
+	void InitialOnEditTransform();
+	void InitialOnEditTransformRec();
 
 	[[nodiscard]] bool IsEnabled() const;
 	[[nodiscard]] bool IsEnabledSelf() const;

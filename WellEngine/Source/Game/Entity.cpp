@@ -373,6 +373,23 @@ void Entity::SetDirtyImmediate()
 		behaviour.get()->SetDirty();
 }
 
+void Entity::CallTransformEdited(bool first)
+{
+	for (auto &behaviour : _behaviours)
+	{
+		if (first)
+			behaviour->InitialOnEditTransform();
+		behaviour->InitialOnEditTransformRec();
+	}
+
+	for (auto &child : _children)
+		child->CallTransformEdited(false);
+}
+void Entity::SignalTransformEdited()
+{
+	CallTransformEdited(true);
+}
+
 void Entity::MarkAsRemoved()
 {
 	_isRemoved = true;
@@ -1072,6 +1089,7 @@ bool Entity::UIContextMenu()
 			Store(entMovement, (Load(camPos) + (Load(camForward) * distance)) - Load(originPos));
 
 			_transform.Move(entMovement, World);
+			SignalTransformEdited();
 		}
 
 		if (ImGui::MenuItem("Align View With Entity"))
@@ -1087,7 +1105,8 @@ bool Entity::UIContextMenu()
 			// Copy camera position & rotation to entity.
 			Transform *cameraTrans = camera->GetTransform();
 			_transform.SetPosition(cameraTrans->GetPosition(World), World);
-			_transform.SetRotation(cameraTrans->GetRotation(World), World);
+			_transform.SetRotation(cameraTrans->GetRotation(World), World); 
+			SignalTransformEdited();
 		}
 
 		if (ImGui::MenuItem("Position With Cursor") && debugPlayer)
@@ -1887,12 +1906,16 @@ bool Entity::InitialRenderUI()
 	ImGui::PushID("Transform");
 	if (ImGui::CollapsingHeader("Transform", ImGuiTreeNodeFlags_AllowOverlap))
 	{
-		if (!_transform.RenderUI(debugPlayer->GetEditSpace()))
+		bool changed = false;
+		if (!_transform.RenderUI(debugPlayer->GetEditSpace(), &changed))
 		{
 			ErrMsg("Failed to render transform UI!");
 			ImGui::PopID();
 			return false;
 		}
+
+		if (changed)
+			SignalTransformEdited();
 	}
 	ImGui::PopID();
 
@@ -2296,12 +2319,6 @@ bool Entity::InitialRenderUI()
 
 bool Entity::InitialBindBuffers(ID3D11DeviceContext *context)
 {
-	//if (!_transform.UpdateConstantBuffer(GetScene()->GetContext()))
-	//{
-	//	ErrMsg("Failed to update entity constant buffers!");
-	//	return false;
-	//}
-
 	ID3D11Buffer *const wmBuffer = _transform.GetConstantBuffer();
 	GetScene()->GetContext()->VSSetConstantBuffers(0, 1, &wmBuffer);
 

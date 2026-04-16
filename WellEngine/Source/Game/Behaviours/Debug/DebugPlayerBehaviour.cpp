@@ -284,10 +284,11 @@ bool DebugPlayerBehaviour::Update(TimeUtils &time, const Input &input)
 
 				positioningTargetTrans->SetPosition(placementPos, World);
 			}
+			positioningTargetEnt->SignalTransformEdited();
 
 			if (input.GetKey(KeyCode::Enter) == KeyState::Pressed ||
-				input.GetKey(KeyCode::M2) == KeyState::Pressed ||
-				input.GetKey(KeyCode::M3) == KeyState::Pressed)
+				input.GetKey(KeyCode::M2, true) == KeyState::Pressed ||
+				input.GetKey(KeyCode::M3, true) == KeyState::Pressed)
 			{
 				PositionWithCursor(nullptr);
 				Select(positioningTargetEnt);

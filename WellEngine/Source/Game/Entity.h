@@ -51,6 +51,8 @@ private:
 	float _lastHeightInHierarchy = 0.0f;
 #endif
 
+	void CallTransformEdited(bool first);
+
 protected:
 	bool _isInitialized = false;
 	bool _isEnabled = true;
@@ -122,6 +124,8 @@ public:
 
 	void SetDirty();
 	void SetDirtyImmediate();
+
+	void SignalTransformEdited();
 
 	void MarkAsRemoved();
 	[[nodiscard]] bool IsRemoved() const;

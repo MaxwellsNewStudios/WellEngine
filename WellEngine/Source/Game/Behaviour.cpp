@@ -490,6 +490,14 @@ bool Behaviour::InitialOnDebugSelect()
 {
 	return OnDebugSelect();
 }
+void Behaviour::InitialOnEditTransform()
+{
+	OnEditTransform();
+}
+void Behaviour::InitialOnEditTransformRec()
+{
+	OnEditTransformRec();
+}
 
 bool Behaviour::InitialSerialize(json::Document::AllocatorType &docAlloc, json::Value &obj)
 {
@@ -550,6 +558,8 @@ bool Behaviour::BindBuffers(ID3D11DeviceContext *context) { return true; }
 void Behaviour::OnEnable() { }
 void Behaviour::OnDisable() { }
 void Behaviour::OnDirty() { }
+void Behaviour::OnEditTransform() { }
+void Behaviour::OnEditTransformRec() { }
 bool Behaviour::OnHover() { return true; }
 bool Behaviour::OffHover() { return true; }
 bool Behaviour::OnSelect() { return true; }
@@ -558,3 +568,4 @@ bool Behaviour::OnDebugSelect() { return true; }
 bool Behaviour::Serialize(json::Document::AllocatorType &docAlloc, json::Value &obj) { return true; }
 bool Behaviour::Deserialize(const json::Value &obj, Scene *scene) { return true; }
 void Behaviour::PostDeserialize() { }
+

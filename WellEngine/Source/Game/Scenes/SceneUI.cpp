@@ -3062,6 +3062,7 @@ bool Scene::RenderGizmoUI()
 							entTrans->SetPosition(finalPos, World);
 							entTrans->SetScale(finalScaleFloat, World);
 							entTrans->SetRotation(finalRotFloat, World);
+							ent->SignalTransformEdited();
 						}
 					}
 				}
@@ -3103,6 +3104,7 @@ bool Scene::RenderGizmoUI()
 							entTrans->SetPosition(finalPos, World);
 							entTrans->SetScale(finalScaleFloat, World);
 							entTrans->SetRotation(finalRotFloat, World);
+							ent->SignalTransformEdited();
 						}
 					}
 				}

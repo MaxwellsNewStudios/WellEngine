@@ -170,7 +170,7 @@ public:
 	[[nodiscard]] dx::XMFLOAT3A NormalWorldToLocal(const dx::XMFLOAT3A &world);
 
 #ifdef USE_IMGUI
-	[[nodiscard]] bool RenderUI(ReferenceSpace space);
+	[[nodiscard]] bool RenderUI(ReferenceSpace space, bool *changed = nullptr);
 #endif
 
 	TESTABLE();

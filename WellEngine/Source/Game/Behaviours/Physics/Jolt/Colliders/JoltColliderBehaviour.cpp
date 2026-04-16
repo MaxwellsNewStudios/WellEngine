@@ -30,8 +30,8 @@ bool JoltColliderBehaviour::Start()
 {
 	// Apply default properties
 	Transform *transform = GetTransform();
-	_lastEntPos = _lastPosLerpGoal = _posLerpGoal = transform->GetPosition(World);
-	_lastEntRot = _lastRotLerpGoal = _rotLerpGoal = transform->GetRotation(World);
+	_lastPosLerpGoal = _posLerpGoal = transform->GetPosition(World);
+	_lastRotLerpGoal = _rotLerpGoal = transform->GetRotation(World);
 	_lerpTime = 0.0f;
 
 	BodyInterface &bodyInterface = GetBodyInterface();
@@ -49,69 +49,72 @@ bool JoltColliderBehaviour::Start()
 
 bool JoltColliderBehaviour::Update(TimeUtils &time, const Input &input)
 {
+#ifdef USE_IMGUI
+	if (_debugDrawInterpolation)
+	{
+		// Draw green line from last lerp goal pos to curr pos
+		// Draw yellow line from curr pos to goal pos
+		// Draw red line from curr pos to actual physics body pos
+
+		const BodyInterface &bodyInterface = GetBodyInterface();
+		DebugDrawer &drawer = DebugDrawer::Instance();
+
+		dx::XMFLOAT3A currPos;
+		dx::XMFLOAT4A _;
+		CalcLerp(currPos, _);
+
+		dx::XMFLOAT3A bodyPos;
+		CalcBodyLocation(bodyPos, _);
+
+
+		drawer.DrawLine(_lastPosLerpGoal, currPos, 0.1f, {0.0f, 1.0f, 0.0f, 0.5f}, false);
+		drawer.DrawLine(currPos, _posLerpGoal, 0.1f, { 1.0f, 1.0f, 0.0f, 0.5f }, false);
+		drawer.DrawLine(currPos, bodyPos, 0.05f, { 1.0f, 0.0f, 0.0f, 0.5f }, false);
+	}
+#endif
+
 	return true;
 }
 bool JoltColliderBehaviour::LateUpdate(TimeUtils &time, const Input &input)
 {
-	// If entity transform has moved or rotated since the last frame, apply the new transform to the physics body.
-	// Otherwise, apply the current physics body transform to the entity to keep them in sync.
-
-	Transform *transform = GetTransform();
-
-	dx::XMFLOAT3A currPos = transform->GetPosition(World);
-	dx::XMFLOAT4A currRot = transform->GetRotation(World);
-
-	dx::XMFLOAT3A currScale = transform->GetScale();
-
-	if (!EstEqual(currScale.x, _lastEntScale.x, 1e-3f) || !EstEqual(currScale.y, _lastEntScale.y, 1e-3f) || !EstEqual(currScale.z, _lastEntScale.z, 1e-3f))
+	// Resample interpolation goal immediately after physics update.
+	if (_resampleGoal)
 	{
-		// Entity scale has changed, recalculate physics body.
-		RecalculatePhysicsBody();
+		Transform *transform = GetTransform();
+		transform->SetPosition(_posLerpGoal, World);
+		transform->SetRotation(_rotLerpGoal, World);
 
-		_lastEntScale = currScale;
+		_lastPosLerpGoal = _posLerpGoal;
+		_lastRotLerpGoal = _rotLerpGoal;
+
+		CalcBodyLocation(_posLerpGoal, _rotLerpGoal);
+		_lerpTime = time.GetPhysDeltaTime();
+
+		_resampleGoal = false;
 	}
 
-	if (!EstEqual(currPos.x, _lastEntPos.x, 1e-3f) || !EstEqual(currPos.y, _lastEntPos.y, 1e-3f) || !EstEqual(currPos.z, _lastEntPos.z, 1e-3f) ||
-		!EstEqual(currRot.x, _lastEntRot.x, 1e-3f) || !EstEqual(currRot.y, _lastEntRot.y, 1e-3f) || !EstEqual(currRot.z, _lastEntRot.z, 1e-3f) || !EstEqual(currRot.w, _lastEntRot.w, 1e-3f))
+	BodyInterface &bodyInterface = GetBodyInterface();
+	bool skipInterpolation = false;
+
+	if (bodyInterface.GetMotionType(_bodyID) == EMotionType::Static)
+		skipInterpolation = true;
+	else if (!bodyInterface.IsActive(_bodyID))
+		skipInterpolation = true;
+
+	if (!skipInterpolation)
 	{
-		// Entity transform has changed, apply it to the physics body.
-		SyncPhysics();
+		// Interpolate towards the current lerp goal to ensure smooth movement even if physics updates are infrequent.
 
-		_lastPosLerpGoal = _posLerpGoal = _lastEntPos = currPos;
-		_lastRotLerpGoal = _rotLerpGoal = _lastEntRot = currRot;
+		dx::XMFLOAT3A newPos;
+		dx::XMFLOAT4A newRot;
+		CalcLerp(newPos, newRot);
+
+		Transform *transform = GetTransform();
+		transform->SetPosition(newPos, World);
+		transform->SetRotation(newRot, World);
+
+		_lerpTime = max(_lerpTime - time.GetDeltaTime(), 0.0f);
 	}
-	else
-	{
-		// Entity transform has not changed, apply physics body transform to entity.
-		// This can be skipped if the body is static or inactive.
-
-		BodyInterface &bodyInterface = GetBodyInterface();
-		bool doSkip = false;
-
-		if (bodyInterface.GetMotionType(_bodyID) == EMotionType::Static)
-			doSkip = true;
-		else if (!bodyInterface.IsActive(_bodyID))
-			doSkip = true;
-
-		if (!doSkip)
-		{
-			dx::XMFLOAT3A newPos;
-			dx::XMFLOAT4A newRot;
-
-			float t = _lerpTime / TimeUtils::GetPhysDeltaTime();
-			Store(newPos, dx::XMVectorLerp(Load(_posLerpGoal), Load(_lastPosLerpGoal), t));
-			Store(newRot, dx::XMQuaternionSlerp(Load(_rotLerpGoal), Load(_lastRotLerpGoal), t));
-
-			transform->SetPosition(newPos, World);
-			transform->SetRotation(newRot, World);
-			
-			_lastEntPos = newPos;
-			_lastEntRot = newRot;
-		}
-	}
-
-	_lerpTime -= time.GetDeltaTime();
-	_lerpTime = max(_lerpTime, 0.0f);
 
 	return true;
 }
@@ -124,15 +127,7 @@ bool JoltColliderBehaviour::PhysicsUpdate(float deltaTime)
 	else if (!bodyInterface.IsActive(_bodyID))
 		return true;
 
-	Transform *transform = GetTransform();
-	transform->SetPosition(_posLerpGoal, World);
-	transform->SetRotation(_rotLerpGoal, World);
-
-	_lastEntPos = _lastPosLerpGoal = _posLerpGoal;
-	_lastEntRot = _lastRotLerpGoal = _rotLerpGoal;
-	CalcBodyLocation(_posLerpGoal, _rotLerpGoal);
-
-	_lerpTime = deltaTime;
+	_resampleGoal = true;
 
 	return true;
 }
@@ -207,6 +202,35 @@ void JoltColliderBehaviour::DestroyBody()
 	bodyInterface.RemoveBody(_bodyID);
 	bodyInterface.DestroyBody(_bodyID);
 	_bodyID = BodyID(BodyID::cInvalidBodyID);
+}
+
+void JoltColliderBehaviour::CalcLerp(dx::XMFLOAT3A &pos, dx::XMFLOAT4A &rot) const
+{
+	float t = _lerpTime / TimeUtils::GetPhysDeltaTime();
+	Store(pos, dx::XMVectorLerp(Load(_posLerpGoal), Load(_lastPosLerpGoal), t));
+	Store(rot, dx::XMQuaternionSlerp(Load(_rotLerpGoal), Load(_lastRotLerpGoal), t));
+}
+
+void JoltColliderBehaviour::OnEditTransformRec()
+{
+	Transform *transform = GetTransform();
+	dx::XMFLOAT3A currPos = transform->GetPosition(World);
+	dx::XMFLOAT4A currRot = transform->GetRotation(World);
+	dx::XMFLOAT3A currScale = transform->GetScale();
+
+	constexpr float eps = 1e-3f;
+	if (!EstEqual(currScale.x, _lastEntScale.x, eps) || !EstEqual(currScale.y, _lastEntScale.y, eps) || !EstEqual(currScale.z, _lastEntScale.z, eps))
+	{
+		// Entity scale has changed, recalculate physics body.
+		RecalculatePhysicsBody();
+		_lastEntScale = currScale;
+	}
+
+	// Entity transform has changed, apply it to the physics body.
+	SyncPhysics();
+
+	_lastPosLerpGoal = _posLerpGoal = currPos;
+	_lastRotLerpGoal = _rotLerpGoal = currRot;
 }
 
 const BodyInterface &JoltColliderBehaviour::GetBodyInterface() const
@@ -489,6 +513,7 @@ bool JoltColliderBehaviour::RenderUI()
 	}
 
 	ImGui::Checkbox("Debug Draw", &_debugDraw);
+	ImGui::Checkbox("Draw Interpolation", &_debugDrawInterpolation);
 
 	// Motion type
 	const char *motionTypes[] = { "Static", "Kinematic", "Dynamic" };

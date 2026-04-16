@@ -1208,7 +1208,7 @@ dx::XMFLOAT3A Transform::NormalWorldToLocal(const dx::XMFLOAT3A &world)
 }
 
 #ifdef USE_IMGUI
-bool Transform::RenderUI(ReferenceSpace space)
+bool Transform::RenderUI(ReferenceSpace space, bool *changed)
 {
 	constexpr ImGuiInputTextFlags floatInputFlags = ImGuiInputTextFlags_CharsDecimal;
 	bool isChanged = false;
@@ -1462,6 +1462,9 @@ bool Transform::RenderUI(ReferenceSpace space)
 	}
 
 	ImGui::Dummy(ImVec2(0, 2));
+
+	if (changed)
+		*changed = isChanged;
 
 	return true;
 }

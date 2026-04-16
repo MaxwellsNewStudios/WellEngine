@@ -18,18 +18,19 @@ private:
 	float _gravityFactor = 1.0f;
 	float _restitution = 0.3f;
 
-	dx::XMFLOAT3A _lastEntPos = { 0, 0, 0 };
-	dx::XMFLOAT4A _lastEntRot = { 0, 0, 0, 1 };
-	dx::XMFLOAT3A _lastEntScale = { 1, 1, 1 };
-
+	bool _resampleGoal = false;
 	float _lerpTime = 0.0f;
 	dx::XMFLOAT3A _lastPosLerpGoal = { 0, 0, 0 };
 	dx::XMFLOAT4A _lastRotLerpGoal = { 0, 0, 0, 1 };
 	dx::XMFLOAT3A _posLerpGoal = { 0, 0, 0 };
 	dx::XMFLOAT4A _rotLerpGoal = { 0, 0, 0, 1 };
 
+	dx::XMFLOAT3A _lastEntScale = { 1, 1, 1 };
+
+
 #ifdef USE_IMGUI
 	bool _debugDraw = false;
+	bool _debugDrawInterpolation = false;
 #endif
 
 protected:
@@ -68,6 +69,10 @@ protected:
 	virtual void SyncTransform() = 0; 
 
 	void SetLerpGoal(const dx::XMFLOAT3A &posGoal, const dx::XMFLOAT4A &rotGoal) { _posLerpGoal = posGoal; _rotLerpGoal = rotGoal; }
+
+	void CalcLerp(dx::XMFLOAT3A &pos, dx::XMFLOAT4A &rot) const;
+
+	virtual void OnEditTransformRec() override;
 
 public:
 	JoltColliderBehaviour();
@@ -110,5 +115,4 @@ public:
 	void AddImpulse(const dx::XMFLOAT3 &impulse, const dx::XMFLOAT3 &point);
 	void AddAngularImpulse(const dx::XMFLOAT3 &impulse);
 	void MoveKinematic(const dx::XMFLOAT3 &position, const dx::XMFLOAT4 &rotation, float time);
-
 };
