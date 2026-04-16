@@ -718,7 +718,7 @@ bool Content::RenderUI(ID3D11Device *device)
 		static bool enableAutoRecompile = false;
 		ImGui::Checkbox("Auto Recompile Exposed Shaders", &enableAutoRecompile);
 
-		bool recompile = false;
+		bool tryRecompile = false;
 		if (enableAutoRecompile)
 		{
 			static float delay = 1.0f;
@@ -731,7 +731,7 @@ bool Content::RenderUI(ID3D11Device *device)
 			if (timeUntilReload <= 0.0f)
 			{
 				timeUntilReload = delay;
-				recompile = true;
+				tryRecompile = true;
 			}
 		}
 
@@ -751,8 +751,32 @@ bool Content::RenderUI(ID3D11Device *device)
 				ImGui::Text("Name: %s", shaderNames[i].c_str());
 				ImGui::Text("Path: %s", shaderContainer->path.c_str());
 
+				bool recompile = false;
+				if (tryRecompile)
+				{
+					// Check if the shader source file has been modified after the cso was last compiled
+					// If so, trigger a recompile
+
+					std::string csoPath = PATH_FILE_EXT(ASSET_COMPILED_PATH_CSO, shaderNames[i], "cso");
+					std::string sourcePath = PATH_FILE_EXT(ENGINE_PATH_SHADERS, shaderContainer->path, "hlsl");
+
+					std::filesystem::file_time_type csoTime = std::filesystem::last_write_time(csoPath);
+					std::filesystem::file_time_type sourceTime = std::filesystem::last_write_time(sourcePath);
+
+					if (sourceTime > csoTime)
+						recompile = true;
+				}
+
 				if (recompile || ImGui::Button("Recompile"))
-					bool _ = RecompileShader(device, shaderNames[i]);
+				{
+					if (!RecompileShader(device, shaderNames[i]))
+					{
+						// Recompilation failed, likely due to a syntax error in the shader.
+						// Touch the cso file to prevent continuous recompilation attempts until the source file is modified again.
+						std::string csoPath = PATH_FILE_EXT(ASSET_COMPILED_PATH_CSO, shaderNames[i], "cso");
+						std::filesystem::last_write_time(csoPath, std::filesystem::file_time_type::clock::now());
+					}
+				}
 
 				if (ImGui::TreeNode("Shader Info"))
 				{
@@ -1446,6 +1470,23 @@ ID3DBlob *Content::CompileShader(ID3D11Device *device, const std::string &path, 
 
 	if (errorBlob)
 		errorBlob->Release();
+
+	// Save compiled shader to cso path for future loading
+	{
+		std::string shaderName = std::filesystem::path(path).stem().string();
+		std::string csoPath = PATH_FILE_EXT(ASSET_COMPILED_PATH_CSO, shaderName, "cso");
+		std::ofstream writer(csoPath, std::ios::binary);
+
+		if (writer.is_open())
+		{
+			writer.write(static_cast<const char *>(shaderBlob->GetBufferPointer()), shaderBlob->GetBufferSize());
+			writer.close();
+		}
+		else
+		{
+			Warn("Failed to save compiled shader to cso path!");
+		}
+	}
 
 	return shaderBlob;
 }

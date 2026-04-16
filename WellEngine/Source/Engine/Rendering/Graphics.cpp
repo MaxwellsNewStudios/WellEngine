@@ -3464,191 +3464,104 @@ bool Graphics::RenderPostFX()
 			ZoneNamedXNC(renderFogVolumeZone, "Render Fog", RandomUniqueColor(), true);
 			TracyD3D11NamedZoneC(_tracyD3D11Context, renderFogVolumeD3D11Zone, "Render Fog", RandomUniqueColor(), true);
 
-			if (true) // compute
+			// Bind distortion settings
+			ID3D11Buffer *const distortionSettings = _distortionSettingsBuffer.GetBuffer();
+			_context->CSSetConstantBuffers(2, 1, &distortionSettings);
+
+			// Bind fog settings
+			ID3D11Buffer *const fogSettings = _fogSettingsBuffer.GetBuffer();
+			_context->CSSetConstantBuffers(6, 1, &fogSettings);
+
+			// Bind general data
+			ID3D11Buffer *const generalData = _generalDataBuffer.GetBuffer();
+			_context->CSSetConstantBuffers(5, 1, &generalData);
+
+			// Bind light tile data
+			ID3D11ShaderResourceView *const lightTileBuffer = _lightGridBuffer.GetSRV();
+			_context->CSSetShaderResources(14, 1, &lightTileBuffer);
+
+			// Bind fog compute shader
+			if (!_content->GetShader("CS_FogFX")->BindShader(_context))
 			{
-				// Bind distortion settings
-				ID3D11Buffer *const distortionSettings = _distortionSettingsBuffer.GetBuffer();
-				_context->CSSetConstantBuffers(2, 1, &distortionSettings);
-
-				// Bind fog settings
-				ID3D11Buffer *const fogSettings = _fogSettingsBuffer.GetBuffer();
-				_context->CSSetConstantBuffers(6, 1, &fogSettings);
-
-				// Bind general data
-				ID3D11Buffer *const generalData = _generalDataBuffer.GetBuffer();
-				_context->CSSetConstantBuffers(5, 1, &generalData);
-
-				// Bind light tile data
-				ID3D11ShaderResourceView *const lightTileBuffer = _lightGridBuffer.GetSRV();
-				_context->CSSetShaderResources(14, 1, &lightTileBuffer);
-
-				// Bind fog compute shader
-				if (!_content->GetShader("CS_FogFX")->BindShader(_context))
-				{
-					ErrMsg("Failed to bind fog compute shader!");
-					return false;
-				}
-
-				// Bind fog render target
-				ID3D11UnorderedAccessView *const uav[1] = { _fogRT.GetUAV() };
-				_context->CSSetUnorderedAccessViews(0, 1, uav, nullptr);
-
-				// Bind depth resource
-				ID3D11ShaderResourceView *const srv[1] = { _depthRT.GetSRV() };
-				_context->CSSetShaderResources(0, 1, srv);
-
-				// Bind spotlight collection
-				if (!_currSpotLightCollection.Get()->BindCSBuffers(_context))
-				{
-					ErrMsg("Failed to bind spotlight buffers!");
-					return false;
-				}
-
-				// Bind pointlight collection
-				if (!_currPointLightCollection.Get()->BindCSBuffers(_context))
-				{
-					ErrMsg("Failed to bind pointlight buffers!");
-					return false;
-				}
-
-				// Bind shadow sampler
-				static ID3D11SamplerState *const ssShadow = _content->GetSampler("Shadow")->GetSamplerState();
-				static ID3D11SamplerState *const ssShadowCube = _content->GetSampler("ShadowCube")->GetSamplerState();
-				static ID3D11SamplerState *const ssTest = _content->GetSampler("Test")->GetSamplerState();
-				static ID3D11SamplerState *const ssHQ = _content->GetSampler("HQ")->GetSamplerState();
-				static ID3D11SamplerState *const ssArray[4] = { ssShadow, ssShadowCube, ssTest, ssHQ };
-				_context->CSSetSamplers(1, 4, ssArray);
-
-				// Bind camera lighting data
-				if (!_currViewCamera->BindCSLightingBuffers())
-				{
-					ErrMsg("Failed to bind camera buffers!");
-					return false;
-				}
-
-				// Bind camera inverse view data
-				if (!_currViewCamera->BindInverseBuffers())
-				{
-					ErrMsg("Failed to bind inverse camera buffers!");
-					return false;
-				}
-
-
-				// Send execution command
-				_context->Dispatch(static_cast<UINT>(ceil(_viewportFog.Width / 8.0f)), static_cast<UINT>(ceil(_viewportFog.Height / 8.0f)), 1);
-
-
-				// Unbind pointlight collection
-				if (!_currPointLightCollection.Get()->UnbindCSBuffers(_context))
-				{
-					ErrMsg("Failed to unbind pointlight buffers!");
-					return false;
-				}
-
-				// Unbind spotlight collection
-				if (!_currSpotLightCollection.Get()->UnbindCSBuffers(_context))
-				{
-					ErrMsg("Failed to unbind spotlight buffers!");
-					return false;
-				}
-
-				// Unbind compute shader resources
-				ID3D11ShaderResourceView *nullSRV[1] = {};
-				memset(nullSRV, 0, sizeof(ID3D11ShaderResourceView));
-				_context->CSSetShaderResources(0, 1, nullSRV);
-
-				// Unbind render target
-				static ID3D11UnorderedAccessView *const nullUAV = nullptr;
-				_context->CSSetUnorderedAccessViews(0, 1, &nullUAV, nullptr);
+				ErrMsg("Failed to bind fog compute shader!");
+				return false;
 			}
-			else
+
+			// Bind fog render target
+			ID3D11UnorderedAccessView *const uav[1] = { _fogRT.GetUAV() };
+			_context->CSSetUnorderedAccessViews(0, 1, uav, nullptr);
+
+			// Bind depth resource
+			ID3D11ShaderResourceView *const srv[1] = { _depthRT.GetSRV() };
+			_context->CSSetShaderResources(0, 1, srv);
+
+			// Bind spotlight collection
+			if (!_currSpotLightCollection.Get()->BindCSBuffers(_context))
 			{
-				// Bind distortion settings
-				ID3D11Buffer *const distortionSettings = _distortionSettingsBuffer.GetBuffer();
-				_context->PSSetConstantBuffers(2, 1, &distortionSettings);
-
-				// Bind fog settings
-				ID3D11Buffer *const fogSettings = _fogSettingsBuffer.GetBuffer();
-				_context->PSSetConstantBuffers(6, 1, &fogSettings);
-
-				// Bind general data
-				ID3D11Buffer *const generalData = _generalDataBuffer.GetBuffer();
-				_context->PSSetConstantBuffers(5, 1, &generalData);
-
-				// Bind light tile data
-				ID3D11ShaderResourceView *const lightTileBuffer = _lightGridBuffer.GetSRV();
-				_context->PSSetShaderResources(14, 1, &lightTileBuffer);
-
-				// Bind fog render target
-				ID3D11RenderTargetView *const rtv[1] = { _fogRT.GetRTV()};
-				_context->OMSetRenderTargets(1, rtv, nullptr);
-
-				// Bind depth resource
-				ID3D11ShaderResourceView *const srv[1] = { _depthRT.GetSRV() };
-				_context->PSSetShaderResources(32, 1, srv);
-
-				// Bind spotlight collection
-				if (!_currSpotLightCollection.Get()->BindPSBuffers(_context))
-				{
-					ErrMsg("Failed to bind spotlight buffers!");
-					return false;
-				}
-
-				// Bind pointlight collection
-				if (!_currPointLightCollection.Get()->BindPSBuffers(_context))
-				{
-					ErrMsg("Failed to bind pointlight buffers!");
-					return false;
-				}
-
-				// Bind shadow sampler
-				static ID3D11SamplerState *const ssShadow = _content->GetSampler("Shadow")->GetSamplerState();
-				static ID3D11SamplerState *const ssShadowCube = _content->GetSampler("ShadowCube")->GetSamplerState();
-				static ID3D11SamplerState *const ssTest = _content->GetSampler("Test")->GetSamplerState();
-				static ID3D11SamplerState *const ssHQ = _content->GetSampler("HQ")->GetSamplerState();
-				static ID3D11SamplerState *const ssArray[4] = { ssShadow, ssShadowCube, ssTest, ssHQ };
-				_context->PSSetSamplers(1, 4, ssArray);
-
-				// Bind camera lighting data
-				if (!_currViewCamera->BindPSLightingBuffers())
-				{
-					ErrMsg("Failed to bind camera buffers!");
-					return false;
-				}
-
-				// Bind camera inverse view data
-				if (!_currViewCamera->BindInverseBuffers())
-				{
-					ErrMsg("Failed to bind inverse camera buffers!");
-					return false;
-				}
-
-				// Render full-screen quad
-				RenderScreenEffect(_content->GetShaderID("PS_ScreenEffectFog"));
-
-				// Unbind pointlight collection
-				if (!_currPointLightCollection.Get()->UnbindPSBuffers(_context))
-				{
-					ErrMsg("Failed to unbind pointlight buffers!");
-					return false;
-				}
-
-				// Unbind spotlight collection
-				if (!_currSpotLightCollection.Get()->UnbindPSBuffers(_context))
-				{
-					ErrMsg("Failed to unbind spotlight buffers!");
-					return false;
-				}
-
-				// Unbind resource views
-				ID3D11ShaderResourceView *nullSRV[1] = {};
-				memset(nullSRV, 0, sizeof(ID3D11ShaderResourceView));
-				_context->PSSetShaderResources(0, 1, nullSRV);
-
-				// Unbind render target
-				static ID3D11RenderTargetView *const nullRTV = nullptr;
-				_context->OMSetRenderTargets(1, &nullRTV, nullptr);
+				ErrMsg("Failed to bind spotlight buffers!");
+				return false;
 			}
+
+			// Bind pointlight collection
+			if (!_currPointLightCollection.Get()->BindCSBuffers(_context))
+			{
+				ErrMsg("Failed to bind pointlight buffers!");
+				return false;
+			}
+
+			// Bind shadow sampler
+			static ID3D11SamplerState *const ssShadow = _content->GetSampler("Shadow")->GetSamplerState();
+			static ID3D11SamplerState *const ssShadowCube = _content->GetSampler("ShadowCube")->GetSamplerState();
+			static ID3D11SamplerState *const ssTest = _content->GetSampler("Test")->GetSamplerState();
+			static ID3D11SamplerState *const ssHQ = _content->GetSampler("HQ")->GetSamplerState();
+			static ID3D11SamplerState *const ssArray[4] = { ssShadow, ssShadowCube, ssTest, ssHQ };
+			_context->CSSetSamplers(1, 4, ssArray);
+
+			// Bind camera lighting data
+			if (!_currViewCamera->BindCSLightingBuffers())
+			{
+				ErrMsg("Failed to bind camera buffers!");
+				return false;
+			}
+
+			// Bind camera inverse view data
+			if (!_currViewCamera->BindInverseBuffers())
+			{
+				ErrMsg("Failed to bind inverse camera buffers!");
+				return false;
+			}
+
+
+			// Send execution command
+			_context->Dispatch(
+				static_cast<UINT>(std::ceil(_viewportFog.Width / 8.0f)),
+				static_cast<UINT>(std::ceil(_viewportFog.Height / 8.0f)),
+				1
+			);
+
+
+			// Unbind pointlight collection
+			if (!_currPointLightCollection.Get()->UnbindCSBuffers(_context))
+			{
+				ErrMsg("Failed to unbind pointlight buffers!");
+				return false;
+			}
+
+			// Unbind spotlight collection
+			if (!_currSpotLightCollection.Get()->UnbindCSBuffers(_context))
+			{
+				ErrMsg("Failed to unbind spotlight buffers!");
+				return false;
+			}
+
+			// Unbind compute shader resources
+			ID3D11ShaderResourceView *nullSRV[1] = {};
+			memset(nullSRV, 0, sizeof(ID3D11ShaderResourceView));
+			_context->CSSetShaderResources(0, 1, nullSRV);
+
+			// Unbind render target
+			static ID3D11UnorderedAccessView *const nullUAV = nullptr;
+			_context->CSSetUnorderedAccessViews(0, 1, &nullUAV, nullptr);
 		}
 
 		// Perform Fog Blur
@@ -3696,7 +3609,11 @@ bool Graphics::RenderPostFX()
 
 
 					// Send execution command
-					_context->Dispatch(static_cast<UINT>(ceil(_viewportFog.Width / 8.0f)), static_cast<UINT>(ceil(_viewportFog.Height / 8.0f)), 1);
+					_context->Dispatch(
+						static_cast<UINT>(std::ceil(_viewportFog.Width / 8.0f)),
+						static_cast<UINT>(std::ceil(_viewportFog.Height / 8.0f)),
+						1
+					);
 
 
 					// Unbind compute shader resources
@@ -3730,7 +3647,11 @@ bool Graphics::RenderPostFX()
 
 
 					// Send execution command
-					_context->Dispatch(static_cast<UINT>(ceil(_viewportFog.Width / 8.0f)), static_cast<UINT>(ceil(_viewportFog.Height / 8.0f)), 1);
+					_context->Dispatch(
+						static_cast<UINT>(std::ceil(_viewportFog.Width / 8.0f)),
+						static_cast<UINT>(std::ceil(_viewportFog.Height / 8.0f)),
+						1
+					);
 
 
 					// Unbind compute shader resources
@@ -3750,6 +3671,7 @@ bool Graphics::RenderPostFX()
 			_context->CSSetShaderResources(1, 1, nullSRV);
 			_context->CSSetShaderResources(3, 1, nullSRV);
 		}
+
 
 		// Perform Emission downsample
 		if (_renderEmissionFX && _emissionBlurIterations > 0)
@@ -3774,7 +3696,11 @@ bool Graphics::RenderPostFX()
 
 
 			// Send execution command
-			_context->Dispatch((UINT)std::ceil(_viewportBlur.Width / 8.0f), (UINT)std::ceil(_viewportBlur.Height / 8.0f), 1);
+			_context->Dispatch(
+				static_cast<UINT>(std::ceil(_viewportBlur.Width / 8.0f)),
+				static_cast<UINT>(std::ceil(_viewportBlur.Height / 8.0f)),
+				1
+			);
 
 
 			// Unbind compute shader resources
@@ -3832,7 +3758,11 @@ bool Graphics::RenderPostFX()
 
 
 					// Send execution command
-					_context->Dispatch(static_cast<UINT>(ceil(_viewportBlur.Width / 8.0f)), static_cast<UINT>(ceil(_viewportBlur.Height / 8.0f)), 1);
+					_context->Dispatch(
+						static_cast<UINT>(std::ceil(_viewportBlur.Width / 8.0f)), 
+						static_cast<UINT>(std::ceil(_viewportBlur.Height / 8.0f)), 
+						1
+					);
 
 
 					// Unbind compute shader resources
@@ -3866,7 +3796,11 @@ bool Graphics::RenderPostFX()
 
 
 					// Send execution command
-					_context->Dispatch(static_cast<UINT>(ceil(_viewportBlur.Width / 8.0f)), static_cast<UINT>(ceil(_viewportBlur.Height / 8.0f)), 1);
+					_context->Dispatch(
+						static_cast<UINT>(std::ceil(_viewportBlur.Width / 8.0f)),
+						static_cast<UINT>(std::ceil(_viewportBlur.Height / 8.0f)),
+						1
+					);
 
 
 					// Unbind compute shader resources
@@ -3931,7 +3865,11 @@ bool Graphics::RenderPostFX()
 
 
 					// Send execution command
-					_context->Dispatch(static_cast<UINT>(ceil(_viewportOutline.Width / 8.0f)), static_cast<UINT>(ceil(_viewportOutline.Height / 8.0f)), 1);
+					_context->Dispatch(
+						static_cast<UINT>(std::ceil(_viewportOutline.Width / 8.0f)), 
+						static_cast<UINT>(std::ceil(_viewportOutline.Height / 8.0f)), 
+						1
+					);
 
 
 					// Unbind compute shader resources
@@ -3966,7 +3904,11 @@ bool Graphics::RenderPostFX()
 
 
 					// Send execution command
-					_context->Dispatch(static_cast<UINT>(ceil(_viewportOutline.Width / 8.0f)), static_cast<UINT>(ceil(_viewportOutline.Height / 8.0f)), 1);
+					_context->Dispatch(
+						static_cast<UINT>(std::ceil(_viewportOutline.Width / 8.0f)), 
+						static_cast<UINT>(std::ceil(_viewportOutline.Height / 8.0f)), 
+						1
+					);
 
 
 					// Unbind compute shader resources
@@ -4042,7 +3984,11 @@ bool Graphics::RenderPostFX()
 #endif
 
 		// Send execution command
-		_context->Dispatch(static_cast<UINT>(ceil(_viewportSceneView.Width / 8.0f)), static_cast<UINT>(ceil(_viewportSceneView.Height / 8.0f)), 1);
+		_context->Dispatch(
+			static_cast<UINT>(std::ceil(_viewportSceneView.Width / 8.0f)), 
+			static_cast<UINT>(std::ceil(_viewportSceneView.Height / 8.0f)), 
+			1
+		);
 
 
 		// Apply color grading LUT if one is set
@@ -4059,7 +4005,11 @@ bool Graphics::RenderPostFX()
 			_context->CSSetShaderResources(0, 1, &lutSRV);
 
 			// Send execution command
-			_context->Dispatch(static_cast<UINT>(ceil(_viewportSceneView.Width / 8.0f)), static_cast<UINT>(ceil(_viewportSceneView.Height / 8.0f)), 1);
+			_context->Dispatch(
+				static_cast<UINT>(std::ceil(_viewportSceneView.Width / 8.0f)),
+				static_cast<UINT>(std::ceil(_viewportSceneView.Height / 8.0f)),
+				1
+			);
 		}
 
 
@@ -4080,11 +4030,8 @@ bool Graphics::RenderPostFX()
 		_context->CSSetUnorderedAccessViews(0, 1, &nullUAV, nullptr);
 	}
 
-#ifdef USE_IMGUI
+#ifdef USE_IMGUI // TODO: DoF disabled without ImGui for now
 	if (_renderDepthOfFieldFX)
-#else
-	if (false) // TODO: DoF disabled without ImGui for now
-#endif
 	{
 		ZoneNamedXNC(depthOfFieldZone, "Depth of Field", RandomUniqueColor(), true);
 		TracyD3D11NamedZoneC(_tracyD3D11Context, depthOfFieldD3D11Zone, "Depth of Field", RandomUniqueColor(), true);
@@ -4123,7 +4070,11 @@ bool Graphics::RenderPostFX()
 			_context->CSSetConstantBuffers(6, 1, &dofSettings);
 
 			// Send execution command
-			_context->Dispatch(static_cast<UINT>(ceil(_viewportSceneView.Width / 8.0f)), static_cast<UINT>(ceil(_viewportSceneView.Height / 8.0f)), 1);
+			_context->Dispatch(
+				static_cast<UINT>(std::ceil(_viewportSceneView.Width / 8.0f)), 
+				static_cast<UINT>(std::ceil(_viewportSceneView.Height / 8.0f)), 
+				1
+			);
 
 
 			// Unbind compute shader resources
@@ -4160,7 +4111,11 @@ bool Graphics::RenderPostFX()
 
 
 				// Send execution command
-				_context->Dispatch(static_cast<UINT>(ceil(_viewportDof.Width / 8.0f)), static_cast<UINT>(ceil(_viewportDof.Height / 8.0f)), 1);
+				_context->Dispatch(
+					static_cast<UINT>(std::ceil(_viewportDof.Width / 8.0f)),
+					static_cast<UINT>(std::ceil(_viewportDof.Height / 8.0f)),
+					1
+				);
 
 
 				// Unbind compute shader resources
@@ -4197,7 +4152,11 @@ bool Graphics::RenderPostFX()
 
 
 				// Send execution command
-				_context->Dispatch(static_cast<UINT>(ceil(_viewportDof.Width / 8.0f)), static_cast<UINT>(ceil(_viewportDof.Height / 8.0f)), 1);
+				_context->Dispatch(
+					static_cast<UINT>(std::ceil(_viewportDof.Width / 8.0f)),
+					static_cast<UINT>(std::ceil(_viewportDof.Height / 8.0f)),
+					1
+				);
 
 
 				// Unbind compute shader resources
@@ -4231,7 +4190,11 @@ bool Graphics::RenderPostFX()
 
 
 				// Send execution command
-				_context->Dispatch(static_cast<UINT>(ceil(_viewportDof.Width / 8.0f)), static_cast<UINT>(ceil(_viewportDof.Height / 8.0f)), 1);
+				_context->Dispatch(
+					static_cast<UINT>(std::ceil(_viewportDof.Width / 8.0f)), 
+					static_cast<UINT>(std::ceil(_viewportDof.Height / 8.0f)), 
+					1
+				);
 
 
 				// Unbind compute shader resources
@@ -4265,7 +4228,11 @@ bool Graphics::RenderPostFX()
 				_context->CSSetShaderResources(0, 1, srv);
 
 				// Send execution command
-				_context->Dispatch(static_cast<UINT>(ceil(_viewportSceneView.Width / 8.0f)), static_cast<UINT>(ceil(_viewportSceneView.Height / 8.0f)), 1);
+				_context->Dispatch(
+					static_cast<UINT>(std::ceil(_viewportSceneView.Width / 8.0f)), 
+					static_cast<UINT>(std::ceil(_viewportSceneView.Height / 8.0f)), 
+					1
+				);
 
 				// Unbind compute shader resources
 				ID3D11ShaderResourceView *nullSRV[1] = {};
@@ -4308,7 +4275,11 @@ bool Graphics::RenderPostFX()
 			_context->CSSetShaderResources(0, 3, srvs);
 
 			// Send execution command
-			_context->Dispatch(static_cast<UINT>(ceil(_viewportSceneView.Width / 8.0f)), static_cast<UINT>(ceil(_viewportSceneView.Height / 8.0f)), 1);
+			_context->Dispatch(
+				static_cast<UINT>(std::ceil(_viewportSceneView.Width / 8.0f)), 
+				static_cast<UINT>(std::ceil(_viewportSceneView.Height / 8.0f)), 
+				1
+			);
 
 
 			// Unbind shader resources
@@ -4321,6 +4292,7 @@ bool Graphics::RenderPostFX()
 
 		}
 	}
+#endif
 
 	return true;
 }
