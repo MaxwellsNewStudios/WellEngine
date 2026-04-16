@@ -1633,6 +1633,7 @@ bool Scene::MergeStaticEntities()
 void Scene::EnterScene()
 {
 	_graphics->SetAmbientColor(_ambientColor);
+	_graphics->SetSkyboxColor(_skyboxColor);
 	_graphics->SetFogSettings(_fogSettings);
 	_graphics->SetEmissionSettings(_emissionSettings);
 	_graphics->SetDepthOfFieldSettings(_depthOfFieldSettings);
@@ -1652,6 +1653,7 @@ void Scene::EnterScene()
 void Scene::ExitScene()
 {
 	_ambientColor = _graphics->GetAmbientColor();
+	_skyboxColor = _graphics->GetSkyboxColor();
 	_fogSettings = _graphics->GetFogSettings();
 	_emissionSettings = _graphics->GetEmissionSettings();
 	_depthOfFieldSettings = _graphics->GetDepthOfFieldSettings();
@@ -2748,6 +2750,14 @@ const dx::XMFLOAT3 &Scene::GetAmbientColor() const
 void Scene::SetAmbientColor(const dx::XMFLOAT3 &color)
 {
 	_ambientColor = color;
+}
+const dx::XMFLOAT4 &Scene::GetSkyboxColor() const
+{
+	return _skyboxColor;
+}
+void Scene::SetSkyboxColor(const dx::XMFLOAT4 &color)
+{
+	_skyboxColor = color;
 }
 #pragma endregion
 

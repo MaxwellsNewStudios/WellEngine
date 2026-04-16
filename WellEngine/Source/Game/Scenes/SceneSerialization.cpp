@@ -116,6 +116,8 @@ bool Scene::Serialize(bool asSaveFile)
 				std::string skyboxShaderName = _content->GetShaderName(skyboxShaderID);
 				sceneGraphicsObj.AddMember("Skybox", SerializerUtils::SerializeString(skyboxShaderName, docAlloc), docAlloc);
 
+				sceneGraphicsObj.AddMember("SkyCol", SerializerUtils::SerializeVec(_graphics->GetSkyboxColor(), docAlloc), docAlloc);
+
 				sceneGraphicsObj.AddMember("Ambient", SerializerUtils::SerializeVec(_graphics->GetAmbientColor(), docAlloc), docAlloc);
 
 				json::Value sceneFogObj(json::kObjectType);
@@ -350,6 +352,9 @@ bool Scene::Deserialize(bool sceneReload)
 
 			if (sceneGraphicsObj.HasMember("Skybox"))
 				_skyboxShaderID = _content->GetShaderID(sceneGraphicsObj["Skybox"].GetString());
+
+			if (sceneGraphicsObj.HasMember("SkyCol"))
+				SerializerUtils::DeserializeVec(_skyboxColor, sceneGraphicsObj["SkyCol"]);
 
 			if (sceneGraphicsObj.HasMember("Ambient"))
 				SerializerUtils::DeserializeVec(_ambientColor, sceneGraphicsObj["Ambient"]);

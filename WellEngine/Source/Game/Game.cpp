@@ -813,6 +813,7 @@ bool Game::Setup(TimeUtils &time, Window window)
 		{ ShaderType::PIXEL_SHADER,			"PS_TextDefault",				"Pixel/PS_TextDefault"				},
 		{ ShaderType::PIXEL_SHADER,			"PS_DepthCubemap",				"Pixel/PS_DepthCubemap"				},
 		{ ShaderType::PIXEL_SHADER,			"PS_SkyboxDefault",				"Pixel/PS_SkyboxDefault"			},
+		{ ShaderType::PIXEL_SHADER,			"PS_SkyboxSolidColor",			"Pixel/PS_SkyboxSolidColor"			},
 		{ ShaderType::PIXEL_SHADER,			"PS_SkyboxNormal",				"Pixel/PS_SkyboxNormal"				},
 		{ ShaderType::PIXEL_SHADER,			"PS_SkyboxEnvironment",			"Pixel/PS_SkyboxEnvironment"		},
 		{ ShaderType::PIXEL_SHADER,			"PS_ScreenEffectFog",			"Pixel/PS_ScreenEffectFog"			},

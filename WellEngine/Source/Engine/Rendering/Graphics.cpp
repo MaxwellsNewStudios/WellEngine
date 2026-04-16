@@ -907,6 +907,10 @@ dx::XMFLOAT3 Graphics::GetAmbientColor() const
 {
 	return To3(_currAmbientColor);
 }
+dx::XMFLOAT4 Graphics::GetSkyboxColor() const
+{
+	return _currSkyboxColor;
+}
 UINT Graphics::GetSkyboxShaderID() const
 {
 	return _skyboxPsID;
@@ -934,6 +938,13 @@ void Graphics::SetAmbientColor(const dx::XMFLOAT3 &color)
 	_currAmbientColor.y = color.y;
 	_currAmbientColor.z = color.z;
 }
+void Graphics::SetSkyboxColor(const dx::XMFLOAT4 &color)
+{
+	_currSkyboxColor.x = color.x;
+	_currSkyboxColor.y = color.y;
+	_currSkyboxColor.z = color.z;
+	_currSkyboxColor.w = color.w;
+}
 void Graphics::SetSkyboxShaderID(UINT shaderID)
 {
 	if (shaderID == CONTENT_NULL)
@@ -956,6 +967,22 @@ void Graphics::SetSkyboxShaderID(UINT shaderID)
 	}
 
 	_skyboxPsID = shaderID;
+
+	if (shaderName == "PS_SkyboxSolidColor")
+	{
+		if (!_skyboxBuffer)
+			_skyboxBuffer = std::make_unique<ConstantBufferD3D11>();
+
+		if (!_skyboxBuffer->Initialize(_device, sizeof(dx::XMFLOAT4), &_currSkyboxColor))
+		{
+			ErrMsg("Failed to initialize skybox buffer!");
+			return;
+		}
+	}
+	else
+	{
+		_skyboxBuffer = nullptr;
+	}
 }
 void Graphics::SetEnvironmentCubemapID(UINT cubemapID)
 {
@@ -1076,6 +1103,15 @@ bool Graphics::EndSceneRender(TimeUtils &time)
 		{
 			ErrMsg("Failed to update global light buffer!");
 			return false;
+		}
+
+		if (_skyboxBuffer)
+		{
+			if (!_skyboxBuffer->UpdateBuffer(_context, &_currSkyboxColor))
+			{
+				ErrMsg("Failed to update skybox buffer!");
+				return false;
+			}
 		}
 
 		_generalDataSettings.time = time.GetTime();
@@ -2416,6 +2452,13 @@ bool Graphics::RenderScreenEffect(UINT psID)
 			return false;
 		}
 		_currPsID = psID;
+	}
+
+	// If has skybox buffer, bind it to slot 4
+	if (_skyboxBuffer)
+	{
+		ID3D11Buffer *const skyboxBuffer = _skyboxBuffer->GetBuffer();
+		_context->PSSetConstantBuffers(4, 1, &skyboxBuffer);
 	}
 
 	ComPtr<ID3D11DepthStencilState> prevDSS = nullptr;
@@ -4550,6 +4593,12 @@ bool Graphics::RenderUI(TimeUtils &time)
 
 	// Set ambient color
 	ImGui::ColorEdit3("Ambient Color", &(_currAmbientColor.x), ImGuiColorEditFlags_NoInputs);
+
+	if (_skyboxBuffer)
+	{
+		ImGuiColorEditFlags flags = ImGuiColorEditFlags_NoInputs | ImGuiColorEditFlags_AlphaPreviewHalf | ImGuiColorEditFlags_Float | ImGuiColorEditFlags_HDR;
+		ImGui::ColorEdit4("Skybox Color", &(_currSkyboxColor.x), flags);
+	}
 	
 	ImGui::Dummy(ImVec2(0.0f, 6.0f));
 	ImGui::SeparatorText("Toggles");

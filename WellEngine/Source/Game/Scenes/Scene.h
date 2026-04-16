@@ -72,6 +72,7 @@ private:
 	TimelineManager _timelineManager;
 
 	dx::XMFLOAT3 _ambientColor = { 0.01f, 0.01f, 0.01f };
+	dx::XMFLOAT4 _skyboxColor = { 0, 0, 0, 0 };
 	UINT _envCubemapID = CONTENT_NULL;
 	UINT _skyboxShaderID = CONTENT_NULL;
 	FogSettingsBuffer _fogSettings = { };
@@ -222,7 +223,7 @@ public:
 	[[nodiscard]] DebugPlayerBehaviour *GetDebugPlayer() const;
 	void SetDebugPlayer(DebugPlayerBehaviour *debugPlayer);
 	void SetSelection(Entity *ent, bool additive = false);
-	Entity *GetPrimarySelection() const;
+	[[nodiscard]] Entity *GetPrimarySelection() const;
 #endif
 	[[nodiscard]] TimelineManager* GetTimelineManager();
 	[[nodiscard]] SoundEngine *GetSoundEngine();
@@ -247,6 +248,8 @@ public:
 	void SetDepthOfFieldSettings(const DepthOfFieldSettingsBuffer &settings);
 	[[nodiscard]] const dx::XMFLOAT3 &GetAmbientColor() const;
 	void SetAmbientColor(const dx::XMFLOAT3 &color);
+	[[nodiscard]] const dx::XMFLOAT4 &GetSkyboxColor() const;
+	void SetSkyboxColor(const dx::XMFLOAT4 &color);
 #pragma endregion
 
 

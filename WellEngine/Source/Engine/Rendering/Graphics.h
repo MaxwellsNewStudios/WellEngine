@@ -234,6 +234,7 @@ private:
 	RenderType _renderOutput = RenderType::DEFAULT;
 
 	dx::XMFLOAT4A _currAmbientColor = { 0.01f, 0.01f, 0.01f, 0.0f };
+	dx::XMFLOAT4A _currSkyboxColor = { 0, 0, 0, 0 };
 	FogSettingsBuffer _currFogSettings = { };
 	EmissionSettingsBuffer _currEmissionSettings = { };
 	DepthOfFieldSettingsBuffer _currDepthOfFieldSettings = { };
@@ -254,6 +255,7 @@ private:
 	ConstantBufferD3D11 _emissionSettingsBuffer;
 	ConstantBufferD3D11 _distortionSettingsBuffer;
 	ConstantBufferD3D11 _depthOfFieldSettingsBuffer;
+	std::unique_ptr<ConstantBufferD3D11> _skyboxBuffer;
 
 	std::vector<float> _fogGaussWeights = { 0.7788081181217f, 0.2165377067336f, 0.0046541751447f };
 	std::vector<float> _emissionGaussWeights = { 0.2270270270f, 0.1945945946f, 0.1216216216f, 0.0540540541f, 0.0162162162f };
@@ -428,6 +430,7 @@ public:
 	[[nodiscard]] EmissionSettingsBuffer GetEmissionSettings() const;
 	[[nodiscard]] DepthOfFieldSettingsBuffer GetDepthOfFieldSettings() const;
 	[[nodiscard]] dx::XMFLOAT3 GetAmbientColor() const;
+	[[nodiscard]] dx::XMFLOAT4 GetSkyboxColor() const;
 	[[nodiscard]] UINT GetSkyboxShaderID() const;
 	[[nodiscard]] UINT GetEnvironmentCubemapID() const;
 
@@ -435,6 +438,7 @@ public:
 	void SetEmissionSettings(const EmissionSettingsBuffer &emissionSettings);
 	void SetDepthOfFieldSettings(const DepthOfFieldSettingsBuffer& dofSettings);
 	void SetAmbientColor(const dx::XMFLOAT3 &color);
+	void SetSkyboxColor(const dx::XMFLOAT4 &color);
 	void SetSkyboxShaderID(UINT shaderID);
 	void SetEnvironmentCubemapID(UINT cubemapID);
 
