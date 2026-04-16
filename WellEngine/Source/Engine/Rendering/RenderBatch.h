@@ -38,5 +38,5 @@ public:
 	[[nodiscard]] bool BindBuffers() const;
 	[[nodiscard]] bool ResetState();
 
-	TESTABLE()
+	TESTABLE
 };

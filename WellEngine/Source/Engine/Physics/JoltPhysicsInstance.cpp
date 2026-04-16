@@ -18,8 +18,9 @@ bool JoltPhysicsInstance::Initialize(JoltManager *manager)
 		ErrMsg("Failed to initialize JoltPhysicsInstance: JoltManager is null!");
 		return false;
 	}
-
-#ifndef _DEPLOY
+	
+	// Pause physics by default in edit mode.
+#ifdef EDIT_MODE 
 	_paused = true;
 #endif
 

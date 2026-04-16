@@ -141,7 +141,7 @@ namespace InputBindings
 			_deactivationTimer = 0.0f;
 		};
 
-		TESTABLE()
+		TESTABLE
 	};
 
 	// Active if the key has the given state.
@@ -186,7 +186,7 @@ namespace InputBindings
 			return _deactivationTimer > 0.0f;
 		};
 
-		TESTABLE()
+		TESTABLE
 	};
 	
 	// Active if the key has been held for a certain amount of time.
@@ -242,7 +242,7 @@ namespace InputBindings
 			_activationTimer = 0.0f;
 		};
 
-		TESTABLE()
+		TESTABLE
 	};
 
 
@@ -284,7 +284,7 @@ namespace InputBindings
 			}
 		};
 
-		TESTABLE()
+		TESTABLE
 	};
 	
 	/// Active if any binding step is active.
@@ -328,7 +328,7 @@ namespace InputBindings
 			return false;
 		};
 
-		TESTABLE()
+		TESTABLE
 	};
 	
 	/// Active if any binding step is active and no disallowed steps are active.
@@ -413,7 +413,7 @@ namespace InputBindings
 			}
 		};
 
-		TESTABLE()
+		TESTABLE
 	};
 
 	/// Active if all binding steps are active at once.
@@ -451,7 +451,7 @@ namespace InputBindings
 			return true;
 		};
 
-		TESTABLE()
+		TESTABLE
 	};
 
 	/// Active if all binding steps were activated in sequence.
@@ -527,7 +527,7 @@ namespace InputBindings
 			_restartTimer = 0.0f;
 		};
 
-		TESTABLE()
+		TESTABLE
 	};
 }
 
@@ -594,5 +594,5 @@ public:
 		return false;
 	}
 
-	TESTABLE()
+	TESTABLE
 };

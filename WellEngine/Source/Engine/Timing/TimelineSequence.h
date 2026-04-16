@@ -87,5 +87,5 @@ public:
 	[[nodiscard]] const dx::XMFLOAT4A& GetStartRotation() const;
 	[[nodiscard]] const dx::XMFLOAT3A& GetStartScale() const;*/
 
-	TESTABLE()
+	TESTABLE
 };

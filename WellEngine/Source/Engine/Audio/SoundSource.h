@@ -133,5 +133,5 @@ public:
 
 	void ResetSound();
 
-	TESTABLE()
+	TESTABLE
 };

@@ -195,5 +195,5 @@ public:
 	[[nodiscard]] bool InitialDeserialize(const json::Value &obj, Scene *scene);
 	void InitialPostDeserialize();
 
-	TESTABLE()
+	TESTABLE
 };

@@ -20,5 +20,5 @@ public:
 	unsigned int GetHeight() const;
 	std::string GetMap() const;
 
-	TESTABLE()
+	TESTABLE
 };

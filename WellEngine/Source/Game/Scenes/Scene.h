@@ -278,5 +278,5 @@ public:
 	[[nodiscard]] bool CreateSoundEmitterEntity(Entity** out, const std::string& name, const std::string& fileName, bool loop = false, float volume = 1.0f, float distanceScaler = 75.0f, float reverbScaler = 1.0f, float minimumDelay = 2.0f, float maximumDelay = 10.0f);
 #pragma endregion
 
-	TESTABLE()
+	TESTABLE
 };

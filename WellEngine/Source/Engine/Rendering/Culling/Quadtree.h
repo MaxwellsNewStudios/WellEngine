@@ -853,5 +853,5 @@ public:
 	}
 #endif
 
-	TESTABLE()
+	TESTABLE
 };

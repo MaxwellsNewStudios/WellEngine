@@ -26,5 +26,5 @@ public:
 
 	[[nodiscard]] bool UpdateBuffer(ID3D11DeviceContext *context, const void *data) const;
 
-	TESTABLE();
+	TESTABLE;
 };

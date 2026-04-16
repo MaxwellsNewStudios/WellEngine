@@ -495,5 +495,5 @@ public:
 	[[nodiscard]] bool RenderUI();
 #endif
 
-	TESTABLE()
+	TESTABLE
 };

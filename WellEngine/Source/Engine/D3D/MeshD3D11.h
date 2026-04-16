@@ -209,5 +209,5 @@ public:
 	[[nodiscard]] const MeshData *GetMeshData() const;
 	[[nodiscard]] const MeshCollider &GetMeshCollider() const;
 
-	TESTABLE()
+	TESTABLE
 };

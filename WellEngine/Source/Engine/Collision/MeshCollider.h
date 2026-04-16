@@ -58,5 +58,5 @@ public:
 	void VisualizeTreeDepth(const dx::XMFLOAT4X4 &worldMatrix, UINT depth, bool compact, const dx::XMFLOAT4 &color, bool drawTris = false, bool overlay = false, bool recursive = false) const;
 #endif
 
-	TESTABLE()
+	TESTABLE
 };

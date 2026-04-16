@@ -39,5 +39,5 @@ public:
 	bool RenderUI();
 #endif
 
-	TESTABLE()
+	TESTABLE
 };

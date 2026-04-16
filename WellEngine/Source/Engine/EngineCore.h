@@ -15,5 +15,5 @@ public:
 	int Init();
 	int Run();
 
-	TESTABLE()
+	TESTABLE
 };

@@ -33,5 +33,5 @@ public:
 	[[nodiscard]] std::unordered_map<std::string, TimelineSequence> GetSequences() const;
 	[[nodiscard]] TimelineSequence GetSequence(const std::string &sequenceName) const;
 
-	TESTABLE()
+	TESTABLE
 };

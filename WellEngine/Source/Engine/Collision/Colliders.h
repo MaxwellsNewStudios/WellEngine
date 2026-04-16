@@ -116,7 +116,7 @@ namespace Collisions
 		std::vector<std::function<void(const CollisionData&)>> _onCollisionExitCallbacks;
 		std::vector<std::function<void(const CollisionData&)>> _intersectionCallbacks;
 
-		TESTABLE()
+		TESTABLE
 	};
 
 	struct Ray: public Collider
@@ -144,7 +144,7 @@ namespace Collisions
 		bool TransformDebug(ID3D11DeviceContext* context, TimeUtils &time, const Input &input) override;
 #endif
 
-		TESTABLE()
+		TESTABLE
 	};
 
 	struct Sphere: public Collider 
@@ -166,7 +166,7 @@ namespace Collisions
 		bool TransformDebug(ID3D11DeviceContext* context, TimeUtils &time, const Input &input) override;
 #endif
 
-		TESTABLE()
+		TESTABLE
 	};
 
 
@@ -188,7 +188,7 @@ namespace Collisions
 		bool TransformDebug(ID3D11DeviceContext* context, TimeUtils &time, const Input &input) override;
 #endif
 
-		TESTABLE()
+		TESTABLE
 	};
 
 	struct AABB: public Collider
@@ -210,7 +210,7 @@ namespace Collisions
 		bool TransformDebug(ID3D11DeviceContext* context, TimeUtils &time, const Input &input) override;
 #endif
 
-		TESTABLE()
+		TESTABLE
 	};
 
 	struct OBB: public Collider 
@@ -232,7 +232,7 @@ namespace Collisions
 		bool TransformDebug(ID3D11DeviceContext* context, TimeUtils &time, const Input &input) override;
 #endif
 
-		TESTABLE()
+		TESTABLE
 	};
 
 
@@ -299,6 +299,6 @@ namespace Collisions
 		bool _isWallCollider;
 		bool _debugFlip = false;
 
-		TESTABLE()
+		TESTABLE
 	};
 }

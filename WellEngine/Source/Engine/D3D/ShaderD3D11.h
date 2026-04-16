@@ -52,5 +52,5 @@ public:
 	[[nodiscard]] ShaderType GetShaderType() const;
 	[[nodiscard]] ID3D11ShaderReflection *GetReflector() const;
 
-	TESTABLE()
+	TESTABLE
 };

@@ -49,5 +49,5 @@ public:
 	[[nodiscard]] bool IsCubemap() const;
 	[[nodiscard]] TexDim GetDim() const;
 
-	TESTABLE()
+	TESTABLE
 };

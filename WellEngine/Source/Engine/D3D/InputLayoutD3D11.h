@@ -34,5 +34,5 @@ public:
 
 	[[nodiscard]] ID3D11InputLayout *GetInputLayout() const;
 
-	TESTABLE()
+	TESTABLE
 };

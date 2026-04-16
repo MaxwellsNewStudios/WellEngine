@@ -8,7 +8,7 @@ namespace TestUtils
 	class TestUtility;
 };
 
-#define TESTABLE() friend class TestUtils::TestUtility;
+#define TESTABLE friend class TestUtils::TestUtility;
 
 #undef TRACY_ENABLE
 
@@ -16,7 +16,7 @@ namespace TestUtils
 #else
 
 
-#define TESTABLE()
+#define TESTABLE
 
 
 #endif // _TESTING
