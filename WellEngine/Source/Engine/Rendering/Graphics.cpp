@@ -4716,6 +4716,20 @@ bool Graphics::RenderUI(TimeUtils &time)
 						std::vector<float> &gaussWeights = _fogGaussWeights;
 						bool modified = false;
 
+						static float sigma = 0.0f;
+						if (ImGui::Button("Apply Gaussian"))
+						{
+							CalcGaussianWeights(gaussWeights.data(), gaussWeights.size(), sigma);
+							modified = true;
+						}
+
+						ImGui::SameLine();
+						ImGui::Text("Sigma:");
+						ImGui::SameLine();
+						ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
+						ImGui::DragFloat("##Sigma", &sigma, 0.01f);
+						ImGuiUtils::LockMouseOnActive();
+
 						static float valueRange[2] = { 0.0f, 1.0f };
 						if (ImGui::DragFloat2("Range", valueRange, 0.01f))
 							valueRange[1] = max(valueRange[1], valueRange[0]);
@@ -4727,8 +4741,8 @@ bool Graphics::RenderUI(TimeUtils &time)
 							if (normalizeWeights)
 							{
 								float sum = 0.0f;
-								for (float &weight : gaussWeights)
-									sum += weight;
+								for (int i = 0; i < gaussWeights.size(); i++)
+									sum += gaussWeights[i] * (i == 0 ? 1.0f : 2.0f);
 
 								if (sum > 0.0f)
 								{
@@ -4774,7 +4788,7 @@ bool Graphics::RenderUI(TimeUtils &time)
 										for (int j = 0; j < weightCount; j++)
 										{
 											if (j != i)
-												sum += gaussWeights[j];
+												sum += gaussWeights[j]* (j == 0 ? 1.0f : 2.0f);
 										}
 
 										if (sum > 0.0f)
@@ -4815,8 +4829,8 @@ bool Graphics::RenderUI(TimeUtils &time)
 							if (normalizeWeights)
 							{
 								float sum = 0.0f;
-								for (float &weight : gaussWeights)
-									sum += weight;
+								for (int i = 0; i < gaussWeights.size(); i++)
+									sum += gaussWeights[i] * (i == 0 ? 1.0f : 2.0f);
 
 								if (sum > 0.0f)
 								{
@@ -4888,6 +4902,20 @@ bool Graphics::RenderUI(TimeUtils &time)
 						std::vector<float> &gaussWeights = _emissionGaussWeights;
 						bool modified = false;
 
+						static float sigma = 0.0f;
+						if (ImGui::Button("Apply Gaussian"))
+						{
+							CalcGaussianWeights(gaussWeights.data(), gaussWeights.size(), sigma);
+							modified = true;
+						}
+
+						ImGui::SameLine();
+						ImGui::Text("Sigma:");
+						ImGui::SameLine();
+						ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
+						ImGui::DragFloat("##Sigma", &sigma, 0.01f);
+						ImGuiUtils::LockMouseOnActive();
+
 						static float valueRange[2] = { 0.0f, 1.0f };
 						if (ImGui::DragFloat2("Range", valueRange, 0.01f))
 							valueRange[1] = max(valueRange[1], valueRange[0]);
@@ -4899,8 +4927,8 @@ bool Graphics::RenderUI(TimeUtils &time)
 							if (normalizeWeights)
 							{
 								float sum = 0.0f;
-								for (float &weight : gaussWeights)
-									sum += weight;
+								for (int i = 0; i < gaussWeights.size(); i++)
+									sum += gaussWeights[i] * (i == 0 ? 1.0f : 2.0f);
 
 								if (sum > 0.0f)
 								{
@@ -4946,7 +4974,7 @@ bool Graphics::RenderUI(TimeUtils &time)
 										for (int j = 0; j < weightCount; j++)
 										{
 											if (j != i)
-												sum += gaussWeights[j];
+												sum += gaussWeights[j] * (j == 0 ? 1.0f : 2.0f);
 										}
 
 										if (sum > 0.0f)
@@ -4987,8 +5015,8 @@ bool Graphics::RenderUI(TimeUtils &time)
 							if (normalizeWeights)
 							{
 								float sum = 0.0f;
-								for (float &weight : gaussWeights)
-									sum += weight;
+								for (int i = 0; i < gaussWeights.size(); i++)
+									sum += gaussWeights[i] * (i == 0 ? 1.0f : 2.0f);
 
 								if (sum > 0.0f)
 								{
@@ -5057,6 +5085,20 @@ bool Graphics::RenderUI(TimeUtils &time)
 						std::vector<float> &gaussWeights = _dofGaussWeights;
 						bool modified = false;
 
+						static float sigma = 0.0f;
+						if (ImGui::Button("Apply Gaussian"))
+						{
+							CalcGaussianWeights(gaussWeights.data(), gaussWeights.size(), sigma);
+							modified = true;
+						}
+
+						ImGui::SameLine();
+						ImGui::Text("Sigma:");
+						ImGui::SameLine();
+						ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
+						ImGui::DragFloat("##Sigma", &sigma, 0.01f);
+						ImGuiUtils::LockMouseOnActive();
+
 						static float valueRange[2] = { 0.0f, 1.0f };
 						if (ImGui::DragFloat2("Range", valueRange, 0.01f))
 							valueRange[1] = max(valueRange[1], valueRange[0]);
@@ -5068,8 +5110,8 @@ bool Graphics::RenderUI(TimeUtils &time)
 							if (normalizeWeights)
 							{
 								float sum = 0.0f;
-								for (float &weight : gaussWeights)
-									sum += weight;
+								for (int i = 0; i < gaussWeights.size(); i++)
+									sum += gaussWeights[i] * (i == 0 ? 1.0f : 2.0f);
 
 								if (sum > 0.0f)
 								{
@@ -5115,7 +5157,7 @@ bool Graphics::RenderUI(TimeUtils &time)
 										for (int j = 0; j < weightCount; j++)
 										{
 											if (j != i)
-												sum += gaussWeights[j];
+												sum += gaussWeights[j] * (j == 0 ? 1.0f : 2.0f);
 										}
 
 										if (sum > 0.0f)
@@ -5156,8 +5198,8 @@ bool Graphics::RenderUI(TimeUtils &time)
 							if (normalizeWeights)
 							{
 								float sum = 0.0f;
-								for (float &weight : gaussWeights)
-									sum += weight;
+								for (int i = 0; i < gaussWeights.size(); i++)
+									sum += gaussWeights[i] * (i == 0 ? 1.0f : 2.0f);
 
 								if (sum > 0.0f)
 								{
@@ -5231,6 +5273,20 @@ bool Graphics::RenderUI(TimeUtils &time)
 						std::vector<float> &gaussWeights = _outlineGaussWeights;
 						bool modified = false;
 
+						static float sigma = 0.0f;
+						if (ImGui::Button("Apply Gaussian"))
+						{
+							CalcGaussianWeights(gaussWeights.data(), gaussWeights.size(), sigma);
+							modified = true;
+						}
+
+						ImGui::SameLine();
+						ImGui::Text("Sigma:");
+						ImGui::SameLine();
+						ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
+						ImGui::DragFloat("##Sigma", &sigma, 0.01f);
+						ImGuiUtils::LockMouseOnActive();
+
 						static float valueRange[2] = { 0.0f, 1.0f };
 						if (ImGui::DragFloat2("Range", valueRange, 0.01f))
 							valueRange[1] = max(valueRange[1], valueRange[0]);
@@ -5242,8 +5298,8 @@ bool Graphics::RenderUI(TimeUtils &time)
 							if (normalizeWeights)
 							{
 								float sum = 0.0f;
-								for (float &weight : gaussWeights)
-									sum += weight;
+								for (int i = 0; i < gaussWeights.size(); i++)
+									sum += gaussWeights[i] * (i == 0 ? 1.0f : 2.0f);
 
 								if (sum > 0.0f)
 								{
@@ -5289,7 +5345,7 @@ bool Graphics::RenderUI(TimeUtils &time)
 										for (int j = 0; j < weightCount; j++)
 										{
 											if (j != i)
-												sum += gaussWeights[j];
+												sum += gaussWeights[j] * (j == 0 ? 1.0f : 2.0f);
 										}
 
 										if (sum > 0.0f)
@@ -5330,8 +5386,8 @@ bool Graphics::RenderUI(TimeUtils &time)
 							if (normalizeWeights)
 							{
 								float sum = 0.0f;
-								for (float &weight : gaussWeights)
-									sum += weight;
+								for (int i = 0; i < gaussWeights.size(); i++)
+									sum += gaussWeights[i] * (i == 0 ? 1.0f : 2.0f);
 
 								if (sum > 0.0f)
 								{

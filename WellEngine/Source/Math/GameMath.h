@@ -748,6 +748,32 @@ template<typename T>
 
 	return axisAlignedBounds;
 }
+
+static inline void CalcGaussianWeights(float *weights, int kernelSize, float sigma = 0.0f) noexcept
+{
+	if (sigma <= 0.0f)
+		sigma = (kernelSize - 1) / 3.0f; // Default sigma based on kernel size
+
+	float twoSigmaSq = 2.0f * sigma * sigma;
+
+	float sum = 0.0f;
+
+	// Compute weights
+	for (int i = 0; i < kernelSize; ++i) 
+	{
+		float value = std::exp(-(i * i) / twoSigmaSq);
+		weights[i] = value;
+
+		if (i == 0)
+			sum += value;
+		else
+			sum += 2.0f * value; // symmetric contribution
+	}
+
+	// Normalize
+	for (int i = 0; i < kernelSize; ++i)
+		weights[i] /= sum;
+}
 #pragma endregion
 
 
