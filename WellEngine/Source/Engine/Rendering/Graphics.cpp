@@ -3673,7 +3673,7 @@ bool Graphics::RenderPostFX()
 		}
 
 
-		// Perform Emission downsample
+		// Perform Emission 
 		if (_renderEmissionFX && _emissionBlurIterations > 0)
 		{
 			ZoneNamedXNC(emissionDownsampleZone, "Emission Downsample", RandomUniqueColor(), true);
@@ -3687,11 +3687,11 @@ bool Graphics::RenderPostFX()
 			}
 
 			// Bind render target
-			ID3D11UnorderedAccessView *const uav[1] = { _blurRT.GetUAV(0) }; // TODO
+			ID3D11UnorderedAccessView *const uav[1] = { _blurRT.GetUAV(0) };
 			_context->CSSetUnorderedAccessViews(0, 1, uav, nullptr);
 
 			// Bind shader resource
-			ID3D11ShaderResourceView *const srv[1] = { _emissionRT.GetSRV() }; // TODO
+			ID3D11ShaderResourceView *const srv[1] = { _emissionRT.GetSRV() };
 			_context->CSSetShaderResources(0, 1, srv);
 
 
@@ -3713,6 +3713,54 @@ bool Graphics::RenderPostFX()
 			_context->CSSetUnorderedAccessViews(0, 1, &nullUAV, nullptr);
 		}
 
+		// Perform Emission mipmap generation
+		if (_renderEmissionFX && _emissionBlurIterations > 0)
+		{
+			ZoneNamedXNC(emissionMipZone, "Emission Mipmap", RandomUniqueColor(), true);
+			TracyD3D11NamedZoneXC(_tracyD3D11Context, emissionMipD3D11Zone, "Emission Mipmap", RandomUniqueColor(), true);
+
+			// Bind compute shader
+			if (!_content->GetShader("CS_DownsampleHalf")->BindShader(_context))
+			{
+				ErrMsg("Failed to bind downsample half emission compute shader!");
+				return false;
+			}
+
+			UINT mipLevels = _blurRT.GetMipLevels();
+
+			for (UINT i = 1; i < mipLevels; i++)
+			{
+				ZoneNamedXNC(emissionDownsampleIterationZone, "Iteration", RandomUniqueColor(), true);
+				TracyD3D11NamedZoneXC(_tracyD3D11Context, emissionDownsampleIterationD3D11Zone, "Downsample Iteration", RandomUniqueColor(), true);
+
+				// Bind render target
+				ID3D11UnorderedAccessView *const uav[1] = { _blurRT.GetUAV(i) };
+				_context->CSSetUnorderedAccessViews(0, 1, uav, nullptr);
+
+				// Bind shader resource
+				ID3D11ShaderResourceView *const srv[1] = { _blurRT.GetSRV(i-1) };
+				_context->CSSetShaderResources(0, 1, srv);
+
+
+				// Send execution command
+				_context->Dispatch(
+					static_cast<UINT>(std::ceil(_viewportBlur.Width / 8.0f)),
+					static_cast<UINT>(std::ceil(_viewportBlur.Height / 8.0f)),
+					1
+				);
+
+
+				// Unbind compute shader resources
+				ID3D11ShaderResourceView *nullSRV[1] = {};
+				memset(nullSRV, 0, sizeof(ID3D11ShaderResourceView));
+				_context->CSSetShaderResources(0, 1, nullSRV);
+
+				// Unbind render target
+				static ID3D11UnorderedAccessView *const nullUAV = nullptr;
+				_context->CSSetUnorderedAccessViews(0, 1, &nullUAV, nullptr);
+			}
+		}
+
 		// Perform Emission Blur
 		if (_renderEmissionFX && _emissionBlurIterations > 0)
 		{
@@ -3727,90 +3775,99 @@ bool Graphics::RenderPostFX()
 			ID3D11ShaderResourceView *const srvGaussianWeights[1] = { _emissionGaussianWeightsBuffer.GetSRV() };
 			_context->CSSetShaderResources(3, 1, srvGaussianWeights);
 
-			for (int i = 0; i < _emissionBlurIterations; i++)
+			UINT mipLevels = _blurRT.GetMipLevels();
+			for (UINT m = 0; m < mipLevels; m++)
 			{
-				TracyD3D11NamedZoneXC(_tracyD3D11Context, emissionBlurIterationD3D11Zone, "Blur Iteration", RandomUniqueColor(), true);
+				TracyD3D11NamedZoneXC(_tracyD3D11Context, emissionBlurMipD3D11Zone, "Blur Mip Level", RandomUniqueColor(), true);
 
-				ID3D11UnorderedAccessView *uavStageOne = _intermediateBlurRT.GetUAV(0); // TODO
-				ID3D11ShaderResourceView *srvStageOne = _blurRT.GetSRV(0); // TODO
+				UINT mipWidth = 0, mipHeight = 0;
+				_blurRT.GetMipSize(m, &mipWidth, &mipHeight);
 
-				ID3D11UnorderedAccessView *uavStageTwo = _blurRT.GetUAV(0); // TODO
-				ID3D11ShaderResourceView *srvStageTwo = _intermediateBlurRT.GetSRV(0); // TODO
-
-				// Blur Stage One
+				for (int i = 0; i < _emissionBlurIterations; i++)
 				{
-					TracyD3D11NamedZoneXC(_tracyD3D11Context, emissionBlurIterationXD3D11Zone, "Horizontal", RandomUniqueColor(), true);
+					TracyD3D11NamedZoneXC(_tracyD3D11Context, emissionBlurIterationD3D11Zone, "Blur Mip Level Iteration", RandomUniqueColor(), true);
 
-					// Bind compute shader
-					if (!_content->GetShader("CS_BlurHorizontalEmission")->BindShader(_context))
+					ID3D11UnorderedAccessView *uavStageOne = _intermediateBlurRT.GetUAV(m);
+					ID3D11ShaderResourceView *srvStageOne = _blurRT.GetSRV(m);
+
+					ID3D11UnorderedAccessView *uavStageTwo = _blurRT.GetUAV(m);
+					ID3D11ShaderResourceView *srvStageTwo = _intermediateBlurRT.GetSRV(m);
+
+					// Blur Stage One
 					{
-						ErrMsg("Failed to bind horizontal blur compute shader!");
-						return false;
+						TracyD3D11NamedZoneXC(_tracyD3D11Context, emissionBlurIterationXD3D11Zone, "Horizontal", RandomUniqueColor(), true);
+
+						// Bind compute shader
+						if (!_content->GetShader("CS_BlurHorizontalEmission")->BindShader(_context))
+						{
+							ErrMsg("Failed to bind horizontal blur compute shader!");
+							return false;
+						}
+
+						// Bind render target
+						ID3D11UnorderedAccessView *const uav[1] = { uavStageOne };
+						_context->CSSetUnorderedAccessViews(0, 1, uav, nullptr);
+
+						// Bind shader resource
+						ID3D11ShaderResourceView *const srv[1] = { srvStageOne };
+						_context->CSSetShaderResources(0, 1, srv);
+
+
+						// Send execution command
+						_context->Dispatch(
+							static_cast<UINT>(std::ceil((float)mipWidth / 8.0f)),
+							static_cast<UINT>(std::ceil((float)mipHeight / 8.0f)),
+							1
+						);
+
+
+						// Unbind compute shader resources
+						ID3D11ShaderResourceView *nullSRV[1] = {};
+						memset(nullSRV, 0, sizeof(ID3D11ShaderResourceView));
+						_context->CSSetShaderResources(0, 1, nullSRV);
+
+						// Unbind render target
+						static ID3D11UnorderedAccessView *const nullUAV = nullptr;
+						_context->CSSetUnorderedAccessViews(0, 1, &nullUAV, nullptr);
 					}
 
-					// Bind render target
-					ID3D11UnorderedAccessView *const uav[1] = { uavStageOne };
-					_context->CSSetUnorderedAccessViews(0, 1, uav, nullptr);
-
-					// Bind shader resource
-					ID3D11ShaderResourceView *const srv[1] = { srvStageOne };
-					_context->CSSetShaderResources(0, 1, srv);
-
-
-					// Send execution command
-					_context->Dispatch(
-						static_cast<UINT>(std::ceil(_viewportBlur.Width / 8.0f)), 
-						static_cast<UINT>(std::ceil(_viewportBlur.Height / 8.0f)), 
-						1
-					);
-
-
-					// Unbind compute shader resources
-					ID3D11ShaderResourceView *nullSRV[1] = {};
-					memset(nullSRV, 0, sizeof(ID3D11ShaderResourceView));
-					_context->CSSetShaderResources(0, 1, nullSRV);
-
-					// Unbind render target
-					static ID3D11UnorderedAccessView *const nullUAV = nullptr;
-					_context->CSSetUnorderedAccessViews(0, 1, &nullUAV, nullptr);
-				}
-
-				// Blur Stage Two
-				{
-					TracyD3D11NamedZoneXC(_tracyD3D11Context, emissionBlurIterationYD3D11Zone, "Vertical", RandomUniqueColor(), true);
-
-					// Bind compute shader
-					if (!_content->GetShader("CS_BlurVerticalEmission")->BindShader(_context))
+					// Blur Stage Two
 					{
-						ErrMsg("Failed to bind vertical blur compute shader!");
-						return false;
+						TracyD3D11NamedZoneXC(_tracyD3D11Context, emissionBlurIterationYD3D11Zone, "Vertical", RandomUniqueColor(), true);
+
+						// Bind compute shader
+						if (!_content->GetShader("CS_BlurVerticalEmission")->BindShader(_context))
+						{
+							ErrMsg("Failed to bind vertical blur compute shader!");
+							return false;
+						}
+
+						// Bind render target
+						ID3D11UnorderedAccessView *const uav[1] = { uavStageTwo };
+						_context->CSSetUnorderedAccessViews(0, 1, uav, nullptr);
+
+						// Bind shader resource
+						ID3D11ShaderResourceView *const srv[1] = { srvStageTwo };
+						_context->CSSetShaderResources(0, 1, srv);
+
+
+						// Send execution command
+						_context->Dispatch(
+							static_cast<UINT>(std::ceil((float)mipWidth / 8.0f)),
+							static_cast<UINT>(std::ceil((float)mipHeight / 8.0f)),
+							1
+						);
+
+
+						// Unbind compute shader resources
+						ID3D11ShaderResourceView *nullSRV[1] = {};
+						memset(nullSRV, 0, sizeof(ID3D11ShaderResourceView));
+						_context->CSSetShaderResources(0, 1, nullSRV);
+
+						// Unbind render target
+						static ID3D11UnorderedAccessView *const nullUAV = nullptr;
+						_context->CSSetUnorderedAccessViews(0, 1, &nullUAV, nullptr);
 					}
-
-					// Bind render target
-					ID3D11UnorderedAccessView *const uav[1] = { uavStageTwo };
-					_context->CSSetUnorderedAccessViews(0, 1, uav, nullptr);
-
-					// Bind shader resource
-					ID3D11ShaderResourceView *const srv[1] = { srvStageTwo };
-					_context->CSSetShaderResources(0, 1, srv);
-
-
-					// Send execution command
-					_context->Dispatch(
-						static_cast<UINT>(std::ceil(_viewportBlur.Width / 8.0f)),
-						static_cast<UINT>(std::ceil(_viewportBlur.Height / 8.0f)),
-						1
-					);
-
-
-					// Unbind compute shader resources
-					ID3D11ShaderResourceView *nullSRV[1] = {};
-					memset(nullSRV, 0, sizeof(ID3D11ShaderResourceView));
-					_context->CSSetShaderResources(0, 1, nullSRV);
-
-					// Unbind render target
-					static ID3D11UnorderedAccessView *const nullUAV = nullptr;
-					_context->CSSetUnorderedAccessViews(0, 1, &nullUAV, nullptr);
 				}
 			}
 
@@ -3821,6 +3878,7 @@ bool Graphics::RenderPostFX()
 			_context->CSSetShaderResources(3, 1, nullSRV);
 		}
 			
+
 #ifdef DEBUG_BUILD
 		// Perform Outline Blur
 		if (_renderOutlineFX && _outlineBlurIterations > 0)

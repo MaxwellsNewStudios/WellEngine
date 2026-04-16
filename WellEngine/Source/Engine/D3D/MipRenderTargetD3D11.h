@@ -10,6 +10,9 @@ class MipRenderTargetD3D11
 private:
 	struct MipLevel
 	{
+		UINT width = 0;
+		UINT height = 0;
+
 		ComPtr<ID3D11RenderTargetView>		rtv = nullptr;
 		ComPtr<ID3D11ShaderResourceView>	srv = nullptr;
 		ComPtr<ID3D11UnorderedAccessView>	uav = nullptr;
@@ -37,6 +40,7 @@ public:
 	[[nodiscard]] ID3D11ShaderResourceView *GetSRV(UINT mipLevel) const;
 	[[nodiscard]] ID3D11UnorderedAccessView *GetUAV(UINT mipLevel) const;
 	[[nodiscard]] UINT GetMipLevels() const { return static_cast<UINT>(_mipLevels.size()); }
+	void GetMipSize(UINT mipLevel, UINT *width, UINT *height) const;
 
 	TESTABLE
 };

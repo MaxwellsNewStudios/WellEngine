@@ -45,8 +45,16 @@ bool MipRenderTargetD3D11::Initialize(ID3D11Device *device, D3D11_TEXTURE2D_DESC
 
 	_mipLevels.resize(mipLevels);
 
+	UINT mipWidth = desc.Width;
+	UINT mipHeight = desc.Height;
 	for (int i = 0; i < mipLevels; i++)
 	{
+		_mipLevels[i].width = mipWidth;
+		_mipLevels[i].height = mipHeight;
+
+		mipWidth = max(1u, (UINT)std::ceil((float)mipWidth * 0.5f));
+		mipHeight = max(1u, (UINT)std::ceil((float)mipHeight * 0.5f));
+
 		D3D11_RENDER_TARGET_VIEW_DESC rtvDesc{};
 		rtvDesc.Format = desc.Format;
 		rtvDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
@@ -123,4 +131,16 @@ ID3D11UnorderedAccessView *MipRenderTargetD3D11::GetUAV(UINT mipLevel) const
 	if (mipLevel >= _mipLevels.size())
 		return nullptr;
 	return _mipLevels[mipLevel].uav.Get();
+}
+
+void MipRenderTargetD3D11::GetMipSize(UINT mipLevel, UINT *width, UINT *height) const
+{
+	if (mipLevel >= _mipLevels.size())
+	{
+		if (width) *width = 0;
+		if (height) *height = 0;
+		return;
+	}
+	if (width) *width = _mipLevels[mipLevel].width;
+	if (height) *height = _mipLevels[mipLevel].height;
 }
