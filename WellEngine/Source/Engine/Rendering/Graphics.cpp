@@ -603,13 +603,13 @@ bool Graphics::RefreshEmissionBuffers()
 	_viewportBlur.Width = std::ceil(_viewportBlur.Width * _emissionResolutionScale);
 	_viewportBlur.Height = std::ceil(_viewportBlur.Height * _emissionResolutionScale);
 
-	if (!_blurRT.Initialize(_device, (UINT)_viewportBlur.Width, (UINT)_viewportBlur.Height, DXGI_FORMAT_R11G11B10_FLOAT, true, true))
+	if (!_blurRT.Initialize(_device, (UINT)_viewportBlur.Width, (UINT)_viewportBlur.Height, 0, DXGI_FORMAT_R11G11B10_FLOAT, true))
 	{
 		ErrMsg("Failed to initialize blur stage two render target!");
 		return false;
 	}
 
-	if (!_intermediateBlurRT.Initialize(_device, (UINT)_viewportBlur.Width, (UINT)_viewportBlur.Height, DXGI_FORMAT_R11G11B10_FLOAT, true, true))
+	if (!_intermediateBlurRT.Initialize(_device, (UINT)_viewportBlur.Width, (UINT)_viewportBlur.Height, 0, DXGI_FORMAT_R11G11B10_FLOAT, true))
 	{
 		ErrMsg("Failed to initialize blur stage one render target!");
 		return false;
@@ -3687,11 +3687,11 @@ bool Graphics::RenderPostFX()
 			}
 
 			// Bind render target
-			ID3D11UnorderedAccessView *const uav[1] = { _blurRT.GetUAV() };
+			ID3D11UnorderedAccessView *const uav[1] = { _blurRT.GetUAV(0) }; // TODO
 			_context->CSSetUnorderedAccessViews(0, 1, uav, nullptr);
 
 			// Bind shader resource
-			ID3D11ShaderResourceView *const srv[1] = { _emissionRT.GetSRV() };
+			ID3D11ShaderResourceView *const srv[1] = { _emissionRT.GetSRV() }; // TODO
 			_context->CSSetShaderResources(0, 1, srv);
 
 
@@ -3731,11 +3731,11 @@ bool Graphics::RenderPostFX()
 			{
 				TracyD3D11NamedZoneXC(_tracyD3D11Context, emissionBlurIterationD3D11Zone, "Blur Iteration", RandomUniqueColor(), true);
 
-				ID3D11UnorderedAccessView *uavStageOne = _intermediateBlurRT.GetUAV();
-				ID3D11ShaderResourceView *srvStageOne = _blurRT.GetSRV();
+				ID3D11UnorderedAccessView *uavStageOne = _intermediateBlurRT.GetUAV(0); // TODO
+				ID3D11ShaderResourceView *srvStageOne = _blurRT.GetSRV(0); // TODO
 
-				ID3D11UnorderedAccessView *uavStageTwo = _blurRT.GetUAV();
-				ID3D11ShaderResourceView *srvStageTwo = _intermediateBlurRT.GetSRV();
+				ID3D11UnorderedAccessView *uavStageTwo = _blurRT.GetUAV(0); // TODO
+				ID3D11ShaderResourceView *srvStageTwo = _intermediateBlurRT.GetSRV(0); // TODO
 
 				// Blur Stage One
 				{
@@ -3820,9 +3820,7 @@ bool Graphics::RenderPostFX()
 			_context->CSSetShaderResources(1, 1, nullSRV);
 			_context->CSSetShaderResources(3, 1, nullSRV);
 		}
-
-		// Perform Depth of Field Blur
-	
+			
 #ifdef DEBUG_BUILD
 		// Perform Outline Blur
 		if (_renderOutlineFX && _outlineBlurIterations > 0)
@@ -3970,7 +3968,7 @@ bool Graphics::RenderPostFX()
 		// Bind screen, emission & fog resources
 		ID3D11ShaderResourceView *srvs[3] = {
 			_sceneRT.GetSRV(),
-			_blurRT.GetSRV(),
+			_blurRT.GetSRV(0),
 			_fogRT.GetSRV(),
 		};
 		_context->CSSetShaderResources(0, 3, srvs);
@@ -4605,7 +4603,7 @@ bool Graphics::RenderUI(TimeUtils &time)
 		{
 			// Clear post processing resources
 			constexpr float clearColor[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
-			_context->ClearRenderTargetView(_blurRT.GetRTV(), clearColor);
+			_context->ClearRenderTargetView(_blurRT.GetRTV(0), clearColor);
 			_context->ClearRenderTargetView(_fogRT.GetRTV(), clearColor);
 			_context->ClearRenderTargetView(_outlineRT.GetRTV(), clearColor);
 			_context->ClearRenderTargetView(_cocRT.GetRTV(), clearColor);
@@ -4843,7 +4841,7 @@ bool Graphics::RenderUI(TimeUtils &time)
 					{
 						// Clear emission resources
 						constexpr float clearBlur[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
-						_context->ClearRenderTargetView(_blurRT.GetRTV(), clearBlur);
+						_context->ClearRenderTargetView(_blurRT.GetRTV(0), clearBlur);
 					}
 
 					DebugData::Get().graphicsEmissionEnabled = _renderEmissionFX;
@@ -4865,7 +4863,7 @@ bool Graphics::RenderUI(TimeUtils &time)
 					if (ImGui::DragInt("Blur Iterations", &_emissionBlurIterations, 0.1f, 0, 16))
 					{
 						constexpr float clearBlur[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
-						_context->ClearRenderTargetView(_blurRT.GetRTV(), clearBlur);
+						_context->ClearRenderTargetView(_blurRT.GetRTV(0), clearBlur);
 					}
 					ImGuiUtils::LockMouseOnActive();
 

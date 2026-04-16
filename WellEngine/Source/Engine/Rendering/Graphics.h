@@ -10,9 +10,13 @@
 #include "Source/Engine/Timing/TimeUtils.h"
 #include "Source/Engine/Utils/RepeatTracker.h"
 #include "Source/Engine/D3D/RenderTargetD3D11.h"
+#include "Source/Engine/D3D/MipRenderTargetD3D11.h"
 #include "Source/Engine/Window/Window.h"
 #include "Source/Engine/Debug/DebugDrawer.h"
 #include "Source/Game/Behaviours/Rendering/Camera/CameraBehaviour.h"
+#ifdef USE_IMGUI
+#include "Dependencies/ImGui/imgui.h"
+#endif
 
 namespace we = WellEngine;
 
@@ -218,18 +222,18 @@ private:
 #endif
 
 	// The view camera is rendered to sceneRT, the alpha channel is used for emission strength and depth is rendered to depthRT.
-	RenderTargetD3D11 _sceneRT; // RGBA
-	RenderTargetD3D11 _depthRT; // R
-	RenderTargetD3D11 _emissionRT; // RGB
-	RenderTargetD3D11 _blurRT; // RGB
-	RenderTargetD3D11 _intermediateBlurRT; // RGB
-	RenderTargetD3D11 _fogRT; // RGBA
-	RenderTargetD3D11 _intermediateFogRT; // RGBA
-	RenderTargetD3D11 _cocRT; // R
-	RenderTargetD3D11 _dofSharpRT; // RGBA
-	RenderTargetD3D11 _dofHalfBlur1RT; // RGB
-	RenderTargetD3D11 _dofHalfBlur2RT; // RGB
-	RenderTargetD3D11 _dofFullBlurRT; // RGBA
+	RenderTargetD3D11		_sceneRT; // RGBA
+	RenderTargetD3D11		_depthRT; // R
+	RenderTargetD3D11		_emissionRT; // RGB
+	MipRenderTargetD3D11	_blurRT; // RGB
+	MipRenderTargetD3D11	_intermediateBlurRT; // RGB
+	RenderTargetD3D11		_fogRT; // RGBA
+	RenderTargetD3D11		_intermediateFogRT; // RGBA
+	RenderTargetD3D11		_cocRT; // R
+	RenderTargetD3D11		_dofSharpRT; // RGBA
+	RenderTargetD3D11		_dofHalfBlur1RT; // RGB
+	RenderTargetD3D11		_dofHalfBlur2RT; // RGB
+	RenderTargetD3D11		_dofFullBlurRT; // RGBA
 
 	RenderType _renderOutput = RenderType::DEFAULT;
 
@@ -480,5 +484,5 @@ public:
 	/// Resets variables and clears all render queues.
 	[[nodiscard]] bool EndFrame();
 
-	TESTABLE()
+	TESTABLE
 };
