@@ -32,7 +32,7 @@ PixelShaderOutput main(PixelShaderInput input)
 	float4 environmentColor = EnvironmentCubemap.Sample(Sampler, worldDir * float3(-1.0, -1.0, -1.0));
 	
 	output.color = float4(environmentColor.rgb, 0.0);
-	output.emission = pow(saturate(environmentColor.rgb - 0.5), 1.5) * 0.5;
+	output.emission = pow(saturate(environmentColor.rgb - 0.5), 1.25) * 0.6;
 	output.depth = cam_planes.x;
 	return output;
 }

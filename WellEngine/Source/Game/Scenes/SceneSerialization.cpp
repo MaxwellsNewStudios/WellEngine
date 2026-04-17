@@ -138,6 +138,7 @@ bool Scene::Serialize(bool asSaveFile)
 					sceneEmissionObj.AddMember("Strength", emissionSettings.strength, docAlloc);
 					sceneEmissionObj.AddMember("Exponent", emissionSettings.exponent, docAlloc);
 					sceneEmissionObj.AddMember("Threshold", emissionSettings.threshold, docAlloc);
+					sceneEmissionObj.AddMember("WhiteBias", emissionSettings.whiteBias, docAlloc);
 				}
 				sceneGraphicsObj.AddMember("Emission", sceneEmissionObj, docAlloc);
 
@@ -386,9 +387,17 @@ bool Scene::Deserialize(bool sceneReload)
 			{
 				json::Value &sceneEmissionObj = sceneGraphicsObj["Emission"];
 
-				_emissionSettings.strength = sceneEmissionObj["Strength"].GetFloat();
-				_emissionSettings.exponent = sceneEmissionObj["Exponent"].GetFloat();
-				_emissionSettings.threshold = sceneEmissionObj["Threshold"].GetFloat();
+				if (sceneEmissionObj.HasMember("Strength"))
+					_emissionSettings.strength = sceneEmissionObj["Strength"].GetFloat();
+
+				if (sceneEmissionObj.HasMember("Exponent"))
+					_emissionSettings.exponent = sceneEmissionObj["Exponent"].GetFloat();
+
+				if (sceneEmissionObj.HasMember("Threshold"))
+					_emissionSettings.threshold = sceneEmissionObj["Threshold"].GetFloat();
+
+				if (sceneEmissionObj.HasMember("WhiteBias"))
+					_emissionSettings.whiteBias = sceneEmissionObj["WhiteBias"].GetFloat();
 			}
 		}
 	}

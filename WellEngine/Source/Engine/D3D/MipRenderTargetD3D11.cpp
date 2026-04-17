@@ -9,7 +9,7 @@ using Microsoft::WRL::ComPtr;
 
 
 bool MipRenderTargetD3D11::Initialize(
-	ID3D11Device *device, UINT width, UINT height, UINT mipLevels, 
+	ID3D11Device *device, UINT width, UINT height, UINT mipLevels, UINT skippedMips,
 	DXGI_FORMAT format, bool hasUAV)
 {
 	D3D11_TEXTURE2D_DESC desc{};
@@ -25,13 +25,27 @@ bool MipRenderTargetD3D11::Initialize(
 	desc.CPUAccessFlags = 0;
 	desc.MiscFlags = 0;
 
-	return Initialize(device, desc, hasUAV);
+	return Initialize(device, desc, skippedMips, hasUAV);
 }
 
-bool MipRenderTargetD3D11::Initialize(ID3D11Device *device, D3D11_TEXTURE2D_DESC desc, bool hasUAV)
+bool MipRenderTargetD3D11::Initialize(ID3D11Device *device, D3D11_TEXTURE2D_DESC desc, UINT skippedMips, bool hasUAV)
 {
 	if (hasUAV)
 		desc.BindFlags |= D3D11_BIND_UNORDERED_ACCESS;
+
+	if (skippedMips > 0)
+	{
+		if (desc.MipLevels == 0)
+		{
+			UINT maxDimension = max(desc.Width, desc.Height);
+			desc.MipLevels = static_cast<UINT>(std::floor(std::log2(maxDimension))) + 1;
+		}
+
+		if (skippedMips >= desc.MipLevels)
+			desc.MipLevels = 1;
+		else
+			desc.MipLevels -= skippedMips;
+	}
 
 	if (FAILED(device->CreateTexture2D(&desc, nullptr, _texture.ReleaseAndGetAddressOf())))
 	{

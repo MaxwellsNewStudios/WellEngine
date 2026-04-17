@@ -603,13 +603,13 @@ bool Graphics::RefreshEmissionBuffers()
 	_viewportBlur.Width = std::ceil(_viewportBlur.Width * _emissionResolutionScale);
 	_viewportBlur.Height = std::ceil(_viewportBlur.Height * _emissionResolutionScale);
 
-	if (!_blurRT.Initialize(_device, (UINT)_viewportBlur.Width, (UINT)_viewportBlur.Height, 0, DXGI_FORMAT_R11G11B10_FLOAT, true))
+	if (!_blurRT.Initialize(_device, (UINT)_viewportBlur.Width, (UINT)_viewportBlur.Height, 0, 4, DXGI_FORMAT_R11G11B10_FLOAT, true))
 	{
 		ErrMsg("Failed to initialize blur stage two render target!");
 		return false;
 	}
 
-	if (!_intermediateBlurRT.Initialize(_device, (UINT)_viewportBlur.Width, (UINT)_viewportBlur.Height, 0, DXGI_FORMAT_R11G11B10_FLOAT, true))
+	if (!_intermediateBlurRT.Initialize(_device, (UINT)_viewportBlur.Width, (UINT)_viewportBlur.Height, 0, 4, DXGI_FORMAT_R11G11B10_FLOAT, true))
 	{
 		ErrMsg("Failed to initialize blur stage one render target!");
 		return false;
@@ -3449,8 +3449,8 @@ bool Graphics::RenderPostFX()
 	ZoneScopedC(RandomUniqueColor());
 	TracyD3D11ZoneC(_tracyD3D11Context, "Post-Processing", RandomUniqueColor());
 
-	static ID3D11SamplerState *const ss = _content->GetSampler("Clamp")->GetSamplerState();
-	_context->CSSetSamplers(0, 1, &ss); // Verify slot
+	static ID3D11SamplerState *const clampSS = _content->GetSampler("Clamp")->GetSamplerState();
+	_context->CSSetSamplers(0, 1, &clampSS);
 
 	// Bind global light data
 	ID3D11Buffer *const globalLightBuffer = _globalLightBuffer.GetBuffer();
@@ -3672,7 +3672,6 @@ bool Graphics::RenderPostFX()
 			_context->CSSetShaderResources(3, 1, nullSRV);
 		}
 
-
 		// Perform Emission 
 		if (_renderEmissionFX && _emissionBlurIterations > 0)
 		{
@@ -3752,7 +3751,7 @@ bool Graphics::RenderPostFX()
 
 				// Unbind compute shader resources
 				ID3D11ShaderResourceView *nullSRV[1] = {};
-				memset(nullSRV, 0, sizeof(ID3D11ShaderResourceView));
+				memset(nullSRV, 0, sizeof(nullSRV));
 				_context->CSSetShaderResources(0, 1, nullSRV);
 
 				// Unbind render target
@@ -3877,7 +3876,53 @@ bool Graphics::RenderPostFX()
 			_context->CSSetShaderResources(1, 1, nullSRV);
 			_context->CSSetShaderResources(3, 1, nullSRV);
 		}
-			
+
+		// Merge Emission mips into mip 0
+		if (_renderEmissionFX && _emissionBlurIterations > 0)
+		{
+			ZoneNamedXNC(emissionMergeZone, "Emission Mip Merge", RandomUniqueColor(), true);
+			TracyD3D11NamedZoneXC(_tracyD3D11Context, emissionMergeD3D11Zone, "Emission Mip Merge", RandomUniqueColor(), true);
+
+			if (!_content->GetShader("CS_MergeEmissionMips")->BindShader(_context))
+			{
+				ErrMsg("Failed to bind emission mip merge compute shader!");
+				return false;
+			}
+
+			UINT mipLevels = _blurRT.GetMipLevels();
+			if (mipLevels > 1)
+			{
+				for (UINT inMipLevel = mipLevels - 1; inMipLevel > 0; --inMipLevel)
+				{
+					TracyD3D11NamedZoneXC(_tracyD3D11Context, emissionMergeIterationD3D11Zone, "Merge Mip Level", RandomUniqueColor(), true);
+
+					UINT outMipLevel = inMipLevel - 1;
+
+					UINT outMipWidth = 0, outMipHeight = 0;
+					_blurRT.GetMipSize(outMipLevel, &outMipWidth, &outMipHeight);
+
+					ID3D11UnorderedAccessView *const uav[1] = { _blurRT.GetUAV(outMipLevel) };
+					_context->CSSetUnorderedAccessViews(0, 1, uav, nullptr);
+
+					ID3D11ShaderResourceView *const srv[1] = { _blurRT.GetSRV(inMipLevel) };
+					_context->CSSetShaderResources(0, 1, srv);
+
+					_context->Dispatch(
+						static_cast<UINT>(std::ceil((float)outMipWidth / 8.0f)),
+						static_cast<UINT>(std::ceil((float)outMipHeight / 8.0f)),
+						1
+					);
+
+					ID3D11ShaderResourceView *nullSRV[1] = {};
+					memset(nullSRV, 0, sizeof(nullSRV));
+					_context->CSSetShaderResources(0, 1, nullSRV);
+
+					ID3D11UnorderedAccessView *const nullUAV = nullptr;
+					_context->CSSetUnorderedAccessViews(0, 1, &nullUAV, nullptr);
+				}
+			}
+		}
+
 
 #ifdef DEBUG_BUILD
 		// Perform Outline Blur
@@ -4912,10 +4957,13 @@ bool Graphics::RenderUI(TimeUtils &time)
 					ImGui::DragFloat("Strength", &_currEmissionSettings.strength, 0.01f);
 					ImGuiUtils::LockMouseOnActive();
 
-					ImGui::DragFloat("Exponent", &_currEmissionSettings.exponent, 0.01f);
+					ImGui::DragFloat("Exponent", &_currEmissionSettings.exponent, 0.005f);
 					ImGuiUtils::LockMouseOnActive();
 
-					ImGui::DragFloat("Threshold", &_currEmissionSettings.threshold, 0.01f);
+					ImGui::DragFloat("Threshold", &_currEmissionSettings.threshold, 0.005f);
+					ImGuiUtils::LockMouseOnActive();
+
+					ImGui::DragFloat("White Bias", &_currEmissionSettings.whiteBias, 0.005f);
 					ImGuiUtils::LockMouseOnActive();
 
 					if (ImGui::DragInt("Blur Iterations", &_emissionBlurIterations, 0.1f, 0, 16))

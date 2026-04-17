@@ -29,9 +29,9 @@ public:
 	MipRenderTargetD3D11(MipRenderTargetD3D11 &&other) = delete;
 	MipRenderTargetD3D11 &operator=(MipRenderTargetD3D11 &&other) = delete;
 
-	[[nodiscard]] bool Initialize(ID3D11Device *device, UINT width, UINT height, UINT mipLevels = 0,
+	[[nodiscard]] bool Initialize(ID3D11Device *device, UINT width, UINT height, UINT mipLevels = 0, UINT skippedMips = 0,
 		DXGI_FORMAT format = DXGI_FORMAT_R8G8B8A8_UNORM, bool hasUAV = false);
-	[[nodiscard]] bool Initialize(ID3D11Device *device, D3D11_TEXTURE2D_DESC desc, bool hasUAV = false);
+	[[nodiscard]] bool Initialize(ID3D11Device *device, D3D11_TEXTURE2D_DESC desc, UINT skippedMips = 0, bool hasUAV = false);
 
 	void Reset();
 

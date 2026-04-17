@@ -43,13 +43,19 @@ float4 GaussianBlur(in int2 uv, in int2 direction, in int2 dimensions, in bool u
 	{	
 		for (int i = -int(weightCount) + 1; i < int(weightCount); ++i)
 		{
-			int2 sampleUV = uv + i * direction;
-			sampleUV = clamp(sampleUV, int2(0, 0), dimensions - 1);
-				
 			float weight = GaussianWeights[abs(i)];
             weightSum += weight;
-		
-			sum += weight * Input[sampleUV];
+			
+			int2 sampleUV = uv + i * direction;
+			
+			float mul = 1.0;
+			if (sampleUV.x < 0 || sampleUV.x >= dimensions.x)
+				mul *= 0.3;
+			if (sampleUV.y < 0 || sampleUV.y >= dimensions.y)
+				mul *= 0.3;
+			
+			sampleUV = clamp(sampleUV, int2(0, 0), dimensions - 1);
+			sum += weight * mul * Input[sampleUV];
 		}
         sum /= weightSum;
     }

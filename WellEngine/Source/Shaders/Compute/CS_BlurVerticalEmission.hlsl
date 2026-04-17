@@ -16,6 +16,6 @@ void main(uint3 DTid : SV_DispatchThreadID)
 	Output.GetDimensions(outDim.x, outDim.y);
     
 	int2 inCoord = int2(float2(DTid.xy) * (float2(inDim) / float2(outDim)));
-       
-	Output[DTid.xy].rgb = GaussianBlur(inCoord, int2(0, 1), inDim, true).rgb;
+    
+	Output[DTid.xy].rgb = GaussianBlur(inCoord, int2(0, 1), inDim, false).rgb;
 }

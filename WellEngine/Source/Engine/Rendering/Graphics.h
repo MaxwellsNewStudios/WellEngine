@@ -97,8 +97,7 @@ struct EmissionSettingsBuffer
 	float strength = 1.0f;
 	float exponent = 0.5f;
 	float threshold = 1.0f;
-
-	float _padding[1];
+	float whiteBias = 0.25f;
 };
 
 struct DistortionSettingsBuffer
