@@ -83,7 +83,7 @@ namespace SceneContents
 		Entity *RootStep(bool skipInvalid = true, bool skipDisabled = false);
 		[[nodiscard]] Entity *Peek() const;
 
-		TESTABLE()
+		TESTABLE
 	};
 }
 
@@ -195,5 +195,5 @@ public:
 
 	void RecalculateTreeCullingBounds();
 
-	TESTABLE()
+	TESTABLE
 };

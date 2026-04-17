@@ -77,5 +77,5 @@ public:
 	static void LoadState() {}
 #endif
 
-	TESTABLE()
+	TESTABLE
 };

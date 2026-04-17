@@ -16,8 +16,7 @@ cbuffer EmissionSettings : register(b6)
 	float emission_strength;
 	float emission_exponent;
 	float emission_threshold;
-	
-	float _emission_padding;
+	float emission_whiteBias;
 };
 
 cbuffer OutlineSettings : register(b7)
@@ -37,14 +36,26 @@ void main(uint3 DTid : SV_DispatchThreadID)
 	BackBufferUAV.GetDimensions(outDim.x, outDim.y);
 	float2 uv = float2(DTid.xy) / float2(outDim);
 	
+	// Scene
 	float4 sceneCol = SceneColor.SampleLevel(Sampler, uv, 0);
-	float3 emission = (pow(abs(Emission.SampleLevel(Sampler, uv, 0) + 1.0), emission_exponent) - emission_threshold) * emission_strength;
-	float4 fog = Fog.SampleLevel(Sampler, uv, 0);
+	float3 result = sceneCol.xyz;
 	
-	float3 result = sceneCol.xyz + max(emission, float3(0, 0, 0));
+	// Emission
+	float3 emission = pow(abs(Emission.SampleLevel(Sampler, uv, 0) + 1.0), emission_exponent);
+	emission = TrendToWhite(emission, emission_whiteBias);
+	emission -= emission_threshold;
+	emission *= emission_strength;
+	emission = max(emission, float3(0, 0, 0));
+	result += emission;
+	
+	// Fog
+	float4 fog = Fog.SampleLevel(Sampler, uv, 0);
 	result = ACESFilm(result + fog.xyz * fog.w);
+	
+	// Fadeout
 	result = lerp(result, float3(0.0, 0.0, 0.0), ambient_light.w);
 	
+	// Outline
 	float outlineColor = Outline.SampleLevel(Sampler, uv, 0);
 	float outlineValue = lerp(0.0, outline_strength, outline_color.a);
 	outlineValue = lerp(0.0, outlineValue, outlineColor * saturate(Remap(outlineColor, 1.0 - outline_smoothing, 1.0, 1.0, 0.0)));

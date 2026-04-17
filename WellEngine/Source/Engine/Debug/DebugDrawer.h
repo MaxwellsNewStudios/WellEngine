@@ -277,7 +277,7 @@ public:
 	void DrawSphere(const dx::XMFLOAT3 &center, float radius, int subdivisions, const dx::XMFLOAT4 &color, bool useDepth = true);
 
 
-	TESTABLE()
+	TESTABLE
 };
 
 #undef DD

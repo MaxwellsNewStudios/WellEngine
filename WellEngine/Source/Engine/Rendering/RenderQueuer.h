@@ -30,7 +30,7 @@ public:
 		_cameraBehaviour->QueueTransparent(entry);
 	}
 
-	TESTABLE()
+	TESTABLE
 };
 
 class CubeRenderQueuer final : public RenderQueuer
@@ -53,5 +53,5 @@ public:
 		_cameraCubeBehaviour->QueueTransparent(entry);
 	}
 
-	TESTABLE()
+	TESTABLE
 };

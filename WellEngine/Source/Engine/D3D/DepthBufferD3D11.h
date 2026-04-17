@@ -28,5 +28,5 @@ public:
 	[[nodiscard]] ID3D11DepthStencilView *GetDSV(UINT lightIndex) const;
 	[[nodiscard]] ID3D11ShaderResourceView *GetSRV() const;
 
-	TESTABLE()
+	TESTABLE
 };

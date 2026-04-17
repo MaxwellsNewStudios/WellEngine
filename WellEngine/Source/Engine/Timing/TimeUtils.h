@@ -114,5 +114,5 @@ public:
 		GetInstance()._physDeltaTime = physDeltaTime;
 	}
 
-	TESTABLE()
+	TESTABLE
 };

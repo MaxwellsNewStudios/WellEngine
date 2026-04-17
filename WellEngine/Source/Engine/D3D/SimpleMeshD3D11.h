@@ -128,5 +128,5 @@ public:
 	void BindMeshBuffers(ID3D11DeviceContext *context, UINT stride = 0, UINT offset = 0) const;
 	void PerformDrawCall(ID3D11DeviceContext *context) const;
 
-	TESTABLE()
+	TESTABLE
 };

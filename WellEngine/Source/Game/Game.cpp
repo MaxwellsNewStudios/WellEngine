@@ -825,6 +825,7 @@ bool Game::Setup(TimeUtils &time, Window window)
 		{ ShaderType::COMPUTE_SHADER,		"CS_Downsample",				"Compute/CS_Downsample"				},
 		{ ShaderType::COMPUTE_SHADER,		"CS_DownsampleCheap",			"Compute/CS_DownsampleCheap"		},
 		{ ShaderType::COMPUTE_SHADER,		"CS_DownsampleHalf",			"Compute/CS_DownsampleHalf"			},
+		{ ShaderType::COMPUTE_SHADER,		"CS_MergeEmissionMips",			"Compute/CS_MergeEmissionMips"		},
 		{ ShaderType::COMPUTE_SHADER,		"CS_ColorLUT",					"Compute/CS_ColorLUT"				},
 		{ ShaderType::COMPUTE_SHADER,		"CS_FogFX",						"Compute/CS_FogFX"					},
 		{ ShaderType::COMPUTE_SHADER,		"CS_CombineFX",					"Compute/CS_CombineFX"				},

@@ -114,5 +114,5 @@ public:
 	void Exit();
 	[[nodiscard]] bool IsExiting() const noexcept;
 
-	TESTABLE()
+	TESTABLE
 };

@@ -27,5 +27,5 @@ public:
 	[[nodiscard]] size_t GetVertexSize() const;
 	[[nodiscard]] ID3D11Buffer *GetBuffer() const;
 
-	TESTABLE()
+	TESTABLE
 };

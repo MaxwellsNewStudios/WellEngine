@@ -20,6 +20,12 @@
             "Pointlight Resolution": 512,
             "Cubemap": "SandstoneCove",
             "Skybox": "PS_SkyboxEnvironment",
+            "SkyCol": [
+                0.0,
+                0.0,
+                0.0,
+                0.0
+            ],
             "Ambient": [
                 0.044168516993522644,
                 0.04325259104371071,
@@ -34,9 +40,10 @@
                 "Depth Fade Exp": 1.0
             },
             "Emission": {
-                "Strength": 1.0,
-                "Exponent": 0.5,
-                "Threshold": 1.0
+                "Strength": 1.25,
+                "Exponent": 1.2000000476837158,
+                "Threshold": 1.0499999523162842,
+                "WhiteBias": 0.30000001192092896
             }
         }
     },

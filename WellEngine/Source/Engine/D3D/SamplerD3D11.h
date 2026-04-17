@@ -26,5 +26,5 @@ public:
 
 	[[nodiscard]] ID3D11SamplerState *GetSamplerState() const;
 
-	TESTABLE()
+	TESTABLE
 };

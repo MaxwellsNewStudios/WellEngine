@@ -14,6 +14,13 @@ float RandomValue(inout uint state)
 	return float(NextRandom(state)) / 4294967295.0;
 }
 
+float3 TrendToWhite(float3 c, float t)
+{
+	float m = max(c.r, max(c.g, c.b));
+	t *= saturate((m - 1.0) / m);
+	return lerp(c, m.xxx, t);
+}
+
 float3 RGBtoHSV(float3 rgb)
 {
 	float
@@ -176,3 +183,4 @@ float4 Remap(float4 value, float4 inMin, float4 inMax, float4 outMin, float4 out
 	
 	return result;
 }
+

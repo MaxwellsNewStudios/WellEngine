@@ -913,7 +913,7 @@ namespace DXMath
 
 		[[nodiscard]] static inline Vec MultiplyAdd(const Vec &v1, const Vec &v2, const Vec &v3) noexcept { return v1.MultiplyAdd(v2, v3); }
 
-		TESTABLE();
+		TESTABLE
 	};
 
 	/// <summary> See Vec for usage </summary>
@@ -1016,7 +1016,7 @@ namespace DXMath
 			dx::XMQuaternionToAxisAngle(((Op *)normal), angle, quat); 
 		}
 
-		TESTABLE();
+		TESTABLE
 	};
 }
 

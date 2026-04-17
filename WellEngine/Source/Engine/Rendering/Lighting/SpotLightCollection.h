@@ -76,5 +76,5 @@ public:
 	[[nodiscard]] bool UnregisterSimpleLight(SimpleSpotLightBehaviour *light);
 	[[nodiscard]] bool UnregisterSimpleLight(UINT lightIndex);
 
-	TESTABLE()
+	TESTABLE
 };

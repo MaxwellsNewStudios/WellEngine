@@ -428,7 +428,7 @@ public:
 	[[nodiscard]] FontAtlas *GetFontAtlas(UINT id) const;
 #pragma endregion
 
-	TESTABLE()
+	TESTABLE
 };
 
 template<typename C>

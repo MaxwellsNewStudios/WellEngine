@@ -23,5 +23,5 @@ public:
 		return _uid;
 	}
 
-	TESTABLE()
+	TESTABLE
 };

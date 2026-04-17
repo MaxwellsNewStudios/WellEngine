@@ -42,5 +42,5 @@ public:
 	[[nodiscard]] const std::string &GetSpecularPath() const;
 	[[nodiscard]] ID3D11Buffer *GetSpecularBuffer() const;
 
-	TESTABLE()
+	TESTABLE
 };

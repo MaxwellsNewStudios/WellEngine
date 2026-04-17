@@ -17,5 +17,5 @@ void main(uint3 DTid : SV_DispatchThreadID)
     
 	int2 inCoord = int2(float2(DTid.xy) * (float2(inDim) / float2(outDim)));
     
-	Output[DTid.xy].rgb = GaussianBlur(inCoord, int2(1, 0), inDim, true).rgb;
+	Output[DTid.xy].rgb = GaussianBlur(inCoord, int2(1, 0), inDim, false).rgb;
 }

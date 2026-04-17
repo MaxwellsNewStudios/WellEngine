@@ -173,5 +173,5 @@ public:
 	[[nodiscard]] bool RenderUI(ReferenceSpace space, bool *changed = nullptr);
 #endif
 
-	TESTABLE();
+	TESTABLE
 };

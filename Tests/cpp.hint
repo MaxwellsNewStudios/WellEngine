@@ -4,6 +4,6 @@
 
 #define _TESTING
 #define _TEST_PROJ
-#define TESTABLE() friend class Test::TestUtility;
+#define TESTABLE friend class Test::TestUtility;
 #define TEST_CLASS( className ) 
 #define TEST_METHOD( methodName ) 

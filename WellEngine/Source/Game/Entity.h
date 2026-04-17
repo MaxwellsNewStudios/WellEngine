@@ -197,7 +197,7 @@ public:
 	// For deserialization, use Scene::DeserializeEntity
 	[[nodiscard]] bool Serialize(json::Document::AllocatorType &docAlloc, json::Value &obj, bool forceSerialize = false);
 
-	TESTABLE()
+	TESTABLE
 };
 
 template<class T>

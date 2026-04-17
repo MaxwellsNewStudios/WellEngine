@@ -1,7 +1,8 @@
 #pragma once
-
 #include <d3d11.h>
 #include <wrl/client.h>
+
+using Microsoft::WRL::ComPtr;
 
 class RenderTargetD3D11
 {
@@ -31,5 +32,5 @@ public:
 	[[nodiscard]] ID3D11ShaderResourceView *GetSRV() const;
 	[[nodiscard]] ID3D11UnorderedAccessView *GetUAV() const;
 
-	TESTABLE()
+	TESTABLE
 };

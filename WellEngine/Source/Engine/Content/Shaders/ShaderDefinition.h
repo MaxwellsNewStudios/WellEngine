@@ -292,6 +292,6 @@ namespace ShaderData
 			}
 		}
 
-		TESTABLE()
+		TESTABLE
 	};
 };

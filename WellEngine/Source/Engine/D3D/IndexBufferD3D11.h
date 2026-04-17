@@ -25,5 +25,5 @@ public:
 	[[nodiscard]] size_t GetNrOfIndices() const;
 	[[nodiscard]] ID3D11Buffer *GetBuffer() const;
 
-	TESTABLE()
+	TESTABLE
 };

@@ -21,7 +21,7 @@ private:
 	std::vector<Entity *> _entitiesToCheck;
 	std::vector<ColliderBehaviour *> _colliderBehavioursToCheck;
 
-	TESTABLE()
+	TESTABLE
 };
 
 

@@ -655,6 +655,7 @@
     <ClInclude Include="Source\Engine\D3D\IndexBufferD3D11.h" />
     <ClInclude Include="Source\Engine\D3D\InputLayoutD3D11.h" />
     <ClInclude Include="Source\Engine\D3D\MeshD3D11.h" />
+    <ClInclude Include="Source\Engine\D3D\MipRenderTargetD3D11.h" />
     <ClInclude Include="Source\Engine\D3D\RenderTargetD3D11.h" />
     <ClInclude Include="Source\Engine\D3D\SamplerD3D11.h" />
     <ClInclude Include="Source\Engine\D3D\ShaderD3D11.h" />
@@ -1539,6 +1540,7 @@
     <ClCompile Include="Source\Engine\D3D\IndexBufferD3D11.cpp" />
     <ClCompile Include="Source\Engine\D3D\InputLayoutD3D11.cpp" />
     <ClCompile Include="Source\Engine\D3D\MeshD3D11.cpp" />
+    <ClCompile Include="Source\Engine\D3D\MipRenderTargetD3D11.cpp" />
     <ClCompile Include="Source\Engine\D3D\RenderTargetD3D11.cpp" />
     <ClCompile Include="Source\Engine\D3D\SamplerD3D11.cpp" />
     <ClCompile Include="Source\Engine\D3D\ShaderD3D11.cpp" />
@@ -1841,6 +1843,11 @@
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
+    </FxCompile>
+    <FxCompile Include="Source\Shaders\Compute\CS_MergeEmissionMips.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Compute</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">Compute</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Compute</ShaderType>
     </FxCompile>
     <FxCompile Include="Source\Shaders\Compute\CS_Upsample.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Compute</ShaderType>

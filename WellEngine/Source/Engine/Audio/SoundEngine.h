@@ -27,6 +27,6 @@ public:
 
 	void ResetSoundEngine();
 
-	TESTABLE()
+	TESTABLE
 };
 

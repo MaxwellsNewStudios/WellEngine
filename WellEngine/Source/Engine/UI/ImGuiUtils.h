@@ -137,7 +137,7 @@ namespace ImGuiUtils
 
 		[[nodiscard]] static bool Render();
 
-		TESTABLE()
+		TESTABLE
 	};
 }
 

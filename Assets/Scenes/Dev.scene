@@ -20,6 +20,12 @@
             "Pointlight Resolution": 512,
             "Cubemap": "BarrenFieldHDR",
             "Skybox": "PS_SkyboxEnvironment",
+            "SkyCol": [
+                0.0,
+                0.0,
+                0.0,
+                0.0
+            ],
             "Ambient": [
                 0.3529411554336548,
                 0.3529411554336548,
@@ -34,9 +40,10 @@
                 "Depth Fade Exp": 1.0
             },
             "Emission": {
-                "Strength": 1.149999976158142,
-                "Exponent": 0.6000000238418579,
-                "Threshold": 1.024999976158142
+                "Strength": 0.4000000059604645,
+                "Exponent": 1.25,
+                "Threshold": 1.2000000476837158,
+                "WhiteBias": 0.30000001192092896
             }
         }
     },
@@ -185,7 +192,7 @@
             ],
             "Rot": [
                 -0.0,
-                -1.468546748161316,
+                0.10198827087879181,
                 0.0
             ],
             "Scale": [
