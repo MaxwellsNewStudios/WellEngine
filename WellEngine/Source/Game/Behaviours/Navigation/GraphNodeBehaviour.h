@@ -1,6 +1,6 @@
 #pragma once
 #include <vector>
-#include "Source/Game/Behaviour.h"
+#include "Game/Behaviour.h"
 
 class [[register_behaviour]] GraphNodeBehaviour final : public Behaviour
 {

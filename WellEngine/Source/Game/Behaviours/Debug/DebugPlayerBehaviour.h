@@ -1,10 +1,10 @@
 #pragma once
 
-#include "Source/Game/Behaviour.h"
-#include "Source/Game/Transform.h"
+#include "Game/Behaviour.h"
+#include "Game/Transform.h"
 #include "../Rendering/Camera/CameraBehaviour.h"
-#include "Source/Engine/Rendering/RenderQueuer.h"
-#include "Source/Engine/Collision/Raycast.h"
+#include "Engine/Rendering/RenderQueuer.h"
+#include "Engine/Collision/Raycast.h"
 #include "rapidjson/document.h"
 
 namespace dx = DirectX;

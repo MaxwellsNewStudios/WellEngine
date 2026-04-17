@@ -1,6 +1,6 @@
 #pragma once
-#include "Source/Game/Behaviour.h"
-#include "Source/Game/Game.h"
+#include "Game/Behaviour.h"
+#include "Game/Game.h"
 #include "../Rendering/Mesh/MeshBehaviour.h"
 #include "../Sound/SoundBehaviour.h"
 

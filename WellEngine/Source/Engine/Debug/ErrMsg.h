@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Source/Engine/EngineSettings.h"
+#include "Engine/EngineSettings.h"
 #ifndef DEBUG_MESSAGES
 #include <iostream>
 #endif // DEBUG_MESSAGES

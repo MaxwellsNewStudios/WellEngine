@@ -1,9 +1,9 @@
 #pragma once
 #include <vector>
-#include "Source/Game/Behaviour.h"
+#include "Game/Behaviour.h"
 #include "CameraBehaviour.h"
-#include "Source/Engine/Content/Content.h"
-#include "Source/Engine/Rendering/RendererInfo.h"
+#include "Engine/Content/Content.h"
+#include "Engine/Rendering/RendererInfo.h"
 
 class RenderQueuer;
 

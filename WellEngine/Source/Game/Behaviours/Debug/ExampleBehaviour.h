@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Source/Game/Behaviour.h"
-#include "Source/Engine/Rendering/RenderQueuer.h"
+#include "Game/Behaviour.h"
+#include "Engine/Rendering/RenderQueuer.h"
 
 class [[register_behaviour]] ExampleBehaviour final : public Behaviour
 {

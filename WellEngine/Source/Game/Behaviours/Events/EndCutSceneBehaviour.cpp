@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "EndCutSceneBehaviour.h"
-#include "Source/Game/Game.h"
-#include "Source/Game/Scenes/Scene.h"
+#include "Game/Game.h"
+#include "Game/Scenes/Scene.h"
 #include "../Menu/CreditsBehaviour.h"
 
 #ifdef LEAK_DETECTION

@@ -168,7 +168,7 @@ PixelShaderOutput main(PixelShaderInput input)
 			float weight = uvWeightPair[i].z;
 		
 			if (weight > 0.001)
-				ambientCol += weight * AmbientMap.Sample(Sampler, uv).xyz;
+				ambientCol += weight * MatProp_ambientFactor * AmbientMap.Sample(Sampler, uv).xyz;
 		}
 	}
 		
@@ -200,7 +200,10 @@ PixelShaderOutput main(PixelShaderInput input)
 		totalDiffuseLight, totalSpecularLight // Output
 	);
 	
-	float3 totalLight = diffuseCol * (occlusion * (ambientCol + totalDiffuseLight)) + totalSpecularLight;
+	float3 totalLight =
+		occlusion * diffuseCol * totalDiffuseLight +
+		ambientCol +
+		totalSpecularLight;
 	
 	float emissiveness = max(totalSpecularLight.x, max(totalSpecularLight.y, totalSpecularLight.z));
 	float remappedEmissiveness = emissiveness * 0.15 - 0.97;

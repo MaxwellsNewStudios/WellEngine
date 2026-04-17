@@ -1,10 +1,10 @@
 #include "stdafx.h"
 #include "PlayerCutsceneBehaviour.h"
-#include "Source/Game/Scenes/Scene.h"
-#include "Source/Game/Game.h"
+#include "Game/Scenes/Scene.h"
+#include "Game/Game.h"
 #include "../Monster/MonsterBehaviour.h"
 #include "../Player/PlayerViewBehaviour.h"
-#include "Source/Engine/Timing/TimelineSequence.h"
+#include "Engine/Timing/TimelineSequence.h"
 
 #ifdef LEAK_DETECTION
 #define new			DEBUG_NEW

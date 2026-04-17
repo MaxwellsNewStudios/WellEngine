@@ -1,7 +1,7 @@
 #pragma once
 #include "RendererInfo.h"
-#include "Source/Game/Behaviours/Rendering/Camera/CameraBehaviour.h"
-#include "Source/Game/Behaviours/Rendering/Camera/CameraCubeBehaviour.h"
+#include "Game/Behaviours/Rendering/Camera/CameraBehaviour.h"
+#include "Game/Behaviours/Rendering/Camera/CameraCubeBehaviour.h"
 
 class RenderQueuer
 {

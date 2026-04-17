@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "PictureBehaviour.h"
-#include "Source/Game/Scenes/Scene.h"
-#include "Source/Game/Entity.h"
+#include "Game/Scenes/Scene.h"
+#include "Game/Entity.h"
 #include "../Interaction/PickupBehaviour.h"
 #include "../Interaction/HideBehaviour.h"
 

@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "FlashlightPropBehaviour.h"
-#include "Source/Game/Scenes/Scene.h"
-#include "Source/Game/Entity.h"
+#include "Game/Scenes/Scene.h"
+#include "Game/Entity.h"
 
 #ifdef LEAK_DETECTION
 #define new			DEBUG_NEW

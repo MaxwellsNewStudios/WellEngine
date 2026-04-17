@@ -2,8 +2,8 @@
 #include "GraphManager.h"
 #include "Scenes/Scene.h"
 #include "Behaviours/Navigation/GraphNodeBehaviour.h"
-#include "Source/Engine/Collision/Intersections.h"
-#include "Source/Engine/Debug/DebugDrawer.h"
+#include "Engine/Collision/Intersections.h"
+#include "Engine/Debug/DebugDrawer.h"
 
 #ifdef LEAK_DETECTION
 #define new			DEBUG_NEW

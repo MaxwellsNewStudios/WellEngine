@@ -2,9 +2,9 @@
 #include <d3d11.h>
 #include <wrl/client.h>
 #include <DirectXMath.h>
-#include "Source/Engine/Content/Content.h"
-#include "Source/Engine/D3D/SimpleMeshD3D11.h"
-#include "Source/Game/Behaviours/Rendering/Camera/CameraBehaviour.h"
+#include "Engine/Content/Content.h"
+#include "Engine/D3D/SimpleMeshD3D11.h"
+#include "Game/Behaviours/Rendering/Camera/CameraBehaviour.h"
 
 namespace DebugDraw
 {

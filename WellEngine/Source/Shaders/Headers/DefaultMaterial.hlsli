@@ -20,12 +20,13 @@ cbuffer MaterialProperties : register(b2)
     float MatProp_specularFactor;
 	float MatProp_normalFactor;
 	float MatProp_glossFactor;
+	float MatProp_ambientFactor;
     float MatProp_occlusionFactor;
     float MatProp_reflectFactor;
     float MatProp_metallic;
 	uint MatProp_sampleFlags;
 	
-	//float _MatProp_padding[1];
+	float _MatProp_padding[3];
 };
 
 void GetSampleFlags(

@@ -1,11 +1,11 @@
 #include "stdafx.h"
 #include "GraphNodeBehaviour.h"
-#include "Source/Game/Scenes/Scene.h"
-#include "Source/Game/Game.h"
+#include "Game/Scenes/Scene.h"
+#include "Game/Game.h"
 #include "../../GraphManager.h"
 #include "../Rendering/Mesh/MeshBehaviour.h"
 #include "../Debug/DebugPlayerBehaviour.h"
-#include "Source/Engine/Debug/DebugDrawer.h"
+#include "Engine/Debug/DebugDrawer.h"
 
 #ifdef LEAK_DETECTION
 #define new			DEBUG_NEW

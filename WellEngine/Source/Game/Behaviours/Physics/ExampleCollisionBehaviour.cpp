@@ -1,9 +1,9 @@
 #include "stdafx.h"
 #include "ExampleCollisionBehaviour.h"
-#include "Source/Game/Scenes/Scene.h"
+#include "Game/Scenes/Scene.h"
 #include "../Rendering/Mesh/MeshBehaviour.h"
 #include "ColliderBehaviour.h"
-#include "Source/Engine/Collision/Intersections.h"
+#include "Engine/Collision/Intersections.h"
 
 
 #ifdef LEAK_DETECTION

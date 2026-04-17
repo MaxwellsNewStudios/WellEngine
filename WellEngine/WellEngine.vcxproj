@@ -108,7 +108,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <WholeProgramOptimization>false</WholeProgramOptimization>
-      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(SolutionDir);$(ProjectDir);$(ProjectDir)Dependencies\SDL3\include\;$(ProjectDir)Dependencies\rapidjson\include\;$(ProjectDir)Dependencies\JoltPhysics\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(SolutionDir);$(ProjectDir);$(ProjectDir)Source\;$(ProjectDir)Dependencies\SDL3\include\;$(ProjectDir)Dependencies\rapidjson\include\;$(ProjectDir)Dependencies\JoltPhysics\</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>4244;6993;4018;4267;4006;26813;5030;5222;%(DisableSpecificWarnings)</DisableSpecificWarnings>
       <MinimalRebuild>false</MinimalRebuild>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
@@ -168,7 +168,7 @@
       <Optimization>MaxSpeed</Optimization>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
-      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(SolutionDir);$(ProjectDir);$(ProjectDir)Dependencies\SDL3\include\;$(ProjectDir)Dependencies\rapidjson\include\;$(ProjectDir)Dependencies\JoltPhysics\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(SolutionDir);$(ProjectDir);$(ProjectDir)Source\;$(ProjectDir)Dependencies\SDL3\include\;$(ProjectDir)Dependencies\rapidjson\include\;$(ProjectDir)Dependencies\JoltPhysics\</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>4244;6993;4018;4267;4006;26813;5030;5222;%(DisableSpecificWarnings)</DisableSpecificWarnings>
       <MinimalRebuild>false</MinimalRebuild>
       <StringPooling>true</StringPooling>
@@ -234,7 +234,7 @@
       <Optimization>MaxSpeed</Optimization>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
-      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(SolutionDir);$(ProjectDir);$(ProjectDir)Dependencies\SDL3\include\;$(ProjectDir)Dependencies\rapidjson\include\;$(ProjectDir)Dependencies\JoltPhysics\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(SolutionDir);$(ProjectDir);$(ProjectDir)Source\;$(ProjectDir)Dependencies\SDL3\include\;$(ProjectDir)Dependencies\rapidjson\include\;$(ProjectDir)Dependencies\JoltPhysics\</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>4244;6993;4018;4267;4006;26813;5030;5222;%(DisableSpecificWarnings)</DisableSpecificWarnings>
       <StringPooling>true</StringPooling>
       <FloatingPointExceptions>false</FloatingPointExceptions>
@@ -769,12 +769,12 @@
     <ClInclude Include="Source\Game\Scenes\Scene.h" />
     <ClInclude Include="Source\Game\Scenes\SceneHolder.h" />
     <ClInclude Include="Source\Game\Transform.h" />
-    <ClInclude Include="Source\Math\Bezier.h" />
-    <ClInclude Include="Source\Math\ConstRand.h" />
-    <ClInclude Include="Source\Math\Curves.h" />
-    <ClInclude Include="Source\Math\EasingFunctions.h" />
-    <ClInclude Include="Source\Math\GameMath.h" />
-    <ClInclude Include="Source\Math\Primitives.h" />
+    <ClInclude Include="Source\Engine\Math\Bezier.h" />
+    <ClInclude Include="Source\Engine\Math\ConstRand.h" />
+    <ClInclude Include="Source\Engine\Math\Curves.h" />
+    <ClInclude Include="Source\Engine\Math\EasingFunctions.h" />
+    <ClInclude Include="Source\Engine\Math\GameMath.h" />
+    <ClInclude Include="Source\Engine\Math\Primitives.h" />
     <ClInclude Include="stdafx.h" />
   </ItemGroup>
   <ItemGroup>
@@ -1643,9 +1643,9 @@
     <ClCompile Include="Source\Game\Scenes\SceneSerialization.cpp" />
     <ClCompile Include="Source\Game\Scenes\SceneUI.cpp" />
     <ClCompile Include="Source\Game\Transform.cpp" />
-    <ClCompile Include="Source\Math\Curves.cpp" />
-    <ClCompile Include="Source\Math\EasingFunctions.cpp" />
-    <ClCompile Include="Source\Math\Primitives.cpp" />
+    <ClCompile Include="Source\Engine\Math\Curves.cpp" />
+    <ClCompile Include="Source\Engine\Math\EasingFunctions.cpp" />
+    <ClCompile Include="Source\Engine\Math\Primitives.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">Create</PrecompiledHeader>

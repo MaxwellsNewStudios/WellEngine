@@ -1,10 +1,10 @@
 #include "stdafx.h"
 #include "FlashlightBehaviour.h"
-#include "Source/Game/Scenes/Scene.h"
-#include "Source/Game/Entity.h"
+#include "Game/Scenes/Scene.h"
+#include "Game/Entity.h"
 #include "../Monster/MonsterBehaviour.h"
-#include "Source/Engine/Content/Content.h"
-#include "Source/Engine/Collision/Intersections.h"
+#include "Engine/Content/Content.h"
+#include "Engine/Collision/Intersections.h"
 
 #ifdef LEAK_DETECTION
 #define new			DEBUG_NEW

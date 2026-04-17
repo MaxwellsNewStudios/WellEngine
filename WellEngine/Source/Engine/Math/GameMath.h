@@ -4,8 +4,8 @@
 #include <variant>
 #include <DirectXMath.h>
 #include <DirectXCollision.h>
-#include "Source/Engine/Debug/ErrMsg.h"
-#include "Source/Engine/Collision/ColliderShapes.h"
+#include "Engine/Debug/ErrMsg.h"
+#include "Engine/Collision/ColliderShapes.h"
 
 namespace we = WellEngine;
 namespace dx = DirectX;

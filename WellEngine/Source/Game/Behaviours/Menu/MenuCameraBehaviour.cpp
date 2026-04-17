@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "MenuCameraBehaviour.h"
-#include "Source/Game/Scenes/Scene.h"
+#include "Game/Scenes/Scene.h"
 #include "../../Scenes/SceneHolder.h"
 #include "../Rendering/Camera/CameraBehaviour.h"
 

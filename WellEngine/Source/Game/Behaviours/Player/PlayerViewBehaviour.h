@@ -1,5 +1,5 @@
 #pragma once
-#include "Source/Game/Behaviour.h"
+#include "Game/Behaviour.h"
 #include "../Physics/ColliderBehaviour.h"
 #include "PlayerMovementBehaviour.h"
 #include "../Interaction/InteractorBehaviour.h"

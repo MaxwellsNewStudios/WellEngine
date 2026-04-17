@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "SceneHolder.h"
 #include "Scene.h"
-#include "Source/Engine/Debug/DebugData.h"
+#include "Engine/Debug/DebugData.h"
 
 #ifdef LEAK_DETECTION
 #define new			DEBUG_NEW

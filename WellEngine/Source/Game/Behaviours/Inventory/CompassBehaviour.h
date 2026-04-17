@@ -1,5 +1,5 @@
 #pragma once
-#include "Source/Game/Behaviour.h"
+#include "Game/Behaviour.h"
 #include "../Rendering/Mesh/MeshBehaviour.h"
 
 class [[register_behaviour]] CompassBehaviour final : public Behaviour

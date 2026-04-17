@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Source/Game/Behaviour.h"
+#include "Game/Behaviour.h"
 
 // Abstract class intended as a base class for UI buttons (ex: play, exit, options...)
  class UIButtonBehaviour : public Behaviour

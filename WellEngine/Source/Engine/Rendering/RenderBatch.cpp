@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "RenderBatch.h"
-#include "Source/Game/Behaviours/Rendering/Mesh/MeshBehaviour.h"
+#include "Game/Behaviours/Rendering/Mesh/MeshBehaviour.h"
 
 #ifdef LEAK_DETECTION
 #define new			DEBUG_NEW

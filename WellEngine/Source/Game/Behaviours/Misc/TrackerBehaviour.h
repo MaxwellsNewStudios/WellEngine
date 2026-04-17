@@ -5,8 +5,8 @@
 #include <DirectXCollision.h>
 #include <wrl/client.h>
 
-#include "Source/Game/Behaviour.h"
-#include "Source/Engine/Content/Content.h"
+#include "Game/Behaviour.h"
+#include "Engine/Content/Content.h"
 
 class [[register_behaviour]] TrackerBehaviour final : public Behaviour
 {

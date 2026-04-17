@@ -2,8 +2,8 @@
 #include <vector>
 #include "TimelineWaypoint.h"
 #include "TimeUtils.h"
-#include "Source/Game/Transform.h"
-#include "Source/Math/EasingFunctions.h"
+#include "Game/Transform.h"
+#include "Engine/Math/EasingFunctions.h"
 
 enum class SequenceStatus
 {

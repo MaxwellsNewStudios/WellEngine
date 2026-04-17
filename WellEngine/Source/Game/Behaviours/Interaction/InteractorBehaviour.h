@@ -1,5 +1,5 @@
 #pragma once
-#include "Source/Game/Behaviour.h"
+#include "Game/Behaviour.h"
 
 // Behaviour for the player
 class [[register_behaviour]] InteractorBehaviour : public Behaviour

@@ -5,9 +5,9 @@
 #include <d3d11.h>
 #include <DirectXCollision.h>
 #include <DirectXMath.h>
-#include "Source/Game/Behaviour.h"
-#include "Source/Engine/Content/Content.h"
-#include "Source/Engine/Rendering/RendererInfo.h"
+#include "Game/Behaviour.h"
+#include "Engine/Content/Content.h"
+#include "Engine/Rendering/RendererInfo.h"
 
 struct CamBounds
 {

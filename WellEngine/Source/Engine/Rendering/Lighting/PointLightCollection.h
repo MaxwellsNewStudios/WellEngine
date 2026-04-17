@@ -3,11 +3,11 @@
 #include <vector>
 #include <d3d11.h>
 #include <DirectXMath.h>
-#include "Source/Engine/D3D/StructuredBufferD3D11.h"
-#include "Source/Engine/D3D/DepthBufferD3D11.h"
-#include "Source/Game/Behaviours/Rendering/Camera/CameraBehaviour.h"
-#include "Source/Game/Behaviours/Rendering/Lighting/PointLightBehaviour.h"
-#include "Source/Game/Behaviours/Rendering/Lighting/SimplePointLightBehaviour.h"
+#include "Engine/D3D/StructuredBufferD3D11.h"
+#include "Engine/D3D/DepthBufferD3D11.h"
+#include "Game/Behaviours/Rendering/Camera/CameraBehaviour.h"
+#include "Game/Behaviours/Rendering/Lighting/PointLightBehaviour.h"
+#include "Game/Behaviours/Rendering/Lighting/SimplePointLightBehaviour.h"
 
 class PointLightCollection : public IRefTarget<PointLightCollection>
 {

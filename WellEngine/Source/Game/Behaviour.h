@@ -11,10 +11,10 @@
 #pragma once
 
 #include <d3d11.h>
-#include "Source/Engine/EngineSettings.h"
-#include "Source/Engine/Timing/TimeUtils.h"
-#include "Source/Engine/Input/Input.h"
-#include "Source/Engine/Rendering/RendererInfo.h"
+#include "Engine/EngineSettings.h"
+#include "Engine/Timing/TimeUtils.h"
+#include "Engine/Input/Input.h"
+#include "Engine/Rendering/RendererInfo.h"
 #include "Transform.h"
 #include "rapidjson/document.h"
 

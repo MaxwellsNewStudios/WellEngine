@@ -3,7 +3,7 @@
 #include "Scene.h"
 #include "../Game.h"
 #include "../GraphManager.h"
-#include "Source/Engine/Audio/SoundEngine.h"
+#include "Engine/Audio/SoundEngine.h"
 
 #include "../Behaviours/Interaction/BreadcrumbPileBehaviour.h"
 #include "../Behaviours/Player/RestrictedViewBehaviour.h"

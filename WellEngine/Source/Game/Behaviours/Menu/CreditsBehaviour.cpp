@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "CreditsBehaviour.h"
-#include "Source/Game/Scenes/Scene.h"
-#include "Source/Game/Game.h"
+#include "Game/Scenes/Scene.h"
+#include "Game/Game.h"
 #include "../Sound/SoundBehaviour.h"
 
 #ifdef LEAK_DETECTION

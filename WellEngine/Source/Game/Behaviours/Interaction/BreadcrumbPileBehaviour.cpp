@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "BreadcrumbPileBehaviour.h"
-#include "Source/Game/Game.h"
-#include "Source/Game/Scenes/Scene.h"
+#include "Game/Game.h"
+#include "Game/Scenes/Scene.h"
 #include "../Inventory/InventoryBehaviour.h"
 #include "../Inventory/FlashlightBehaviour.h"
 

@@ -1,7 +1,7 @@
 #pragma once
 
 #include <array>
-#include "Source/Game/Behaviour.h"
+#include "Game/Behaviour.h"
 #include "../Camera/CameraCubeBehaviour.h"
 
 class PointLightCollection;

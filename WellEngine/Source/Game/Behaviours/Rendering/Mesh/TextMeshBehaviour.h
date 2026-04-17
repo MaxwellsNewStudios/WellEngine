@@ -1,6 +1,6 @@
 #pragma once
-#include "Source/Game/Behaviour.h"
-#include "Source/Engine/D3D/MeshD3D11.h"
+#include "Game/Behaviour.h"
+#include "Engine/D3D/MeshD3D11.h"
 #include "MeshBehaviour.h"
 
 class [[register_behaviour]] TextMeshBehaviour : public Behaviour

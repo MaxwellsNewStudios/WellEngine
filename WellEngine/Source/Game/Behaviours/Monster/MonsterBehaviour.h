@@ -1,7 +1,7 @@
 #pragma once
 #include <queue>
 
-#include "Source/Game/Behaviour.h"
+#include "Game/Behaviour.h"
 #include "../../GraphManager.h"
 #include "../Rendering/Mesh/MeshBehaviour.h"
 #include "../Sound/SoundBehaviour.h"

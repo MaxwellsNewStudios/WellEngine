@@ -82,7 +82,7 @@ PixelShaderOutput main(PixelShaderInput input)
 		: 1.0 - (1.0 / pow(max(0.0, SpecBuf_specularExponent), 1.75)));
 
 	const float3 ambientCol = sampleAmbient
-		? AmbientMap.Sample(Sampler, uv).xyz
+		? MatProp_ambientFactor * AmbientMap.Sample(Sampler, uv).xyz
         : float3(0.0, 0.0, 0.0);
 
 	const float occlusion = sampleOcclusion
@@ -321,7 +321,8 @@ PixelShaderOutput main(PixelShaderInput input)
 		}
     }
 	
-    float3 totalLight = diffuseCol * (occlusion * (ambientCol + totalDiffuseLight)) + occlusion * totalSpecularLight;
+	//float3 totalLight = ambientCol + occlusion * ((diffuseCol * totalDiffuseLight) + totalSpecularLight);
+	float3 totalLight = (occlusion * diffuseCol * totalDiffuseLight) + ambientCol + totalSpecularLight;
 	
 	float maxChannel = max(tileColor.x, max(tileColor.y, tileColor.z));
 	tileColor = (maxChannel <= 1.0) ? (tileColor) : (tileColor / maxChannel);

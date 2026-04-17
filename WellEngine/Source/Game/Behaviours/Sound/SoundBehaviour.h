@@ -1,8 +1,8 @@
 #pragma once
 #include <string>
-#include "Source/Game/Behaviour.h"
-#include "Source/Engine/Content/Content.h"
-#include "Source/Engine/Audio/SoundSource.h"
+#include "Game/Behaviour.h"
+#include "Engine/Content/Content.h"
+#include "Engine/Audio/SoundSource.h"
 
 class [[register_behaviour]] SoundBehaviour : public Behaviour
 {

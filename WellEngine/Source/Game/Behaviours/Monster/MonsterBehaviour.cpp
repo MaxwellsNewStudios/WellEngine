@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "MonsterBehaviour.h"
-#include "Source/Game/Scenes/Scene.h"
+#include "Game/Scenes/Scene.h"
 #include "MonsterStates/MonsterState.h"
 #include "MonsterStates/MonsterIdle.h"
 #include "MonsterStates/MonsterHunt.h"
@@ -8,7 +8,7 @@
 #include "MonsterStates/MonsterExtendedHunt.h"
 #include "MonsterStates/MonsterCapture.h"
 #include "../Navigation/GraphNodeBehaviour.h"
-#include "Source/Engine/Collision/Intersections.h"
+#include "Engine/Collision/Intersections.h"
 
 #ifdef LEAK_DETECTION
 #define new			DEBUG_NEW

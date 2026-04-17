@@ -2,7 +2,7 @@
 
 #include <vector>
 #include <functional>
-#include "Source/Game/Behaviour.h"
+#include "Game/Behaviour.h"
 #include "InteractorBehaviour.h"
 
 // Behaviour for iteractable objects

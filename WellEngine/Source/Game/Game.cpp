@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "Game.h"
-#include "Source/Engine/Debug/DebugData.h"
-#include "Source/Engine/UI/UILayout.h"
+#include "Engine/Debug/DebugData.h"
+#include "Engine/UI/UILayout.h"
 
 #ifdef LEAK_DETECTION
 #define new			DEBUG_NEW

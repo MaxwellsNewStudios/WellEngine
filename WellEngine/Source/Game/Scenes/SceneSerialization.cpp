@@ -6,7 +6,7 @@
 #include "../BehaviourFactory.h"
 #include "../Behaviours/Debug/DebugPlayerBehaviour.h"
 #include "../Behaviours/Navigation/GraphNodeBehaviour.h"
-#include "Source/Engine/Utils/SerializerUtils.h"
+#include "Engine/Utils/SerializerUtils.h"
 
 #ifdef LEAK_DETECTION
 #define new			DEBUG_NEW

@@ -1,17 +1,17 @@
 #pragma once
 
-#include "Source/Engine/EngineSettings.h"
+#include "Engine/EngineSettings.h"
 #include <DirectXMath.h>
 #include <DirectXCollision.h>
 #include <string>
 #include <functional>
 
-#include "Source/Engine/Timing/TimeUtils.h"
-#include "Source/Engine/Input/Input.h"
-#include "Source/Engine/Rendering/RenderQueuer.h"
-#include "Source/Engine/Rendering/RendererInfo.h"
+#include "Engine/Timing/TimeUtils.h"
+#include "Engine/Input/Input.h"
+#include "Engine/Rendering/RenderQueuer.h"
+#include "Engine/Rendering/RendererInfo.h"
 
-#include "Source/Engine/Content/HeightMap.h"
+#include "Engine/Content/HeightMap.h"
 
 class Entity;
 class Scene;

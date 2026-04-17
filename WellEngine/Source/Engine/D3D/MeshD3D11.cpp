@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "MeshD3D11.h"
-#include "Source/Engine/Content/DefaultVertex.h"
+#include "Engine/Content/DefaultVertex.h"
 
 #ifdef LEAK_DETECTION
 #define new			DEBUG_NEW

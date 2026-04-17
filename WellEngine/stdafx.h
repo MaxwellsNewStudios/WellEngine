@@ -3,9 +3,9 @@
 
 #include "Tests/TestUtils.h"
 
-#include "Source/Engine/EngineSettings.h"
-#include "Source/Engine/Debug/TrackedAlloc.h"
-#include "Source/Engine/Debug/DebugNew.h"
+#include "Engine/EngineSettings.h"
+#include "Engine/Debug/TrackedAlloc.h"
+#include "Engine/Debug/DebugNew.h"
 
 #define _USE_MATH_DEFINES
 
@@ -81,14 +81,14 @@ JPH_SUPPRESS_WARNING_POP
 #include "Dependencies/ImGui/imgui_stdlib.h"
 #include "Dependencies/ImPlot/implot.h"
 
-#include "Source/Engine/UI/ImGuiExtensions.h"
-#include "Source/Engine/UI/Fonts/IconsCodicons.h"
-#include "Source/Engine/UI/Fonts/IconsFontaudio.h"
-#include "Source/Engine/UI/Fonts/IconsFontAwesome6.h"
-#include "Source/Engine/UI/Fonts/IconsForkAwesome.h"
-#include "Source/Engine/UI/Fonts/IconsLucide.h"
-#include "Source/Engine/UI/Fonts/IconsMaterialDesignIcons.h"
-#include "Source/Engine/UI/Fonts/IconsMaterialSymbols.h"
+#include "Engine/UI/ImGuiExtensions.h"
+#include "Engine/UI/Fonts/IconsCodicons.h"
+#include "Engine/UI/Fonts/IconsFontaudio.h"
+#include "Engine/UI/Fonts/IconsFontAwesome6.h"
+#include "Engine/UI/Fonts/IconsForkAwesome.h"
+#include "Engine/UI/Fonts/IconsLucide.h"
+#include "Engine/UI/Fonts/IconsMaterialDesignIcons.h"
+#include "Engine/UI/Fonts/IconsMaterialSymbols.h"
 #endif
 
 #ifdef USE_IMGUIZMO
@@ -111,52 +111,50 @@ JPH_SUPPRESS_WARNING_POP
 namespace json = rapidjson; 
 
 
-// Math
-#include "Source/Math/GameMath.h"
-#include "Source/Math/ConstRand.h"
-#include "Source/Math/Primitives.h"
-#include "Source/Math/Curves.h"
-
 // Engine
-#include "Source/Engine/Utils/UIDHelper.h"
-#include "Source/Engine/Utils/ReferenceHelper.h"
-#include "Source/Engine/Utils/StringUtils.h"
-#include "Source/Engine/Utils/SerializerUtils.h"
-#include "Source/Engine/Utils/RepeatTracker.h"
-#include "Source/Engine/Content/Material.h"
-#include "Source/Engine/Rendering/RendererInfo.h"
-#include "Source/Engine/Rendering/RenderQueuer.h"
-#include "Source/Engine/Window/Window.h"
-#include "Source/Engine/Timing/TimeUtils.h"
-#include "Source/Engine/Input/Input.h"
-#include "Source/Engine/Input/InputBindings.h"
-#include "Source/Engine/Collision/ColliderShapes.h"
-#include "Source/Engine/Collision/Raycast.h"
-#include "Source/Engine/Debug/ErrMsg.h"
+#include "Engine/Math/GameMath.h"
+#include "Engine/Math/ConstRand.h"
+#include "Engine/Math/Primitives.h"
+#include "Engine/Math/Curves.h"
+#include "Engine/Utils/UIDHelper.h"
+#include "Engine/Utils/ReferenceHelper.h"
+#include "Engine/Utils/StringUtils.h"
+#include "Engine/Utils/SerializerUtils.h"
+#include "Engine/Utils/RepeatTracker.h"
+#include "Engine/Content/Material.h"
+#include "Engine/Rendering/RendererInfo.h"
+#include "Engine/Rendering/RenderQueuer.h"
+#include "Engine/Window/Window.h"
+#include "Engine/Timing/TimeUtils.h"
+#include "Engine/Input/Input.h"
+#include "Engine/Input/InputBindings.h"
+#include "Engine/Collision/ColliderShapes.h"
+#include "Engine/Collision/Raycast.h"
+#include "Engine/Debug/ErrMsg.h"
 
-#include "Source/Engine/D3D/D3D11Helper.h"
-#include "Source/Engine/D3D/D3D11FormatData.h"
-#include "Source/Engine/D3D/ConstantBufferD3D11.h"
-#include "Source/Engine/D3D/DepthBufferD3D11.h"
-#include "Source/Engine/D3D/IndexBufferD3D11.h"
-#include "Source/Engine/D3D/InputLayoutD3D11.h"
-#include "Source/Engine/D3D/MeshD3D11.h"
-#include "Source/Engine/D3D/RenderTargetD3D11.h"
-#include "Source/Engine/D3D/SamplerD3D11.h"
-#include "Source/Engine/D3D/ShaderD3D11.h"
-#include "Source/Engine/D3D/ShaderResourceTextureD3D11.h"
-#include "Source/Engine/D3D/SimpleMeshD3D11.h"
-#include "Source/Engine/D3D/StructuredBufferD3D11.h"
-#include "Source/Engine/D3D/SubMeshD3D11.h"
-#include "Source/Engine/D3D/VertexBufferD3D11.h"
+#include "Engine/D3D/D3D11Helper.h"
+#include "Engine/D3D/D3D11FormatData.h"
+#include "Engine/D3D/ConstantBufferD3D11.h"
+#include "Engine/D3D/DepthBufferD3D11.h"
+#include "Engine/D3D/IndexBufferD3D11.h"
+#include "Engine/D3D/InputLayoutD3D11.h"
+#include "Engine/D3D/MeshD3D11.h"
+#include "Engine/D3D/RenderTargetD3D11.h"
+#include "Engine/D3D/SamplerD3D11.h"
+#include "Engine/D3D/ShaderD3D11.h"
+#include "Engine/D3D/ShaderResourceTextureD3D11.h"
+#include "Engine/D3D/SimpleMeshD3D11.h"
+#include "Engine/D3D/StructuredBufferD3D11.h"
+#include "Engine/D3D/SubMeshD3D11.h"
+#include "Engine/D3D/VertexBufferD3D11.h"
 
 #ifdef USE_IMGUI
-#include "Source/Engine/UI/UIDragDropHelpers.h"
-#include "Source/Engine/UI/ImGuiUtils.h"
+#include "Engine/UI/UIDragDropHelpers.h"
+#include "Engine/UI/ImGuiUtils.h"
 #endif
 
 // Game
-#include "Source/Game/Transform.h"
+#include "Game/Transform.h"
 
 namespace we = WellEngine;
 

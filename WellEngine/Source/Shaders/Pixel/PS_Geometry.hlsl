@@ -78,7 +78,7 @@ PixelShaderOutput main(PixelShaderInput input)
 		: 1.0 - (1.0 / pow(max(0.0, SpecBuf_specularExponent), 1.75)));
 
 	const float3 ambientCol = sampleAmbient
-		? AmbientMap.Sample(Sampler, uv).xyz
+		? MatProp_ambientFactor * AmbientMap.Sample(Sampler, uv).xyz
         : 0.0.rrr;
 
 	const float occlusion = sampleOcclusion
@@ -92,9 +92,11 @@ PixelShaderOutput main(PixelShaderInput input)
 		totalDiffuseLight, totalSpecularLight				// Output
 	);
 	
+	//float3 totalLight = diffuseCol * (occlusion * (ambientCol + totalDiffuseLight)) + totalSpecularLight;
 	float3 totalLight = 
-		diffuseCol * (occlusion * (ambientCol + totalDiffuseLight))
-		+ totalSpecularLight;
+		occlusion * diffuseCol * totalDiffuseLight + 
+		ambientCol + 
+		totalSpecularLight;
 	
 	float3 emissivenessFactor = 0.1 * pow(max(totalLight, 0.0.rrr), 1.5) + 0.9 * totalSpecularLight;
 	float emissiveness = max(emissivenessFactor.x, max(emissivenessFactor.y, emissivenessFactor.z));

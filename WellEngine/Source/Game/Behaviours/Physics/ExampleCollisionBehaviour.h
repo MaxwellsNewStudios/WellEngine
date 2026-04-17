@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Source/Game/Behaviour.h"
+#include "Game/Behaviour.h"
 
 class [[register_behaviour]] ExampleCollisionBehaviour : public Behaviour
 {

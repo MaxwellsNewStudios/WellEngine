@@ -1,6 +1,6 @@
 #pragma once
-#include "Source/Game/Behaviour.h"
-#include "Source/Engine/Collision/Raycast.h"
+#include "Game/Behaviour.h"
+#include "Engine/Collision/Raycast.h"
 
 class [[register_behaviour]] MenuCameraBehaviour : public Behaviour
 {

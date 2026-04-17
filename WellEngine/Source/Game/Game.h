@@ -4,13 +4,13 @@
 #include <d3d11.h>
 #include <wrl/client.h>
 #include "Scenes/Scene.h"
-#include "Source/Engine/Physics/JoltManager.h"
-#include "Source/Engine/Rendering/Graphics.h"
-#include "Source/Engine/Content/Content.h"
-#include "Source/Engine/Timing/TimeUtils.h"
-#include "Source/Engine/Input/Input.h"
-#include "Source/Engine/Window/Window.h"
-#include "Source/Engine/Debug/DebugDrawer.h"
+#include "Engine/Physics/JoltManager.h"
+#include "Engine/Rendering/Graphics.h"
+#include "Engine/Content/Content.h"
+#include "Engine/Timing/TimeUtils.h"
+#include "Engine/Input/Input.h"
+#include "Engine/Window/Window.h"
+#include "Engine/Debug/DebugDrawer.h"
 
 namespace we = WellEngine;
 

@@ -1,8 +1,8 @@
 #include "stdafx.h"
 #include "PlayerViewBehaviour.h"
-#include "Source/Game/Entity.h"
-#include "Source/Game/Scenes/Scene.h"
-#include "Source/Engine/Collision/Intersections.h"
+#include "Game/Entity.h"
+#include "Game/Scenes/Scene.h"
+#include "Engine/Collision/Intersections.h"
 
 #ifdef LEAK_DETECTION
 #define new			DEBUG_NEW

@@ -1,8 +1,8 @@
 #include "stdafx.h"
 #include "CameraBehaviour.h"
-#include "Source/Game/Entity.h"
-#include "Source/Game/Scenes/Scene.h"
-#include "Source/Engine/Rendering/RenderQueuer.h"
+#include "Game/Entity.h"
+#include "Game/Scenes/Scene.h"
+#include "Engine/Rendering/RenderQueuer.h"
 
 #ifdef LEAK_DETECTION
 #define new			DEBUG_NEW

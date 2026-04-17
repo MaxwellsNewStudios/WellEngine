@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Source/Game/Game.h"
+#include "Game/Game.h"
 
 class EngineCore
 {

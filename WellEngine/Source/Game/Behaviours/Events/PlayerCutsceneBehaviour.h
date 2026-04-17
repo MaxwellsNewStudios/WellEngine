@@ -1,10 +1,10 @@
 #pragma once
 
-#include "Source/Game/Behaviour.h"
+#include "Game/Behaviour.h"
 #include "../Player/PlayerMovementBehaviour.h"
 #include "../Inventory/FlashlightBehaviour.h"
 #include "../Interaction/CameraItemBehaviour.h"
-#include "Source/Engine/Timing/TimelineSequence.h"
+#include "Engine/Timing/TimelineSequence.h"
 
 enum PlayerCutsceneState
 {

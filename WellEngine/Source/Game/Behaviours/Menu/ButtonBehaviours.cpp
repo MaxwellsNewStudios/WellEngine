@@ -1,10 +1,10 @@
 #include "stdafx.h"
 #include "ButtonBehaviours.h"
-#include "Source/Game/Game.h"
-#include "Source/Game/Scenes/Scene.h"
+#include "Game/Game.h"
+#include "Game/Scenes/Scene.h"
 #include "CreditsBehaviour.h"
-#include "Source/Engine/Input/Input.h"
-#include "Source/Engine/Debug/DebugData.h"
+#include "Engine/Input/Input.h"
+#include "Engine/Debug/DebugData.h"
 
 #ifdef LEAK_DETECTION
 #define new			DEBUG_NEW

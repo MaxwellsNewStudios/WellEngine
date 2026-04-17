@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "ErrMsg.h"
-#include "Source/Engine/Utils/StringUtils.h"
+#include "Engine/Utils/StringUtils.h"
 #include <windows.h>
 
 #ifdef LEAK_DETECTION

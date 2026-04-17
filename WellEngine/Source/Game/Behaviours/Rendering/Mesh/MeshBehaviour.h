@@ -1,6 +1,6 @@
 #pragma once
-#include "Source/Game/Behaviour.h"
-#include "Source/Engine/Content/Content.h"
+#include "Game/Behaviour.h"
+#include "Engine/Content/Content.h"
 
 struct TriplanarSettings
 {
@@ -63,6 +63,7 @@ private:
 	float _normalFactor = 1.0f;
 	float _specularFactor = 1.0f;
 	float _glossFactor = 1.0f;
+	float _ambientFactor = 1.0f;
 	float _occlusionFactor = 0.85f;
 	float _reflectivity = 0.1f;
 	float _metallic = 0.0f;

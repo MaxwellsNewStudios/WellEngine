@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "FontAtlas.h"
-#include "Source/Engine/Content/DefaultVertex.h"
+#include "Engine/Content/DefaultVertex.h"
 
 bool GlyphData::Serialize(json::Document::AllocatorType &docAlloc, json::Value &obj) const
 {

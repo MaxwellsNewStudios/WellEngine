@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "TextMeshBehaviour.h"
-#include "Source/Game/Scenes/Scene.h"
-#include "Source/Game/Behaviours/Debug/DebugPlayerBehaviour.h"
+#include "Game/Scenes/Scene.h"
+#include "Game/Behaviours/Debug/DebugPlayerBehaviour.h"
 
 #ifdef LEAK_DETECTION
 #define new			DEBUG_NEW

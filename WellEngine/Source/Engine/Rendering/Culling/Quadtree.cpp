@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "Quadtree.h"
-#include "Source/Game/Scenes/Scene.h"
-#include "Source/Game/Behaviours/Rendering/Mesh/MeshBehaviour.h"
+#include "Game/Scenes/Scene.h"
+#include "Game/Behaviours/Rendering/Mesh/MeshBehaviour.h"
 
 bool Quadtree::Node::RaycastNode(const dx::XMFLOAT3 &orig, const dx::XMFLOAT3 &dir, float &length, Entity *&entity, bool cheap) const
 {
@@ -236,7 +236,7 @@ bool Quadtree::Node::RaycastNode(const we::Shape::Ray &ray, we::Shape::RayHit &h
 }
 
 #ifdef USE_IMGUI
-#include "Source/Game/Behaviours/Debug/DebugPlayerBehaviour.h"
+#include "Game/Behaviours/Debug/DebugPlayerBehaviour.h"
 
 bool Quadtree::Node::RenderUI(std::string &path, bool drawFullPath, bool drawDataRec, const UINT depth)
 {

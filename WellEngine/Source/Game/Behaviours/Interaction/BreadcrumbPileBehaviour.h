@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Source/Game/Behaviour.h"
+#include "Game/Behaviour.h"
 #include "../Interaction/InteractableBehaviour.h"
 #include "../Rendering/Mesh/BillboardMeshBehaviour.h"
 

@@ -1,5 +1,5 @@
 #pragma once
-#include "Source/Game/Behaviour.h"
+#include "Game/Behaviour.h"
 #include "../Interaction/BreadcrumbBehaviour.h"
 #include "CompassBehaviour.h"
 #include "PictureBehaviour.h"

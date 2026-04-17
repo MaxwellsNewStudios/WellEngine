@@ -1,6 +1,6 @@
 #pragma once
 #include <DirectXMath.h>
-#include "Source/Game/Behaviour.h"
+#include "Game/Behaviour.h"
 #include "../Physics/ColliderBehaviour.h"
 #include "../Sound/SoundBehaviour.h"
 

@@ -1,14 +1,14 @@
 #include "stdafx.h"
 #include "DebugPlayerBehaviour.h"
-#include "Source/Game/Entity.h"
-#include "Source/Game/Scenes/Scene.h"
+#include "Game/Entity.h"
+#include "Game/Scenes/Scene.h"
 //#include "../Menu/UIButtonBehaviour.h"
 //#include "../ FlashlightBehaviour.h"
 #include "../Navigation/GraphNodeBehaviour.h"
 #include "../Rendering/Mesh/BillboardMeshBehaviour.h"
 #include "../Rendering/Mesh/TextMeshBehaviour.h"
 #include "../Player/PlayerMovementBehaviour.h"
-#include "Source/Engine/Debug/DebugData.h"
+#include "Engine/Debug/DebugData.h"
 
 #ifdef LEAK_DETECTION
 #define new			DEBUG_NEW

@@ -6,7 +6,7 @@
 #include <vector>
 #include <d3d11.h>
 #include "rapidjson/document.h"
-#include "Source/Engine/D3D/MeshD3D11.h"
+#include "Engine/D3D/MeshD3D11.h"
 
 namespace dx = DirectX;
 namespace json = rapidjson;

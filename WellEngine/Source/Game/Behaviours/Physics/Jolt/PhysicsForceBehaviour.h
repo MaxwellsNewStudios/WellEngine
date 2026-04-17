@@ -1,7 +1,7 @@
 #pragma once
 #include <d3d11.h>
 #include <DirectXMath.h>
-#include "Source/Game/Behaviour.h"
+#include "Game/Behaviour.h"
 
 class [[register_behaviour]] PhysicsForceBehaviour final : public Behaviour
 {

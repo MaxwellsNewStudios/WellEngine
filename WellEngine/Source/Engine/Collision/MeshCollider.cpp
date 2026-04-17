@@ -1,8 +1,8 @@
 #include "stdafx.h"
 #include "MeshCollider.h"
-#include "Source/Engine/Debug/DebugDrawer.h"
-#include "Source/Engine/D3D/MeshD3D11.h"
-#include "Source/Engine/Content/DefaultVertex.h"
+#include "Engine/Debug/DebugDrawer.h"
+#include "Engine/D3D/MeshD3D11.h"
+#include "Engine/Content/DefaultVertex.h"
 
 #ifdef LEAK_DETECTION
 #define new			DEBUG_NEW

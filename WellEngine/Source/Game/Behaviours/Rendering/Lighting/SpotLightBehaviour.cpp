@@ -1,10 +1,10 @@
 #include "stdafx.h"
 #include "SpotLightBehaviour.h"
-#include "Source/Game/Entity.h"
-#include "Source/Game/Scenes/Scene.h"
+#include "Game/Entity.h"
+#include "Game/Scenes/Scene.h"
 #include "SimpleSpotLightBehaviour.h"
 #include "../Mesh/BillboardMeshBehaviour.h"
-#include "Source/Engine/Rendering/RenderQueuer.h"
+#include "Engine/Rendering/RenderQueuer.h"
 
 #ifdef LEAK_DETECTION
 #define new			DEBUG_NEW

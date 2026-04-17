@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "BreadcrumbBehaviour.h"
-#include "Source/Game/Scenes/Scene.h"
+#include "Game/Scenes/Scene.h"
 #include "../Inventory/FlashlightBehaviour.h"
 
 #ifdef LEAK_DETECTION

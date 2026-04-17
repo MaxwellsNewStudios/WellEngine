@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "ContentLoader.h"
-#include "Source/Engine/Utils/StringUtils.h"
-#include "Source/Engine/Content/DefaultVertex.h"
+#include "Engine/Utils/StringUtils.h"
+#include "Engine/Content/DefaultVertex.h"
 
 #ifdef LEAK_DETECTION
 #define new			DEBUG_NEW

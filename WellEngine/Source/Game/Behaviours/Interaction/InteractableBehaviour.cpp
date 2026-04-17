@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "InteractableBehaviour.h"
-#include "Source/Game/Scenes/Scene.h"
+#include "Game/Scenes/Scene.h"
 #include "PickupBehaviour.h"
 #include "HideBehaviour.h"
 #include "InteractorBehaviour.h"

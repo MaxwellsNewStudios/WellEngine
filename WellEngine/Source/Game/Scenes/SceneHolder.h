@@ -1,9 +1,9 @@
 #pragma once
 
 #include "../Entity.h"
-#include "Source/Engine/Collision/Raycast.h"
-#include "Source/Engine/Debug/DebugNew.h"
-#include "Source/Engine/Rendering/Culling/Quadtree.h"
+#include "Engine/Collision/Raycast.h"
+#include "Engine/Debug/DebugNew.h"
+#include "Engine/Rendering/Culling/Quadtree.h"
 
 namespace we = WellEngine;
 

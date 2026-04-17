@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "SimplePointLightBehaviour.h"
-#include "Source/Game/Entity.h"
-#include "Source/Game/Scenes/Scene.h"
+#include "Game/Entity.h"
+#include "Game/Scenes/Scene.h"
 #include "PointLightBehaviour.h"
 #include "../Mesh/BillboardMeshBehaviour.h"
 

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Source/Engine/Timing/TimeUtils.h"
+#include "Engine/Timing/TimeUtils.h"
 #include "../MonsterBehaviour.h"
 
 class MonsterState

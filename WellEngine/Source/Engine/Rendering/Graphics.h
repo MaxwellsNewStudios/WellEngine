@@ -6,14 +6,14 @@
 
 #include "./Lighting/SpotLightCollection.h"
 #include "./Lighting/PointLightCollection.h"
-#include "Source/Engine/Content/Content.h"
-#include "Source/Engine/Timing/TimeUtils.h"
-#include "Source/Engine/Utils/RepeatTracker.h"
-#include "Source/Engine/D3D/RenderTargetD3D11.h"
-#include "Source/Engine/D3D/MipRenderTargetD3D11.h"
-#include "Source/Engine/Window/Window.h"
-#include "Source/Engine/Debug/DebugDrawer.h"
-#include "Source/Game/Behaviours/Rendering/Camera/CameraBehaviour.h"
+#include "Engine/Content/Content.h"
+#include "Engine/Timing/TimeUtils.h"
+#include "Engine/Utils/RepeatTracker.h"
+#include "Engine/D3D/RenderTargetD3D11.h"
+#include "Engine/D3D/MipRenderTargetD3D11.h"
+#include "Engine/Window/Window.h"
+#include "Engine/Debug/DebugDrawer.h"
+#include "Game/Behaviours/Rendering/Camera/CameraBehaviour.h"
 #ifdef USE_IMGUI
 #include "Dependencies/ImGui/imgui.h"
 #endif

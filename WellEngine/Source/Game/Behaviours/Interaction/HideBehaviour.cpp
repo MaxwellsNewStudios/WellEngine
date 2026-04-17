@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "HideBehaviour.h"
-#include "Source/Game/Scenes/Scene.h"
+#include "Game/Scenes/Scene.h"
 #include "PickupBehaviour.h"
 #include "../Player/PlayerMovementBehaviour.h"
 #include "../Inventory/FlashlightBehaviour.h"

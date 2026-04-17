@@ -1,12 +1,12 @@
 #include "stdafx.h"
 #include "PlayerMovementBehaviour.h"
-#include "Source/Game/Entity.h"
-#include "Source/Game/Scenes/Scene.h"
+#include "Game/Entity.h"
+#include "Game/Scenes/Scene.h"
 #include "RestrictedViewBehaviour.h"
 #include "PlayerViewBehaviour.h"
 #include "../Monster/MonsterBehaviour.h"
 #include "../Inventory/InventoryBehaviour.h"
-#include "Source/Engine/Collision/Intersections.h"
+#include "Engine/Collision/Intersections.h"
 
 #ifdef LEAK_DETECTION
 #define new			DEBUG_NEW

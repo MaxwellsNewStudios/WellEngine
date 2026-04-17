@@ -1,5 +1,5 @@
 #pragma once
-#include "Source/Engine/D3D/MeshD3D11.h"
+#include "Engine/D3D/MeshD3D11.h"
 
 [[nodiscard]] bool LoadMeshFromFile(const char *path, MeshData *meshData);
 [[nodiscard]] bool WriteMeshToFile(const char *path, const MeshData *meshData);

@@ -1,8 +1,8 @@
 #include "stdafx.h"
 #include "MeshBehaviour.h"
-#include "Source/Game/Entity.h"
-#include "Source/Game/Scenes/Scene.h"
-#include "Source/Engine/Rendering/RenderQueuer.h"
+#include "Game/Entity.h"
+#include "Game/Scenes/Scene.h"
+#include "Engine/Rendering/RenderQueuer.h"
 
 #ifdef LEAK_DETECTION
 #define new			DEBUG_NEW
@@ -54,6 +54,7 @@ bool MeshBehaviour::Start()
 	materialProperties.normalFactor		= _normalFactor;
 	materialProperties.specularFactor	= _specularFactor;
 	materialProperties.glossFactor		= _glossFactor;
+	materialProperties.ambientFactor	= _ambientFactor;
 	materialProperties.occlusionFactor	= _occlusionFactor;
 	materialProperties.reflectivity		= _reflectivity;
 	materialProperties.metallic			= _metallic;
@@ -109,6 +110,7 @@ bool MeshBehaviour::Update(TimeUtils &time, const Input &input)
 		materialProperties.normalFactor		= _normalFactor;
 		materialProperties.specularFactor	= _specularFactor;
 		materialProperties.glossFactor		= _glossFactor;
+		materialProperties.ambientFactor	= _ambientFactor;
 		materialProperties.occlusionFactor	= _occlusionFactor;
 		materialProperties.reflectivity		= _reflectivity;
 		materialProperties.metallic			= _metallic;
@@ -1681,6 +1683,10 @@ bool MeshBehaviour::RenderUI()
 			_updateMatBuffer = true;
 		ImGuiUtils::LockMouseOnActive();
 
+		if (ImGui::DragFloat("Ambient Factor", &_ambientFactor, 0.001f))
+			_updateMatBuffer = true;
+		ImGuiUtils::LockMouseOnActive();
+
 		if (ImGui::DragFloat("Occlusion Factor", &_occlusionFactor, 0.001f))
 			_updateMatBuffer = true;
 		ImGuiUtils::LockMouseOnActive();
@@ -1904,6 +1910,7 @@ bool MeshBehaviour::Serialize(json::Document::AllocatorType &docAlloc, json::Val
 	obj.AddMember("Normal Factor", _normalFactor, docAlloc);
 	obj.AddMember("Specular Factor", _specularFactor, docAlloc);
 	obj.AddMember("Glossiness Factor", _glossFactor, docAlloc);
+	obj.AddMember("Ambient Factor", _ambientFactor, docAlloc);
 	obj.AddMember("Occlusion Factor", _occlusionFactor, docAlloc);
 	obj.AddMember("Reflectivity", _reflectivity, docAlloc);
 	obj.AddMember("Metallic", _metallic, docAlloc);
@@ -2040,6 +2047,9 @@ bool MeshBehaviour::Deserialize(const json::Value &obj, Scene *scene)
 
 	if (obj.HasMember("Glossiness Factor"))
 		_glossFactor = obj["Glossiness Factor"].GetFloat();
+
+	if (obj.HasMember("Ambient Factor"))
+		_ambientFactor = obj["Ambient Factor"].GetFloat();
 
 	if (obj.HasMember("Occlusion Factor"))
 		_occlusionFactor = obj["Occlusion Factor"].GetFloat();

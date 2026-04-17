@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Source/Game/Behaviour.h"
-#include "Source/Engine/Collision/Colliders.h"
+#include "Game/Behaviour.h"
+#include "Engine/Collision/Colliders.h"
 
 class [[register_behaviour]] ColliderBehaviour : public Behaviour
 {

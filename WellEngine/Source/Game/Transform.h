@@ -4,8 +4,8 @@
 #include <memory>
 #include <DirectXMath.h>
 #include <functional>
-#include "Source/Engine/D3D/ConstantBufferD3D11.h"
-#include "Source/Engine/Utils/ReferenceHelper.h"
+#include "Engine/D3D/ConstantBufferD3D11.h"
+#include "Engine/Utils/ReferenceHelper.h"
 
 constexpr float MIN_SCALE = 0.0001f;
 

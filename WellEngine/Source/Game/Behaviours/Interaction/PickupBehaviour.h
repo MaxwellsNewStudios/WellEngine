@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Source/Game/Behaviour.h"
+#include "Game/Behaviour.h"
 #include "InteractableBehaviour.h"
 
 class [[register_behaviour]] PickupBehaviour : public Behaviour

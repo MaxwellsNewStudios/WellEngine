@@ -61,7 +61,7 @@ float4 main(PixelShaderInput input) : SV_TARGET
 		: 1.0 - (1.0 / pow(max(0.0, SpecBuf_specularExponent), 1.75)));
 
 	const float3 ambientCol = sampleAmbient
-		? AmbientMap.Sample(Sampler, uv).xyz
+		? MatProp_ambientFactor * AmbientMap.Sample(Sampler, uv).xyz
         : 0.0.rrr;
 
 	const float reflective = MatProp_reflectFactor * (sampleReflective
@@ -80,7 +80,10 @@ float4 main(PixelShaderInput input) : SV_TARGET
 		false
 	);
 		
-	float3 totalLight = col.xyz * (ambientCol + occlusion * totalDiffuseLight) + totalSpecularLight;
+	float3 totalLight =
+		occlusion * col.xyz * totalDiffuseLight +
+		ambientCol +
+		totalSpecularLight;
 	
 	// Apply far-plane depth fade out
 	totalLight = ApplyRenderDistanceFog(totalLight, input.position.z);

@@ -21,7 +21,7 @@ float4 main(PixelShaderInput input) : SV_TARGET
 	GetSampleFlags(_, _, _, _, sampleAmbient, _);
     
     const float3 ambientCol = (sampleAmbient > 0)
-		? AmbientMap.Sample(Sampler, input.tex_coord).xyz
+		? MatProp_ambientFactor * AmbientMap.Sample(Sampler, input.tex_coord).xyz
         : float3(0.0, 0.0, 0.0);
     
     return float4(ambientCol, 1.0);

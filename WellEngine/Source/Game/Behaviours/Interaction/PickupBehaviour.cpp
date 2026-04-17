@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "PickupBehaviour.h"
-#include "Source/Game/Scenes/Scene.h"
+#include "Game/Scenes/Scene.h"
 #include "HideBehaviour.h"
 
 #ifdef LEAK_DETECTION

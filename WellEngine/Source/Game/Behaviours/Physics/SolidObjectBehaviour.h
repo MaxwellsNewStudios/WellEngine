@@ -1,7 +1,7 @@
 #pragma once
 #include <DirectXMath.h>
-#include "Source/Game/Behaviour.h"
-#include "Source/Engine/Collision/Intersections.h"
+#include "Game/Behaviour.h"
+#include "Engine/Collision/Intersections.h"
 
 class [[register_behaviour]] SolidObjectBehaviour : public Behaviour
 {

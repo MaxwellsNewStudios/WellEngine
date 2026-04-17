@@ -4,12 +4,12 @@
 #include <string>
 #include <set>
 
-#include "Source/Engine/D3D/InputLayoutD3D11.h"
-#include "Source/Engine/D3D/ShaderD3D11.h"
-#include "Source/Engine/D3D/MeshD3D11.h"
-#include "Source/Engine/D3D/SamplerD3D11.h"
-#include "Source/Engine/D3D/ShaderResourceTextureD3D11.h"
-#include "Source/Engine/Audio/SoundSource.h"
+#include "Engine/D3D/InputLayoutD3D11.h"
+#include "Engine/D3D/ShaderD3D11.h"
+#include "Engine/D3D/MeshD3D11.h"
+#include "Engine/D3D/SamplerD3D11.h"
+#include "Engine/D3D/ShaderResourceTextureD3D11.h"
+#include "Engine/Audio/SoundSource.h"
 #include "Material.h"
 #include "HeightMap.h"
 #include "FontAtlas.h"
@@ -26,6 +26,7 @@ struct MaterialProperties
 	float		 specularFactor  = 1.0f;
 	float		 normalFactor	 = 1.0f;
 	float		 glossFactor	 = 1.0f;
+	float		 ambientFactor	 = 1.0f;
 	float		 occlusionFactor = 0.85f;
 	float		 reflectivity	 = 0.1f;
 	float		 metallic		 = 0.0f;
@@ -35,7 +36,7 @@ struct MaterialProperties
 	// 3: reflective	4: ambient light	5: ambient occlusion
 	UINT		 sampleFlags	 = 0u;
 
-	//float _padding[1];		
+	float _padding[3];		
 
 	UINT SetSampleFlags(
 		bool normal,	 bool specular,	bool glossiness,
