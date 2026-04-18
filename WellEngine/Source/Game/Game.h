@@ -5,7 +5,7 @@
 #include <wrl/client.h>
 #include "Scenes/Scene.h"
 #include "Engine/Physics/JoltManager.h"
-#include "Engine/Rendering/Graphics.h"
+#include "Engine/Rendering/Graphics/Graphics.h"
 #include "Engine/Content/Content.h"
 #include "Engine/Timing/TimeUtils.h"
 #include "Engine/Input/Input.h"

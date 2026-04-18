@@ -4,7 +4,7 @@
 #include "Behaviour.h"
 #include "Engine/Timing/TimeUtils.h"
 #include "Engine/Input/Input.h"
-#include "Engine/Rendering/Graphics.h"
+#include "Engine/Rendering/Graphics/Graphics.h"
 #include "Engine/Rendering/Culling/CullingPlacement.h"
 #include "Engine/Rendering/RenderQueuer.h"
 #include "Engine/Collision/Colliders.h"

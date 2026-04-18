@@ -1,11 +1,11 @@
 #pragma region Includes, Usings & Defines
 #include "stdafx.h"
 #include "Scene.h"
-#include "../Game.h"
-#include "../GraphManager.h"
-#include "../BehaviourFactory.h"
-#include "../Behaviours/Debug/DebugPlayerBehaviour.h"
-#include "../Behaviours/Navigation/GraphNodeBehaviour.h"
+#include "Game/Game.h"
+#include "Game/GraphManager.h"
+#include "Game/BehaviourFactory.h"
+#include "Game/Behaviours/Debug/DebugPlayerBehaviour.h"
+#include "Game/Behaviours/Navigation/GraphNodeBehaviour.h"
 #include "Engine/Utils/SerializerUtils.h"
 
 #ifdef LEAK_DETECTION
@@ -224,9 +224,8 @@ bool Scene::Serialize(bool asSaveFile)
 #ifdef USE_IMGUI
 	auto &n = _graphics->notifications.emplace_back(
 		std::format("Scene '{}' saved!", _sceneName), 
-		NotificationMessage::SeverityColor::Blue,
-		5.0f, 
-		24.0f
+		NotificationMessage::SeverityColor::White,
+		5.0f, 24.0f, -1.0f, 0.8f
 	);
 #endif
 

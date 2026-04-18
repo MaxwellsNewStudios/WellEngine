@@ -672,6 +672,7 @@
     <ClInclude Include="Source\Engine\Physics\JoltListeners.h" />
     <ClInclude Include="Source\Engine\Physics\JoltManager.h" />
     <ClInclude Include="Source\Engine\Physics\JoltPhysicsInstance.h" />
+    <ClInclude Include="Source\Engine\Rendering\Graphics\GraphicsTypes.h" />
     <ClInclude Include="Source\Engine\UI\Fonts\IconsCodicons.h" />
     <ClInclude Include="Source\Engine\UI\Fonts\IconsFontaudio.h" />
     <ClInclude Include="Source\Engine\UI\Fonts\IconsFontAwesome6.h" />
@@ -690,7 +691,7 @@
     <ClInclude Include="Source\Engine\Input\InputBindings.h" />
     <ClInclude Include="Source\Engine\Rendering\Culling\CullingPlacement.h" />
     <ClInclude Include="Source\Engine\Rendering\Culling\Quadtree.h" />
-    <ClInclude Include="Source\Engine\Rendering\Graphics.h" />
+    <ClInclude Include="Source\Engine\Rendering\Graphics\Graphics.h" />
     <ClInclude Include="Source\Engine\Rendering\Lighting\PointLightCollection.h" />
     <ClInclude Include="Source\Engine\Rendering\Lighting\SpotLightCollection.h" />
     <ClInclude Include="Source\Engine\Rendering\RenderBatch.h" />
@@ -1556,6 +1557,9 @@
     <ClCompile Include="Source\Engine\Physics\JoltListeners.cpp" />
     <ClCompile Include="Source\Engine\Physics\JoltManager.cpp" />
     <ClCompile Include="Source\Engine\Physics\JoltPhysicsInstance.cpp" />
+    <ClCompile Include="Source\Engine\Rendering\Graphics\GraphicsCreation.cpp" />
+    <ClCompile Include="Source\Engine\Rendering\Graphics\GraphicsInterface.cpp" />
+    <ClCompile Include="Source\Engine\Rendering\Graphics\GraphicsUI.cpp" />
     <ClCompile Include="Source\Engine\UI\ImGuiCurve.cpp" />
     <ClCompile Include="Source\Engine\UI\ImGuiExtensions.cpp" />
     <ClCompile Include="Source\Engine\UI\ImGuiNodeGraph.cpp" />
@@ -1565,7 +1569,7 @@
     <ClCompile Include="Source\Engine\Input\Input.cpp" />
     <ClCompile Include="Source\Engine\Input\InputBindings.cpp" />
     <ClCompile Include="Source\Engine\Rendering\Culling\Quadtree.cpp" />
-    <ClCompile Include="Source\Engine\Rendering\Graphics.cpp" />
+    <ClCompile Include="Source\Engine\Rendering\Graphics\Graphics.cpp" />
     <ClCompile Include="Source\Engine\Rendering\Lighting\PointLightCollection.cpp" />
     <ClCompile Include="Source\Engine\Rendering\Lighting\SpotLightCollection.cpp" />
     <ClCompile Include="Source\Engine\Rendering\RenderBatch.cpp" />

@@ -5,10 +5,10 @@
 
 #include "rapidjson/document.h"
 #include "SceneHolder.h"
-#include "../Entity.h"
-#include "../GraphManager.h"
-#include "../Behaviours/Rendering/Camera/CameraBehaviour.h"
-#include "Engine/Rendering/Graphics.h"
+#include "Game/Entity.h"
+#include "Game/GraphManager.h"
+#include "Game/Behaviours/Rendering/Camera/CameraBehaviour.h"
+#include "Engine/Rendering/Graphics/Graphics.h"
 #include "Engine/Rendering/Lighting/SpotLightCollection.h"
 #include "Engine/Rendering/Lighting/PointLightCollection.h"
 #include "Engine/Content/Material.h"
@@ -16,6 +16,7 @@
 #include "Engine/Collision/CollisionHandler.h"
 #include "Engine/Debug/DebugDrawer.h"
 #include "Engine/Timing/TimelineManager.h"
+#include "Engine/Utils/UIDHelper.h"
 #include "Engine/Physics/JoltPhysicsInstance.h"
 
 namespace we = WellEngine;
