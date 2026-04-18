@@ -1,5 +1,7 @@
 #include "stdafx.h"
+JPH_SUPPRESS_WARNING_PUSH
 #include "JoltListeners.h"
+JPH_SUPPRESS_WARNING_POP
 
 #ifdef LEAK_DETECTION
 #define new			DEBUG_NEW

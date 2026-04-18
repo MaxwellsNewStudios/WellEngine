@@ -243,8 +243,6 @@ bool Scene::InitializeBase(std::string sceneName, ID3D11Device *device, ID3D11De
 
 	_physInstance.GetSystem().OptimizeBroadPhase();
 
-	_physInstance.GetSystem().OptimizeBroadPhase();
-
 	_initialized = true;
 	return true;
 }
@@ -1634,8 +1632,17 @@ void Scene::EnterScene()
 {
 	_graphics->SetAmbientColor(_ambientColor);
 	_graphics->SetSkyboxColor(_skyboxColor);
+
+	_graphics->SetFogBlurIterations(_fogBlurIterations);
+	if (!_fogGaussWeights.empty())
+		_graphics->SetFogGaussianWeights(_fogGaussWeights.data(), (UINT)_fogGaussWeights.size());
 	_graphics->SetFogSettings(_fogSettings);
+
+	_graphics->SetEmissionBlurIterations(_emissionBlurIterations);
+	if (!_emissionGaussWeights.empty())
+		_graphics->SetEmissionGaussianWeights(_emissionGaussWeights.data(), (UINT)_emissionGaussWeights.size());
 	_graphics->SetEmissionSettings(_emissionSettings);
+
 	_graphics->SetDepthOfFieldSettings(_depthOfFieldSettings);
 
 	_graphics->SetEnvironmentCubemapID(_envCubemapID);
@@ -1654,9 +1661,17 @@ void Scene::ExitScene()
 {
 	_ambientColor = _graphics->GetAmbientColor();
 	_skyboxColor = _graphics->GetSkyboxColor();
+
+	_fogBlurIterations = _graphics->GetFogBlurIterations();
+	_fogGaussWeights = _graphics->GetFogWeights();
 	_fogSettings = _graphics->GetFogSettings();
+
+	_emissionBlurIterations = _graphics->GetEmissionBlurIterations();
+	_emissionGaussWeights = _graphics->GetEmissionWeights();
 	_emissionSettings = _graphics->GetEmissionSettings();
+
 	_depthOfFieldSettings = _graphics->GetDepthOfFieldSettings();
+
 	_envCubemapID = _graphics->GetEnvironmentCubemapID();
 	_skyboxShaderID = _graphics->GetSkyboxShaderID();
 
@@ -2727,6 +2742,7 @@ void Scene::SetFogSettings(const FogSettingsBuffer &settings)
 {
 	_fogSettings = settings;
 }
+
 const EmissionSettingsBuffer &Scene::GetEmissionSettings() const
 {
 	return _emissionSettings;
@@ -2735,6 +2751,7 @@ void Scene::SetEmissionSettings(const EmissionSettingsBuffer &settings)
 {
 	_emissionSettings = settings;
 }
+
 const DepthOfFieldSettingsBuffer &Scene::GetDepthOfFieldSettings() const
 {
 	return _depthOfFieldSettings;
@@ -2743,6 +2760,7 @@ void Scene::SetDepthOfFieldSettings(const DepthOfFieldSettingsBuffer &settings)
 {
 	_depthOfFieldSettings = settings;
 }
+
 const dx::XMFLOAT3 &Scene::GetAmbientColor() const
 {
 	return _ambientColor;
@@ -2751,6 +2769,7 @@ void Scene::SetAmbientColor(const dx::XMFLOAT3 &color)
 {
 	_ambientColor = color;
 }
+
 const dx::XMFLOAT4 &Scene::GetSkyboxColor() const
 {
 	return _skyboxColor;

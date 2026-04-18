@@ -1,5 +1,4 @@
 #pragma once
-
 #include <d3d11.h>
 #include <wrl/client.h>
 
@@ -19,7 +18,6 @@
 namespace we = WellEngine;
 
 class CameraBehaviour;
-
 
 
 /// Handles rendering of the scene and the GUI.
@@ -286,13 +284,28 @@ public:
 	void SetDistortionOrigin(const dx::XMFLOAT3A &origin);
 	void SetDistortionStrength(float strength);
 
+	[[nodiscard]] UINT GetFogBlurIterations() const;
+	[[nodiscard]] UINT GetEmissionBlurIterations() const;
+
+	void SetFogBlurIterations(UINT iterations);
+	void SetEmissionBlurIterations(UINT iterations);
+
 	void SetFogGaussianWeightsBuffer(float *const weights, UINT count);
 	void SetEmissionGaussianWeightsBuffer(float *const weights, UINT count);
 	void SetDofGaussianWeightsBuffer(float *const weights, UINT count);
 
+	void SetFogGaussianWeights(float *const weights, UINT count);
+	void SetEmissionGaussianWeights(float *const weights, UINT count);
+	void SetDofGaussianWeights(float *const weights, UINT count);
+
+	[[nodiscard]] const std::vector<float> &GetFogWeights() const;
+	[[nodiscard]] const std::vector<float> &GetEmissionWeights() const;
+	[[nodiscard]] const std::vector<float> &GetDofWeights() const;
+
 	[[nodiscard]] FogSettingsBuffer GetFogSettings() const;
 	[[nodiscard]] EmissionSettingsBuffer GetEmissionSettings() const;
 	[[nodiscard]] DepthOfFieldSettingsBuffer GetDepthOfFieldSettings() const;
+
 	[[nodiscard]] dx::XMFLOAT3 GetAmbientColor() const;
 	[[nodiscard]] dx::XMFLOAT4 GetSkyboxColor() const;
 	[[nodiscard]] UINT GetSkyboxShaderID() const;

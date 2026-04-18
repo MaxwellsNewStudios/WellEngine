@@ -42,6 +42,28 @@ ID3D11DepthStencilState *Graphics::GetCurrentDepthStencilState()
 	return _currViewCamera->GetInverted() ? _rdss.Get() : _ndss.Get();
 }
 
+UINT Graphics::GetFogBlurIterations() const
+{
+	return _fogBlurIterations;
+}
+UINT Graphics::GetEmissionBlurIterations() const
+{
+	return _emissionBlurIterations;
+}
+
+const std::vector<float> &Graphics::GetFogWeights() const
+{
+	return _fogGaussWeights;
+}
+const std::vector<float> &Graphics::GetEmissionWeights() const
+{
+	return _emissionGaussWeights;
+}
+const std::vector<float> &Graphics::GetDofWeights() const
+{
+	return _dofGaussWeights;
+}
+
 FogSettingsBuffer Graphics::GetFogSettings() const
 {
 	return _currFogSettings;
@@ -54,6 +76,7 @@ DepthOfFieldSettingsBuffer Graphics::GetDepthOfFieldSettings() const
 {
 	return _currDepthOfFieldSettings;
 }
+
 dx::XMFLOAT3 Graphics::GetAmbientColor() const
 {
 	return To3(_currAmbientColor);
@@ -117,6 +140,15 @@ void Graphics::SetDistortionStrength(float strength)
 	_distortionSettings.distortionStrength = strength;
 }
 
+void Graphics::SetFogBlurIterations(UINT iterations)
+{
+	_fogBlurIterations = iterations;
+}
+void Graphics::SetEmissionBlurIterations(UINT iterations)
+{
+	_emissionBlurIterations = iterations;
+}
+
 void Graphics::SetGaussianWeightsBuffer(StructuredBufferD3D11 *buffer, float *const weights, UINT count)
 {
 	ZoneScopedC(RandomUniqueColor());
@@ -146,6 +178,28 @@ void Graphics::SetDofGaussianWeightsBuffer(float *const weights, UINT count)
 	SetGaussianWeightsBuffer(&_dofGaussianWeightsBuffer, weights, count);
 }
 
+void Graphics::SetFogGaussianWeights(float *const weights, UINT count)
+{
+	_fogGaussWeights.clear();
+	_fogGaussWeights.resize(count);
+	std::copy(weights, weights + count, _fogGaussWeights.begin());
+	SetFogGaussianWeightsBuffer(weights, count);
+}
+void Graphics::SetEmissionGaussianWeights(float *const weights, UINT count)
+{
+	_emissionGaussWeights.clear();
+	_emissionGaussWeights.resize(count);
+	std::copy(weights, weights + count, _emissionGaussWeights.begin());
+	SetEmissionGaussianWeightsBuffer(weights, count);
+}
+void Graphics::SetDofGaussianWeights(float *const weights, UINT count)
+{
+	_dofGaussWeights.clear();
+	_dofGaussWeights.resize(count);
+	std::copy(weights, weights + count, _dofGaussWeights.begin());
+	SetDofGaussianWeightsBuffer(weights, count);
+}
+
 void Graphics::SetFogSettings(const FogSettingsBuffer &fogSettings)
 {
 	_currFogSettings = fogSettings;
@@ -158,6 +212,7 @@ void Graphics::SetDepthOfFieldSettings(const DepthOfFieldSettingsBuffer &dofSett
 {
 	//_currDepthOfFieldSettings = dofSettings; TODO: Uncomment this to give control to the scene
 }
+
 void Graphics::SetAmbientColor(const dx::XMFLOAT3 &color)
 {
 	_currAmbientColor.x = color.x;

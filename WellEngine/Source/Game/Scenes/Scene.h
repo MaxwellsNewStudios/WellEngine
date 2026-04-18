@@ -76,6 +76,11 @@ private:
 	dx::XMFLOAT4 _skyboxColor = { 0, 0, 0, 0 };
 	UINT _envCubemapID = CONTENT_NULL;
 	UINT _skyboxShaderID = CONTENT_NULL;
+
+	UINT _fogBlurIterations = 2;
+	UINT _emissionBlurIterations = 2;
+	std::vector<float> _fogGaussWeights = {};
+	std::vector<float> _emissionGaussWeights = {};
 	FogSettingsBuffer _fogSettings = { };
 	EmissionSettingsBuffer _emissionSettings = { };
 	DepthOfFieldSettingsBuffer _depthOfFieldSettings = {};
@@ -183,6 +188,11 @@ public:
 
 
 #pragma region Serialization
+private:
+	[[nodiscard]] bool SerializeSceneSettings(json::Value &sceneSettingsObj, json::Document::AllocatorType &docAlloc);
+	[[nodiscard]] bool DeserializeSceneSettings(const json::Value &sceneSettingsObj);
+
+public:
 	[[nodiscard]] bool Serialize(bool asSaveFile);
 
 	[[nodiscard]] bool Deserialize(bool sceneReload = false);

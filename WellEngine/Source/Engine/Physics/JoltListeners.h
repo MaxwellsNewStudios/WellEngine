@@ -1,8 +1,10 @@
 #pragma once
 #include "Jolt/Jolt.h"
+JPH_SUPPRESS_WARNING_PUSH
 #include "Jolt/Physics/PhysicsSystem.h"
 #include "Jolt/Physics/Body/BodyCreationSettings.h"
 #include "Jolt/Physics/Body/BodyActivationListener.h"
+JPH_SUPPRESS_WARNING_POP
 
 namespace JPH
 {

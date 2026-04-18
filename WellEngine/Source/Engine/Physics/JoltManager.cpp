@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "JoltManager.h"
+JPH_SUPPRESS_WARNING_PUSH
 #include "Jolt/RegisterTypes.h"
+JPH_SUPPRESS_WARNING_POP
 
 #ifdef LEAK_DETECTION
 #define new			DEBUG_NEW

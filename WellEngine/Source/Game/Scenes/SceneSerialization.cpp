@@ -89,63 +89,10 @@ bool Scene::Serialize(bool asSaveFile)
 		json::Value &sceneObj = doc.SetObject();
 
 		json::Value sceneSettingsObj(json::kObjectType);
+		if (!SerializeSceneSettings(sceneSettingsObj, docAlloc))
 		{
-			sceneSettingsObj.AddMember("Transitional", _transitionScene, docAlloc);
-
-			json::Value sceneBoundsObj(json::kObjectType);
-			{
-				const dx::BoundingBox &sceneBounds = _sceneHolder.GetBounds();
-				sceneBoundsObj.AddMember("Center", SerializerUtils::SerializeVec(sceneBounds.Center, docAlloc), docAlloc);
-				sceneBoundsObj.AddMember("Extents", SerializerUtils::SerializeVec(sceneBounds.Extents, docAlloc), docAlloc);
-
-				sceneBoundsObj.AddMember("Max Depth", _sceneHolder.GetTreeDepth(), docAlloc);
-				sceneBoundsObj.AddMember("Max Items In Node", _sceneHolder.GetTreeNodeSize(), docAlloc);
-			}
-			sceneSettingsObj.AddMember("Bounds", sceneBoundsObj, docAlloc);
-
-			json::Value sceneGraphicsObj(json::kObjectType);
-			{
-				sceneGraphicsObj.AddMember("Spotlight Resolution", _spotlights->GetShadowResolution(), docAlloc);
-				sceneGraphicsObj.AddMember("Pointlight Resolution", _pointlights->GetShadowResolution(), docAlloc);
-
-				UINT envCubemapID = _graphics->GetEnvironmentCubemapID();
-				std::string envCubemapName = _content->GetCubemapName(envCubemapID);
-				sceneGraphicsObj.AddMember("Cubemap", SerializerUtils::SerializeString(envCubemapName, docAlloc), docAlloc);
-
-				UINT skyboxShaderID = _graphics->GetSkyboxShaderID();
-				std::string skyboxShaderName = _content->GetShaderName(skyboxShaderID);
-				sceneGraphicsObj.AddMember("Skybox", SerializerUtils::SerializeString(skyboxShaderName, docAlloc), docAlloc);
-
-				sceneGraphicsObj.AddMember("SkyCol", SerializerUtils::SerializeVec(_graphics->GetSkyboxColor(), docAlloc), docAlloc);
-
-				sceneGraphicsObj.AddMember("Ambient", SerializerUtils::SerializeVec(_graphics->GetAmbientColor(), docAlloc), docAlloc);
-
-				json::Value sceneFogObj(json::kObjectType);
-				{
-					FogSettingsBuffer fogSettings = _graphics->GetFogSettings();
-					sceneFogObj.AddMember("Thickness", fogSettings.thickness, docAlloc);
-					sceneFogObj.AddMember("Sample Bias", fogSettings.sampleBias, docAlloc);
-					sceneFogObj.AddMember("Max Steps", fogSettings.maxSteps, docAlloc);
-					sceneFogObj.AddMember("Depth Fade Begin", fogSettings.depthFadeBegin, docAlloc);
-					sceneFogObj.AddMember("Depth Fade End", fogSettings.depthFadeEnd, docAlloc);
-					sceneFogObj.AddMember("Depth Fade Exp", fogSettings.depthFadeExp, docAlloc);
-				}
-				sceneGraphicsObj.AddMember("Fog", sceneFogObj, docAlloc);
-
-				json::Value sceneEmissionObj(json::kObjectType);
-				{
-					EmissionSettingsBuffer emissionSettings = _graphics->GetEmissionSettings();
-					sceneEmissionObj.AddMember("Strength", emissionSettings.strength, docAlloc);
-					sceneEmissionObj.AddMember("Exponent", emissionSettings.exponent, docAlloc);
-					sceneEmissionObj.AddMember("Threshold", emissionSettings.threshold, docAlloc);
-					sceneEmissionObj.AddMember("WhiteBias", emissionSettings.whiteBias, docAlloc);
-				}
-				sceneGraphicsObj.AddMember("Emission", sceneEmissionObj, docAlloc);
-
-			}
-			sceneSettingsObj.AddMember("Graphics", sceneGraphicsObj, docAlloc);
-
-			// TODO: Audio parameters
+			ErrMsg("Failed to serialize scene settings!");
+			return false;
 		}
 		sceneObj.AddMember("Scene", sceneSettingsObj, docAlloc);
 
@@ -231,6 +178,87 @@ bool Scene::Serialize(bool asSaveFile)
 
 	return true;
 }
+bool Scene::SerializeSceneSettings(json::Value &sceneSettingsObj, json::Document::AllocatorType &docAlloc)
+{
+	sceneSettingsObj.AddMember("Transitional", _transitionScene, docAlloc);
+
+	json::Value sceneBoundsObj(json::kObjectType);
+	{
+		const dx::BoundingBox &sceneBounds = _sceneHolder.GetBounds();
+		sceneBoundsObj.AddMember("Center", SerializerUtils::SerializeVec(sceneBounds.Center, docAlloc), docAlloc);
+		sceneBoundsObj.AddMember("Extents", SerializerUtils::SerializeVec(sceneBounds.Extents, docAlloc), docAlloc);
+
+		sceneBoundsObj.AddMember("Max Depth", _sceneHolder.GetTreeDepth(), docAlloc);
+		sceneBoundsObj.AddMember("Max Items In Node", _sceneHolder.GetTreeNodeSize(), docAlloc);
+	}
+	sceneSettingsObj.AddMember("Bounds", sceneBoundsObj, docAlloc);
+
+	json::Value sceneGraphicsObj(json::kObjectType);
+	{
+		sceneGraphicsObj.AddMember("Spotlight Resolution", _spotlights->GetShadowResolution(), docAlloc);
+		sceneGraphicsObj.AddMember("Pointlight Resolution", _pointlights->GetShadowResolution(), docAlloc);
+
+		UINT envCubemapID = _graphics->GetEnvironmentCubemapID();
+		std::string envCubemapName = _content->GetCubemapName(envCubemapID);
+		sceneGraphicsObj.AddMember("Cubemap", SerializerUtils::SerializeString(envCubemapName, docAlloc), docAlloc);
+
+		UINT skyboxShaderID = _graphics->GetSkyboxShaderID();
+		std::string skyboxShaderName = _content->GetShaderName(skyboxShaderID);
+		sceneGraphicsObj.AddMember("Skybox", SerializerUtils::SerializeString(skyboxShaderName, docAlloc), docAlloc);
+
+		sceneGraphicsObj.AddMember("SkyCol", SerializerUtils::SerializeVec(_graphics->GetSkyboxColor(), docAlloc), docAlloc);
+
+		sceneGraphicsObj.AddMember("Ambient", SerializerUtils::SerializeVec(_graphics->GetAmbientColor(), docAlloc), docAlloc);
+
+		json::Value sceneFogObj(json::kObjectType);
+		{
+			FogSettingsBuffer fogSettings = _graphics->GetFogSettings();
+			sceneFogObj.AddMember("Thickness", fogSettings.thickness, docAlloc);
+			sceneFogObj.AddMember("Sample Bias", fogSettings.sampleBias, docAlloc);
+			sceneFogObj.AddMember("Max Steps", fogSettings.maxSteps, docAlloc);
+			sceneFogObj.AddMember("Depth Fade Begin", fogSettings.depthFadeBegin, docAlloc);
+			sceneFogObj.AddMember("Depth Fade End", fogSettings.depthFadeEnd, docAlloc);
+			sceneFogObj.AddMember("Depth Fade Exp", fogSettings.depthFadeExp, docAlloc);
+
+			sceneFogObj.AddMember("BlurIterations", _graphics->GetFogBlurIterations(), docAlloc);
+
+			json::Value weightsArr(json::kArrayType);
+			{
+				auto &weights = _graphics->GetFogWeights();
+				for (const auto &weight : weights)
+					weightsArr.PushBack(weight, docAlloc);
+			}
+			sceneFogObj.AddMember("Weights", weightsArr, docAlloc);
+		}
+		sceneGraphicsObj.AddMember("Fog", sceneFogObj, docAlloc);
+
+		json::Value sceneEmissionObj(json::kObjectType);
+		{
+			EmissionSettingsBuffer emissionSettings = _graphics->GetEmissionSettings();
+			sceneEmissionObj.AddMember("Strength", emissionSettings.strength, docAlloc);
+			sceneEmissionObj.AddMember("Exponent", emissionSettings.exponent, docAlloc);
+			sceneEmissionObj.AddMember("Threshold", emissionSettings.threshold, docAlloc);
+			sceneEmissionObj.AddMember("WhiteBias", emissionSettings.whiteBias, docAlloc);
+
+			sceneEmissionObj.AddMember("BlurIterations", _graphics->GetEmissionBlurIterations(), docAlloc);
+
+			json::Value weightsArr(json::kArrayType);
+			{
+				auto &weights = _graphics->GetEmissionWeights();
+				for (const auto &weight : weights)
+					weightsArr.PushBack(weight, docAlloc);
+			}
+			sceneEmissionObj.AddMember("Weights", weightsArr, docAlloc);
+		}
+		sceneGraphicsObj.AddMember("Emission", sceneEmissionObj, docAlloc);
+
+	}
+	sceneSettingsObj.AddMember("Graphics", sceneGraphicsObj, docAlloc);
+
+	// TODO: Audio parameters
+
+	return true;
+}
 
 bool Scene::Deserialize(bool sceneReload)
 {
@@ -292,112 +320,10 @@ bool Scene::Deserialize(bool sceneReload)
 
 	if (doc.HasMember("Scene"))
 	{
-		json::Value &sceneSettingsObj = doc["Scene"];
-
-		if (sceneSettingsObj.HasMember("Transitional"))
-			_transitionScene = sceneSettingsObj["Transitional"].GetBool();
-
-		dx::BoundingBox sceneBounds{};
-		UINT maxDepth = -1;
-		UINT maxItemsInNode = -1;
-
-		if (sceneSettingsObj.HasMember("Bounds"))
+		if (!DeserializeSceneSettings(doc["Scene"]))
 		{
-			json::Value &sceneBoundsObj = sceneSettingsObj["Bounds"];
-			if (sceneBoundsObj.HasMember("Center"))
-				SerializerUtils::DeserializeVec(sceneBounds.Center, sceneBoundsObj["Center"]);
-
-			if (sceneBoundsObj.HasMember("Extents"))
-				SerializerUtils::DeserializeVec(sceneBounds.Extents, sceneBoundsObj["Extents"]);
-
-			if (sceneBoundsObj.HasMember("Max Depth"))
-				maxDepth = sceneBoundsObj["Max Depth"].GetUint();
-
-			if (sceneBoundsObj.HasMember("Max Items In Node"))
-				maxItemsInNode = sceneBoundsObj["Max Items In Node"].GetUint();
-		}
-
-		if (!_sceneHolder.Initialize(sceneBounds, maxDepth, maxItemsInNode))
-		{
-			ErrMsg("Failed to initialize scene holder!");
+			ErrMsg("Failed to deserialize scene settings!");
 			return false;
-		}
-
-		if (sceneSettingsObj.HasMember("Graphics"))
-		{
-			json::Value &sceneGraphicsObj = sceneSettingsObj["Graphics"];
-
-			UINT pointlightRes = 512;
-			if (sceneGraphicsObj.HasMember("Pointlight Resolution"))
-				pointlightRes = sceneGraphicsObj["Pointlight Resolution"].GetUint();
-
-			if (!_pointlights->Initialize(_device, pointlightRes))
-			{
-				ErrMsg("Failed to initialize pointlight collection!");
-				return false;
-			}
-
-			UINT spotlightRes = 256;
-			if (sceneGraphicsObj.HasMember("Spotlight Resolution"))
-				spotlightRes = sceneGraphicsObj["Spotlight Resolution"].GetUint();
-
-			if (!_spotlights->Initialize(_device, spotlightRes))
-			{
-				ErrMsg("Failed to initialize spotlight collection!");
-				return false;
-			}
-
-			if (sceneGraphicsObj.HasMember("Cubemap"))
-				_envCubemapID = _content->GetCubemapID(sceneGraphicsObj["Cubemap"].GetString());
-
-			if (sceneGraphicsObj.HasMember("Skybox"))
-				_skyboxShaderID = _content->GetShaderID(sceneGraphicsObj["Skybox"].GetString());
-
-			if (sceneGraphicsObj.HasMember("SkyCol"))
-				SerializerUtils::DeserializeVec(_skyboxColor, sceneGraphicsObj["SkyCol"]);
-
-			if (sceneGraphicsObj.HasMember("Ambient"))
-				SerializerUtils::DeserializeVec(_ambientColor, sceneGraphicsObj["Ambient"]);
-
-			if (sceneGraphicsObj.HasMember("Fog"))
-			{
-				json::Value &sceneFogObj = sceneGraphicsObj["Fog"];
-
-				if (sceneFogObj.HasMember("Thickness"))
-					_fogSettings.thickness = sceneFogObj["Thickness"].GetFloat();
-
-				if (sceneFogObj.HasMember("Sample Bias"))
-					_fogSettings.sampleBias = sceneFogObj["Sample Bias"].GetFloat();
-
-				if (sceneFogObj.HasMember("Max Steps"))
-					_fogSettings.maxSteps = sceneFogObj["Max Steps"].GetInt();
-
-				if (sceneFogObj.HasMember("Depth Fade Begin"))
-					_fogSettings.depthFadeBegin = sceneFogObj["Depth Fade Begin"].GetFloat();
-
-				if (sceneFogObj.HasMember("Depth Fade End"))
-					_fogSettings.depthFadeEnd = sceneFogObj["Depth Fade End"].GetFloat();
-
-				if (sceneFogObj.HasMember("Depth Fade Exp"))
-					_fogSettings.depthFadeExp = sceneFogObj["Depth Fade Exp"].GetFloat();
-			}
-
-			if (sceneGraphicsObj.HasMember("Emission"))
-			{
-				json::Value &sceneEmissionObj = sceneGraphicsObj["Emission"];
-
-				if (sceneEmissionObj.HasMember("Strength"))
-					_emissionSettings.strength = sceneEmissionObj["Strength"].GetFloat();
-
-				if (sceneEmissionObj.HasMember("Exponent"))
-					_emissionSettings.exponent = sceneEmissionObj["Exponent"].GetFloat();
-
-				if (sceneEmissionObj.HasMember("Threshold"))
-					_emissionSettings.threshold = sceneEmissionObj["Threshold"].GetFloat();
-
-				if (sceneEmissionObj.HasMember("WhiteBias"))
-					_emissionSettings.whiteBias = sceneEmissionObj["WhiteBias"].GetFloat();
-			}
 		}
 	}
 
@@ -424,6 +350,142 @@ bool Scene::Deserialize(bool sceneReload)
 	{
 		ErrMsg("Failed to deserialize timeline manager!");
 		return false;
+	}
+
+	return true;
+}
+bool Scene::DeserializeSceneSettings(const json::Value &sceneSettingsObj)
+{
+	if (sceneSettingsObj.HasMember("Transitional"))
+		_transitionScene = sceneSettingsObj["Transitional"].GetBool();
+
+	dx::BoundingBox sceneBounds{};
+	UINT maxDepth = -1;
+	UINT maxItemsInNode = -1;
+
+	if (sceneSettingsObj.HasMember("Bounds"))
+	{
+		const json::Value &sceneBoundsObj = sceneSettingsObj["Bounds"];
+		if (sceneBoundsObj.HasMember("Center"))
+			SerializerUtils::DeserializeVec(sceneBounds.Center, sceneBoundsObj["Center"]);
+
+		if (sceneBoundsObj.HasMember("Extents"))
+			SerializerUtils::DeserializeVec(sceneBounds.Extents, sceneBoundsObj["Extents"]);
+
+		if (sceneBoundsObj.HasMember("Max Depth"))
+			maxDepth = sceneBoundsObj["Max Depth"].GetUint();
+
+		if (sceneBoundsObj.HasMember("Max Items In Node"))
+			maxItemsInNode = sceneBoundsObj["Max Items In Node"].GetUint();
+	}
+
+	if (!_sceneHolder.Initialize(sceneBounds, maxDepth, maxItemsInNode))
+	{
+		ErrMsg("Failed to initialize scene holder!");
+		return false;
+	}
+
+	if (sceneSettingsObj.HasMember("Graphics"))
+	{
+		const json::Value &sceneGraphicsObj = sceneSettingsObj["Graphics"];
+
+		UINT pointlightRes = 512;
+		if (sceneGraphicsObj.HasMember("Pointlight Resolution"))
+			pointlightRes = sceneGraphicsObj["Pointlight Resolution"].GetUint();
+
+		if (!_pointlights->Initialize(_device, pointlightRes))
+		{
+			ErrMsg("Failed to initialize pointlight collection!");
+			return false;
+		}
+
+		UINT spotlightRes = 256;
+		if (sceneGraphicsObj.HasMember("Spotlight Resolution"))
+			spotlightRes = sceneGraphicsObj["Spotlight Resolution"].GetUint();
+
+		if (!_spotlights->Initialize(_device, spotlightRes))
+		{
+			ErrMsg("Failed to initialize spotlight collection!");
+			return false;
+		}
+
+		if (sceneGraphicsObj.HasMember("Cubemap"))
+			_envCubemapID = _content->GetCubemapID(sceneGraphicsObj["Cubemap"].GetString());
+
+		if (sceneGraphicsObj.HasMember("Skybox"))
+			_skyboxShaderID = _content->GetShaderID(sceneGraphicsObj["Skybox"].GetString());
+
+		if (sceneGraphicsObj.HasMember("SkyCol"))
+			SerializerUtils::DeserializeVec(_skyboxColor, sceneGraphicsObj["SkyCol"]);
+
+		if (sceneGraphicsObj.HasMember("Ambient"))
+			SerializerUtils::DeserializeVec(_ambientColor, sceneGraphicsObj["Ambient"]);
+
+		if (sceneGraphicsObj.HasMember("Fog"))
+		{
+			const json::Value &sceneFogObj = sceneGraphicsObj["Fog"];
+
+			if (sceneFogObj.HasMember("Thickness"))
+				_fogSettings.thickness = sceneFogObj["Thickness"].GetFloat();
+
+			if (sceneFogObj.HasMember("Sample Bias"))
+				_fogSettings.sampleBias = sceneFogObj["Sample Bias"].GetFloat();
+
+			if (sceneFogObj.HasMember("Max Steps"))
+				_fogSettings.maxSteps = sceneFogObj["Max Steps"].GetInt();
+
+			if (sceneFogObj.HasMember("Depth Fade Begin"))
+				_fogSettings.depthFadeBegin = sceneFogObj["Depth Fade Begin"].GetFloat();
+
+			if (sceneFogObj.HasMember("Depth Fade End"))
+				_fogSettings.depthFadeEnd = sceneFogObj["Depth Fade End"].GetFloat();
+
+			if (sceneFogObj.HasMember("Depth Fade Exp"))
+				_fogSettings.depthFadeExp = sceneFogObj["Depth Fade Exp"].GetFloat();
+
+			if (sceneFogObj.HasMember("BlurIterations"))
+				_fogBlurIterations = sceneFogObj["BlurIterations"].GetUint();
+
+			if (sceneFogObj.HasMember("Weights"))
+			{
+				const json::Value &weightsObj = sceneFogObj["Weights"];
+
+				_fogGaussWeights.clear();
+				_fogGaussWeights.reserve(weightsObj.Size());
+				for (const auto &weightVal : weightsObj.GetArray())
+					_fogGaussWeights.emplace_back(weightVal.GetFloat());
+			}
+		}
+
+		if (sceneGraphicsObj.HasMember("Emission"))
+		{
+			const json::Value &sceneEmissionObj = sceneGraphicsObj["Emission"];
+
+			if (sceneEmissionObj.HasMember("Strength"))
+				_emissionSettings.strength = sceneEmissionObj["Strength"].GetFloat();
+
+			if (sceneEmissionObj.HasMember("Exponent"))
+				_emissionSettings.exponent = sceneEmissionObj["Exponent"].GetFloat();
+
+			if (sceneEmissionObj.HasMember("Threshold"))
+				_emissionSettings.threshold = sceneEmissionObj["Threshold"].GetFloat();
+
+			if (sceneEmissionObj.HasMember("WhiteBias"))
+				_emissionSettings.whiteBias = sceneEmissionObj["WhiteBias"].GetFloat();
+
+			if (sceneEmissionObj.HasMember("BlurIterations"))
+				_emissionBlurIterations = sceneEmissionObj["BlurIterations"].GetUint();
+
+			if (sceneEmissionObj.HasMember("Weights"))
+			{
+				const json::Value &weightsObj = sceneEmissionObj["Weights"];
+
+				_emissionGaussWeights.clear();
+				_emissionGaussWeights.reserve(weightsObj.Size());
+				for (const auto &weightVal : weightsObj.GetArray())
+					_emissionGaussWeights.emplace_back(weightVal.GetFloat());
+			}
+		}
 	}
 
 	return true;
