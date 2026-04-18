@@ -1,8 +1,7 @@
 #include "stdafx.h"
 #include "Graphics.h"
-#include "Game/Entity.h"
 #include "Game/Behaviours/Rendering/Camera/CameraBehaviour.h"
-#include "Game/Behaviours/Rendering/Mesh/MeshBehaviour.h"
+#include "Engine/Debug/DebugDrawer.h"
 #include "Engine/Debug/DebugData.h"
 #include "Engine/UI/UILayout.h"
 

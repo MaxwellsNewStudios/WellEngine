@@ -1,7 +1,6 @@
 #pragma once
 
 #include <d3d11.h>
-#include <array>
 #include <wrl/client.h>
 
 #include "GraphicsTypes.h"
@@ -13,7 +12,6 @@
 #include "Engine/D3D/RenderTargetD3D11.h"
 #include "Engine/D3D/MipRenderTargetD3D11.h"
 #include "Engine/Window/Window.h"
-#include "Engine/Debug/DebugDrawer.h"
 #ifdef USE_IMGUI
 #include "Dependencies/ImGui/imgui.h"
 #endif

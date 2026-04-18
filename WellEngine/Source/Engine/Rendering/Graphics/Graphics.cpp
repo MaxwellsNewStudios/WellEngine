@@ -3,8 +3,7 @@
 #include "Game/Entity.h"
 #include "Game/Behaviours/Rendering/Camera/CameraBehaviour.h"
 #include "Game/Behaviours/Rendering/Mesh/MeshBehaviour.h"
-#include "Engine/Debug/DebugData.h"
-#include "Engine/UI/UILayout.h"
+#include "Engine/Debug/DebugDrawer.h"
 
 #ifdef LEAK_DETECTION
 #define new			DEBUG_NEW
