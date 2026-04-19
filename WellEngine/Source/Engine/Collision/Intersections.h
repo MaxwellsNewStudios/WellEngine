@@ -5,7 +5,7 @@
 
 #include "Colliders.h"
 
-namespace Collisions
+namespace WellEngine::Collisions
 {
 	struct CollisionData {
 		dx::XMFLOAT3 normal;

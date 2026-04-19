@@ -149,7 +149,7 @@ bool PlayerCutsceneBehaviour::Update(TimeUtils &time, const Input &input)
         _caveMusic->SetEnabled(true);
         _caveMusic->Play();
 
-        for (int i = 0; i < POINT_COUNT; i++)
+        for (int i = 0; i < CUTSCENE_POINT_COUNT; i++)
             _movePoints[i].y -= 1.5f;
 
         GetTransform()->SetPosition(_movePoints[0], World);
@@ -211,7 +211,7 @@ bool PlayerCutsceneBehaviour::Update(TimeUtils &time, const Input &input)
 			seq.SetType(SEQUENCE);
 			float time = 0;
 
-			for (int i = 3; i < POINT_COUNT-1; i++)
+			for (int i = 3; i < CUTSCENE_POINT_COUNT-1; i++)
 			{
 				seq.AddWaypoint({ {_movePoints[i]}, _rotationPoints[i], t->GetScale(), time});
 				time += _speedPoints[i];

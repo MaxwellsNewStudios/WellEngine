@@ -228,7 +228,7 @@ static void SetViewport(D3D11_VIEWPORT &viewport, const UINT width, const UINT h
 }
 
 
-bool SetupD3D11(
+bool WellEngine::SetupD3D11(
 	bool fullscreen,
 	const UINT width, const UINT height, const HWND window,
 	ID3D11Device *&device,
@@ -275,7 +275,7 @@ bool SetupD3D11(
 }
 
 
-bool ResizeD3D11(
+bool WellEngine::ResizeD3D11(
 	bool fullscreen,
 	const UINT width, const UINT height,
 	ID3D11Device *&device,
@@ -329,7 +329,7 @@ bool ResizeD3D11(
 
 
 #ifdef _DEBUG
-void ReportLiveDeviceObjects(ID3D11Device *&device)
+void WellEngine::ReportLiveDeviceObjects(ID3D11Device *&device)
 {
 	OutputDebugString(L"-------------------------------------------------------------------------------------------------------------\n");
 	OutputDebugString(L"--------------------| Live Device Object Report |------------------------------------------------------------\n");

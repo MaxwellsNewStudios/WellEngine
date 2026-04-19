@@ -1,5 +1,7 @@
 #pragma once
+
 #include <type_traits>
+
 #include "Transform.h"
 #include "Behaviour.h"
 #include "Engine/Timing/TimeUtils.h"
@@ -9,316 +11,318 @@
 #include "Engine/Rendering/RenderQueuer.h"
 #include "Engine/Collision/Colliders.h"
 
-namespace we = WellEngine;
-namespace dx = DirectX;
-
-// Forward declarations
-class Game;
-class Scene;
-struct SceneEntity;
-
-class Entity : public IRefTarget<Entity>
+namespace WellEngine
 {
-private:
-	UINT _entityID = -1;
-	UINT _deserializedID = -1;
-	std::string _name = "";
-	std::string _prefabName = "";
+	namespace dx = DirectX;
 
-	bool _isRemoved = false;
-	bool _showInHierarchy = true;
-	bool _isStatic = false;
-	bool _isDebugSelectable = true;
-	bool _recalculateBounds = true;
-	bool _doSerialize = true;
-	std::atomic_bool _doRender = false;
-	UINT _inheritedDisabled = 0;
+	// Forward declarations
+	class Game;
+	class Scene;
+	struct SceneEntity;
 
-	bool _skipInRaycast = false;
-
-	dx::BoundingOrientedBox _bounds = {{0,0,0}, {1,1,1}, {0,0,0,1}};
-	dx::BoundingOrientedBox _transformedBounds = {{0,0,0}, {1,1,1}, {0,0,0,1}};
-	dx::BoundingOrientedBox _lastTransformedCullingBounds = _transformedBounds;
-
-	void IncrementDisable();
-	void DecrementDisable();
-	void SetInheritedDisableCount(UINT count);
-
-	void GetFullBoundsPoints(bool includeTriggers, std::vector<dx::XMFLOAT3> &points);
-
-#ifdef USE_IMGUI
-	bool _visibleInHierarchy = true;
-	float _lastHeightInHierarchy = 0.0f;
-#endif
-
-	void CallTransformEdited(bool first);
-
-protected:
-	bool _isInitialized = false;
-	bool _isEnabled = true;
-	bool _recalculateCollider = true;
-
-	Scene *_scene = nullptr;
-	Transform _transform;
-	Entity *_parent = nullptr;
-	std::vector<Entity *> _children;
-	std::vector<std::unique_ptr<Behaviour>> _behaviours;
-
-	Culling::CullingPlacement _cullingPlacement;
-
-	inline void AddChild(Entity *child, bool keepWorldTransform = false);
-	inline void RemoveChild(Entity *child, bool keepWorldTransform = false);
-
-	Entity(Entity &&other) noexcept; // Move constructor, internal use only, DO NOT USE
-	Entity &operator=(Entity &&other) noexcept; // Move assignment operator, internal use only, DO NOT USE
-
-public:
-	Entity(UINT id, const dx::BoundingOrientedBox &bounds) : _entityID(id), _bounds(bounds) {}
-	virtual ~Entity();
-	Entity(const Entity &other) = delete;
-	Entity &operator=(const Entity &other) = delete;
-
-	[[nodiscard]] bool Initialize(ID3D11Device *device, Scene *scene, const std::string &name);
-	[[nodiscard]] bool IsInitialized() const;
-
-	void Destroy();
-
-	void SetSerialization(bool state);
-	[[nodiscard]] bool IsSerializable() const;
-
-	[[nodiscard]] bool IsEnabled() const;
-	[[nodiscard]] bool IsEnabledSelf() const;
-
-	void SetStatic(bool state);
-	[[nodiscard]] bool IsStatic() const;
-
-	void SetDebugSelectable(bool state);
-	[[nodiscard]] bool IsDebugSelectable() const;
-
-	void SetRaycastTarget(bool state);
-	[[nodiscard]] bool IsRaycastTarget() const;
-
-	void AddBehaviour(Behaviour *behaviour);
-	void RemoveBehaviour(Behaviour *behaviour);
-	void ReorderBehaviour(Behaviour *behaviour, UINT newIndex);
-
-	[[nodiscard]] Behaviour *GetBehaviour(UINT index) const;
-	[[nodiscard]] UINT GetBehaviourIndex(Behaviour *behaviour) const;
-	[[nodiscard]] const std::vector<std::unique_ptr<Behaviour>> *GetBehaviours() const;
-	[[nodiscard]] UINT GetBehaviourCount() const;
-
-	template <class T>
-	bool HasBehaviourOfType() const;
-	template <class T>
-	bool GetBehaviourByType(T *&behaviour) const;
-	template <class T>
-	bool GetBehaviourByType(Behaviour *&behaviour) const;
-	template <class T>
-	bool GetBehavioursByType(std::vector<T *> &behaviours) const;
-	template <class T>
-	bool GetBehavioursByType(std::vector<Behaviour *> &behaviours) const;
-
-	void Enable();
-	void Disable();
-	void SetEnabledSelf(bool state);
-
-	void SetDirty();
-	void SetDirtyImmediate();
-
-	void SignalTransformEdited();
-
-	void MarkAsRemoved();
-	[[nodiscard]] bool IsRemoved() const;
-
-	[[nodiscard]] bool IsPrefab() const;
-	[[nodiscard]] const std::string &GetPrefabName() const;
-	void SetPrefabName(const std::string &name);
-	void UnlinkFromPrefab();
-
-	void SetParent(Entity *parent, bool keepWorldTransform = false);
-	[[nodiscard]] Entity *GetParent() const;
-	[[nodiscard]] UINT GetChildCount() const;
-	[[nodiscard]] const std::vector<Entity *> *GetChildren() const;
-	void GetChildrenRecursive(std::vector<Entity *> &children) const;
-	void ReorderChild(Entity *child, UINT newIndex);
-	void ReorderChild(Entity *child, Entity *after);
-	[[nodiscard]] bool IsChildOf(const Entity *ent, bool immediate = false) const;
-	[[nodiscard]] bool IsParentOf(const Entity *ent, bool immediate = false) const;
-
-	[[nodiscard]] Culling::CullingPlacement &GetCullingPlacement();
-
-	void SetScene(Scene *scene);
-	// If this is called from a class with a circular dependency to Scene, you'll have to explicity include Scene.h from the caller.
-	[[nodiscard]] Scene *GetScene() const;
-
-	Game *GetGame() const;
-
-	[[nodiscard]] Transform *GetTransform();
-
-	void SetName(const std::string &name);
-	[[nodiscard]] const std::string &GetName() const;
-
-	[[nodiscard]] UINT GetID() const;
-
-	[[nodiscard]] UINT GetDeserializedID() const;
-	void SetDeserializedID(UINT id);
-
-	[[nodiscard]] bool GetShowInHierarchy(bool ignoreShowHidden = false) const;
-	void SetShowInHierarchy(bool show);
-
-	bool HasBounds(bool includeTriggers, dx::BoundingOrientedBox &out);
-	bool GetFullBounds(bool includeTriggers, dx::BoundingOrientedBox &bounds);
-	void SetEntityBounds(dx::BoundingOrientedBox &bounds);
-	void StoreEntityBounds(dx::BoundingOrientedBox &bounds, ReferenceSpace space = ReferenceSpace::World);
-
-	[[nodiscard]] const dx::BoundingOrientedBox &GetLastCullingBounds() const;
-	void UpdateCullingBounds();
-
-	[[nodiscard]] bool InitialUpdate(TimeUtils &time, const Input &input);
-	[[nodiscard]] bool InitialParallelUpdate(const TimeUtils &time, const Input &input);
-	[[nodiscard]] bool InitialLateUpdate(TimeUtils &time, const Input &input);
-	[[nodiscard]] bool InitialFixedUpdate(float deltaTime, const Input &input);
-	[[nodiscard]] bool InitialBeforeRender();
-	[[nodiscard]] bool InitialRender(const RenderQueuer &queuer, const RendererInfo &rendererInfo);
-#ifdef USE_IMGUI
-	// Serialize entity to JSON and copy to clipboard
-	void CopyToClipboard();
-	[[nodiscard]] bool UIContextMenu();
-	[[nodiscard]] bool InitialRenderUI();
-	void SetVisibleInHierarchy(bool visible, float height) { _visibleInHierarchy = visible; _lastHeightInHierarchy = height; }
-	[[nodiscard]] bool IsVisibleInHierarchy(float &height) const { height = _lastHeightInHierarchy; return _visibleInHierarchy; }
-#endif
-	[[nodiscard]] bool InitialBindBuffers(ID3D11DeviceContext *context);
-	[[nodiscard]] bool InitialOnHover();
-	[[nodiscard]] bool InitialOffHover();
-	[[nodiscard]] bool InitialOnSelect();
-	[[nodiscard]] bool InitialOnDebugSelect();
-
-	// For deserialization, use Scene::DeserializeEntity
-	[[nodiscard]] bool Serialize(json::Document::AllocatorType &docAlloc, json::Value &obj, bool forceSerialize = false);
-
-	TESTABLE
-};
-
-template<class T>
-inline bool Entity::HasBehaviourOfType() const
-{
-	if (_isRemoved)
-		return false;
-
-	if (!std::is_base_of<Behaviour, T>::value)
-		return false;
-
-	UINT behaviourCount = static_cast<UINT>(_behaviours.size());
-	for (UINT i = 0; i < behaviourCount; i++)
+	class Entity : public IRefTarget<Entity>
 	{
-		T *castedBehaviour = dynamic_cast<T*>(_behaviours[i].get());
+	private:
+		UINT _entityID = -1;
+		UINT _deserializedID = -1;
+		std::string _name = "";
+		std::string _prefabName = "";
 
-		if (castedBehaviour)
+		bool _isRemoved = false;
+		bool _showInHierarchy = true;
+		bool _isStatic = false;
+		bool _isDebugSelectable = true;
+		bool _recalculateBounds = true;
+		bool _doSerialize = true;
+		std::atomic_bool _doRender = false;
+		UINT _inheritedDisabled = 0;
+
+		bool _skipInRaycast = false;
+
+		dx::BoundingOrientedBox _bounds = {{0,0,0}, {1,1,1}, {0,0,0,1}};
+		dx::BoundingOrientedBox _transformedBounds = {{0,0,0}, {1,1,1}, {0,0,0,1}};
+		dx::BoundingOrientedBox _lastTransformedCullingBounds = _transformedBounds;
+
+		void IncrementDisable();
+		void DecrementDisable();
+		void SetInheritedDisableCount(UINT count);
+
+		void GetFullBoundsPoints(bool includeTriggers, std::vector<dx::XMFLOAT3> &points);
+
+	#ifdef USE_IMGUI
+		bool _visibleInHierarchy = true;
+		float _lastHeightInHierarchy = 0.0f;
+	#endif
+
+		void CallTransformEdited(bool first);
+
+	protected:
+		bool _isInitialized = false;
+		bool _isEnabled = true;
+		bool _recalculateCollider = true;
+
+		Scene *_scene = nullptr;
+		Transform _transform;
+		Entity *_parent = nullptr;
+		std::vector<Entity *> _children;
+		std::vector<std::unique_ptr<Behaviour>> _behaviours;
+
+		Culling::CullingPlacement _cullingPlacement;
+
+		inline void AddChild(Entity *child, bool keepWorldTransform = false);
+		inline void RemoveChild(Entity *child, bool keepWorldTransform = false);
+
+		Entity(Entity &&other) noexcept; // Move constructor, internal use only, DO NOT USE
+		Entity &operator=(Entity &&other) noexcept; // Move assignment operator, internal use only, DO NOT USE
+
+	public:
+		Entity(UINT id, const dx::BoundingOrientedBox &bounds) : _entityID(id), _bounds(bounds) {}
+		virtual ~Entity();
+		Entity(const Entity &other) = delete;
+		Entity &operator=(const Entity &other) = delete;
+
+		[[nodiscard]] bool Initialize(ID3D11Device *device, Scene *scene, const std::string &name);
+		[[nodiscard]] bool IsInitialized() const;
+
+		void Destroy();
+
+		void SetSerialization(bool state);
+		[[nodiscard]] bool IsSerializable() const;
+
+		[[nodiscard]] bool IsEnabled() const;
+		[[nodiscard]] bool IsEnabledSelf() const;
+
+		void SetStatic(bool state);
+		[[nodiscard]] bool IsStatic() const;
+
+		void SetDebugSelectable(bool state);
+		[[nodiscard]] bool IsDebugSelectable() const;
+
+		void SetRaycastTarget(bool state);
+		[[nodiscard]] bool IsRaycastTarget() const;
+
+		void AddBehaviour(Behaviour *behaviour);
+		void RemoveBehaviour(Behaviour *behaviour);
+		void ReorderBehaviour(Behaviour *behaviour, UINT newIndex);
+
+		[[nodiscard]] Behaviour *GetBehaviour(UINT index) const;
+		[[nodiscard]] UINT GetBehaviourIndex(Behaviour *behaviour) const;
+		[[nodiscard]] const std::vector<std::unique_ptr<Behaviour>> *GetBehaviours() const;
+		[[nodiscard]] UINT GetBehaviourCount() const;
+
+		template <class T>
+		bool HasBehaviourOfType() const;
+		template <class T>
+		bool GetBehaviourByType(T *&behaviour) const;
+		template <class T>
+		bool GetBehaviourByType(Behaviour *&behaviour) const;
+		template <class T>
+		bool GetBehavioursByType(std::vector<T *> &behaviours) const;
+		template <class T>
+		bool GetBehavioursByType(std::vector<Behaviour *> &behaviours) const;
+
+		void Enable();
+		void Disable();
+		void SetEnabledSelf(bool state);
+
+		void SetDirty();
+		void SetDirtyImmediate();
+
+		void SignalTransformEdited();
+
+		void MarkAsRemoved();
+		[[nodiscard]] bool IsRemoved() const;
+
+		[[nodiscard]] bool IsPrefab() const;
+		[[nodiscard]] const std::string &GetPrefabName() const;
+		void SetPrefabName(const std::string &name);
+		void UnlinkFromPrefab();
+
+		void SetParent(Entity *parent, bool keepWorldTransform = false);
+		[[nodiscard]] Entity *GetParent() const;
+		[[nodiscard]] UINT GetChildCount() const;
+		[[nodiscard]] const std::vector<Entity *> *GetChildren() const;
+		void GetChildrenRecursive(std::vector<Entity *> &children) const;
+		void ReorderChild(Entity *child, UINT newIndex);
+		void ReorderChild(Entity *child, Entity *after);
+		[[nodiscard]] bool IsChildOf(const Entity *ent, bool immediate = false) const;
+		[[nodiscard]] bool IsParentOf(const Entity *ent, bool immediate = false) const;
+
+		[[nodiscard]] Culling::CullingPlacement &GetCullingPlacement();
+
+		void SetScene(Scene *scene);
+		// If this is called from a class with a circular dependency to Scene, you'll have to explicity include Scene.h from the caller.
+		[[nodiscard]] Scene *GetScene() const;
+
+		Game *GetGame() const;
+
+		[[nodiscard]] Transform *GetTransform();
+
+		void SetName(const std::string &name);
+		[[nodiscard]] const std::string &GetName() const;
+
+		[[nodiscard]] UINT GetID() const;
+
+		[[nodiscard]] UINT GetDeserializedID() const;
+		void SetDeserializedID(UINT id);
+
+		[[nodiscard]] bool GetShowInHierarchy(bool ignoreShowHidden = false) const;
+		void SetShowInHierarchy(bool show);
+
+		bool HasBounds(bool includeTriggers, dx::BoundingOrientedBox &out);
+		bool GetFullBounds(bool includeTriggers, dx::BoundingOrientedBox &bounds);
+		void SetEntityBounds(dx::BoundingOrientedBox &bounds);
+		void StoreEntityBounds(dx::BoundingOrientedBox &bounds, ReferenceSpace space = ReferenceSpace::World);
+
+		[[nodiscard]] const dx::BoundingOrientedBox &GetLastCullingBounds() const;
+		void UpdateCullingBounds();
+
+		[[nodiscard]] bool InitialUpdate(TimeUtils &time, const Input &input);
+		[[nodiscard]] bool InitialParallelUpdate(const TimeUtils &time, const Input &input);
+		[[nodiscard]] bool InitialLateUpdate(TimeUtils &time, const Input &input);
+		[[nodiscard]] bool InitialFixedUpdate(float deltaTime, const Input &input);
+		[[nodiscard]] bool InitialBeforeRender();
+		[[nodiscard]] bool InitialRender(const RenderQueuer &queuer, const RendererInfo &rendererInfo);
+	#ifdef USE_IMGUI
+		// Serialize entity to JSON and copy to clipboard
+		void CopyToClipboard();
+		[[nodiscard]] bool UIContextMenu();
+		[[nodiscard]] bool InitialRenderUI();
+		void SetVisibleInHierarchy(bool visible, float height) { _visibleInHierarchy = visible; _lastHeightInHierarchy = height; }
+		[[nodiscard]] bool IsVisibleInHierarchy(float &height) const { height = _lastHeightInHierarchy; return _visibleInHierarchy; }
+	#endif
+		[[nodiscard]] bool InitialBindBuffers(ID3D11DeviceContext *context);
+		[[nodiscard]] bool InitialOnHover();
+		[[nodiscard]] bool InitialOffHover();
+		[[nodiscard]] bool InitialOnSelect();
+		[[nodiscard]] bool InitialOnDebugSelect();
+
+		// For deserialization, use Scene::DeserializeEntity
+		[[nodiscard]] bool Serialize(json::Document::AllocatorType &docAlloc, json::Value &obj, bool forceSerialize = false);
+
+		TESTABLE
+	};
+
+	template<class T>
+	inline bool Entity::HasBehaviourOfType() const
+	{
+		if (_isRemoved)
+			return false;
+
+		if (!std::is_base_of<Behaviour, T>::value)
+			return false;
+
+		UINT behaviourCount = static_cast<UINT>(_behaviours.size());
+		for (UINT i = 0; i < behaviourCount; i++)
+		{
+			T *castedBehaviour = dynamic_cast<T*>(_behaviours[i].get());
+
+			if (castedBehaviour)
+				return true;
+		}
+
+		return false;
+	}
+
+	template<class T>
+	inline bool Entity::GetBehaviourByType(T *&behaviour) const
+	{
+		if (_isRemoved)
+			return false;
+
+		if (!std::is_base_of<Behaviour, T>::value)
+			return false;
+
+		UINT behaviourCount = static_cast<UINT>(_behaviours.size());
+		for (UINT i = 0; i < behaviourCount; i++)
+		{
+			T *castedBehaviour = dynamic_cast<T*>(_behaviours[i].get());
+
+			if (!castedBehaviour)
+				continue;
+
+			behaviour = castedBehaviour;
 			return true;
+		}
+
+		behaviour = nullptr;
+		return false;
 	}
 
-	return false;
-}
-
-template<class T>
-inline bool Entity::GetBehaviourByType(T *&behaviour) const
-{
-	if (_isRemoved)
-		return false;
-
-	if (!std::is_base_of<Behaviour, T>::value)
-		return false;
-
-	UINT behaviourCount = static_cast<UINT>(_behaviours.size());
-	for (UINT i = 0; i < behaviourCount; i++)
+	template<class T>
+	inline bool Entity::GetBehaviourByType(Behaviour *&behaviour) const
 	{
-		T *castedBehaviour = dynamic_cast<T*>(_behaviours[i].get());
+		if (_isRemoved)
+			return false;
 
-		if (!castedBehaviour)
-			continue;
+		if (!std::is_base_of<Behaviour, T>::value)
+			return false;
 
-		behaviour = castedBehaviour;
-		return true;
+		UINT behaviourCount = static_cast<UINT>(_behaviours.size());
+		for (UINT i = 0; i < behaviourCount; i++)
+		{
+			T *castedBehaviour = dynamic_cast<T *>(_behaviours[i].get());
+
+			if (!castedBehaviour)
+				continue;
+
+			behaviour = _behaviours[i].get();
+			return true;
+		}
+
+		behaviour = nullptr;
+		return false;
 	}
 
-	behaviour = nullptr;
-	return false;
-}
-
-template<class T>
-inline bool Entity::GetBehaviourByType(Behaviour *&behaviour) const
-{
-	if (_isRemoved)
-		return false;
-
-	if (!std::is_base_of<Behaviour, T>::value)
-		return false;
-
-	UINT behaviourCount = static_cast<UINT>(_behaviours.size());
-	for (UINT i = 0; i < behaviourCount; i++)
+	template<class T>
+	inline bool Entity::GetBehavioursByType(std::vector<T*> &behaviours) const
 	{
-		T *castedBehaviour = dynamic_cast<T *>(_behaviours[i].get());
+		if (_isRemoved)
+			return false;
 
-		if (!castedBehaviour)
-			continue;
-
-		behaviour = _behaviours[i].get();
-		return true;
-	}
-
-	behaviour = nullptr;
-	return false;
-}
-
-template<class T>
-inline bool Entity::GetBehavioursByType(std::vector<T*> &behaviours) const
-{
-	if (_isRemoved)
-		return false;
-
-	if (!std::is_base_of<Behaviour, T>::value)
-		return false;
+		if (!std::is_base_of<Behaviour, T>::value)
+			return false;
 	
-	bool found = false;
+		bool found = false;
 
-	UINT behaviourCount = static_cast<UINT>(_behaviours.size());
-	for (UINT i = 0; i < behaviourCount; i++)
-	{
-		T *castedBehaviour = dynamic_cast<T*>(_behaviours[i].get());
+		UINT behaviourCount = static_cast<UINT>(_behaviours.size());
+		for (UINT i = 0; i < behaviourCount; i++)
+		{
+			T *castedBehaviour = dynamic_cast<T*>(_behaviours[i].get());
 
-		if (!castedBehaviour)
-			continue;
+			if (!castedBehaviour)
+				continue;
 
-		behaviours.emplace_back(castedBehaviour);
-		found = true;
+			behaviours.emplace_back(castedBehaviour);
+			found = true;
+		}
+
+		return found;
 	}
 
-	return found;
-}
+	template<class T>
+	inline bool Entity::GetBehavioursByType(std::vector<Behaviour *> &behaviours) const
+	{
+		if (_isRemoved)
+			return false;
 
-template<class T>
-inline bool Entity::GetBehavioursByType(std::vector<Behaviour *> &behaviours) const
-{
-	if (_isRemoved)
-		return false;
-
-	if (!std::is_base_of<Behaviour, T>::value)
-		return false;
+		if (!std::is_base_of<Behaviour, T>::value)
+			return false;
 	
-	bool found = false;
+		bool found = false;
 
-	UINT behaviourCount = static_cast<UINT>(_behaviours.size());
-	for (UINT i = 0; i < behaviourCount; i++)
-	{
-		T *castedBehaviour = dynamic_cast<T*>(_behaviours[i].get());
+		UINT behaviourCount = static_cast<UINT>(_behaviours.size());
+		for (UINT i = 0; i < behaviourCount; i++)
+		{
+			T *castedBehaviour = dynamic_cast<T*>(_behaviours[i].get());
 
-		if (!castedBehaviour)
-			continue;
+			if (!castedBehaviour)
+				continue;
 
-		behaviours.emplace_back(_behaviours[i].get());
-		found = true;
+			behaviours.emplace_back(_behaviours[i].get());
+			found = true;
+		}
+
+		return found;
 	}
-
-	return found;
 }

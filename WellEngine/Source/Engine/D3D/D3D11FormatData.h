@@ -2,10 +2,13 @@
 
 #include <string>
 #include <map>
+#include <d3d11.h>
 #include <dxgiformat.h>
 
-namespace D3D11FormatData
+namespace WellEngine::D3D11FormatData
 {
+	namespace dx = DirectX;
+
 	[[nodiscard]] inline DXGI_FORMAT TypeFromName(const std::string &name)
 	{
 		static const std::unordered_map<std::string_view, DXGI_FORMAT> formatMap = {

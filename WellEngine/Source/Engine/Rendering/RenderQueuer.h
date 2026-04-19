@@ -1,57 +1,61 @@
 #pragma once
+
 #include "RendererInfo.h"
 #include "Game/Behaviours/Rendering/Camera/CameraBehaviour.h"
 #include "Game/Behaviours/Rendering/Camera/CameraCubeBehaviour.h"
 
-class RenderQueuer
+namespace WellEngine
 {
-public:
-	virtual void QueueGeometry(const RenderQueueEntry &entry) const = 0;
-	virtual void QueueTransparent(const RenderQueueEntry &entry) const = 0;
-};
-
-class CamRenderQueuer final : public RenderQueuer
-{
-private:
-	CameraBehaviour *_cameraBehaviour = nullptr;
-
-public:
-	CamRenderQueuer(CameraBehaviour *cameraBehaviour)
+	class RenderQueuer
 	{
-		_cameraBehaviour = cameraBehaviour;
-	}
+	public:
+		virtual void QueueGeometry(const RenderQueueEntry &entry) const = 0;
+		virtual void QueueTransparent(const RenderQueueEntry &entry) const = 0;
+	};
 
-	void QueueGeometry(const RenderQueueEntry &entry) const override
+	class CamRenderQueuer final : public RenderQueuer
 	{
-		_cameraBehaviour->QueueGeometry(entry);
-	}
-	void QueueTransparent(const RenderQueueEntry &entry) const override
+	private:
+		CameraBehaviour *_cameraBehaviour = nullptr;
+
+	public:
+		CamRenderQueuer(CameraBehaviour *cameraBehaviour)
+		{
+			_cameraBehaviour = cameraBehaviour;
+		}
+
+		void QueueGeometry(const RenderQueueEntry &entry) const override
+		{
+			_cameraBehaviour->QueueGeometry(entry);
+		}
+		void QueueTransparent(const RenderQueueEntry &entry) const override
+		{
+			_cameraBehaviour->QueueTransparent(entry);
+		}
+
+		TESTABLE
+	};
+
+	class CubeRenderQueuer final : public RenderQueuer
 	{
-		_cameraBehaviour->QueueTransparent(entry);
-	}
+	private:
+		CameraCubeBehaviour *_cameraCubeBehaviour = nullptr;
 
-	TESTABLE
-};
+	public:
+		CubeRenderQueuer(CameraCubeBehaviour *cameraCubeBehaviour)
+		{
+			_cameraCubeBehaviour = cameraCubeBehaviour;
+		}
 
-class CubeRenderQueuer final : public RenderQueuer
-{
-private:
-	CameraCubeBehaviour *_cameraCubeBehaviour = nullptr;
+		void QueueGeometry(const RenderQueueEntry &entry) const override
+		{
+			_cameraCubeBehaviour->QueueGeometry(entry);
+		}
+		void QueueTransparent(const RenderQueueEntry &entry) const override
+		{
+			_cameraCubeBehaviour->QueueTransparent(entry);
+		}
 
-public:
-	CubeRenderQueuer(CameraCubeBehaviour *cameraCubeBehaviour)
-	{
-		_cameraCubeBehaviour = cameraCubeBehaviour;
-	}
-
-	void QueueGeometry(const RenderQueueEntry &entry) const override
-	{
-		_cameraCubeBehaviour->QueueGeometry(entry);
-	}
-	void QueueTransparent(const RenderQueueEntry &entry) const override
-	{
-		_cameraCubeBehaviour->QueueTransparent(entry);
-	}
-
-	TESTABLE
-};
+		TESTABLE
+	};
+}

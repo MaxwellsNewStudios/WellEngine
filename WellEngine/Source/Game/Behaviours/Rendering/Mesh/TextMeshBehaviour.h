@@ -1,53 +1,57 @@
 #pragma once
+
 #include "Game/Behaviour.h"
 #include "Engine/D3D/MeshD3D11.h"
 #include "MeshBehaviour.h"
 
-class [[register_behaviour]] TextMeshBehaviour : public Behaviour
+namespace WellEngine
 {
-private:
-	Ref<MeshBehaviour> _meshBehaviour = nullptr;
-	UINT _fontAtlasID = CONTENT_NULL;
-	UINT _meshID = CONTENT_NULL;
-	std::string _text = "";
-
-	dx::XMFLOAT4 _color = { 1, 1, 1, 1 };
-	float _thickness = 0.5f;
-
-	static std::vector<UINT> &GetUnusedMeshIDs()
+	class [[register_behaviour]] TextMeshBehaviour : public Behaviour
 	{
-		static std::vector<UINT> unusedMeshIDs;
-		return unusedMeshIDs;
-	}
+	private:
+		Ref<MeshBehaviour> _meshBehaviour = nullptr;
+		UINT _fontAtlasID = CONTENT_NULL;
+		UINT _meshID = CONTENT_NULL;
+		std::string _text = "";
 
-protected:
-	[[nodiscard]] bool Start() override;
+		dx::XMFLOAT4 _color = { 1, 1, 1, 1 };
+		float _thickness = 0.5f;
 
-#ifdef USE_IMGUI
-	[[nodiscard]] bool RenderUI() override;
-#endif
+		static std::vector<UINT> &GetUnusedMeshIDs()
+		{
+			static std::vector<UINT> unusedMeshIDs;
+			return unusedMeshIDs;
+		}
 
-	// Serializes the behaviour to a string.
-	[[nodiscard]] bool Serialize(json::Document::AllocatorType &docAlloc, json::Value &obj) override;
+	protected:
+		[[nodiscard]] bool Start() override;
 
-	// Deserializes the behaviour from a string.
-	[[nodiscard]] bool Deserialize(const json::Value &obj, Scene *scene) override;
+	#ifdef USE_IMGUI
+		[[nodiscard]] bool RenderUI() override;
+	#endif
 
-	void PostDeserialize() override;
+		// Serializes the behaviour to a string.
+		[[nodiscard]] bool Serialize(json::Document::AllocatorType &docAlloc, json::Value &obj) override;
 
-	void RecreateMesh();
+		// Deserializes the behaviour from a string.
+		[[nodiscard]] bool Deserialize(const json::Value &obj, Scene *scene) override;
 
-public:
-	TextMeshBehaviour() = default;
-	~TextMeshBehaviour();
+		void PostDeserialize() override;
 
-	const std::string &GetText() const;
-	void SetText(std::string_view text, bool skipRebuild = false);
+		void RecreateMesh();
 
-	UINT GetFontAtlasID() const;
-	void SetFontAtlasID(UINT id, bool skipRebuild = false);
+	public:
+		TextMeshBehaviour() = default;
+		~TextMeshBehaviour();
 
-	UINT GetMeshID() const;
+		const std::string &GetText() const;
+		void SetText(std::string_view text, bool skipRebuild = false);
 
-	MeshBehaviour *GetMeshBehaviour() const;
-};
+		UINT GetFontAtlasID() const;
+		void SetFontAtlasID(UINT id, bool skipRebuild = false);
+
+		UINT GetMeshID() const;
+
+		MeshBehaviour *GetMeshBehaviour() const;
+	};
+}

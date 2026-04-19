@@ -1,784 +1,784 @@
 #pragma once
 
-#pragma region Includes
 #include <variant>
 #include <DirectXMath.h>
 #include <DirectXCollision.h>
+
 #include "Engine/Debug/ErrMsg.h"
 #include "Engine/Collision/ColliderShapes.h"
-
-namespace we = WellEngine;
-namespace dx = DirectX;
-
-#pragma endregion
 
 #pragma region Defines
 #define SIGN(x)	(x > 0 ? 1 : -1)
 #define CLAMP(x, a, b) min(max(x, a), b)
 
-static constexpr float DEG_TO_RAD = (dx::XM_PI / 180.0f);
-static constexpr float RAD_TO_DEG = (180.0f / dx::XM_PI);
+static constexpr float DEG_TO_RAD = (DirectX::XM_PI / 180.0f);
+static constexpr float RAD_TO_DEG = (180.0f / DirectX::XM_PI);
 #pragma endregion
 
+namespace WellEngine
+{
+	namespace dx = DirectX;
 
 #pragma region Vector Channel Conversions
-[[nodiscard]] static inline const dx::XMFLOAT4A To4(const dx::XMFLOAT3A &vec) noexcept
-{
-	return *reinterpret_cast<const dx::XMFLOAT4A *>(&vec);
-}
-[[nodiscard]] static inline dx::XMFLOAT4A To4(const dx::XMFLOAT3 &vec) noexcept
-{
-	return dx::XMFLOAT4A(vec.x, vec.y, vec.z, 0.0f);
-}
-[[nodiscard]] static inline dx::XMFLOAT3A To3(const dx::XMFLOAT4A &vec) noexcept
-{
-	return *reinterpret_cast<const dx::XMFLOAT3A *>(&vec);
-}
-[[nodiscard]] static inline dx::XMFLOAT3A To3(const dx::XMFLOAT4 &vec) noexcept
-{
-	return *reinterpret_cast<const dx::XMFLOAT3A *>(&vec);
-}
-[[nodiscard]] static inline dx::XMFLOAT3A To3(const dx::XMFLOAT3 &vec) noexcept
-{
-	return dx::XMFLOAT3A(vec.x, vec.y, vec.z);
-}
-[[nodiscard]] static inline dx::XMFLOAT3 To3(const dx::XMFLOAT3A &vec) noexcept
-{
-	return dx::XMFLOAT3(vec.x, vec.y, vec.z);
-}
-[[nodiscard]] static inline dx::XMFLOAT2A To2(const dx::XMFLOAT4 &vec) noexcept
-{
-	return *reinterpret_cast<const dx::XMFLOAT2A *>(&vec);
-}
-[[nodiscard]] static inline dx::XMFLOAT2A To2(const dx::XMFLOAT3 &vec) noexcept
-{
-	return dx::XMFLOAT2A(vec.x, vec.y);
-}
-[[nodiscard]] static inline dx::XMFLOAT2 To2(const dx::XMFLOAT3A &vec) noexcept
-{
-	return dx::XMFLOAT2(vec.x, vec.y);
-}
-[[nodiscard]] static inline dx::XMFLOAT2A To2(const dx::XMFLOAT2 &vec) noexcept
-{
-	return dx::XMFLOAT2A(vec.x, vec.y);
-}
-[[nodiscard]] static inline dx::XMFLOAT2 To2(const dx::XMFLOAT2A &vec) noexcept
-{
-	return dx::XMFLOAT2(vec.x, vec.y);
-}
-[[nodiscard]] static inline float To1(const dx::XMFLOAT4A &vec) noexcept
-{
-	return vec.x;
-}
-[[nodiscard]] static inline float To1(const dx::XMFLOAT3A &vec) noexcept
-{
-	return vec.x;
-}
-[[nodiscard]] static inline float To1(const dx::XMFLOAT4 &vec) noexcept
-{
-	return vec.x;
-}
-[[nodiscard]] static inline float To1(const dx::XMFLOAT3 &vec) noexcept
-{
-	return vec.x;
-}
+	[[nodiscard]] static inline const dx::XMFLOAT4A To4(const dx::XMFLOAT3A &vec) noexcept
+	{
+		return *reinterpret_cast<const dx::XMFLOAT4A *>(&vec);
+	}
+	[[nodiscard]] static inline dx::XMFLOAT4A To4(const dx::XMFLOAT3 &vec) noexcept
+	{
+		return dx::XMFLOAT4A(vec.x, vec.y, vec.z, 0.0f);
+	}
+	[[nodiscard]] static inline dx::XMFLOAT3A To3(const dx::XMFLOAT4A &vec) noexcept
+	{
+		return *reinterpret_cast<const dx::XMFLOAT3A *>(&vec);
+	}
+	[[nodiscard]] static inline dx::XMFLOAT3A To3(const dx::XMFLOAT4 &vec) noexcept
+	{
+		return *reinterpret_cast<const dx::XMFLOAT3A *>(&vec);
+	}
+	[[nodiscard]] static inline dx::XMFLOAT3A To3(const dx::XMFLOAT3 &vec) noexcept
+	{
+		return dx::XMFLOAT3A(vec.x, vec.y, vec.z);
+	}
+	[[nodiscard]] static inline dx::XMFLOAT3 To3(const dx::XMFLOAT3A &vec) noexcept
+	{
+		return dx::XMFLOAT3(vec.x, vec.y, vec.z);
+	}
+	[[nodiscard]] static inline dx::XMFLOAT2A To2(const dx::XMFLOAT4 &vec) noexcept
+	{
+		return *reinterpret_cast<const dx::XMFLOAT2A *>(&vec);
+	}
+	[[nodiscard]] static inline dx::XMFLOAT2A To2(const dx::XMFLOAT3 &vec) noexcept
+	{
+		return dx::XMFLOAT2A(vec.x, vec.y);
+	}
+	[[nodiscard]] static inline dx::XMFLOAT2 To2(const dx::XMFLOAT3A &vec) noexcept
+	{
+		return dx::XMFLOAT2(vec.x, vec.y);
+	}
+	[[nodiscard]] static inline dx::XMFLOAT2A To2(const dx::XMFLOAT2 &vec) noexcept
+	{
+		return dx::XMFLOAT2A(vec.x, vec.y);
+	}
+	[[nodiscard]] static inline dx::XMFLOAT2 To2(const dx::XMFLOAT2A &vec) noexcept
+	{
+		return dx::XMFLOAT2(vec.x, vec.y);
+	}
+	[[nodiscard]] static inline float To1(const dx::XMFLOAT4A &vec) noexcept
+	{
+		return vec.x;
+	}
+	[[nodiscard]] static inline float To1(const dx::XMFLOAT3A &vec) noexcept
+	{
+		return vec.x;
+	}
+	[[nodiscard]] static inline float To1(const dx::XMFLOAT4 &vec) noexcept
+	{
+		return vec.x;
+	}
+	[[nodiscard]] static inline float To1(const dx::XMFLOAT3 &vec) noexcept
+	{
+		return vec.x;
+	}
 #pragma endregion
 
 #pragma region Vector Type Conversions
-[[nodiscard]] static inline dx::XMFLOAT4 ToFloat(const dx::XMUINT4 &vec) noexcept
-{
-	return { (float)vec.x, (float)vec.y, (float)vec.z, (float)vec.w };
-}
-[[nodiscard]] static inline dx::XMFLOAT4 ToFloat(const dx::XMINT4 &vec) noexcept
-{
-	return { (float)vec.x, (float)vec.y, (float)vec.z, (float)vec.w };
-}
-[[nodiscard]] static inline dx::XMFLOAT3 ToFloat(const dx::XMUINT3 &vec) noexcept
-{
-	return { (float)vec.x, (float)vec.y, (float)vec.z };
-}
-[[nodiscard]] static inline dx::XMFLOAT3 ToFloat(const dx::XMINT3 &vec) noexcept
-{
-	return { (float)vec.x, (float)vec.y, (float)vec.z };
-}
-[[nodiscard]] static inline dx::XMFLOAT2 ToFloat(const dx::XMUINT2 &vec) noexcept
-{
-	return { (float)vec.x, (float)vec.y };
-}
-[[nodiscard]] static inline dx::XMFLOAT2 ToFloat(const dx::XMINT2 &vec) noexcept
-{
-	return { (float)vec.x, (float)vec.y };
-}
+	[[nodiscard]] static inline dx::XMFLOAT4 ToFloat(const dx::XMUINT4 &vec) noexcept
+	{
+		return { (float)vec.x, (float)vec.y, (float)vec.z, (float)vec.w };
+	}
+	[[nodiscard]] static inline dx::XMFLOAT4 ToFloat(const dx::XMINT4 &vec) noexcept
+	{
+		return { (float)vec.x, (float)vec.y, (float)vec.z, (float)vec.w };
+	}
+	[[nodiscard]] static inline dx::XMFLOAT3 ToFloat(const dx::XMUINT3 &vec) noexcept
+	{
+		return { (float)vec.x, (float)vec.y, (float)vec.z };
+	}
+	[[nodiscard]] static inline dx::XMFLOAT3 ToFloat(const dx::XMINT3 &vec) noexcept
+	{
+		return { (float)vec.x, (float)vec.y, (float)vec.z };
+	}
+	[[nodiscard]] static inline dx::XMFLOAT2 ToFloat(const dx::XMUINT2 &vec) noexcept
+	{
+		return { (float)vec.x, (float)vec.y };
+	}
+	[[nodiscard]] static inline dx::XMFLOAT2 ToFloat(const dx::XMINT2 &vec) noexcept
+	{
+		return { (float)vec.x, (float)vec.y };
+	}
 
-[[nodiscard]] static inline dx::XMUINT4 ToUint(const dx::XMFLOAT4A &vec) noexcept
-{
-	return { (UINT)vec.x, (UINT)vec.y, (UINT)vec.z, (UINT)vec.w };
-}
-[[nodiscard]] static inline dx::XMUINT4 ToUint(const dx::XMFLOAT4 &vec) noexcept
-{
-	return { (UINT)vec.x, (UINT)vec.y, (UINT)vec.z, (UINT)vec.w };
-}
-[[nodiscard]] static inline dx::XMUINT4 ToUint(const dx::XMINT4 &vec) noexcept
-{
-	return { (UINT)vec.x, (UINT)vec.y, (UINT)vec.z, (UINT)vec.w };
-}
-[[nodiscard]] static inline dx::XMUINT3 ToUint(const dx::XMFLOAT3A &vec) noexcept
-{
-	return { (UINT)vec.x, (UINT)vec.y, (UINT)vec.z };
-}
-[[nodiscard]] static inline dx::XMUINT3 ToUint(const dx::XMFLOAT3 &vec) noexcept
-{
-	return { (UINT)vec.x, (UINT)vec.y, (UINT)vec.z };
-}
-[[nodiscard]] static inline dx::XMUINT3 ToUint(const dx::XMINT3 &vec) noexcept
-{
-	return { (UINT)vec.x, (UINT)vec.y, (UINT)vec.z };
-}
-[[nodiscard]] static inline dx::XMUINT2 ToUint(const dx::XMFLOAT2A &vec) noexcept
-{
-	return { (UINT)vec.x, (UINT)vec.y };
-}
-[[nodiscard]] static inline dx::XMUINT2 ToUint(const dx::XMFLOAT2 &vec) noexcept
-{
-	return { (UINT)vec.x, (UINT)vec.y };
-}
-[[nodiscard]] static inline dx::XMUINT2 ToUint(const dx::XMINT2 &vec) noexcept
-{
-	return { (UINT)vec.x, (UINT)vec.y };
-}
+	[[nodiscard]] static inline dx::XMUINT4 ToUint(const dx::XMFLOAT4A &vec) noexcept
+	{
+		return { (UINT)vec.x, (UINT)vec.y, (UINT)vec.z, (UINT)vec.w };
+	}
+	[[nodiscard]] static inline dx::XMUINT4 ToUint(const dx::XMFLOAT4 &vec) noexcept
+	{
+		return { (UINT)vec.x, (UINT)vec.y, (UINT)vec.z, (UINT)vec.w };
+	}
+	[[nodiscard]] static inline dx::XMUINT4 ToUint(const dx::XMINT4 &vec) noexcept
+	{
+		return { (UINT)vec.x, (UINT)vec.y, (UINT)vec.z, (UINT)vec.w };
+	}
+	[[nodiscard]] static inline dx::XMUINT3 ToUint(const dx::XMFLOAT3A &vec) noexcept
+	{
+		return { (UINT)vec.x, (UINT)vec.y, (UINT)vec.z };
+	}
+	[[nodiscard]] static inline dx::XMUINT3 ToUint(const dx::XMFLOAT3 &vec) noexcept
+	{
+		return { (UINT)vec.x, (UINT)vec.y, (UINT)vec.z };
+	}
+	[[nodiscard]] static inline dx::XMUINT3 ToUint(const dx::XMINT3 &vec) noexcept
+	{
+		return { (UINT)vec.x, (UINT)vec.y, (UINT)vec.z };
+	}
+	[[nodiscard]] static inline dx::XMUINT2 ToUint(const dx::XMFLOAT2A &vec) noexcept
+	{
+		return { (UINT)vec.x, (UINT)vec.y };
+	}
+	[[nodiscard]] static inline dx::XMUINT2 ToUint(const dx::XMFLOAT2 &vec) noexcept
+	{
+		return { (UINT)vec.x, (UINT)vec.y };
+	}
+	[[nodiscard]] static inline dx::XMUINT2 ToUint(const dx::XMINT2 &vec) noexcept
+	{
+		return { (UINT)vec.x, (UINT)vec.y };
+	}
 
-[[nodiscard]] static inline dx::XMINT4 ToInt(const dx::XMFLOAT4A &vec) noexcept
-{
-	return { (int)vec.x, (int)vec.y, (int)vec.z, (int)vec.w };
-}
-[[nodiscard]] static inline dx::XMINT4 ToInt(const dx::XMFLOAT4 &vec) noexcept
-{
-	return { (int)vec.x, (int)vec.y, (int)vec.z, (int)vec.w };
-}
-[[nodiscard]] static inline dx::XMINT4 ToInt(const dx::XMUINT4 &vec) noexcept
-{
-	return { (int)vec.x, (int)vec.y, (int)vec.z, (int)vec.w };
-}
-[[nodiscard]] static inline dx::XMINT3 ToInt(const dx::XMFLOAT3A &vec) noexcept
-{
-	return { (int)vec.x, (int)vec.y, (int)vec.z };
-}
-[[nodiscard]] static inline dx::XMINT3 ToInt(const dx::XMFLOAT3 &vec) noexcept
-{
-	return { (int)vec.x, (int)vec.y, (int)vec.z };
-}
-[[nodiscard]] static inline dx::XMINT3 ToInt(const dx::XMUINT3 &vec) noexcept
-{
-	return { (int)vec.x, (int)vec.y, (int)vec.z };
-}
-[[nodiscard]] static inline dx::XMINT2 ToInt(const dx::XMFLOAT2A &vec) noexcept
-{
-	return { (int)vec.x, (int)vec.y };
-}
-[[nodiscard]] static inline dx::XMINT2 ToInt(const dx::XMFLOAT2 &vec) noexcept
-{
-	return { (int)vec.x, (int)vec.y };
-}
-[[nodiscard]] static inline dx::XMINT2 ToInt(const dx::XMUINT2 &vec) noexcept
-{
-	return { (int)vec.x, (int)vec.y };
-}
+	[[nodiscard]] static inline dx::XMINT4 ToInt(const dx::XMFLOAT4A &vec) noexcept
+	{
+		return { (int)vec.x, (int)vec.y, (int)vec.z, (int)vec.w };
+	}
+	[[nodiscard]] static inline dx::XMINT4 ToInt(const dx::XMFLOAT4 &vec) noexcept
+	{
+		return { (int)vec.x, (int)vec.y, (int)vec.z, (int)vec.w };
+	}
+	[[nodiscard]] static inline dx::XMINT4 ToInt(const dx::XMUINT4 &vec) noexcept
+	{
+		return { (int)vec.x, (int)vec.y, (int)vec.z, (int)vec.w };
+	}
+	[[nodiscard]] static inline dx::XMINT3 ToInt(const dx::XMFLOAT3A &vec) noexcept
+	{
+		return { (int)vec.x, (int)vec.y, (int)vec.z };
+	}
+	[[nodiscard]] static inline dx::XMINT3 ToInt(const dx::XMFLOAT3 &vec) noexcept
+	{
+		return { (int)vec.x, (int)vec.y, (int)vec.z };
+	}
+	[[nodiscard]] static inline dx::XMINT3 ToInt(const dx::XMUINT3 &vec) noexcept
+	{
+		return { (int)vec.x, (int)vec.y, (int)vec.z };
+	}
+	[[nodiscard]] static inline dx::XMINT2 ToInt(const dx::XMFLOAT2A &vec) noexcept
+	{
+		return { (int)vec.x, (int)vec.y };
+	}
+	[[nodiscard]] static inline dx::XMINT2 ToInt(const dx::XMFLOAT2 &vec) noexcept
+	{
+		return { (int)vec.x, (int)vec.y };
+	}
+	[[nodiscard]] static inline dx::XMINT2 ToInt(const dx::XMUINT2 &vec) noexcept
+	{
+		return { (int)vec.x, (int)vec.y };
+	}
 #pragma endregion
 
 #pragma region Load Helpers
-[[nodiscard]] static inline dx::XMVECTOR Load(float f) noexcept
-{
-	return dx::XMLoadFloat(&f);
-}
-[[nodiscard]] static inline dx::XMVECTOR Load(const dx::XMFLOAT2 &float2) noexcept
-{
-	return dx::XMLoadFloat2(&float2);
-}
-[[nodiscard]] static inline dx::XMVECTOR Load(const dx::XMFLOAT3 &float3) noexcept
-{
-	return dx::XMLoadFloat3(&float3);
-}
-[[nodiscard]] static inline dx::XMVECTOR Load(const dx::XMFLOAT4 &float4) noexcept
-{
-	return dx::XMLoadFloat4(&float4);
-}
-[[nodiscard]] static inline dx::XMVECTOR Load(const dx::XMFLOAT3A &float3A) noexcept
-{
-	return dx::XMLoadFloat3A(&float3A);
-}
-[[nodiscard]] static inline dx::XMVECTOR Load(const dx::XMFLOAT4A &float4A) noexcept
-{
-	return dx::XMLoadFloat4A(&float4A);
-}
-[[nodiscard]] static inline dx::XMMATRIX Load(const dx::XMFLOAT3X3 &float3x3) noexcept
-{
-	return dx::XMLoadFloat3x3(&float3x3);
-}
-[[nodiscard]] static inline dx::XMMATRIX Load(const dx::XMFLOAT4X4 &float4x4) noexcept
-{
-	return dx::XMLoadFloat4x4(&float4x4);
-}
-[[nodiscard]] static inline dx::XMMATRIX Load(const dx::XMFLOAT4X4A &float4x4A) noexcept
-{
-	return dx::XMLoadFloat4x4A(&float4x4A);
-}
+	[[nodiscard]] static inline dx::XMVECTOR Load(float f) noexcept
+	{
+		return dx::XMLoadFloat(&f);
+	}
+	[[nodiscard]] static inline dx::XMVECTOR Load(const dx::XMFLOAT2 &float2) noexcept
+	{
+		return dx::XMLoadFloat2(&float2);
+	}
+	[[nodiscard]] static inline dx::XMVECTOR Load(const dx::XMFLOAT3 &float3) noexcept
+	{
+		return dx::XMLoadFloat3(&float3);
+	}
+	[[nodiscard]] static inline dx::XMVECTOR Load(const dx::XMFLOAT4 &float4) noexcept
+	{
+		return dx::XMLoadFloat4(&float4);
+	}
+	[[nodiscard]] static inline dx::XMVECTOR Load(const dx::XMFLOAT3A &float3A) noexcept
+	{
+		return dx::XMLoadFloat3A(&float3A);
+	}
+	[[nodiscard]] static inline dx::XMVECTOR Load(const dx::XMFLOAT4A &float4A) noexcept
+	{
+		return dx::XMLoadFloat4A(&float4A);
+	}
+	[[nodiscard]] static inline dx::XMMATRIX Load(const dx::XMFLOAT3X3 &float3x3) noexcept
+	{
+		return dx::XMLoadFloat3x3(&float3x3);
+	}
+	[[nodiscard]] static inline dx::XMMATRIX Load(const dx::XMFLOAT4X4 &float4x4) noexcept
+	{
+		return dx::XMLoadFloat4x4(&float4x4);
+	}
+	[[nodiscard]] static inline dx::XMMATRIX Load(const dx::XMFLOAT4X4A &float4x4A) noexcept
+	{
+		return dx::XMLoadFloat4x4A(&float4x4A);
+	}
 
-[[nodiscard]] static inline dx::XMVECTOR Load(const dx::XMFLOAT2 *float2) noexcept
-{
-	return dx::XMLoadFloat2(float2);
-}
-[[nodiscard]] static inline dx::XMVECTOR Load(const dx::XMFLOAT3 *float3) noexcept
-{
-	return dx::XMLoadFloat3(float3);
-}
-[[nodiscard]] static inline dx::XMVECTOR Load(const dx::XMFLOAT4 *float4) noexcept
-{
-	return dx::XMLoadFloat4(float4);
-}
-[[nodiscard]] static inline dx::XMVECTOR Load(const dx::XMFLOAT3A *float3A) noexcept
-{
-	return dx::XMLoadFloat3A(float3A);
-}
-[[nodiscard]] static inline dx::XMVECTOR Load(const dx::XMFLOAT4A *float4A) noexcept
-{
-	return dx::XMLoadFloat4A(float4A);
-}
-[[nodiscard]] static inline dx::XMMATRIX Load(const dx::XMFLOAT3X3 *float3x3) noexcept
-{
-	return dx::XMLoadFloat3x3(float3x3);
-}
-[[nodiscard]] static inline dx::XMMATRIX Load(const dx::XMFLOAT4X4 *float4x4) noexcept
-{
-	return dx::XMLoadFloat4x4(float4x4);
-}
-[[nodiscard]] static inline dx::XMMATRIX Load(const dx::XMFLOAT4X4A *float4x4A) noexcept
-{
-	return dx::XMLoadFloat4x4A(float4x4A);
-}
+	[[nodiscard]] static inline dx::XMVECTOR Load(const dx::XMFLOAT2 *float2) noexcept
+	{
+		return dx::XMLoadFloat2(float2);
+	}
+	[[nodiscard]] static inline dx::XMVECTOR Load(const dx::XMFLOAT3 *float3) noexcept
+	{
+		return dx::XMLoadFloat3(float3);
+	}
+	[[nodiscard]] static inline dx::XMVECTOR Load(const dx::XMFLOAT4 *float4) noexcept
+	{
+		return dx::XMLoadFloat4(float4);
+	}
+	[[nodiscard]] static inline dx::XMVECTOR Load(const dx::XMFLOAT3A *float3A) noexcept
+	{
+		return dx::XMLoadFloat3A(float3A);
+	}
+	[[nodiscard]] static inline dx::XMVECTOR Load(const dx::XMFLOAT4A *float4A) noexcept
+	{
+		return dx::XMLoadFloat4A(float4A);
+	}
+	[[nodiscard]] static inline dx::XMMATRIX Load(const dx::XMFLOAT3X3 *float3x3) noexcept
+	{
+		return dx::XMLoadFloat3x3(float3x3);
+	}
+	[[nodiscard]] static inline dx::XMMATRIX Load(const dx::XMFLOAT4X4 *float4x4) noexcept
+	{
+		return dx::XMLoadFloat4x4(float4x4);
+	}
+	[[nodiscard]] static inline dx::XMMATRIX Load(const dx::XMFLOAT4X4A *float4x4A) noexcept
+	{
+		return dx::XMLoadFloat4x4A(float4x4A);
+	}
 #pragma endregion
 
 #pragma region Store Helpers
-static inline void Store(float &dest, dx::XMVECTOR vec) noexcept
-{
-	dx::XMStoreFloat(&dest, vec);
-}
-static inline void Store(dx::XMFLOAT2 &dest, dx::XMVECTOR vec) noexcept
-{
-	dx::XMStoreFloat2(&dest, vec);
-}
-static inline void Store(dx::XMFLOAT3 &dest, dx::XMVECTOR vec) noexcept
-{
-	dx::XMStoreFloat3(&dest, vec);
-}
-static inline void Store(dx::XMFLOAT4 &dest, dx::XMVECTOR vec) noexcept
-{
-	dx::XMStoreFloat4(&dest, vec);
-}
-static inline void Store(dx::XMFLOAT2A &dest, dx::XMVECTOR vec) noexcept
-{
-	dx::XMStoreFloat2A(&dest, vec);
-}
-static inline void Store(dx::XMFLOAT3A &dest, dx::XMVECTOR vec) noexcept
-{
-	dx::XMStoreFloat3A(&dest, vec);
-}
-static inline void Store(dx::XMFLOAT4A &dest, dx::XMVECTOR vec) noexcept
-{
-	dx::XMStoreFloat4A(&dest, vec);
-}
-static inline void Store(dx::XMFLOAT3X3 &dest, const dx::XMMATRIX &mat) noexcept
-{
-	dx::XMStoreFloat3x3(&dest, mat);
-}
-static inline void Store(dx::XMFLOAT4X4 &dest, const dx::XMMATRIX &mat) noexcept
-{
-	dx::XMStoreFloat4x4(&dest, mat);
-}
-static inline void Store(dx::XMFLOAT4X4A &dest, const dx::XMMATRIX &mat) noexcept
-{
-	dx::XMStoreFloat4x4A(&dest, mat);
-}
-static inline void Store(float *dest, dx::XMVECTOR vec) noexcept
-{
-	dx::XMStoreFloat(dest, vec);
-}
-static inline void Store(dx::XMFLOAT2 *dest, dx::XMVECTOR vec) noexcept
-{
-	dx::XMStoreFloat2(dest, vec);
-}
-static inline void Store(dx::XMFLOAT3 *dest, dx::XMVECTOR vec) noexcept
-{
-	dx::XMStoreFloat3(dest, vec);
-}
-static inline void Store(dx::XMFLOAT4 *dest, dx::XMVECTOR vec) noexcept
-{
-	dx::XMStoreFloat4(dest, vec);
-}
-static inline void Store(dx::XMFLOAT2A *dest, dx::XMVECTOR vec) noexcept
-{
-	dx::XMStoreFloat2A(dest, vec);
-}
-static inline void Store(dx::XMFLOAT3A *dest, dx::XMVECTOR vec) noexcept
-{
-	dx::XMStoreFloat3A(dest, vec);
-}
-static inline void Store(dx::XMFLOAT4A *dest, dx::XMVECTOR vec) noexcept
-{
-	dx::XMStoreFloat4A(dest, vec);
-}
-static inline void Store(dx::XMFLOAT3X3 *dest, const dx::XMMATRIX &mat) noexcept
-{
-	dx::XMStoreFloat3x3(dest, mat);
-}
-static inline void Store(dx::XMFLOAT4X4 *dest, const dx::XMMATRIX &mat) noexcept
-{
-	dx::XMStoreFloat4x4(dest, mat);
-}
-static inline void Store(dx::XMFLOAT4X4A *dest, const dx::XMMATRIX &mat) noexcept
-{
-	dx::XMStoreFloat4x4A(dest, mat);
-}
+	static inline void Store(float &dest, dx::XMVECTOR vec) noexcept
+	{
+		dx::XMStoreFloat(&dest, vec);
+	}
+	static inline void Store(dx::XMFLOAT2 &dest, dx::XMVECTOR vec) noexcept
+	{
+		dx::XMStoreFloat2(&dest, vec);
+	}
+	static inline void Store(dx::XMFLOAT3 &dest, dx::XMVECTOR vec) noexcept
+	{
+		dx::XMStoreFloat3(&dest, vec);
+	}
+	static inline void Store(dx::XMFLOAT4 &dest, dx::XMVECTOR vec) noexcept
+	{
+		dx::XMStoreFloat4(&dest, vec);
+	}
+	static inline void Store(dx::XMFLOAT2A &dest, dx::XMVECTOR vec) noexcept
+	{
+		dx::XMStoreFloat2A(&dest, vec);
+	}
+	static inline void Store(dx::XMFLOAT3A &dest, dx::XMVECTOR vec) noexcept
+	{
+		dx::XMStoreFloat3A(&dest, vec);
+	}
+	static inline void Store(dx::XMFLOAT4A &dest, dx::XMVECTOR vec) noexcept
+	{
+		dx::XMStoreFloat4A(&dest, vec);
+	}
+	static inline void Store(dx::XMFLOAT3X3 &dest, const dx::XMMATRIX &mat) noexcept
+	{
+		dx::XMStoreFloat3x3(&dest, mat);
+	}
+	static inline void Store(dx::XMFLOAT4X4 &dest, const dx::XMMATRIX &mat) noexcept
+	{
+		dx::XMStoreFloat4x4(&dest, mat);
+	}
+	static inline void Store(dx::XMFLOAT4X4A &dest, const dx::XMMATRIX &mat) noexcept
+	{
+		dx::XMStoreFloat4x4A(&dest, mat);
+	}
+	static inline void Store(float *dest, dx::XMVECTOR vec) noexcept
+	{
+		dx::XMStoreFloat(dest, vec);
+	}
+	static inline void Store(dx::XMFLOAT2 *dest, dx::XMVECTOR vec) noexcept
+	{
+		dx::XMStoreFloat2(dest, vec);
+	}
+	static inline void Store(dx::XMFLOAT3 *dest, dx::XMVECTOR vec) noexcept
+	{
+		dx::XMStoreFloat3(dest, vec);
+	}
+	static inline void Store(dx::XMFLOAT4 *dest, dx::XMVECTOR vec) noexcept
+	{
+		dx::XMStoreFloat4(dest, vec);
+	}
+	static inline void Store(dx::XMFLOAT2A *dest, dx::XMVECTOR vec) noexcept
+	{
+		dx::XMStoreFloat2A(dest, vec);
+	}
+	static inline void Store(dx::XMFLOAT3A *dest, dx::XMVECTOR vec) noexcept
+	{
+		dx::XMStoreFloat3A(dest, vec);
+	}
+	static inline void Store(dx::XMFLOAT4A *dest, dx::XMVECTOR vec) noexcept
+	{
+		dx::XMStoreFloat4A(dest, vec);
+	}
+	static inline void Store(dx::XMFLOAT3X3 *dest, const dx::XMMATRIX &mat) noexcept
+	{
+		dx::XMStoreFloat3x3(dest, mat);
+	}
+	static inline void Store(dx::XMFLOAT4X4 *dest, const dx::XMMATRIX &mat) noexcept
+	{
+		dx::XMStoreFloat4x4(dest, mat);
+	}
+	static inline void Store(dx::XMFLOAT4X4A *dest, const dx::XMMATRIX &mat) noexcept
+	{
+		dx::XMStoreFloat4x4A(dest, mat);
+	}
 #pragma endregion
 
 
 #pragma region Math Functions
-[[nodiscard]] static inline int Wrap(int val, int min, int max)
-{
-	int length = max - min + 1;
+	[[nodiscard]] static inline int Wrap(int val, int min, int max)
+	{
+		int length = max - min + 1;
 
-	if (val < min)
-		val += length * ((min - val) / length + 1);
+		if (val < min)
+			val += length * ((min - val) / length + 1);
 
-	return min + (val - min) % length;
-}
-[[nodiscard]] static inline float Wrap(float val, float min, float max)
-{
-	float length = max - min + 1.0f;
+		return min + (val - min) % length;
+	}
+	[[nodiscard]] static inline float Wrap(float val, float min, float max)
+	{
+		float length = max - min + 1.0f;
 
-	if (val < min)
-		val += length * ((min - val) / length + 1.0f);
+		if (val < min)
+			val += length * ((min - val) / length + 1.0f);
 
-	return min + fmodf(val - min, length);
-}
-[[nodiscard]] static inline double Wrap(double val, double min, double max)
-{
-	double length = max - min + 1.0;
+		return min + fmodf(val - min, length);
+	}
+	[[nodiscard]] static inline double Wrap(double val, double min, double max)
+	{
+		double length = max - min + 1.0;
 
-	if (val < min)
-		val += length * ((min - val) / length + 1.0);
+		if (val < min)
+			val += length * ((min - val) / length + 1.0);
 
-	return min + fmod(val - min, length);
-}
+		return min + fmod(val - min, length);
+	}
 
-[[nodiscard]] static inline float Lerp(float a, float b, float t) noexcept
-{
-	return std::lerp(a, b, t);
-}
-[[nodiscard]] static inline dx::XMFLOAT4A Lerp(const dx::XMFLOAT4A &a, const dx::XMFLOAT4A &b, const dx::XMFLOAT4A &t) noexcept
-{
-	return {
-		a.x + (b.x - a.x) * t.x,
-		a.y + (b.y - a.y) * t.y,
-		a.z + (b.z - a.z) * t.z,
-		a.w + (b.w - a.w) * t.w
-	};
-}
-[[nodiscard]] static inline dx::XMFLOAT3A Lerp(const dx::XMFLOAT3A &a, const dx::XMFLOAT3A &b, const dx::XMFLOAT3A &t) noexcept
-{
-	return {
-		a.x + (b.x - a.x) * t.x,
-		a.y + (b.y - a.y) * t.y,
-		a.z + (b.z - a.z) * t.z
-	};
-}
-[[nodiscard]] static inline dx::XMFLOAT2A Lerp(const dx::XMFLOAT2A &a, const dx::XMFLOAT2A &b, const dx::XMFLOAT2A &t) noexcept
-{
-	return {
-		a.x + (b.x - a.x) * t.x,
-		a.y + (b.y - a.y) * t.y
-	};
-}
-[[nodiscard]] static inline dx::XMFLOAT4 Lerp(const dx::XMFLOAT4 &a, const dx::XMFLOAT4 &b, const dx::XMFLOAT4 &t) noexcept
-{
-	return {
-		a.x + (b.x - a.x) * t.x,
-		a.y + (b.y - a.y) * t.y,
-		a.z + (b.z - a.z) * t.z,
-		a.w + (b.w - a.w) * t.w
-	};
-}
-[[nodiscard]] static inline dx::XMFLOAT3 Lerp(const dx::XMFLOAT3 &a, const dx::XMFLOAT3 &b, const dx::XMFLOAT3 &t) noexcept
-{
-	return {
-		a.x + (b.x - a.x) * t.x,
-		a.y + (b.y - a.y) * t.y,
-		a.z + (b.z - a.z) * t.z
-	};
-}
-[[nodiscard]] static inline dx::XMFLOAT2 Lerp(const dx::XMFLOAT2 &a, const dx::XMFLOAT2 &b, const dx::XMFLOAT2 &t) noexcept
-{
-	return {
-		a.x + (b.x - a.x) * t.x,
-		a.y + (b.y - a.y) * t.y
-	};
-}
-[[nodiscard]] static inline dx::XMFLOAT4A Lerp(const dx::XMFLOAT4A &a, const dx::XMFLOAT4A &b, float t) noexcept
-{
-	return {
-		a.x + (b.x - a.x) * t,
-		a.y + (b.y - a.y) * t,
-		a.z + (b.z - a.z) * t,
-		a.w + (b.w - a.w) * t
-	};
-}
-[[nodiscard]] static inline dx::XMFLOAT3A Lerp(const dx::XMFLOAT3A &a, const dx::XMFLOAT3A &b, float t) noexcept
-{
-	return {
-		a.x + (b.x - a.x) * t,
-		a.y + (b.y - a.y) * t,
-		a.z + (b.z - a.z) * t
-	};
-}
-[[nodiscard]] static inline dx::XMFLOAT2A Lerp(const dx::XMFLOAT2A &a, const dx::XMFLOAT2A &b, float t) noexcept
-{
-	return {
-		a.x + (b.x - a.x) * t,
-		a.y + (b.y - a.y) * t
-	};
-}
-[[nodiscard]] static inline dx::XMFLOAT4 Lerp(const dx::XMFLOAT4 &a, const dx::XMFLOAT4 &b, float t) noexcept
-{
-	return {
-		a.x + (b.x - a.x) * t,
-		a.y + (b.y - a.y) * t,
-		a.z + (b.z - a.z) * t,
-		a.w + (b.w - a.w) * t
-	};
-}
-[[nodiscard]] static inline dx::XMFLOAT3 Lerp(const dx::XMFLOAT3 &a, const dx::XMFLOAT3 &b, float t) noexcept
-{
-	return {
-		a.x + (b.x - a.x) * t,
-		a.y + (b.y - a.y) * t,
-		a.z + (b.z - a.z) * t
-	};
-}
-[[nodiscard]] static inline dx::XMFLOAT2 Lerp(const dx::XMFLOAT2 &a, const dx::XMFLOAT2 &b, float t) noexcept
-{
-	return {
-		a.x + (b.x - a.x) * t,
-		a.y + (b.y - a.y) * t
-	};
-}
+	[[nodiscard]] static inline float Lerp(float a, float b, float t) noexcept
+	{
+		return std::lerp(a, b, t);
+	}
+	[[nodiscard]] static inline dx::XMFLOAT4A Lerp(const dx::XMFLOAT4A &a, const dx::XMFLOAT4A &b, const dx::XMFLOAT4A &t) noexcept
+	{
+		return {
+			a.x + (b.x - a.x) * t.x,
+			a.y + (b.y - a.y) * t.y,
+			a.z + (b.z - a.z) * t.z,
+			a.w + (b.w - a.w) * t.w
+		};
+	}
+	[[nodiscard]] static inline dx::XMFLOAT3A Lerp(const dx::XMFLOAT3A &a, const dx::XMFLOAT3A &b, const dx::XMFLOAT3A &t) noexcept
+	{
+		return {
+			a.x + (b.x - a.x) * t.x,
+			a.y + (b.y - a.y) * t.y,
+			a.z + (b.z - a.z) * t.z
+		};
+	}
+	[[nodiscard]] static inline dx::XMFLOAT2A Lerp(const dx::XMFLOAT2A &a, const dx::XMFLOAT2A &b, const dx::XMFLOAT2A &t) noexcept
+	{
+		return {
+			a.x + (b.x - a.x) * t.x,
+			a.y + (b.y - a.y) * t.y
+		};
+	}
+	[[nodiscard]] static inline dx::XMFLOAT4 Lerp(const dx::XMFLOAT4 &a, const dx::XMFLOAT4 &b, const dx::XMFLOAT4 &t) noexcept
+	{
+		return {
+			a.x + (b.x - a.x) * t.x,
+			a.y + (b.y - a.y) * t.y,
+			a.z + (b.z - a.z) * t.z,
+			a.w + (b.w - a.w) * t.w
+		};
+	}
+	[[nodiscard]] static inline dx::XMFLOAT3 Lerp(const dx::XMFLOAT3 &a, const dx::XMFLOAT3 &b, const dx::XMFLOAT3 &t) noexcept
+	{
+		return {
+			a.x + (b.x - a.x) * t.x,
+			a.y + (b.y - a.y) * t.y,
+			a.z + (b.z - a.z) * t.z
+		};
+	}
+	[[nodiscard]] static inline dx::XMFLOAT2 Lerp(const dx::XMFLOAT2 &a, const dx::XMFLOAT2 &b, const dx::XMFLOAT2 &t) noexcept
+	{
+		return {
+			a.x + (b.x - a.x) * t.x,
+			a.y + (b.y - a.y) * t.y
+		};
+	}
+	[[nodiscard]] static inline dx::XMFLOAT4A Lerp(const dx::XMFLOAT4A &a, const dx::XMFLOAT4A &b, float t) noexcept
+	{
+		return {
+			a.x + (b.x - a.x) * t,
+			a.y + (b.y - a.y) * t,
+			a.z + (b.z - a.z) * t,
+			a.w + (b.w - a.w) * t
+		};
+	}
+	[[nodiscard]] static inline dx::XMFLOAT3A Lerp(const dx::XMFLOAT3A &a, const dx::XMFLOAT3A &b, float t) noexcept
+	{
+		return {
+			a.x + (b.x - a.x) * t,
+			a.y + (b.y - a.y) * t,
+			a.z + (b.z - a.z) * t
+		};
+	}
+	[[nodiscard]] static inline dx::XMFLOAT2A Lerp(const dx::XMFLOAT2A &a, const dx::XMFLOAT2A &b, float t) noexcept
+	{
+		return {
+			a.x + (b.x - a.x) * t,
+			a.y + (b.y - a.y) * t
+		};
+	}
+	[[nodiscard]] static inline dx::XMFLOAT4 Lerp(const dx::XMFLOAT4 &a, const dx::XMFLOAT4 &b, float t) noexcept
+	{
+		return {
+			a.x + (b.x - a.x) * t,
+			a.y + (b.y - a.y) * t,
+			a.z + (b.z - a.z) * t,
+			a.w + (b.w - a.w) * t
+		};
+	}
+	[[nodiscard]] static inline dx::XMFLOAT3 Lerp(const dx::XMFLOAT3 &a, const dx::XMFLOAT3 &b, float t) noexcept
+	{
+		return {
+			a.x + (b.x - a.x) * t,
+			a.y + (b.y - a.y) * t,
+			a.z + (b.z - a.z) * t
+		};
+	}
+	[[nodiscard]] static inline dx::XMFLOAT2 Lerp(const dx::XMFLOAT2 &a, const dx::XMFLOAT2 &b, float t) noexcept
+	{
+		return {
+			a.x + (b.x - a.x) * t,
+			a.y + (b.y - a.y) * t
+		};
+	}
 #pragma endregion
 
 #pragma region Array Math Functions
-template<typename T>
-static inline void Lerp(int c, T *dest, const T *a, const T *b, T t) noexcept
-{
-	for (int i = 0; i < c; i++)
-		dest[i] = std::lerp(a[i], b[i], t);
-}
-template<typename T>
-static inline void Lerp(int c, T *dest, const T *a, const T *b, const T *t) noexcept
-{
-	for (int i = 0; i < c; i++)
-		dest[i] = std::lerp(a[i], b[i], t[i]);
-}
+	template<typename T>
+	static inline void Lerp(int c, T *dest, const T *a, const T *b, T t) noexcept
+	{
+		for (int i = 0; i < c; i++)
+			dest[i] = std::lerp(a[i], b[i], t);
+	}
+	template<typename T>
+	static inline void Lerp(int c, T *dest, const T *a, const T *b, const T *t) noexcept
+	{
+		for (int i = 0; i < c; i++)
+			dest[i] = std::lerp(a[i], b[i], t[i]);
+	}
 
-template<typename T>
-[[nodiscard]] static inline T Min(int c, const T *v) noexcept
-{
-	T val = v[0];
-	for (int i = 1; i < c; i++)
-		val = min(val, v[i]);
-	return val;
-}
-template<typename T>
-[[nodiscard]] static inline T Max(int c, const T *v) noexcept
-{
-	T val = v[0];
-	for (int i = 1; i < c; i++)
-		val = max(val, v[i]);
-	return val;
-}
+	template<typename T>
+	[[nodiscard]] static inline T Min(int c, const T *v) noexcept
+	{
+		T val = v[0];
+		for (int i = 1; i < c; i++)
+			val = min(val, v[i]);
+		return val;
+	}
+	template<typename T>
+	[[nodiscard]] static inline T Max(int c, const T *v) noexcept
+	{
+		T val = v[0];
+		for (int i = 1; i < c; i++)
+			val = max(val, v[i]);
+		return val;
+	}
 
-template<typename T>
-static inline void Min(int c, T *dest, const T *a, T b) noexcept
-{
-	for (int i = 0; i < c; i++)
-		dest[i] = min(a[i], b);
-}
-template<typename T>
-static inline void Max(int c, T *dest, const T *a, T b) noexcept
-{
-	for (int i = 0; i < c; i++)
-		dest[i] = max(a[i], b);
-}
+	template<typename T>
+	static inline void Min(int c, T *dest, const T *a, T b) noexcept
+	{
+		for (int i = 0; i < c; i++)
+			dest[i] = min(a[i], b);
+	}
+	template<typename T>
+	static inline void Max(int c, T *dest, const T *a, T b) noexcept
+	{
+		for (int i = 0; i < c; i++)
+			dest[i] = max(a[i], b);
+	}
 
-template<typename T>
-static inline void Min(int c, T *dest, const T *a, const T *b) noexcept
-{
-	for (int i = 0; i < c; i++)
-		dest[i] = min(a[i], b[i]);
-}
-template<typename T>
-static inline void Max(int c, T *dest, const T *a, const T *b) noexcept
-{
-	for (int i = 0; i < c; i++)
-		dest[i] = max(a[i], b[i]);
-}
+	template<typename T>
+	static inline void Min(int c, T *dest, const T *a, const T *b) noexcept
+	{
+		for (int i = 0; i < c; i++)
+			dest[i] = min(a[i], b[i]);
+	}
+	template<typename T>
+	static inline void Max(int c, T *dest, const T *a, const T *b) noexcept
+	{
+		for (int i = 0; i < c; i++)
+			dest[i] = max(a[i], b[i]);
+	}
 
-template<typename T>
-static inline void Min(int c, T *dest, const T *b) noexcept
-{
-	Min(c, dest, dest, b);
-}
-template<typename T>
-static inline void Max(int c, T *dest, const T *b) noexcept
-{
-	Max(c, dest, dest, b);
-}
+	template<typename T>
+	static inline void Min(int c, T *dest, const T *b) noexcept
+	{
+		Min(c, dest, dest, b);
+	}
+	template<typename T>
+	static inline void Max(int c, T *dest, const T *b) noexcept
+	{
+		Max(c, dest, dest, b);
+	}
 
-template<typename T>
-static inline void Clamp(int c, T *dest, const T *v, const T *a, const T *b) noexcept
-{
-	for (int i = 0; i < c; i++)
-		dest[i] = std::clamp(v[i], a[i], b[i]);
-}
-template<typename T>
-static inline void Clamp(int c, T *dest, const T *a, const T *b) noexcept
-{
-	Clamp(c, dest, dest, a, b);
-}
+	template<typename T>
+	static inline void Clamp(int c, T *dest, const T *v, const T *a, const T *b) noexcept
+	{
+		for (int i = 0; i < c; i++)
+			dest[i] = std::clamp(v[i], a[i], b[i]);
+	}
+	template<typename T>
+	static inline void Clamp(int c, T *dest, const T *a, const T *b) noexcept
+	{
+		Clamp(c, dest, dest, a, b);
+	}
 #pragma endregion
 
 
 #pragma region Misc
-[[nodiscard]] static inline bool EstEqual(float a, float b, float epsilon = 1e-5f) noexcept
-{
-	return fabsf(a - b) < epsilon;
-}
-
-template<typename T>
-[[nodiscard]] static inline size_t NumericLimit() noexcept
-{
-#undef max
-	return std::numeric_limits<T>::max();
-#define max(a, b) (((a) > (b)) ? (a) : (b))
-};
-
-template<typename T>
-[[nodiscard]] static inline size_t NumericLimit(T number) noexcept
-{
-#undef max
-	return std::numeric_limits<T>::max();
-#define max(a, b) (((a) > (b)) ? (a) : (b))
-};
-
-/// Calculate the reach of a light based on its falloff and color value.
-/// This is done to prevent harsh edges between light tiles.
-/// Shaders match this cutoff  by using CutoffLight() in LightData.hlsli.
-[[nodiscard]] static inline float CalculateLightReach(dx::XMFLOAT3 color, float falloff) noexcept
-{
-	// The intensity at which the light is considered to have no effect.
-	// Must match the value of the same name in CutoffLight().
-	float intensityCutoff = LIGHT_MIN_INTENSITY;
-
-	float value = max(color.x, max(color.y, color.z));
-
-	// intensity = value / (1 + (distance * falloff)^2)
-	return sqrt((value / intensityCutoff) - 1.0f) / falloff;
-};
-
-[[nodiscard]] static inline dx::XMFLOAT3 RGBtoHSV(dx::XMFLOAT3 rgb)
-{
-	float
-		r = rgb.x,
-		g = rgb.y,
-		b = rgb.z;
-
-	float max = max(r, max(g, b));
-	float min = min(r, min(g, b));
-	float diff = max - min;
-
-	float h = 0.0, s, v;
-
-	if (max == min) 	h = 0.0f;
-	else if (max == r)	h = fmodf((60.0f * ((g - b) / diff) + 360.0f), 360.0f);
-	else if (max == g)	h = fmodf((60.0f * ((b - r) / diff) + 120.0f), 360.0f);
-	else if (max == b)	h = fmodf((60.0f * ((r - g) / diff) + 240.0f), 360.0f);
-	else				h = 0.0f;
-
-	s = (max == 0.0f) ? (0.0f) : ((diff / max) * 1.0f);
-	v = max;
-
-	return { h, s, v };
-};
-[[nodiscard]] static inline dx::XMFLOAT3 HSVtoRGB(dx::XMFLOAT3 hsv)
-{
-	float
-		r = 0.0f,
-		g = 0.0f,
-		b = 0.0f;
-
-	if (hsv.y == 0.0f)
+	[[nodiscard]] static inline bool EstEqual(float a, float b, float epsilon = 1e-5f) noexcept
 	{
-		r = hsv.z;
-		g = hsv.z;
-		b = hsv.z;
+		return fabsf(a - b) < epsilon;
 	}
-	else
+
+	template<typename T>
+	[[nodiscard]] static inline size_t NumericLimit() noexcept
 	{
-		int i;
-		float f, p, q, t;
+	#undef max
+		return std::numeric_limits<T>::max();
+	#define max(a, b) (((a) > (b)) ? (a) : (b))
+	};
 
-		if (hsv.x == 360.0f)
-			hsv.x = 0.0f;
-		else
-			hsv.x = hsv.x / 60.0f;
+	template<typename T>
+	[[nodiscard]] static inline size_t NumericLimit(T number) noexcept
+	{
+	#undef max
+		return std::numeric_limits<T>::max();
+	#define max(a, b) (((a) > (b)) ? (a) : (b))
+	};
 
-		i = (int)trunc(hsv.x);
-		f = hsv.x - i;
+	/// Calculate the reach of a light based on its falloff and color value.
+	/// This is done to prevent harsh edges between light tiles.
+	/// Shaders match this cutoff  by using CutoffLight() in LightData.hlsli.
+	[[nodiscard]] static inline float CalculateLightReach(dx::XMFLOAT3 color, float falloff) noexcept
+	{
+		// The intensity at which the light is considered to have no effect.
+		// Must match the value of the same name in CutoffLight().
+		float intensityCutoff = LIGHT_MIN_INTENSITY;
 
-		p = hsv.z * (1.0f - hsv.y);
-		q = hsv.z * (1.0f - (hsv.y * f));
-		t = hsv.z * (1.0f - (hsv.y * (1.0f - f)));
+		float value = max(color.x, max(color.y, color.z));
 
-		switch (i)
+		// intensity = value / (1 + (distance * falloff)^2)
+		return sqrt((value / intensityCutoff) - 1.0f) / falloff;
+	};
+
+	[[nodiscard]] static inline dx::XMFLOAT3 RGBtoHSV(dx::XMFLOAT3 rgb)
+	{
+		float
+			r = rgb.x,
+			g = rgb.y,
+			b = rgb.z;
+
+		float max = max(r, max(g, b));
+		float min = min(r, min(g, b));
+		float diff = max - min;
+
+		float h = 0.0, s, v;
+
+		if (max == min) 	h = 0.0f;
+		else if (max == r)	h = fmodf((60.0f * ((g - b) / diff) + 360.0f), 360.0f);
+		else if (max == g)	h = fmodf((60.0f * ((b - r) / diff) + 120.0f), 360.0f);
+		else if (max == b)	h = fmodf((60.0f * ((r - g) / diff) + 240.0f), 360.0f);
+		else				h = 0.0f;
+
+		s = (max == 0.0f) ? (0.0f) : ((diff / max) * 1.0f);
+		v = max;
+
+		return { h, s, v };
+	};
+	[[nodiscard]] static inline dx::XMFLOAT3 HSVtoRGB(dx::XMFLOAT3 hsv)
+	{
+		float
+			r = 0.0f,
+			g = 0.0f,
+			b = 0.0f;
+
+		if (hsv.y == 0.0f)
 		{
-		case 0:
 			r = hsv.z;
-			g = t;
-			b = p;
-			break;
-
-		case 1:
-			r = q;
 			g = hsv.z;
-			b = p;
-			break;
-
-		case 2:
-			r = p;
-			g = hsv.z;
-			b = t;
-			break;
-
-		case 3:
-			r = p;
-			g = q;
 			b = hsv.z;
-			break;
+		}
+		else
+		{
+			int i;
+			float f, p, q, t;
 
-		case 4:
-			r = t;
-			g = p;
-			b = hsv.z;
-			break;
+			if (hsv.x == 360.0f)
+				hsv.x = 0.0f;
+			else
+				hsv.x = hsv.x / 60.0f;
 
-		default:
-			r = hsv.z;
-			g = p;
-			b = q;
-			break;
+			i = (int)trunc(hsv.x);
+			f = hsv.x - i;
+
+			p = hsv.z * (1.0f - hsv.y);
+			q = hsv.z * (1.0f - (hsv.y * f));
+			t = hsv.z * (1.0f - (hsv.y * (1.0f - f)));
+
+			switch (i)
+			{
+			case 0:
+				r = hsv.z;
+				g = t;
+				b = p;
+				break;
+
+			case 1:
+				r = q;
+				g = hsv.z;
+				b = p;
+				break;
+
+			case 2:
+				r = p;
+				g = hsv.z;
+				b = t;
+				break;
+
+			case 3:
+				r = p;
+				g = q;
+				b = hsv.z;
+				break;
+
+			case 4:
+				r = t;
+				g = p;
+				b = hsv.z;
+				break;
+
+			default:
+				r = hsv.z;
+				g = p;
+				b = q;
+				break;
+			}
+
 		}
 
-	}
-
-	return {
-		r,
-		g,
-		b
+		return {
+			r,
+			g,
+			b
+		};
 	};
-};
 
-[[nodiscard]] static inline float RandomFloat(float min, float max)
-{
-	return min + static_cast<float>(rand()) / (static_cast<float>(RAND_MAX / (max - min)));
-};
-
-[[nodiscard]] static inline dx::BoundingBox OBBtoAABB(const dx::BoundingOrientedBox &obb) noexcept
-{
-	dx::XMFLOAT3 corners[8];
-	obb.GetCorners(corners);
-
-	dx::XMVECTOR cornersV[8]{};
-	for (int i = 0; i < 8; i++)
-		cornersV[i] = Load(corners[i]);
-
-	dx::XMVECTOR
-		min = { FLT_MAX, FLT_MAX, FLT_MAX },
-		max = { -FLT_MAX, -FLT_MAX, -FLT_MAX };
-
-	for (int i = 0; i < 8; i++)
+	[[nodiscard]] static inline float RandomFloat(float min, float max)
 	{
-		min = dx::XMVectorMin(min, Load(corners[i]));
-		max = dx::XMVectorMax(max, Load(corners[i]));
+		return min + static_cast<float>(rand()) / (static_cast<float>(RAND_MAX / (max - min)));
+	};
+
+	[[nodiscard]] static inline dx::BoundingBox OBBtoAABB(const dx::BoundingOrientedBox &obb) noexcept
+	{
+		dx::XMFLOAT3 corners[8];
+		obb.GetCorners(corners);
+
+		dx::XMVECTOR cornersV[8]{};
+		for (int i = 0; i < 8; i++)
+			cornersV[i] = Load(corners[i]);
+
+		dx::XMVECTOR
+			min = { FLT_MAX, FLT_MAX, FLT_MAX },
+			max = { -FLT_MAX, -FLT_MAX, -FLT_MAX };
+
+		for (int i = 0; i < 8; i++)
+		{
+			min = dx::XMVectorMin(min, Load(corners[i]));
+			max = dx::XMVectorMax(max, Load(corners[i]));
+		}
+
+		dx::BoundingBox axisAlignedBounds;
+		dx::BoundingBox().CreateFromPoints(axisAlignedBounds, min, max);
+
+		return axisAlignedBounds;
 	}
 
-	dx::BoundingBox axisAlignedBounds;
-	dx::BoundingBox().CreateFromPoints(axisAlignedBounds, min, max);
-
-	return axisAlignedBounds;
-}
-
-[[nodiscard]] static inline dx::BoundingBox MergeBounds(const dx::BoundingOrientedBox &a, const dx::BoundingOrientedBox &b) noexcept
-{
-	dx::XMFLOAT3 corners[16]{};
-	a.GetCorners(&(corners[0])); // fills corners[0] to corners[7]
-	b.GetCorners(&(corners[8])); // fills corners[8] to corners[15]
-
-	dx::XMVECTOR cornersV[16]{};
-	for (int i = 0; i < 16; i++)
-		cornersV[i] = Load(corners[i]);
-
-	dx::XMVECTOR
-		min = { FLT_MAX, FLT_MAX, FLT_MAX },
-		max = { -FLT_MAX, -FLT_MAX, -FLT_MAX };
-
-	for (int i = 0; i < 16; i++)
+	[[nodiscard]] static inline dx::BoundingBox MergeBounds(const dx::BoundingOrientedBox &a, const dx::BoundingOrientedBox &b) noexcept
 	{
-		min = dx::XMVectorMin(min, Load(corners[i]));
-		max = dx::XMVectorMax(max, Load(corners[i]));
+		dx::XMFLOAT3 corners[16]{};
+		a.GetCorners(&(corners[0])); // fills corners[0] to corners[7]
+		b.GetCorners(&(corners[8])); // fills corners[8] to corners[15]
+
+		dx::XMVECTOR cornersV[16]{};
+		for (int i = 0; i < 16; i++)
+			cornersV[i] = Load(corners[i]);
+
+		dx::XMVECTOR
+			min = { FLT_MAX, FLT_MAX, FLT_MAX },
+			max = { -FLT_MAX, -FLT_MAX, -FLT_MAX };
+
+		for (int i = 0; i < 16; i++)
+		{
+			min = dx::XMVectorMin(min, Load(corners[i]));
+			max = dx::XMVectorMax(max, Load(corners[i]));
+		}
+
+		dx::BoundingBox axisAlignedBounds;
+		dx::BoundingBox().CreateFromPoints(axisAlignedBounds, min, max);
+
+		return axisAlignedBounds;
 	}
 
-	dx::BoundingBox axisAlignedBounds;
-	dx::BoundingBox().CreateFromPoints(axisAlignedBounds, min, max);
-
-	return axisAlignedBounds;
-}
-
-static inline void CalcGaussianWeights(float *weights, int kernelSize, float sigma = 0.0f) noexcept
-{
-	if (sigma <= 0.0f)
-		sigma = (kernelSize - 1) / 3.0f; // Default sigma based on kernel size
-
-	float twoSigmaSq = 2.0f * sigma * sigma;
-
-	float sum = 0.0f;
-
-	// Compute weights
-	for (int i = 0; i < kernelSize; ++i) 
+	static inline void CalcGaussianWeights(float *weights, int kernelSize, float sigma = 0.0f) noexcept
 	{
-		float value = std::exp(-(i * i) / twoSigmaSq);
-		weights[i] = value;
+		if (sigma <= 0.0f)
+			sigma = (kernelSize - 1) / 3.0f; // Default sigma based on kernel size
 
-		if (i == 0)
-			sum += value;
-		else
-			sum += 2.0f * value; // symmetric contribution
+		float twoSigmaSq = 2.0f * sigma * sigma;
+
+		float sum = 0.0f;
+
+		// Compute weights
+		for (int i = 0; i < kernelSize; ++i) 
+		{
+			float value = std::exp(-(i * i) / twoSigmaSq);
+			weights[i] = value;
+
+			if (i == 0)
+				sum += value;
+			else
+				sum += 2.0f * value; // symmetric contribution
+		}
+
+		// Normalize
+		for (int i = 0; i < kernelSize; ++i)
+			weights[i] /= sum;
 	}
-
-	// Normalize
-	for (int i = 0; i < kernelSize; ++i)
-		weights[i] /= sum;
-}
 #pragma endregion
+}
 
-
-namespace DXMath
+namespace WellEngine::DXMath
 {
+	namespace dx = DirectX;
+
 	/// <summary>
 	/// <para/> Vec is a wrapper for DirectXMath, merging storage and 
 	/// operator types with the "power" of unions.
@@ -1020,10 +1020,11 @@ namespace DXMath
 	};
 }
 
-
-namespace GameCollision
+namespace WellEngine::GameCollision
 {
-	static inline bool _IntersectsTriangleAABBSat(const we::Shape::Tri &tri, const DXMath::Vec3 &extent, const DXMath::Vec3 &axis)
+	namespace dx = DirectX;
+
+	static inline bool _IntersectsTriangleAABBSat(const Shape::Tri &tri, const DXMath::Vec3 &extent, const DXMath::Vec3 &axis)
 	{
 		using namespace DXMath;
 
@@ -1046,7 +1047,7 @@ namespace GameCollision
 
 		return !(max(-maxP, minP) > r);
 	}
-	static inline bool _IntersectsTriangleAABBB(const we::Shape::Tri &tri, const dx::BoundingBox &aabb)
+	static inline bool _IntersectsTriangleAABBB(const Shape::Tri &tri, const dx::BoundingBox &aabb)
 	{
 		using namespace DXMath;
 
@@ -1089,7 +1090,7 @@ namespace GameCollision
 		Vec3 a22 = Vec3(-caMem.y, caMem.x, 0);
 
 		a.ToMem(); b.ToMem(); c.ToMem();
-		we::Shape::Tri TranslatedTriangle(a.Get(), b.Get(), c.Get());
+		Shape::Tri TranslatedTriangle(a.Get(), b.Get(), c.Get());
 
 		return _IntersectsTriangleAABBSat(TranslatedTriangle, boxExtent, a00.ToOp()) &&
 			   _IntersectsTriangleAABBSat(TranslatedTriangle, boxExtent, a01.ToOp()) &&
@@ -1105,7 +1106,7 @@ namespace GameCollision
 			   _IntersectsTriangleAABBSat(TranslatedTriangle, boxExtent, Vec3::UnitZ().ToOp()) &&
 			   _IntersectsTriangleAABBSat(TranslatedTriangle, boxExtent, ab.Cross3(bc));
 	}
-	static inline bool BoxTriIntersect(const dx::BoundingBox &box, const we::Shape::Tri &tri)
+	static inline bool BoxTriIntersect(const dx::BoundingBox &box, const Shape::Tri &tri)
 	{
 		using namespace DXMath;
 

@@ -32,7 +32,7 @@ void MeshCollider::Node::CalculateCompactBounds()
 	{
 		for (UINT index : triIndices)
 		{
-			const we::Shape::Tri &tri = (*triBufferPtr)[index];
+			const Shape::Tri &tri = (*triBufferPtr)[index];
 			dx::XMFLOAT3 verts[3] = { tri.v0, tri.v1, tri.v2 };
 
 			for (const dx::XMFLOAT3 &vert : verts)
@@ -128,7 +128,7 @@ void MeshCollider::Node::Bake(const std::vector<UINT> *allTriIndices, const UINT
 	for (int i = 0; i < length; i++)
 	{
 		UINT triIndex = (*allTriIndices)[i];
-		const we::Shape::Tri &tri = (*triBufferPtr)[triIndex];
+		const Shape::Tri &tri = (*triBufferPtr)[triIndex];
 
 		if (GameCollision::BoxTriIntersect(errorMarginBounds, tri))
 			triIndices.push_back(triIndex);
@@ -202,7 +202,7 @@ void MeshCollider::Node::Bake(const std::vector<UINT> *allTriIndices, const UINT
 	return;
 }
 
-bool MeshCollider::Node::RaycastNode(const we::Shape::Ray &ray, we::Shape::RayHit &hit) const
+bool MeshCollider::Node::RaycastNode(const Shape::Ray &ray, Shape::RayHit &hit) const
 {
 	if (isEmpty)
 		return false;
@@ -217,14 +217,14 @@ bool MeshCollider::Node::RaycastNode(const we::Shape::Ray &ray, we::Shape::RayHi
 	if (isLeaf)
 	{
 		bool hasHit = false;
-		const we::Shape::Tri *currClosest = nullptr;
+		const Shape::Tri *currClosest = nullptr;
 
 		// Check all items in leaf for intersection & return result.
 		for (UINT index : triIndices)
 		{
-			const we::Shape::Tri &tri = (*triBufferPtr)[index];
+			const Shape::Tri &tri = (*triBufferPtr)[index];
 
-			we::Shape::RayHit newHit;
+			Shape::RayHit newHit;
 			if (Raycast(ray, tri, newHit))
 			{
 				if (newHit.length >= hit.length)
@@ -291,7 +291,7 @@ bool MeshCollider::Node::RaycastNode(const we::Shape::Ray &ray, we::Shape::RayHi
 	// Check children in order of closest to furthest.
 	bool hasHit = false;
 
-	we::Shape::RayHit newHit;
+	Shape::RayHit newHit;
 	newHit.length = hit.length;
 
 	for (int i = 0; i < childHitCount; i++)
@@ -373,7 +373,7 @@ bool MeshCollider::Node::RaycastNode(const we::Shape::Ray &ray, we::Shape::RayHi
 	return true;
 }
 
-bool MeshCollider::RaycastMesh(const we::Shape::Ray &ray, we::Shape::RayHit &hit) const
+bool MeshCollider::RaycastMesh(const Shape::Ray &ray, Shape::RayHit &hit) const
 {
 	ZoneScopedC(RandomUniqueColor());
 
@@ -439,7 +439,7 @@ void MeshCollider::Node::VisualizeTreeDepth(const dx::XMFLOAT4X4 &worldMatrix, U
 			{
 				for (UINT index : triIndices)
 				{
-					we::Shape::Tri tri = (*triBufferPtr)[index].Transformed(worldMatrix);
+					Shape::Tri tri = (*triBufferPtr)[index].Transformed(worldMatrix);
 					dx::XMFLOAT3 triNormal = tri.Normal();
 
 					float normalOffset = 0.00025f; // To avoid z-fighting

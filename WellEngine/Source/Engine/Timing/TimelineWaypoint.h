@@ -1,43 +1,50 @@
 #pragma once
+
+#include <string>
 #include <DirectXMath.h>
 
-class TimelineWaypoint
+namespace WellEngine
 {
-private:
-	dx::XMFLOAT3A _worldPosition = { 0, 0, 0 };
-	dx::XMFLOAT4A _worldRotation = { 0, 0, 0, 1 };
-	dx::XMFLOAT3A _worldScale = { 1, 1, 1 };
+	namespace dx = DirectX;
 
-	float _time = 0.0f;
+	class TimelineWaypoint
+	{
+	private:
+		dx::XMFLOAT3A _worldPosition = { 0, 0, 0 };
+		dx::XMFLOAT4A _worldRotation = { 0, 0, 0, 1 };
+		dx::XMFLOAT3A _worldScale = { 1, 1, 1 };
 
-public:
-	TimelineWaypoint() = default;
-	TimelineWaypoint(
-		dx::XMFLOAT3A worldPosition,
-		dx::XMFLOAT4A worldRotation,
-		dx::XMFLOAT3A worldScale,
-		const float time
-	): _worldPosition(worldPosition), _worldRotation(worldRotation), _worldScale(worldScale), _time(time) {}
+		float _time = 0.0f;
 
-	~TimelineWaypoint() = default;
+	public:
+		TimelineWaypoint() = default;
+		TimelineWaypoint(
+			dx::XMFLOAT3A worldPosition,
+			dx::XMFLOAT4A worldRotation,
+			dx::XMFLOAT3A worldScale,
+			const float time
+		): _worldPosition(worldPosition), _worldRotation(worldRotation), _worldScale(worldScale), _time(time) {}
 
-	TimelineWaypoint(const TimelineWaypoint &other) = default;
-	TimelineWaypoint& operator=(const TimelineWaypoint &other) = default;
-	TimelineWaypoint(TimelineWaypoint &&other) = default;
-	TimelineWaypoint& operator=(TimelineWaypoint &&other) = default;
+		~TimelineWaypoint() = default;
 
-	[[nodiscard]] const dx::XMFLOAT3A &GetPosition() const;
-	[[nodiscard]] const dx::XMFLOAT4A &GetRotation() const;
-	[[nodiscard]] const dx::XMFLOAT3A &GetScale() const;
-	[[nodiscard]] const float &GetTime() const;
+		TimelineWaypoint(const TimelineWaypoint &other) = default;
+		TimelineWaypoint& operator=(const TimelineWaypoint &other) = default;
+		TimelineWaypoint(TimelineWaypoint &&other) = default;
+		TimelineWaypoint& operator=(TimelineWaypoint &&other) = default;
 
-	void SetTime(const float time);
-	bool Serialize(std::string *code) const;
-	bool Deserialize(const std::string &code);
+		[[nodiscard]] const dx::XMFLOAT3A &GetPosition() const;
+		[[nodiscard]] const dx::XMFLOAT4A &GetRotation() const;
+		[[nodiscard]] const dx::XMFLOAT3A &GetScale() const;
+		[[nodiscard]] const float &GetTime() const;
 
-#ifdef USE_IMGUI
-	bool RenderUI();
-#endif
+		void SetTime(const float time);
+		bool Serialize(std::string *code) const;
+		bool Deserialize(const std::string &code);
 
-	TESTABLE
-};
+	#ifdef USE_IMGUI
+		bool RenderUI();
+	#endif
+
+		TESTABLE
+	};
+}

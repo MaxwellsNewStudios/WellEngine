@@ -5,26 +5,28 @@
 #include "../Rendering/Mesh/BillboardMeshBehaviour.h"
 #include "../Sound/SoundBehaviour.h"
 
-class [[register_behaviour]] HideBehaviour : public Behaviour
+namespace WellEngine
 {
-private:
+	class [[register_behaviour]] HideBehaviour : public Behaviour
+	{
+	private:
 
-	Transform *_objectTransform = nullptr;
-	Entity *_playerEntity = nullptr;
+		Transform *_objectTransform = nullptr;
+		Entity *_playerEntity = nullptr;
 
-	SoundBehaviour *_sfx = nullptr;
+		SoundBehaviour *_sfx = nullptr;
 
-protected:
-	// Start runs once when the behaviour is created.
-	[[nodiscard]] bool Start() override;
+	protected:
+		// Start runs once when the behaviour is created.
+		[[nodiscard]] bool Start() override;
 
-public:
-	void Hide();
+	public:
+		void Hide();
 
-	// Serializes the behaviour to a string.
-	[[nodiscard]] bool Serialize(json::Document::AllocatorType &docAlloc, json::Value &obj) override;
+		// Serializes the behaviour to a string.
+		[[nodiscard]] bool Serialize(json::Document::AllocatorType &docAlloc, json::Value &obj) override;
 
-	// Deserializes the behaviour from a string.
-	[[nodiscard]] bool Deserialize(const json::Value &obj, Scene *scene) override;
-};
-
+		// Deserializes the behaviour from a string.
+		[[nodiscard]] bool Deserialize(const json::Value &obj, Scene *scene) override;
+	};
+}

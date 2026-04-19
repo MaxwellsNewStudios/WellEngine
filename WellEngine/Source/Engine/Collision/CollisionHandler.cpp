@@ -2,6 +2,7 @@
 #include "CollisionHandler.h"
 #include "Intersections.h"
 #include "Game/Scenes/Scene.h"
+#include "Game/Behaviours/Physics/ColliderBehaviour.h"
 
 #ifdef LEAK_DETECTION
 #define new			DEBUG_NEW

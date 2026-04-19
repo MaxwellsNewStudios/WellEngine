@@ -1,37 +1,41 @@
 #pragma once
+
 #include "Game/Behaviour.h"
 #include "../Rendering/Mesh/BillboardMeshBehaviour.h"
 
-class FlashlightBehaviour;
-
-enum class BreadcrumbColor
+namespace WellEngine
 {
-	Red,
-	Green,
-	Blue
-};
+	class FlashlightBehaviour;
 
-class [[register_behaviour]] BreadcrumbBehaviour : public Behaviour
-{
-private:
-	BillboardMeshBehaviour *_flare = nullptr;
-	BreadcrumbColor _color = BreadcrumbColor::Red;
-	FlashlightBehaviour *_flashlight = nullptr;
+	enum class BreadcrumbColor
+	{
+		Red,
+		Green,
+		Blue
+	};
 
-protected:
-	[[nodiscard]] bool Start() override;
+	class [[register_behaviour]] BreadcrumbBehaviour : public Behaviour
+	{
+	private:
+		BillboardMeshBehaviour *_flare = nullptr;
+		BreadcrumbColor _color = BreadcrumbColor::Red;
+		FlashlightBehaviour *_flashlight = nullptr;
 
-	[[nodiscard]] bool Update(TimeUtils &time, const Input &input) override;
+	protected:
+		[[nodiscard]] bool Start() override;
 
-public:
-	BreadcrumbBehaviour() = default;
-	~BreadcrumbBehaviour() = default;
+		[[nodiscard]] bool Update(TimeUtils &time, const Input &input) override;
 
-	BreadcrumbBehaviour(BreadcrumbColor color);
+	public:
+		BreadcrumbBehaviour() = default;
+		~BreadcrumbBehaviour() = default;
 
-	// Serializes the behaviour to a string.
-	[[nodiscard]] bool Serialize(json::Document::AllocatorType &docAlloc, json::Value &obj) override;
+		BreadcrumbBehaviour(BreadcrumbColor color);
 
-	// Deserializes the behaviour from a string.
-	[[nodiscard]] bool Deserialize(const json::Value &obj, Scene *scene) override;
-};
+		// Serializes the behaviour to a string.
+		[[nodiscard]] bool Serialize(json::Document::AllocatorType &docAlloc, json::Value &obj) override;
+
+		// Deserializes the behaviour from a string.
+		[[nodiscard]] bool Deserialize(const json::Value &obj, Scene *scene) override;
+	};
+}

@@ -1,35 +1,40 @@
 #pragma once
+
 #include <d3d11.h>
 #include <DirectXMath.h>
+
 #include "Game/Behaviour.h"
 
-class [[register_behaviour]] PhysicsForceBehaviour final : public Behaviour
+namespace WellEngine
 {
-private:
-	dx::XMFLOAT3 _force = { 0, 0, 0 };
-	dx::XMFLOAT3 _point = { 0, 0, 0 };
-	bool _localSpace = true;
+	class [[register_behaviour]] PhysicsForceBehaviour final : public Behaviour
+	{
+	private:
+		dx::XMFLOAT3 _force = { 0, 0, 0 };
+		dx::XMFLOAT3 _point = { 0, 0, 0 };
+		bool _localSpace = true;
 
-#ifdef USE_IMGUI
-	bool _debugDraw = false;
-#endif
+	#ifdef USE_IMGUI
+		bool _debugDraw = false;
+	#endif
 
-	dx::XMFLOAT3 GetWorldForce() const;
-	dx::XMFLOAT3 GetWorldPoint() const;
+		dx::XMFLOAT3 GetWorldForce() const;
+		dx::XMFLOAT3 GetWorldPoint() const;
 
-protected:
-	[[nodiscard]] bool Start() override;
-	[[nodiscard]] bool PhysicsUpdate(float deltaTime) override;
-#ifdef USE_IMGUI
-	[[nodiscard]] bool Update(TimeUtils &time, const Input &input) override;
-	[[nodiscard]] bool RenderUI() override;
-#endif
+	protected:
+		[[nodiscard]] bool Start() override;
+		[[nodiscard]] bool PhysicsUpdate(float deltaTime) override;
+	#ifdef USE_IMGUI
+		[[nodiscard]] bool Update(TimeUtils &time, const Input &input) override;
+		[[nodiscard]] bool RenderUI() override;
+	#endif
 
-	[[nodiscard]] bool Serialize(json::Document::AllocatorType &docAlloc, json::Value &obj) override;
-	[[nodiscard]] bool Deserialize(const json::Value &obj, Scene *scene) override;
+		[[nodiscard]] bool Serialize(json::Document::AllocatorType &docAlloc, json::Value &obj) override;
+		[[nodiscard]] bool Deserialize(const json::Value &obj, Scene *scene) override;
 
-public:
-	PhysicsForceBehaviour() = default;
-	PhysicsForceBehaviour(const dx::XMFLOAT3 &force, const dx::XMFLOAT3 &point = { 0, 0, 0 }, bool localSpace = true) : _force(force), _point(point), _localSpace(localSpace) {}
-	~PhysicsForceBehaviour() = default;
-};
+	public:
+		PhysicsForceBehaviour() = default;
+		PhysicsForceBehaviour(const dx::XMFLOAT3 &force, const dx::XMFLOAT3 &point = { 0, 0, 0 }, bool localSpace = true) : _force(force), _point(point), _localSpace(localSpace) {}
+		~PhysicsForceBehaviour() = default;
+	};
+}

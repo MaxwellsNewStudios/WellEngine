@@ -1,9 +1,15 @@
 #pragma once
+
 #include <string>
+#include <map>
+#include <functional>
 
-class Behaviour;
+namespace WellEngine
+{	
+	class Behaviour;
+}
 
-namespace BehaviourRegistry
+namespace WellEngine::BehaviourRegistry
 {
 	[[nodiscard]] const std::map<std::string, std::function<Behaviour *(void)>> &Get();
 

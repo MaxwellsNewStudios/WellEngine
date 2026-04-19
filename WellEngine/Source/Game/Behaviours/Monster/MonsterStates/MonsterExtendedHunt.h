@@ -2,14 +2,17 @@
 
 #include "MonsterState.h"
 
-class MonsterExtendedHunt : public MonsterState
+namespace WellEngine
 {
-public:
-	MonsterExtendedHunt() = default;
-	~MonsterExtendedHunt() = default;
+	class MonsterExtendedHunt : public MonsterState
+	{
+	public:
+		MonsterExtendedHunt() = default;
+		~MonsterExtendedHunt() = default;
 
-protected:
-	bool OnEnter() override;
-	bool OnUpdate(TimeUtils &time) override;
-	bool OnExit() override;
-};
+	protected:
+		bool OnEnter() override;
+		bool OnUpdate(TimeUtils &time) override;
+		bool OnExit() override;
+	};
+}

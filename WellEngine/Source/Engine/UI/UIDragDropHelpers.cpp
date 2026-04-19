@@ -7,6 +7,8 @@
 #define new			DEBUG_NEW
 #endif
 
+using namespace WellEngine;
+
 template<typename P>
 void ImGui::DragDropSource(const char *tag, P &payload, std::function<void(void)> preview, ImGuiDragDropFlags flags)
 {

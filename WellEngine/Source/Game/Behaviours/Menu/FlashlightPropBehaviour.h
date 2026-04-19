@@ -1,20 +1,24 @@
 #pragma once
+
 #include "Game/Behaviour.h"
 #include "../Rendering/Lighting/SpotLightBehaviour.h"
 
-class [[register_behaviour]] FlashlightPropBehaviour : public Behaviour
+namespace WellEngine
 {
-private:
-	bool _isOn = true;
+	class [[register_behaviour]] FlashlightPropBehaviour : public Behaviour
+	{
+	private:
+		bool _isOn = true;
 
-	SpotLightBehaviour *_lightBehaviour = nullptr;
+		SpotLightBehaviour *_lightBehaviour = nullptr;
 
-protected:
-	[[nodiscard]] bool Start() override;
-	[[nodiscard]] bool Update(TimeUtils &time, const Input &input) override;
-	[[nodiscard]] bool FixedUpdate(float deltaTime, const Input &input) override;
+	protected:
+		[[nodiscard]] bool Start() override;
+		[[nodiscard]] bool Update(TimeUtils &time, const Input &input) override;
+		[[nodiscard]] bool FixedUpdate(float deltaTime, const Input &input) override;
 
-public:
-	FlashlightPropBehaviour() = default;
-	~FlashlightPropBehaviour() = default;
-};
+	public:
+		FlashlightPropBehaviour() = default;
+		~FlashlightPropBehaviour() = default;
+	};
+}

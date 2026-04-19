@@ -2,9 +2,10 @@
 
 #include <string>
 #include <vector>
+
 #include "../Content.h"
 
-namespace ShaderData
+namespace WellEngine::ShaderData
 {
 	enum class BindingType
 	{

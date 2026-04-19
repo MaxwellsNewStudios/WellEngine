@@ -2,20 +2,23 @@
 
 #include "MonsterState.h"
 
-class MonsterCapture : public MonsterState
+namespace WellEngine
 {
-public:
-	MonsterCapture() = default;
-	~MonsterCapture() = default;
+	class MonsterCapture : public MonsterState
+	{
+	public:
+		MonsterCapture() = default;
+		~MonsterCapture() = default;
 
-protected:
-	bool OnEnter() override;
-	bool OnUpdate(TimeUtils &time) override;
-	bool OnExit() override;
+	protected:
+		bool OnEnter() override;
+		bool OnUpdate(TimeUtils &time) override;
+		bool OnExit() override;
 
-private:
-	Transform *_playerTransform = nullptr;
+	private:
+		Transform *_playerTransform = nullptr;
 
-	dx::XMFLOAT3A _playerPos{};
-	dx::XMFLOAT4A _playerRotation{};
-};
+		dx::XMFLOAT3A _playerPos{};
+		dx::XMFLOAT4A _playerRotation{};
+	};
+}

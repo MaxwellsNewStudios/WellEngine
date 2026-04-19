@@ -1,32 +1,36 @@
 #pragma once
+
 #include <string>
 #include <memory>
 #include <iostream>
+
 #include "Audio.h"
 
-class SoundEngine
+namespace WellEngine
 {
-private:
-	bool _initialized = false;
-	std::unique_ptr<dx::AudioEngine> _soundEngine = nullptr;
+	class SoundEngine
+	{
+	private:
+		bool _initialized = false;
+		std::unique_ptr<dx::AudioEngine> _soundEngine = nullptr;
 
-public:
-	SoundEngine() = default;
-	~SoundEngine() = default;
-	bool Initialize(dx::AUDIO_ENGINE_FLAGS flags, dx::AUDIO_ENGINE_REVERB reverb, float gameVolume);
-	bool IsInitialized();
+	public:
+		SoundEngine() = default;
+		~SoundEngine() = default;
+		bool Initialize(dx::AUDIO_ENGINE_FLAGS flags, dx::AUDIO_ENGINE_REVERB reverb, float gameVolume);
+		bool IsInitialized();
 
-	bool Update();
+		bool Update();
 
-	dx::AudioEngine *GetAudioEngine();
+		dx::AudioEngine *GetAudioEngine();
 
-	void Suspend();
-	void Resume();
+		void Suspend();
+		void Resume();
 
-	void SetVolume(float volume);
+		void SetVolume(float volume);
 
-	void ResetSoundEngine();
+		void ResetSoundEngine();
 
-	TESTABLE
-};
-
+		TESTABLE
+	};
+}

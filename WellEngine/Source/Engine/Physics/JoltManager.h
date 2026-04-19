@@ -1,9 +1,9 @@
 #pragma once
+
 #include "Jolt/Jolt.h"
 JPH_SUPPRESS_WARNING_PUSH
 #include "Jolt/Physics/PhysicsSystem.h"
 JPH_SUPPRESS_WARNING_POP
-
 
 namespace JPH
 {
@@ -64,24 +64,26 @@ namespace JPH
 	};
 }
 
-
-class JoltManager
+namespace WellEngine
 {
-private:
-	JPH::BPLayerInterfaceImpl				_broadPhaseLayerInterface;
-	JPH::ObjectVsBroadPhaseLayerFilterImpl	_objectVsBroadPhaseLayerFilter;
-	JPH::ObjectLayerPairFilterImpl			_objectVsObjectLayerFilter;
+	class JoltManager
+	{
+	private:
+		JPH::BPLayerInterfaceImpl				_broadPhaseLayerInterface;
+		JPH::ObjectVsBroadPhaseLayerFilterImpl	_objectVsBroadPhaseLayerFilter;
+		JPH::ObjectLayerPairFilterImpl			_objectVsObjectLayerFilter;
 
-public:
-	const JPH::uint cMaxBodies = 65536;
-	const JPH::uint cNumBodyMutexes = 0;
-	const JPH::uint cMaxBodyPairs = 65536;
-	const JPH::uint cMaxContactConstraints = 10240;
+	public:
+		const JPH::uint cMaxBodies = 65536;
+		const JPH::uint cNumBodyMutexes = 0;
+		const JPH::uint cMaxBodyPairs = 65536;
+		const JPH::uint cMaxContactConstraints = 10240;
 
-	JoltManager();
-	~JoltManager();
+		JoltManager();
+		~JoltManager();
 
-	[[nodiscard]] JPH::BPLayerInterfaceImpl &GetBroadPhaseLayerInterface() { return _broadPhaseLayerInterface; }
-	[[nodiscard]] JPH::ObjectVsBroadPhaseLayerFilterImpl &GetObjectVsBroadPhaseLayerFilter() { return _objectVsBroadPhaseLayerFilter; }
-	[[nodiscard]] JPH::ObjectLayerPairFilterImpl &GetObjectVsObjectLayerFilter() { return _objectVsObjectLayerFilter; }
-};
+		[[nodiscard]] JPH::BPLayerInterfaceImpl &GetBroadPhaseLayerInterface() { return _broadPhaseLayerInterface; }
+		[[nodiscard]] JPH::ObjectVsBroadPhaseLayerFilterImpl &GetObjectVsBroadPhaseLayerFilter() { return _objectVsBroadPhaseLayerFilter; }
+		[[nodiscard]] JPH::ObjectLayerPairFilterImpl &GetObjectVsObjectLayerFilter() { return _objectVsObjectLayerFilter; }
+	};
+}

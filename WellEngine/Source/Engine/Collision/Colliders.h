@@ -1,23 +1,25 @@
 #pragma once
 
-#include "Engine/EngineSettings.h"
 #include <DirectXMath.h>
 #include <DirectXCollision.h>
 #include <string>
 #include <functional>
 
+#include "Engine/EngineSettings.h"
 #include "Engine/Timing/TimeUtils.h"
 #include "Engine/Input/Input.h"
 #include "Engine/Rendering/RenderQueuer.h"
 #include "Engine/Rendering/RendererInfo.h"
-
 #include "Engine/Content/HeightMap.h"
 
-class Entity;
-class Scene;
-class Content;
+namespace WellEngine
+{
+	class Entity;
+	class Scene;
+	class Content;
+}
 
-namespace Collisions
+namespace WellEngine::Collisions
 {
 	struct CollisionData;
 
@@ -45,7 +47,7 @@ namespace Collisions
 		TEMP7_TAG = 0x80
 	};
 
-	constexpr ColliderTags MAP_COLLIDER_TAGS = static_cast<Collisions::ColliderTags>(Collisions::SKIP_TERRAIN_TAG | Collisions::STATIC_TAG);
+	constexpr ColliderTags MAP_COLLIDER_TAGS = static_cast<ColliderTags>(SKIP_TERRAIN_TAG | STATIC_TAG);
 
 	struct Collider 
 	{

@@ -1,27 +1,28 @@
 #pragma once
 
 #include "Colliders.h"
-#include "Game/Behaviours/Physics/ColliderBehaviour.h"
 
-class Scene;
-
-class CollisionHandler
+namespace WellEngine
 {
-public:
-	CollisionHandler() = default;
-	~CollisionHandler() = default;
+	class Scene;
+	class ColliderBehaviour;
 
-	bool Initialize(Scene *scene);
-	bool CheckCollisions(TimeUtils &time, Scene *scene, ID3D11DeviceContext *context);
+	class CollisionHandler
+	{
+	public:
+		CollisionHandler() = default;
+		~CollisionHandler() = default;
 
-	bool CheckCollision(const Collisions::Collider *col, Scene *scene, Collisions::CollisionData &data);
+		bool Initialize(Scene *scene);
+		bool CheckCollisions(TimeUtils &time, Scene *scene, ID3D11DeviceContext *context);
 
-private:
-	std::vector<const Collisions::Collider *> _collidersToCheck;
-	std::vector<Entity *> _entitiesToCheck;
-	std::vector<ColliderBehaviour *> _colliderBehavioursToCheck;
+		bool CheckCollision(const Collisions::Collider *col, Scene *scene, Collisions::CollisionData &data);
 
-	TESTABLE
-};
+	private:
+		std::vector<const Collisions::Collider *> _collidersToCheck;
+		std::vector<Entity *> _entitiesToCheck;
+		std::vector<ColliderBehaviour *> _colliderBehavioursToCheck;
 
-
+		TESTABLE
+	};
+}

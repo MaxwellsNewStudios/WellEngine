@@ -2,14 +2,17 @@
 
 #include "MonsterState.h"
 
-class MonsterIdle : public MonsterState
+namespace WellEngine
 {
-public:
-	MonsterIdle() = default;
-	~MonsterIdle() = default;
+	class MonsterIdle : public MonsterState
+	{
+	public:
+		MonsterIdle() = default;
+		~MonsterIdle() = default;
 
-protected:
-	bool OnEnter() override;
-	bool OnUpdate(TimeUtils &time) override;
-	bool OnExit() override;
-};
+	protected:
+		bool OnEnter() override;
+		bool OnUpdate(TimeUtils &time) override;
+		bool OnExit() override;
+	};
+}

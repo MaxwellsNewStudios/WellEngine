@@ -7,120 +7,124 @@
 #include "Engine/Collision/Raycast.h"
 #include "rapidjson/document.h"
 
-namespace dx = DirectX;
-namespace json = rapidjson;
-
-class BillboardMeshBehaviour;
-
-enum class MouseMovementMode
+namespace WellEngine
 {
-	None,
-	OrbitPan,
-	FlyCam
-};
+	namespace dx = DirectX;
+	namespace json = rapidjson;
 
-class [[register_behaviour]] DebugPlayerBehaviour final : public Behaviour, public IRefTarget<DebugPlayerBehaviour>
-{
-#ifdef DEBUG_BUILD
-private:
-	Ref<CameraBehaviour> _mainCamera{};
-	Ref<CameraBehaviour> _secondaryCamera{};
-	Ref<CameraBehaviour> _currCameraPtr{};
+	class BillboardMeshBehaviour;
 
-	int _currCamera = -2;
-	std::vector<Ref<Entity>> _currSelection;
-	bool _rayCastFromMouse = false;
+	enum class MouseMovementMode
+	{
+		None,
+		OrbitPan,
+		FlyCam
+	};
 
-	bool _useMainCamera = true;
-	bool _drawPointer = false;
+	class [[register_behaviour]] DebugPlayerBehaviour final : public Behaviour, public IRefTarget<DebugPlayerBehaviour>
+	{
+	#ifdef DEBUG_BUILD
+	private:
+		Ref<CameraBehaviour> _mainCamera{};
+		Ref<CameraBehaviour> _secondaryCamera{};
+		Ref<CameraBehaviour> _currCameraPtr{};
 
-	Ref<Entity> _cursorPositioningTarget{};
-	bool _includePositioningTargetInTree = false;
+		int _currCamera = -2;
+		std::vector<Ref<Entity>> _currSelection;
+		bool _rayCastFromMouse = false;
 
-	std::vector<std::pair<KeyCode, UINT>> _duplicateBinds = {};
-	int _addDuplicateBindForEntity = -1;
+		bool _useMainCamera = true;
+		bool _drawPointer = false;
 
-	std::vector<BillboardMeshBehaviour *> _gizmoBillboards = {};
+		Ref<Entity> _cursorPositioningTarget{};
+		bool _includePositioningTargetInTree = false;
 
-	[[nodiscard]] bool HandleCameraMovement(TimeUtils &time, const Input &input);
+		std::vector<std::pair<KeyCode, UINT>> _duplicateBinds = {};
+		int _addDuplicateBindForEntity = -1;
 
-	[[nodiscard]] bool UpdateGlobalEntities(TimeUtils &time, const Input &input);
+		std::vector<BillboardMeshBehaviour *> _gizmoBillboards = {};
 
-	// out contains entity and distance to entity from camera, pos is the coordinates for the ray hit
-	[[nodiscard]] bool RayCastFromCamera(RaycastOut &out);	// Casts a ray from _camera in the direction of _camera
-	[[nodiscard]] bool RayCastFromCamera(RaycastOut &out, dx::XMFLOAT3A &pos, dx::XMFLOAT3A &dir);
-	[[nodiscard]] bool RayCastFromMouse(RaycastOut &out, const Input &input);	// Casts a ray from mouse position on nearplane along the z-axis
-	[[nodiscard]] bool RayCastFromMouse(RaycastOut &out, dx::XMFLOAT3A &pos, dx::XMFLOAT3A &dir, const Input &input);
+		[[nodiscard]] bool HandleCameraMovement(TimeUtils &time, const Input &input);
 
-protected:
-	// Start runs once when the behaviour is created.
-	[[nodiscard]] bool Start() override;
+		[[nodiscard]] bool UpdateGlobalEntities(TimeUtils &time, const Input &input);
 
-	// Update runs every frame.
-	[[nodiscard]] bool Update(TimeUtils &time, const Input &input) override;
+		// out contains entity and distance to entity from camera, pos is the coordinates for the ray hit
+		[[nodiscard]] bool RayCastFromCamera(RaycastOut &out);	// Casts a ray from _camera in the direction of _camera
+		[[nodiscard]] bool RayCastFromCamera(RaycastOut &out, dx::XMFLOAT3A &pos, dx::XMFLOAT3A &dir);
+		[[nodiscard]] bool RayCastFromMouse(RaycastOut &out, const Input &input);	// Casts a ray from mouse position on nearplane along the z-axis
+		[[nodiscard]] bool RayCastFromMouse(RaycastOut &out, dx::XMFLOAT3A &pos, dx::XMFLOAT3A &dir, const Input &input);
 
-	// Render runs every frame when objects are being queued for rendering.
-	[[nodiscard]] bool Render(const RenderQueuer &queuer, const RendererInfo &rendererInfo) override;
+	protected:
+		// Start runs once when the behaviour is created.
+		[[nodiscard]] bool Start() override;
 
-	// Serializes the behaviour to a string.
-	[[nodiscard]] bool Serialize(json::Document::AllocatorType &docAlloc, json::Value &obj) override;
+		// Update runs every frame.
+		[[nodiscard]] bool Update(TimeUtils &time, const Input &input) override;
 
-	// Deserializes the behaviour from a string.
-	[[nodiscard]] bool Deserialize(const json::Value &obj, Scene *scene) override;
+		// Render runs every frame when objects are being queued for rendering.
+		[[nodiscard]] bool Render(const RenderQueuer &queuer, const RendererInfo &rendererInfo) override;
 
-	void PostDeserialize() override;
+		// Serializes the behaviour to a string.
+		[[nodiscard]] bool Serialize(json::Document::AllocatorType &docAlloc, json::Value &obj) override;
 
-public:
-	DebugPlayerBehaviour() = default;
-	~DebugPlayerBehaviour() = default;
+		// Deserializes the behaviour from a string.
+		[[nodiscard]] bool Deserialize(const json::Value &obj, Scene *scene) override;
 
-	void SetCamera(CameraBehaviour *cam);
+		void PostDeserialize() override;
 
-	[[nodiscard]] bool IsSelected(Entity *ent, UINT *index = nullptr, bool includeBillboard = false) const;
+	public:
+		DebugPlayerBehaviour() = default;
+		~DebugPlayerBehaviour() = default;
 
-	void Select(UINT id, bool additive = false);
-	void Select(Entity *ent, bool additive = false);
-	void Select(Entity **ents, UINT count, bool additive = false);
+		void SetCamera(CameraBehaviour *cam);
 
-	void Deselect(UINT id);
-	void Deselect(Entity *ent);
-	void Deselect(Entity **ents, UINT count);
-	void DeselectIndex(UINT index);
+		[[nodiscard]] bool IsSelected(Entity *ent, UINT *index = nullptr, bool includeBillboard = false) const;
 
-	void ClearSelection();
+		void Select(UINT id, bool additive = false);
+		void Select(Entity *ent, bool additive = false);
+		void Select(Entity **ents, UINT count, bool additive = false);
 
-	[[nodiscard]] const UINT GetSelectionSize() const;
-	[[nodiscard]] Entity *GetPrimarySelection() const;
-	[[nodiscard]] const std::vector<Ref<Entity>> &GetSelection();
-	void GetParentSelection(std::vector<Ref<Entity>> &selectedParents);
+		void Deselect(UINT id);
+		void Deselect(Entity *ent);
+		void Deselect(Entity **ents, UINT count);
+		void DeselectIndex(UINT index);
 
-	void SetEditSpace(ReferenceSpace space);
-	[[nodiscard]] ReferenceSpace GetEditSpace() const;
+		void ClearSelection();
 
-	void SetEditType(TransformationType type);
-	[[nodiscard]] TransformationType GetEditType() const;
+		[[nodiscard]] const UINT GetSelectionSize() const;
+		[[nodiscard]] Entity *GetPrimarySelection() const;
+		[[nodiscard]] const std::vector<Ref<Entity>> &GetSelection();
+		void GetParentSelection(std::vector<Ref<Entity>> &selectedParents);
 
-	void SetEditOriginMode(TransformOriginMode mode);
-	[[nodiscard]] TransformOriginMode GetEditOriginMode() const;
+		void SetEditSpace(ReferenceSpace space);
+		[[nodiscard]] ReferenceSpace GetEditSpace() const;
 
-	void AssignDuplicateToKey(UINT id);
-	bool IsAssigningDuplicateToKey(UINT id) const;
-	bool IsValidDuplicateBind(KeyCode key) const;
-	void AddDuplicateBind(KeyCode key, UINT id);
-	void RemoveDuplicateBind(UINT id);
-	bool HasDuplicateBind(UINT id) const;
-	KeyCode GetDuplicateBind(UINT id);
-	void ClearDuplicateBinds();
+		void SetEditType(TransformationType type);
+		[[nodiscard]] TransformationType GetEditType() const;
 
-	Entity *DuplicateEntity(Entity *entity);
-	void PositionWithCursor(Entity *ent);
+		void SetEditOriginMode(TransformOriginMode mode);
+		[[nodiscard]] TransformOriginMode GetEditOriginMode() const;
 
-	void AddGizmoBillboard(BillboardMeshBehaviour *gizmo);
-	void RemoveGizmoBillboard(BillboardMeshBehaviour *gizmo);
+		void AssignDuplicateToKey(UINT id);
+		bool IsAssigningDuplicateToKey(UINT id) const;
+		bool IsValidDuplicateBind(KeyCode key) const;
+		void AddDuplicateBind(KeyCode key, UINT id);
+		void RemoveDuplicateBind(UINT id);
+		bool HasDuplicateBind(UINT id) const;
+		KeyCode GetDuplicateBind(UINT id);
+		void ClearDuplicateBinds();
 
-	void UpdateGizmoBillboards();
-#else
-public:
-	DebugPlayerBehaviour() = default;
-#endif
-};
+		Entity *DuplicateEntity(Entity *entity);
+		void PositionWithCursor(Entity *ent);
+
+		void AddGizmoBillboard(BillboardMeshBehaviour *gizmo);
+		void RemoveGizmoBillboard(BillboardMeshBehaviour *gizmo);
+
+		void UpdateGizmoBillboards();
+	#else
+	public:
+		DebugPlayerBehaviour() = default;
+	#endif
+	};
+
+}

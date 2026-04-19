@@ -4,104 +4,109 @@
 #include <string>
 #include <unordered_map>
 #include <vector>
+#include <functional>
 #include <d3d11.h>
+
 #include "rapidjson/document.h"
 #include "Engine/D3D/MeshD3D11.h"
 
-namespace dx = DirectX;
-namespace json = rapidjson;
-
-class Content;
-
-struct GlyphVertex
+namespace WellEngine
 {
-	dx::XMFLOAT2 position;
-	dx::XMFLOAT2 uv;
-};
+	namespace dx = DirectX;
+	namespace json = rapidjson;
 
-class GlyphData
-{
-public:
-	dx::XMFLOAT4 uvRect; // Atlas texture coordinates (min-max)
-	dx::XMFLOAT2 size;   // Size of the glyph in pixels
-	dx::XMFLOAT2 offset; // Offset from the cursor position to the top-left of the glyph
-	float advance;       // How much to move the cursor after drawing this glyph
+	class Content;
 
-	GlyphData() : uvRect(0, 0, 0, 0), size(0, 0), offset(0, 0), advance(0) {}
-
-	// Generate vertices for this glyph and append them to the output vector
-	void ToVerts(std::vector<GlyphVertex> &out, dx::XMFLOAT2 &cursor) const
+	struct GlyphVertex
 	{
-		float x = cursor.x - offset.x;
-		float y = cursor.y - offset.y;
-		float w = size.x;
-		float h = size.y;
+		dx::XMFLOAT2 position;
+		dx::XMFLOAT2 uv;
+	};
 
-		// Define the four corners of the glyph quad
-		GlyphVertex topLeft     = { { x,     y,    }, { uvRect.x, uvRect.y } };
-		GlyphVertex topRight    = { { x + w, y,    }, { uvRect.z, uvRect.y } };
-		GlyphVertex bottomRight = { { x + w, y + h }, { uvRect.z, uvRect.w } };
-		GlyphVertex bottomLeft  = { { x,     y + h }, { uvRect.x, uvRect.w } };
+	class GlyphData
+	{
+	public:
+		dx::XMFLOAT4 uvRect; // Atlas texture coordinates (min-max)
+		dx::XMFLOAT2 size;   // Size of the glyph in pixels
+		dx::XMFLOAT2 offset; // Offset from the cursor position to the top-left of the glyph
+		float advance;       // How much to move the cursor after drawing this glyph
 
-		// Two triangles for the quad
-		out.push_back(topLeft);
-		out.push_back(bottomLeft);
-		out.push_back(topRight);
+		GlyphData() : uvRect(0, 0, 0, 0), size(0, 0), offset(0, 0), advance(0) {}
 
-		out.push_back(topRight);
-		out.push_back(bottomLeft);
-		out.push_back(bottomRight);
+		// Generate vertices for this glyph and append them to the output vector
+		void ToVerts(std::vector<GlyphVertex> &out, dx::XMFLOAT2 &cursor) const
+		{
+			float x = cursor.x - offset.x;
+			float y = cursor.y - offset.y;
+			float w = size.x;
+			float h = size.y;
 
-		// Advance the cursor position
-		cursor.x += advance;
-	}
+			// Define the four corners of the glyph quad
+			GlyphVertex topLeft     = { { x,     y,    }, { uvRect.x, uvRect.y } };
+			GlyphVertex topRight    = { { x + w, y,    }, { uvRect.z, uvRect.y } };
+			GlyphVertex bottomRight = { { x + w, y + h }, { uvRect.z, uvRect.w } };
+			GlyphVertex bottomLeft  = { { x,     y + h }, { uvRect.x, uvRect.w } };
 
-	[[nodiscard]] bool Serialize(json::Document::AllocatorType &docAlloc, json::Value &obj) const;
-	[[nodiscard]] bool Deserialize(const json::Value &obj);
-};
+			// Two triangles for the quad
+			out.push_back(topLeft);
+			out.push_back(bottomLeft);
+			out.push_back(topRight);
 
-class FontAtlas
-{
-private:
-	UINT _fontTextureID = -1;
-	UINT _fallbackGlyphID = -1;
-	std::unordered_map<UINT, GlyphData> _glyphs;
-	std::string _fontName;
-	float _lineHeight = 18.0f;
-	float _spacing = 12.0f;
+			out.push_back(topRight);
+			out.push_back(bottomLeft);
+			out.push_back(bottomRight);
 
-	std::unordered_map<size_t, std::function<void(void)>> _modifyCallback;
+			// Advance the cursor position
+			cursor.x += advance;
+		}
 
-#ifdef USE_IMGUI
-	std::vector<UINT> _selectedGlyphIDs;
-#endif
+		[[nodiscard]] bool Serialize(json::Document::AllocatorType &docAlloc, json::Value &obj) const;
+		[[nodiscard]] bool Deserialize(const json::Value &obj);
+	};
 
-	void AppendGlyph(UINT codepoint, std::vector<GlyphVertex> &vertices, dx::XMFLOAT2 &cursor) const;
+	class FontAtlas
+	{
+	private:
+		UINT _fontTextureID = -1;
+		UINT _fallbackGlyphID = -1;
+		std::unordered_map<UINT, GlyphData> _glyphs;
+		std::string _fontName;
+		float _lineHeight = 18.0f;
+		float _spacing = 12.0f;
 
-public:
-	FontAtlas() = default;
-	~FontAtlas() = default;
+		std::unordered_map<size_t, std::function<void(void)>> _modifyCallback;
 
-	[[nodiscard]] bool Initialize(const Content *content, std::string name);
+	#ifdef USE_IMGUI
+		std::vector<UINT> _selectedGlyphIDs;
+	#endif
 
-	const GlyphData *GetGlyph(UINT codepoint) const;
-	UINT GetFontTextureID() const { return _fontTextureID; }
+		void AppendGlyph(UINT codepoint, std::vector<GlyphVertex> &vertices, dx::XMFLOAT2 &cursor) const;
 
-	dx::XMFLOAT2 CalcTextSize(std::wstring_view text) const;
-	dx::XMFLOAT2 CalcTextSize(std::string_view text) const;
+	public:
+		FontAtlas() = default;
+		~FontAtlas() = default;
 
-	std::vector<GlyphVertex> Generate(std::wstring_view text) const;
-	std::vector<GlyphVertex> Generate(std::string_view text) const;
+		[[nodiscard]] bool Initialize(const Content *content, std::string name);
 
-	MeshData *ToMesh(const std::vector<GlyphVertex> &verts) const;
+		const GlyphData *GetGlyph(UINT codepoint) const;
+		UINT GetFontTextureID() const { return _fontTextureID; }
 
-	[[nodiscard]] bool Serialize(std::string_view fileName, const Content *content) const;
-	[[nodiscard]] bool Deserialize(std::string_view fileName, const Content *content);
+		dx::XMFLOAT2 CalcTextSize(std::wstring_view text) const;
+		dx::XMFLOAT2 CalcTextSize(std::string_view text) const;
 
-	bool AddListener(size_t id, std::function<void(void)> func);
-	bool RemoveListener(size_t id);
+		std::vector<GlyphVertex> Generate(std::wstring_view text) const;
+		std::vector<GlyphVertex> Generate(std::string_view text) const;
 
-#ifdef USE_IMGUI
-	[[nodiscard]] bool RenderUI(const Content *content);
-#endif
-};
+		MeshData *ToMesh(const std::vector<GlyphVertex> &verts) const;
+
+		[[nodiscard]] bool Serialize(std::string_view fileName, const Content *content) const;
+		[[nodiscard]] bool Deserialize(std::string_view fileName, const Content *content);
+
+		bool AddListener(size_t id, std::function<void(void)> func);
+		bool RemoveListener(size_t id);
+
+	#ifdef USE_IMGUI
+		[[nodiscard]] bool RenderUI(const Content *content);
+	#endif
+	};
+}

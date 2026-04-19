@@ -1,7 +1,10 @@
 #pragma once
 
-struct RendererInfo
+namespace WellEngine
 {
-	bool includeTransparent = true;
-	bool shadowCamera = false; 
-};
+	struct RendererInfo
+	{
+		bool includeTransparent = true;
+		bool shadowCamera = false; 
+	};
+}

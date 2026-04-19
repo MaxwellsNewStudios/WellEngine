@@ -112,6 +112,7 @@ namespace json = rapidjson;
 
 
 // Engine
+#include "Engine/EngineDefinitions.h"
 #include "Engine/Math/GameMath.h"
 #include "Engine/Math/ConstRand.h"
 #include "Engine/Math/Primitives.h"
@@ -156,7 +157,8 @@ namespace json = rapidjson;
 // Game
 #include "Game/Transform.h"
 
-namespace we = WellEngine;
+
+using namespace WellEngine;
 
 
 

@@ -2,14 +2,17 @@
 
 #include "ButtonBehaviours.h"
 
-class UIButtonExampleBehaviour : public UIButtonBehaviour
+namespace WellEngine
 {
-protected:
-	[[nodiscard]] bool Start() override;
-	[[nodiscard]] bool OnSelect() override;
-	[[nodiscard]] bool OnHover() override;
+	class UIButtonExampleBehaviour : public UIButtonBehaviour
+	{
+	protected:
+		[[nodiscard]] bool Start() override;
+		[[nodiscard]] bool OnSelect() override;
+		[[nodiscard]] bool OnHover() override;
 
-public:
-	UIButtonExampleBehaviour() = default;
-	~UIButtonExampleBehaviour() = default;
-};
+	public:
+		UIButtonExampleBehaviour() = default;
+		~UIButtonExampleBehaviour() = default;
+	};
+}

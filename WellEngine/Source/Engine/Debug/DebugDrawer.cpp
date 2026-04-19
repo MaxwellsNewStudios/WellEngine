@@ -1244,7 +1244,7 @@ void DebugDrawer::DrawTri(const Tri &tri, bool useDepth, bool twoSided)
 	if (twoSided)
 		triList.emplace_back(Tri(tri.v2, tri.v1, tri.v0));
 }
-void DebugDrawer::DrawTri(const we::Shape::Tri &tri, const dx::XMFLOAT4 &color, bool useDepth, bool twoSided)
+void DebugDrawer::DrawTri(const Shape::Tri &tri, const dx::XMFLOAT4 &color, bool useDepth, bool twoSided)
 {
 #ifndef DEBUG_DRAW
 	return;

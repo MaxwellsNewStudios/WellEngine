@@ -3,22 +3,25 @@
 #include "Engine/Timing/TimeUtils.h"
 #include "../MonsterBehaviour.h"
 
-class MonsterState
+namespace WellEngine
 {
-public:
-	MonsterState() = default;
-	virtual ~MonsterState() = default;
+	class MonsterState
+	{
+	public:
+		MonsterState() = default;
+		virtual ~MonsterState() = default;
 
-	void Intitalize(MonsterBehaviour *monsterBehaviour);
+		void Intitalize(MonsterBehaviour *monsterBehaviour);
 
-	bool InitialOnEnter();
-	bool InitialOnUpdate(TimeUtils &time);
-	bool InitialOnExit();
+		bool InitialOnEnter();
+		bool InitialOnUpdate(TimeUtils &time);
+		bool InitialOnExit();
 
-protected:
-	virtual bool OnEnter();
-	virtual bool OnUpdate(TimeUtils &time);
-	virtual bool OnExit();
+	protected:
+		virtual bool OnEnter();
+		virtual bool OnUpdate(TimeUtils &time);
+		virtual bool OnExit();
 
-	MonsterBehaviour *_mb = nullptr;
-};
+		MonsterBehaviour *_mb = nullptr;
+	};
+}

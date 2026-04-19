@@ -1,10 +1,12 @@
 #pragma once
 
 #include <map>
+
+#include "Tests/TestUtils.h"
 #include "Input.h"
 #include "Engine/Timing/TimeUtils.h"
 
-namespace InputBindings
+namespace WellEngine::InputBindings
 {
 	enum class InputAction
 	{
@@ -532,67 +534,70 @@ namespace InputBindings
 }
 
 
-/// Singleton class for handling input bindings. Stores all input bindings for the game.
-/// 
-/// How it works:
-/// Every action that can be performed in the game is defined as an InputAction.
-/// Each InputAction is either unbound or bound to an InputBinding.
-/// InputActions are triggered when their InputBinding is triggered.
-/// An InputBinding represents a string of keypresses and has a vector of InputBindingSteps.
-/// An InputBindingStep represents a single key and how to press it.
-/// 
-/// Ex:
-/// I want [Shift] + [F5] to trigger a quicksave.
-/// To set this up, I create an InputBindingCombo with two InputBindingSteps.
-/// The first is an InputBindingStepSimple, with KeyCode::LeftShift and KeyState::Held.
-/// The second is an InputBindingStepSimple, with KeyCode::F5 and KeyState::Pressed.
-class BindingCollection
+namespace WellEngine
 {
-private:
-	std::map<InputBindings::InputAction, std::unique_ptr<InputBindings::InputBinding>> _inputs;
-
-public:
-	BindingCollection() = default;
-	~BindingCollection() = default;
-
-	static inline BindingCollection *GetInstance()
+	/// Singleton class for handling input bindings. Stores all input bindings for the game.
+	/// 
+	/// How it works:
+	/// Every action that can be performed in the game is defined as an InputAction.
+	/// Each InputAction is either unbound or bound to an InputBinding.
+	/// InputActions are triggered when their InputBinding is triggered.
+	/// An InputBinding represents a string of keypresses and has a vector of InputBindingSteps.
+	/// An InputBindingStep represents a single key and how to press it.
+	/// 
+	/// Ex:
+	/// I want [Shift] + [F5] to trigger a quicksave.
+	/// To set this up, I create an InputBindingCombo with two InputBindingSteps.
+	/// The first is an InputBindingStepSimple, with KeyCode::LeftShift and KeyState::Held.
+	/// The second is an InputBindingStepSimple, with KeyCode::F5 and KeyState::Pressed.
+	class BindingCollection
 	{
-		static BindingCollection instance;
-		return &instance;
-	}
+	private:
+		std::map<InputBindings::InputAction, std::unique_ptr<InputBindings::InputBinding>> _inputs;
 
-	void SaveBindings(const std::string &path);
-	void LoadBindings(const std::string &path);
+	public:
+		BindingCollection() = default;
+		~BindingCollection() = default;
 
-	static inline void SetBinding(InputBindings::InputAction action, std::unique_ptr<InputBindings::InputBinding> binding)
-	{
-		auto instance = GetInstance();
-		instance->_inputs.try_emplace(action, std::move(binding));
-	}
-
-	static inline void Update()
-	{
-		auto instance = GetInstance();
-
-		for (auto &input : instance->_inputs)
+		static inline BindingCollection *GetInstance()
 		{
-			input.second->Update();
-		}
-	}
-
-	static inline bool IsTriggered(InputBindings::InputAction action)
-	{
-		auto instance = GetInstance();
-		auto input = instance->_inputs.find(action);
-
-		if (input != instance->_inputs.end())
-		{
-			return input->second->IsTriggered();
+			static BindingCollection instance;
+			return &instance;
 		}
 
-		// Action is unbound. Always return false.
-		return false;
-	}
+		void SaveBindings(const std::string &path);
+		void LoadBindings(const std::string &path);
 
-	TESTABLE
-};
+		static inline void SetBinding(InputBindings::InputAction action, std::unique_ptr<InputBindings::InputBinding> binding)
+		{
+			auto instance = GetInstance();
+			instance->_inputs.try_emplace(action, std::move(binding));
+		}
+
+		static inline void Update()
+		{
+			auto instance = GetInstance();
+
+			for (auto &input : instance->_inputs)
+			{
+				input.second->Update();
+			}
+		}
+
+		static inline bool IsTriggered(InputBindings::InputAction action)
+		{
+			auto instance = GetInstance();
+			auto input = instance->_inputs.find(action);
+
+			if (input != instance->_inputs.end())
+			{
+				return input->second->IsTriggered();
+			}
+
+			// Action is unbound. Always return false.
+			return false;
+		}
+
+		TESTABLE
+	};
+}

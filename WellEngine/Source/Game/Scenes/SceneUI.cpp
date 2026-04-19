@@ -1830,8 +1830,8 @@ bool Scene::RenderSceneUI()
 				return maxDist * (u_next - u);
 			};
 
-			static we::Shape::Ray ray({ 0,0,0 }, { 0,0,1 }, 1);
-			static we::Shape::RayHit hit;
+			static Shape::Ray ray({ 0,0,0 }, { 0,0,1 }, 1);
+			static Shape::RayHit hit;
 			static bool doRecalc = false;
 
 			static std::vector<dx::XMFLOAT3> samplePoints;
@@ -1934,8 +1934,8 @@ bool Scene::RenderSceneUI()
 		
 		if (TreeNode("Raycast Tests"))
 		{
-			static we::Shape::Ray ray({ 0,0,0 }, { 0,0,1 }, 1);
-			we::Shape::RayHit hit;
+			static Shape::Ray ray({ 0,0,0 }, { 0,0,1 }, 1);
+			Shape::RayHit hit;
 			bool didHit = false;
 			Entity *hitEntity = nullptr;
 			static Ref<Entity> originEntity = nullptr;

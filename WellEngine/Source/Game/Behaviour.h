@@ -11,189 +11,195 @@
 #pragma once
 
 #include <d3d11.h>
+
 #include "Engine/EngineSettings.h"
+#include "Engine/Utils/ReferenceHelper.h"
 #include "Engine/Timing/TimeUtils.h"
 #include "Engine/Input/Input.h"
 #include "Engine/Rendering/RendererInfo.h"
 #include "Transform.h"
 #include "rapidjson/document.h"
 
-namespace dx = DirectX;
-namespace json = rapidjson;
-
-class Game;
-class Scene;
-class Entity;
-class CameraBehaviour;
-class RenderQueuer;
-
-class Behaviour : public IRefTarget<Behaviour>
+namespace WellEngine
 {
-private:
-	bool _isInitialized = false;
-	bool _isDestroyed = false;
-	bool _isEnabledSelf = true;
-	bool _doSerialize = true;
-#ifdef USE_IMGUI
-	int _uiOpen = 0; // -1 = uninitialized, 0 = close, 1 = open
-	float _uiMaxSize = -1.0f;
-	bool _uiMaximized = true;
-	bool _uiSizeDirty = true;
-	bool _uiIsResizing = false;
-#endif
+	namespace dx = DirectX;
+	namespace json = rapidjson;
 
-	Entity *_entity = nullptr;
+	// Forward declarations
+	class Game;
+	class Scene;
+	class Entity;
+	class CameraBehaviour;
+	class RenderQueuer;
 
-protected:
-	std::string _name = "";
+	class Behaviour : public IRefTarget<Behaviour>
+	{
+	private:
+		bool _isInitialized = false;
+		bool _isDestroyed = false;
+		bool _isEnabledSelf = true;
+		bool _doSerialize = true;
+	#ifdef USE_IMGUI
+		int _uiOpen = 0; // -1 = uninitialized, 0 = close, 1 = open
+		float _uiMaxSize = -1.0f;
+		bool _uiMaximized = true;
+		bool _uiSizeDirty = true;
+		bool _uiIsResizing = false;
+	#endif
 
-	void QueueUpdate();
-	void DequeueUpdate();
+		Entity *_entity = nullptr;
 
-	void QueueParallelUpdate();
-	void DequeueParallelUpdate();
+	protected:
+		std::string _name = "";
 
-	void QueueLateUpdate();
-	void DequeueLateUpdate();
+		void QueueUpdate();
+		void DequeueUpdate();
 
-	void QueueFixedUpdate();
-	void DequeueFixedUpdate();
+		void QueueParallelUpdate();
+		void DequeueParallelUpdate();
 
-	void QueuePhysicsUpdate();
-	void DequeuePhysicsUpdate();
+		void QueueLateUpdate();
+		void DequeueLateUpdate();
 
-	// Start runs once when the behaviour is created.
-	[[nodiscard]] virtual bool Start();
+		void QueueFixedUpdate();
+		void DequeueFixedUpdate();
 
-	// Update runs every frame.
-	[[nodiscard]] virtual bool Update(TimeUtils &time, const Input &input);
+		void QueuePhysicsUpdate();
+		void DequeuePhysicsUpdate();
+
+		// Start runs once when the behaviour is created.
+		[[nodiscard]] virtual bool Start();
+
+		// Update runs every frame.
+		[[nodiscard]] virtual bool Update(TimeUtils &time, const Input &input);
 	
-	// ParallelUpdate runs after update and exeutes in parallel with all other behaviours, so one must ensure thread safety between behaviours.
-	[[nodiscard]] virtual bool ParallelUpdate(const TimeUtils &time, const Input &input);
+		// ParallelUpdate runs after update and exeutes in parallel with all other behaviours, so one must ensure thread safety between behaviours.
+		[[nodiscard]] virtual bool ParallelUpdate(const TimeUtils &time, const Input &input);
 	
-	// Like Update, but later.
-	[[nodiscard]] virtual bool LateUpdate(TimeUtils &time, const Input &input);
+		// Like Update, but later.
+		[[nodiscard]] virtual bool LateUpdate(TimeUtils &time, const Input &input);
 
-	// FixedUpdate runs every fixed update (20hz by default).
-	[[nodiscard]] virtual bool FixedUpdate(float deltaTime, const Input &input);
+		// FixedUpdate runs every fixed update (20hz by default).
+		[[nodiscard]] virtual bool FixedUpdate(float deltaTime, const Input &input);
 
-	// PhysicsUpdate runs every physics update (60hz by default).
-	[[nodiscard]] virtual bool PhysicsUpdate(float deltaTime);
+		// PhysicsUpdate runs every physics update (60hz by default).
+		[[nodiscard]] virtual bool PhysicsUpdate(float deltaTime);
 
-	// Render runs for all objects queued for rendering before they are rendered.
-	[[nodiscard]] virtual bool BeforeRender();
+		// Render runs for all objects queued for rendering before they are rendered.
+		[[nodiscard]] virtual bool BeforeRender();
 
-	// Render runs when objects are being queued for rendering.
-	[[nodiscard]] virtual bool Render(const RenderQueuer &queuer, const RendererInfo &rendererInfo);
+		// Render runs when objects are being queued for rendering.
+		[[nodiscard]] virtual bool Render(const RenderQueuer &queuer, const RendererInfo &rendererInfo);
 
-#ifdef USE_IMGUI
-	// RenderUI runs every frame during ImGui rendering if the entity is selected.
-	[[nodiscard]] virtual bool RenderUI();
-#endif
+	#ifdef USE_IMGUI
+		// RenderUI runs every frame during ImGui rendering if the entity is selected.
+		[[nodiscard]] virtual bool RenderUI();
+	#endif
 
-	// BindBuffers runs before drawcalls pertaining to the Entity are performed.
-	[[nodiscard]] virtual bool BindBuffers(ID3D11DeviceContext *context);
+		// BindBuffers runs before drawcalls pertaining to the Entity are performed.
+		[[nodiscard]] virtual bool BindBuffers(ID3D11DeviceContext *context);
 
-	// OnEnable runs immediately after the behaviour is enabled.
-	virtual void OnEnable();
+		// OnEnable runs immediately after the behaviour is enabled.
+		virtual void OnEnable();
 
-	// OnEnable runs immediately after the behaviour is disabled.
-	virtual void OnDisable();
+		// OnEnable runs immediately after the behaviour is disabled.
+		virtual void OnDisable();
 
-	// OnDirty runs when the Entity's transform is modified.
-	virtual void OnDirty();
+		// OnDirty runs when the Entity's transform is modified.
+		virtual void OnDirty();
 
-	// OnEditTransform runs when the Entity's transform is modified in the editor or in code.
-	// NOTE: Triggered manually by calling Entity::SignalTransformEdited(). 
-	// It is your responsibility to call after editing an entity.
-	virtual void OnEditTransform();
+		// OnEditTransform runs when the Entity's transform is modified in the editor or in code.
+		// NOTE: Triggered manually by calling Entity::SignalTransformEdited(). 
+		// It is your responsibility to call after editing an entity.
+		virtual void OnEditTransform();
 
-	// OnEditTransformRec runs when the Entity's transform or any of its parents' transforms are modified in the editor or in code.
-	// NOTE: Triggered manually by calling Entity::SignalTransformEdited(). 
-	// It is your responsibility to call after editing an entity.
-	virtual void OnEditTransformRec();
+		// OnEditTransformRec runs when the Entity's transform or any of its parents' transforms are modified in the editor or in code.
+		// NOTE: Triggered manually by calling Entity::SignalTransformEdited(). 
+		// It is your responsibility to call after editing an entity.
+		virtual void OnEditTransformRec();
 
-	// Serializes the behaviour to a string.
-	[[nodiscard]] virtual bool Serialize(json::Document::AllocatorType &docAlloc, json::Value &obj);
+		// Serializes the behaviour to a string.
+		[[nodiscard]] virtual bool Serialize(json::Document::AllocatorType &docAlloc, json::Value &obj);
 
-	// Deserializes the behaviour from a string.
-	[[nodiscard]] virtual bool Deserialize(const json::Value &obj, Scene *scene);
+		// Deserializes the behaviour from a string.
+		[[nodiscard]] virtual bool Deserialize(const json::Value &obj, Scene *scene);
 
-	virtual void PostDeserialize();
-	[[nodiscard]] virtual bool OnHover();
-	[[nodiscard]] virtual bool OffHover();
-	[[nodiscard]] virtual bool OnSelect();
-	[[nodiscard]] virtual bool OnDebugSelect();
+		virtual void PostDeserialize();
+		[[nodiscard]] virtual bool OnHover();
+		[[nodiscard]] virtual bool OffHover();
+		[[nodiscard]] virtual bool OnSelect();
+		[[nodiscard]] virtual bool OnDebugSelect();
 
-public:
-	Behaviour() = default;
-	virtual ~Behaviour();
+	public:
+		Behaviour() = default;
+		virtual ~Behaviour();
 
-	[[nodiscard]] bool Initialize(Entity *entity, const std::string &behaviourName = "");
-	[[nodiscard]] bool IsInitialized() const;
+		[[nodiscard]] bool Initialize(Entity *entity, const std::string &behaviourName = "");
+		[[nodiscard]] bool IsInitialized() const;
 
-	void Destroy();
-	[[nodiscard]] bool IsDestroyed() const;
-	void MarkDestroyed();
+		void Destroy();
+		[[nodiscard]] bool IsDestroyed() const;
+		void MarkDestroyed();
 
-	void SetSerialization(bool state);
-	[[nodiscard]] bool IsSerializable() const;
+		void SetSerialization(bool state);
+		[[nodiscard]] bool IsSerializable() const;
 
-	[[nodiscard]] Entity *GetEntity() const;
-	[[nodiscard]] Transform *GetTransform() const;
-	[[nodiscard]] Scene *GetScene() const;
-	[[nodiscard]] Game *GetGame() const;
+		[[nodiscard]] Entity *GetEntity() const;
+		[[nodiscard]] Transform *GetTransform() const;
+		[[nodiscard]] Scene *GetScene() const;
+		[[nodiscard]] Game *GetGame() const;
 
-	void SetName(const std::string &name);
-	[[nodiscard]] const std::string &GetName() const;
+		void SetName(const std::string &name);
+		[[nodiscard]] const std::string &GetName() const;
 
-	[[nodiscard]] bool InitialUpdate(TimeUtils &time, const Input &input);
-	[[nodiscard]] bool InitialParallelUpdate(const TimeUtils &time, const Input &input);
-	[[nodiscard]] bool InitialLateUpdate(TimeUtils &time, const Input &input);
-	[[nodiscard]] bool InitialFixedUpdate(float deltaTime, const Input &input);
-	[[nodiscard]] bool InitialPhysicsUpdate(float deltaTime);
-	[[nodiscard]] bool InitialBeforeRender();
-	[[nodiscard]] bool InitialRender(const RenderQueuer &queuer, const RendererInfo &rendererInfo);
+		[[nodiscard]] bool InitialUpdate(TimeUtils &time, const Input &input);
+		[[nodiscard]] bool InitialParallelUpdate(const TimeUtils &time, const Input &input);
+		[[nodiscard]] bool InitialLateUpdate(TimeUtils &time, const Input &input);
+		[[nodiscard]] bool InitialFixedUpdate(float deltaTime, const Input &input);
+		[[nodiscard]] bool InitialPhysicsUpdate(float deltaTime);
+		[[nodiscard]] bool InitialBeforeRender();
+		[[nodiscard]] bool InitialRender(const RenderQueuer &queuer, const RendererInfo &rendererInfo);
 
-#ifdef USE_IMGUI
-	// Serialize behaviour to JSON and copy to clipboard
-	void CopyToClipboard();
+	#ifdef USE_IMGUI
+		// Serialize behaviour to JSON and copy to clipboard
+		void CopyToClipboard();
 
-	[[nodiscard]] int PopUIOpenState();
-	void SetUIOpen(bool state);
+		[[nodiscard]] int PopUIOpenState();
+		void SetUIOpen(bool state);
 
-	[[nodiscard]] float GetUISize() const;
-	void SetUISize(float maxSize);
+		[[nodiscard]] float GetUISize() const;
+		void SetUISize(float maxSize);
 
-	[[nodiscard]] bool GetUIMaximized() const;
-	void SetUIMaximized(bool state);
+		[[nodiscard]] bool GetUIMaximized() const;
+		void SetUIMaximized(bool state);
 
-	[[nodiscard]] bool IsResizingUI() const;
-	void SetResizingUI(bool state);
+		[[nodiscard]] bool IsResizingUI() const;
+		void SetResizingUI(bool state);
 
-	[[nodiscard]] bool IsUIDirty() const;
-	void SetUIDirty(bool state);
+		[[nodiscard]] bool IsUIDirty() const;
+		void SetUIDirty(bool state);
 
-	[[nodiscard]] bool InitialRenderUI();
-#endif
-	[[nodiscard]] bool InitialBindBuffers(ID3D11DeviceContext *context);
+		[[nodiscard]] bool InitialRenderUI();
+	#endif
+		[[nodiscard]] bool InitialBindBuffers(ID3D11DeviceContext *context);
 
-	[[nodiscard]] bool InitialOnHover();
-	[[nodiscard]] bool InitialOffHover();
-	[[nodiscard]] bool InitialOnSelect();
-	[[nodiscard]] bool InitialOnDebugSelect();
-	void InitialOnEditTransform();
-	void InitialOnEditTransformRec();
+		[[nodiscard]] bool InitialOnHover();
+		[[nodiscard]] bool InitialOffHover();
+		[[nodiscard]] bool InitialOnSelect();
+		[[nodiscard]] bool InitialOnDebugSelect();
+		void InitialOnEditTransform();
+		void InitialOnEditTransformRec();
 
-	[[nodiscard]] bool IsEnabled() const;
-	[[nodiscard]] bool IsEnabledSelf() const;
-	void InheritEnabled(bool state);
-	void SetEnabled(bool state);
-	void SetDirty();
+		[[nodiscard]] bool IsEnabled() const;
+		[[nodiscard]] bool IsEnabledSelf() const;
+		void InheritEnabled(bool state);
+		void SetEnabled(bool state);
+		void SetDirty();
 
-	[[nodiscard]] bool InitialSerialize(json::Document::AllocatorType &docAlloc, json::Value &obj);
-	[[nodiscard]] bool InitialDeserialize(const json::Value &obj, Scene *scene);
-	void InitialPostDeserialize();
+		[[nodiscard]] bool InitialSerialize(json::Document::AllocatorType &docAlloc, json::Value &obj);
+		[[nodiscard]] bool InitialDeserialize(const json::Value &obj, Scene *scene);
+		void InitialPostDeserialize();
 
-	TESTABLE
-};
+		TESTABLE
+	};
+}

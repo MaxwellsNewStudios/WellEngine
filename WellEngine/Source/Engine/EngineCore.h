@@ -2,18 +2,21 @@
 
 #include "Game/Game.h"
 
-class EngineCore
+namespace WellEngine
 {
-private:
-	Game _game{};
-	size_t _frameCount = 0;
+	class EngineCore
+	{
+	private:
+		Game _game{};
+		size_t _frameCount = 0;
 
-public:
-	EngineCore();
-	~EngineCore();
+	public:
+		EngineCore();
+		~EngineCore();
 
-	int Init();
-	int Run();
+		int Init();
+		int Run();
 
-	TESTABLE
-};
+		TESTABLE
+	};
+}

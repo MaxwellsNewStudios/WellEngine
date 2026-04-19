@@ -668,6 +668,7 @@
     <ClInclude Include="Source\Engine\Debug\DebugDrawer.h" />
     <ClInclude Include="Source\Engine\Debug\DebugNew.h" />
     <ClInclude Include="Source\Engine\Debug\ErrMsg.h" />
+    <ClInclude Include="Source\Engine\EngineDefinitions.h" />
     <ClInclude Include="Source\Engine\Input\KeyboardWinHook.h" />
     <ClInclude Include="Source\Engine\Physics\JoltListeners.h" />
     <ClInclude Include="Source\Engine\Physics\JoltManager.h" />

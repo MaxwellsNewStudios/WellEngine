@@ -15,7 +15,7 @@ constexpr UINT EntityIDHashRemoveAge = 16;
 constexpr UINT EntityNameHashMaxSize = 32;
 constexpr UINT EntityNameHashRemoveAge = 32;
 
-namespace SceneContents
+namespace WellEngine::SceneContents
 {
 	struct SceneEntity
 	{
@@ -1247,7 +1247,7 @@ bool SceneHolder::RaycastScene(const dx::XMFLOAT3A &origin, const dx::XMFLOAT3A 
 
 	return _volumeTree.RaycastTree(origin, direction, result.distance, result.entity, cheap);
 }
-bool SceneHolder::RaycastScene(const we::Shape::Ray &ray, we::Shape::RayHit &hit, Entity *&ent) const
+bool SceneHolder::RaycastScene(const Shape::Ray &ray, Shape::RayHit &hit, Entity *&ent) const
 {
 	ZoneScopedC(RandomUniqueColor());
 

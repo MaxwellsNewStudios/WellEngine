@@ -1,96 +1,101 @@
 #pragma once
+
 #include <vector>
+
 #include "Game/Behaviour.h"
 #include "CameraBehaviour.h"
 #include "Engine/Content/Content.h"
 #include "Engine/Rendering/RendererInfo.h"
 
-class RenderQueuer;
-
-struct CameraCubeBufferData
+namespace WellEngine
 {
-	dx::XMFLOAT3A position;
-	float nearZ;
-	float farZ;
-	float padding[2];
-};
+	class RenderQueuer;
 
-class [[register_behaviour]] CameraCubeBehaviour final : public Behaviour
-{
-private:
-	std::vector<RenderQueueEntry> _geometryRenderQueue;
-	std::vector<RenderQueueEntry> _transparentRenderQueue;
+	struct CameraCubeBufferData
+	{
+		dx::XMFLOAT3A position;
+		float nearZ;
+		float farZ;
+		float padding[2];
+	};
 
-	ConstantBufferD3D11 _viewProjArrayBuffer;
-	std::unique_ptr<ConstantBufferD3D11> _posBuffer = nullptr;
+	class [[register_behaviour]] CameraCubeBehaviour final : public Behaviour
+	{
+	private:
+		std::vector<RenderQueueEntry> _geometryRenderQueue;
+		std::vector<RenderQueueEntry> _transparentRenderQueue;
 
-	RendererInfo _rendererInfo;
-	CameraPlanes _cameraPlanes;
+		ConstantBufferD3D11 _viewProjArrayBuffer;
+		std::unique_ptr<ConstantBufferD3D11> _posBuffer = nullptr;
 
-	dx::BoundingBox _bounds, _transformedBounds;
+		RendererInfo _rendererInfo;
+		CameraPlanes _cameraPlanes;
 
-	bool _hasCSBuffer = false;
-	bool _recalculateFrustumBounds = true;
-	bool _recalculateBounds = true;
-	bool _isDirty = true;
+		dx::BoundingBox _bounds, _transformedBounds;
 
-	UINT _lastCullCount = 0;
+		bool _hasCSBuffer = false;
+		bool _recalculateFrustumBounds = true;
+		bool _recalculateBounds = true;
+		bool _isDirty = true;
 
-	void GetAxes(UINT cameraIndex, dx::XMFLOAT3A *right, dx::XMFLOAT3A *up, dx::XMFLOAT3A *forward);
-	[[nodiscard]] dx::XMFLOAT4A GetRotation(UINT cameraIndex);
+		UINT _lastCullCount = 0;
 
-protected:
-	[[nodiscard]] bool Start() override;
+		void GetAxes(UINT cameraIndex, dx::XMFLOAT3A *right, dx::XMFLOAT3A *up, dx::XMFLOAT3A *forward);
+		[[nodiscard]] dx::XMFLOAT4A GetRotation(UINT cameraIndex);
 
-	void OnDirty() override;
+	protected:
+		[[nodiscard]] bool Start() override;
 
-#ifdef USE_IMGUI
-	[[nodiscard]] bool RenderUI() override;
-#endif
+		void OnDirty() override;
 
-	[[nodiscard]] bool Serialize(json::Document::AllocatorType &docAlloc, json::Value &obj) override;
+	#ifdef USE_IMGUI
+		[[nodiscard]] bool RenderUI() override;
+	#endif
 
-	[[nodiscard]] bool Deserialize(const json::Value &obj, Scene *scene) override;
+		[[nodiscard]] bool Serialize(json::Document::AllocatorType &docAlloc, json::Value &obj) override;
 
-public:
-	CameraCubeBehaviour() = default;
-	CameraCubeBehaviour(const CameraPlanes &planes, bool hasCSBuffer);
-	~CameraCubeBehaviour() = default;
+		[[nodiscard]] bool Deserialize(const json::Value &obj, Scene *scene) override;
 
-	[[nodiscard]] dx::XMFLOAT4X4A GetViewMatrix(UINT cameraIndex);
-	[[nodiscard]] dx::XMFLOAT4X4A GetProjectionMatrix() const;
-	[[nodiscard]] dx::XMFLOAT4X4A GetViewProjectionMatrix(UINT cameraIndex);
+	public:
+		CameraCubeBehaviour() = default;
+		CameraCubeBehaviour(const CameraPlanes &planes, bool hasCSBuffer);
+		~CameraCubeBehaviour() = default;
+
+		[[nodiscard]] dx::XMFLOAT4X4A GetViewMatrix(UINT cameraIndex);
+		[[nodiscard]] dx::XMFLOAT4X4A GetProjectionMatrix() const;
+		[[nodiscard]] dx::XMFLOAT4X4A GetViewProjectionMatrix(UINT cameraIndex);
 	
-	/// This must be called from the behaviour in control of the camera.
-	[[nodiscard]] bool UpdateBuffers();
+		/// This must be called from the behaviour in control of the camera.
+		[[nodiscard]] bool UpdateBuffers();
 
-	[[nodiscard]] bool BindShadowCasterBuffers() const;
-	[[nodiscard]] bool BindGeometryBuffers() const;
-	[[nodiscard]] bool BindLightingBuffers() const;
-	[[nodiscard]] bool BindTransparentBuffers() const;
-	[[nodiscard]] bool BindViewBuffers() const;
+		[[nodiscard]] bool BindShadowCasterBuffers() const;
+		[[nodiscard]] bool BindGeometryBuffers() const;
+		[[nodiscard]] bool BindLightingBuffers() const;
+		[[nodiscard]] bool BindTransparentBuffers() const;
+		[[nodiscard]] bool BindViewBuffers() const;
 
-	[[nodiscard]] bool StoreBounds(dx::BoundingBox &bounds);
+		[[nodiscard]] bool StoreBounds(dx::BoundingBox &bounds);
 
-	void QueueGeometry(const RenderQueueEntry &entry);
-	void QueueTransparent(const RenderQueueEntry &entry);
-	void ResetRenderQueue();
+		void QueueGeometry(const RenderQueueEntry &entry);
+		void QueueTransparent(const RenderQueueEntry &entry);
+		void ResetRenderQueue();
 
-	void SortGeometryQueue();
-	void SortTransparentQueue();
+		void SortGeometryQueue();
+		void SortTransparentQueue();
 
-	[[nodiscard]] const std::vector<RenderQueueEntry> &GetGeometryQueue() const;
-	[[nodiscard]] const std::vector<RenderQueueEntry> &GetTransparentQueue() const;
+		[[nodiscard]] const std::vector<RenderQueueEntry> &GetGeometryQueue() const;
+		[[nodiscard]] const std::vector<RenderQueueEntry> &GetTransparentQueue() const;
 
-	[[nodiscard]] UINT GetCullCount() const;
-	void SetCullCount(UINT cullCount);
+		[[nodiscard]] UINT GetCullCount() const;
+		void SetCullCount(UINT cullCount);
 
-	void SetRendererInfo(const RendererInfo &rendererInfo);
-	void SetFarZ(float farZ);
-	[[nodiscard]] RendererInfo GetRendererInfo() const;
-	[[nodiscard]] float GetNearZ() const;
-	[[nodiscard]] float GetFarZ() const;
+		void SetRendererInfo(const RendererInfo &rendererInfo);
+		void SetFarZ(float farZ);
+		[[nodiscard]] RendererInfo GetRendererInfo() const;
+		[[nodiscard]] float GetNearZ() const;
+		[[nodiscard]] float GetFarZ() const;
 	
-	[[nodiscard]] ID3D11Buffer *GetCameraGSBuffer() const;
-	[[nodiscard]] ID3D11Buffer *GetCameraCSBuffer() const;
-};
+		[[nodiscard]] ID3D11Buffer *GetCameraGSBuffer() const;
+		[[nodiscard]] ID3D11Buffer *GetCameraCSBuffer() const;
+	};
+}
