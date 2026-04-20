@@ -21,6 +21,8 @@ namespace WellEngine
 	// Forward declarations
 	class CameraBehaviour;
 
+	using Microsoft::WRL::ComPtr;
+
 	/// Handles rendering of the scene and the GUI.
 	class Graphics
 	{
@@ -59,9 +61,14 @@ namespace WellEngine
 		float _fogResolutionScale = 0.25f;
 		float _dofResolutionScale = 0.5f;
 
-		ComPtr<ID3D11RasterizerState> _defaultRasterizer = nullptr;
-		ComPtr<ID3D11RasterizerState> _wireframeRasterizer = nullptr;
+		ComPtr<ID3D11RasterizerState> _frontFaceRasterizer = nullptr;			// Culls back faces
+		ComPtr<ID3D11RasterizerState> _backFaceRasterizer = nullptr;			// Culls front faces
+		ComPtr<ID3D11RasterizerState> _doubleSidedRasterizer = nullptr;			// Culls no faces
+		ComPtr<ID3D11RasterizerState> _wireframeFrontFaceRasterizer = nullptr;
+		ComPtr<ID3D11RasterizerState> _wireframeBackFaceRasterizer = nullptr;
+		ComPtr<ID3D11RasterizerState> _wireframeDoubleSidedRasterizer = nullptr;
 		ComPtr<ID3D11RasterizerState> _shadowRasterizer = nullptr;
+		ID3D11RasterizerState *_currRasterizer = nullptr;
 
 		bool _renderTransparency = true;
 		bool _renderOverlay = true;
@@ -239,6 +246,14 @@ namespace WellEngine
 	#endif
 
 		void SetGaussianWeightsBuffer(StructuredBufferD3D11 *buffer, float *const weights, UINT count);
+
+		ID3D11RasterizerState *GetRasterizerDefault() const;
+		ID3D11RasterizerState *GetRasterizerByCullMode(FaceCullingType cullMode) const;
+
+		ID3D11RasterizerState *GetWireframeRasterizerDefault() const;
+		ID3D11RasterizerState *GetWireframeRasterizerByCullMode(FaceCullingType cullMode) const;
+
+		void SetRasterizerState(ID3D11RasterizerState *rs);
 
 	public:
 		~Graphics();

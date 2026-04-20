@@ -761,7 +761,7 @@ bool Graphics::RenderSpotlights()
 
 			if (!meshBehaviour)
 			{
-				ErrMsgF("Skipping depth-rendering for non-mesh #{}!", entity_i);
+				WarnF("Skipping depth-rendering for non-mesh #{}!", entity_i);
 				return false;
 			}
 
@@ -977,7 +977,7 @@ bool Graphics::RenderPointlights()
 
 			if (!meshBehaviour)
 			{
-				ErrMsgF("Skipping depth-rendering for non-mesh #{}!", entity_i);
+				WarnF("Skipping depth-rendering for non-mesh #{}!", entity_i);
 				return false;
 			}
 
@@ -1100,7 +1100,7 @@ bool Graphics::RenderShadowCasters()
 
 	_context->PSSetShader(nullptr, nullptr, 0);
 	_context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	_context->RSSetState(_shadowRasterizer.Get());
+	SetRasterizerState(_shadowRasterizer.Get());
 
 	if (!RenderSpotlights())
 	{
@@ -1118,7 +1118,7 @@ bool Graphics::RenderShadowCasters()
 	static constexpr ID3D11RenderTargetView* nullViews [] = { nullptr };
 	_context->OMSetRenderTargets(1, nullViews, 0);
 
-	_context->RSSetState(_defaultRasterizer.Get());
+	SetRasterizerState(GetRasterizerDefault());
 
 	return true;
 }
@@ -1158,8 +1158,8 @@ bool Graphics::RenderOutlinedGeometry()
 	}
 
 	_context->RSSetViewports(1, &_viewportOutline);
-	_context->RSSetState(_defaultRasterizer.Get());
 	_context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	SetRasterizerState(GetRasterizerDefault());
 
 	// Bind general buffers
 	{
@@ -1263,12 +1263,24 @@ bool Graphics::RenderOutlinedGeometry()
 
 			MeshBehaviour *meshBehaviour = dynamic_cast<MeshBehaviour *>(instance.subject);
 
+			if (!meshBehaviour)
+			{
+				WarnF("Skipping non-mesh #{} in outline rendering!", entity_i);
+				return false;
+			}
+
 			ZoneNamedNC(renderMeshZone, "Draw Entity", RandomUniqueColor(), true);
 			const std::string &name = meshBehaviour->GetEntity()->GetName();
 			ZoneText(name.c_str(), name.size());
 			TracyD3D11NamedZoneC(_tracyD3D11Context, renderMeshD3D11Zone, "Draw Entity", RandomUniqueColor(), true);
 
 			// Bind shared geometry resources
+			FaceCullingType cullMode = meshBehaviour->GetCullMode();
+			SetRasterizerState(_wireframe ?
+				GetWireframeRasterizerByCullMode(cullMode) :
+				GetRasterizerByCullMode(cullMode)
+			);
+
 			if (_currMeshID != resources.meshID)
 			{
 				ZoneNamedXNC(bindResourceZone, "Bind Mesh", RandomUniqueColor(), true);
@@ -1554,6 +1566,12 @@ bool Graphics::RenderGeometry(bool overlayStage, bool skipPixelShader)
 		TracyD3D11NamedZoneC(_tracyD3D11Context, renderMeshD3D11Zone, "Draw Entity", RandomUniqueColor(), true);
 
 		// Bind shared geometry resources
+		FaceCullingType cullMode = meshBehaviour->GetCullMode();
+		SetRasterizerState(_wireframe ?
+			GetWireframeRasterizerByCullMode(cullMode) :
+			GetRasterizerByCullMode(cullMode)
+		);
+
 		if (_currMeshID != resources.meshID)
 		{
 			ZoneNamedXNC(bindResourceZone, "Bind Mesh", RandomUniqueColor(), true);
@@ -1868,8 +1886,8 @@ bool Graphics::RenderOpaque(
 	_context->OMSetRenderTargets(3, rtvs, targetDSV);
 
 	_context->RSSetViewports(1, targetViewport);
-	_context->RSSetState(_wireframe ? _wireframeRasterizer.Get() : _defaultRasterizer.Get());
 	_context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	SetRasterizerState(_wireframe ? GetWireframeRasterizerDefault() : GetRasterizerDefault());
 
 	// Bind camera data
 	if (!_currViewCamera->BindViewBuffers())
@@ -2001,7 +2019,7 @@ bool Graphics::RenderCustom(
 
 	_context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	_context->RSSetViewports(1, &_viewportSceneView);
-	_context->RSSetState(_wireframe ? _wireframeRasterizer.Get() : _defaultRasterizer.Get());
+	SetRasterizerState(_wireframe ? GetWireframeRasterizerDefault() : GetRasterizerDefault());
 
 	// Bind camera data
 	if (!_currViewCamera->BindViewBuffers())
@@ -2120,7 +2138,7 @@ bool Graphics::RenderTransparency(
 	_context->OMSetRenderTargets(1, &targetRTV, targetDSV);
 	_context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	_context->RSSetViewports(1, targetViewport);
-	_context->RSSetState(_wireframe ? _wireframeRasterizer.Get() : _defaultRasterizer.Get());
+	SetRasterizerState(_wireframe ? GetWireframeRasterizerDefault() : GetRasterizerDefault());
 
 	// Bind camera data
 	if (!_currViewCamera->BindTransparentBuffers())
@@ -2245,6 +2263,12 @@ bool Graphics::RenderTransparency(
 		TracyD3D11NamedZoneC(_tracyD3D11Context, renderMeshD3D11Zone, "Draw Entity", RandomUniqueColor(), true);
 
 		// Bind shared geometry resources
+		FaceCullingType cullMode = meshBehaviour->GetCullMode();
+		SetRasterizerState(_wireframe ?
+			GetWireframeRasterizerByCullMode(cullMode) :
+			GetRasterizerByCullMode(cullMode)
+		);
+
 		if (_currMeshID != resources.meshID)
 		{
 			ZoneNamedXNC(bindResourceZone, "Bind Mesh", RandomUniqueColor(), true);
@@ -3584,6 +3608,7 @@ bool Graphics::ResetRenderState()
 			collection.GetLightBehaviour(i)->GetShadowCameraCube()->ResetRenderQueue();
 	}
 
+	_currRasterizer		= nullptr;
 	_currInputLayoutID	= CONTENT_NULL;
 	_currMeshID			= CONTENT_NULL;
 	_currVsID			= CONTENT_NULL;

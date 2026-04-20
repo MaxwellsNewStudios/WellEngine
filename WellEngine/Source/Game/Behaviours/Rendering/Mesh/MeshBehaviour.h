@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Game/Behaviour.h"
+#include "Engine/Rendering/Graphics/GraphicsTypes.h"
 #include "Engine/Content/Content.h"
 
 namespace WellEngine
@@ -51,6 +52,7 @@ namespace WellEngine
 
 		UINT _meshID = CONTENT_NULL;
 		UINT _blendStateID = CONTENT_NULL;
+		FaceCullingType _cullMode = FaceCullingType::BACK;
 		const Material *_material = nullptr;
 
 		bool _updatePosBuffer = true;
@@ -127,12 +129,14 @@ namespace WellEngine
 		void SetAlphaCutoff(float value);
 		void SetColor(const dx::XMFLOAT4 &color);
 		void SetBounds(dx::BoundingOrientedBox &newBounds);
+		void SetCullMode(FaceCullingType cullMode);
 
 		[[nodiscard]] UINT GetMeshID() const;
 		[[nodiscard]] UINT GetBlendStateID() const;
 		[[nodiscard]] const Material *GetMaterial() const;
 		[[nodiscard]] const dx::XMFLOAT4 &GetColor() const;
 		[[nodiscard]] float GetAlphaCutoff() const;
+		[[nodiscard]] FaceCullingType GetCullMode() const;
 
 		void SetLastUsedLOD(UINT lodIndex, float normalizedDist);
 		[[nodiscard]] UINT GetLastUsedLODIndex() const;

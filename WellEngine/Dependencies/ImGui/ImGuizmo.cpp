@@ -699,7 +699,7 @@ namespace IMGUIZMO_NAMESPACE
 		ImVec2 mScreenSquareMax;
 
 		ImVec2 mViewManipulatorDelta;
-		vec_t mViewManipulatorUp;
+		vec_t mViewManipulatorUp = makeVect(0.f, 1.f, 0.f);
 
 		float mScreenFactor;
 		vec_t mRelativeOrigin;

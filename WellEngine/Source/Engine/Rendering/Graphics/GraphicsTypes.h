@@ -3,7 +3,6 @@
 #include <d3d11.h>
 #include <wrl/client.h>
 
-#include "GraphicsTypes.h"
 #include "Engine/Content/Content.h"
 #ifdef USE_IMGUI
 #include "Dependencies/ImGui/imgui.h"
@@ -16,6 +15,13 @@ namespace WellEngine
 
 	class CameraBehaviour;
 
+
+	enum class FaceCullingType
+	{
+		NONE	= 0,
+		FRONT	= 1,
+		BACK	= 2
+	};
 
 	enum class RenderType
 	{

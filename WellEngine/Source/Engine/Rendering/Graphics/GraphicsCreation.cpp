@@ -175,21 +175,54 @@ bool Graphics::Setup(
 		rasterizerDesc.MultisampleEnable = false;
 		rasterizerDesc.AntialiasedLineEnable = false;
 
-		if (FAILED(device->CreateRasterizerState(&rasterizerDesc, &_defaultRasterizer)))
+		if (FAILED(device->CreateRasterizerState(&rasterizerDesc, &_frontFaceRasterizer)))
 		{
-			ErrMsg("Failed to create default rasterizer state!");
+			ErrMsg("Failed to create front-face rasterizer state!");
 			return false;
 		}
+
+		rasterizerDesc.CullMode = D3D11_CULL_FRONT;
+
+		if (FAILED(device->CreateRasterizerState(&rasterizerDesc, &_backFaceRasterizer)))
+		{
+			ErrMsg("Failed to create back-face rasterizer state!");
+			return false;
+		}
+
+		rasterizerDesc.CullMode = D3D11_CULL_NONE;
+
+		if (FAILED(device->CreateRasterizerState(&rasterizerDesc, &_doubleSidedRasterizer)))
+		{
+			ErrMsg("Failed to create double-sided rasterizer state!");
+			return false;
+		}
+
 
 		rasterizerDesc.FillMode = D3D11_FILL_WIREFRAME;
 		rasterizerDesc.CullMode = D3D11_CULL_NONE;
-		//rasterizerDesc.AntialiasedLineEnable = true;
 
-		if (FAILED(device->CreateRasterizerState(&rasterizerDesc, &_wireframeRasterizer)))
+		if (FAILED(device->CreateRasterizerState(&rasterizerDesc, &_wireframeFrontFaceRasterizer)))
 		{
-			ErrMsg("Failed to create wireframe rasterizer state!");
+			ErrMsg("Failed to create wireframe front-face rasterizer state!");
 			return false;
 		}
+
+		rasterizerDesc.CullMode = D3D11_CULL_FRONT;
+
+		if (FAILED(device->CreateRasterizerState(&rasterizerDesc, &_wireframeBackFaceRasterizer)))
+		{
+			ErrMsg("Failed to create wireframe back-face rasterizer state!");
+			return false;
+		}
+
+		rasterizerDesc.CullMode = D3D11_CULL_NONE;
+
+		if (FAILED(device->CreateRasterizerState(&rasterizerDesc, &_wireframeDoubleSidedRasterizer)))
+		{
+			ErrMsg("Failed to create wireframe double-sided rasterizer state!");
+			return false;
+		}
+
 
 		rasterizerDesc.FillMode = D3D11_FILL_SOLID;
 		rasterizerDesc.CullMode = D3D11_CULL_BACK; // D3D11_CULL_NONE
@@ -330,8 +363,12 @@ void Graphics::Shutdown()
 	_rdss.Reset();
 	_tdss.Reset();
 	_nulldss.Reset();
-	_defaultRasterizer.Reset();
-	_wireframeRasterizer.Reset();
+	_frontFaceRasterizer.Reset();
+	_backFaceRasterizer.Reset();
+	_doubleSidedRasterizer.Reset();
+	_wireframeFrontFaceRasterizer.Reset();
+	_wireframeBackFaceRasterizer.Reset();
+	_wireframeDoubleSidedRasterizer.Reset();
 	_shadowRasterizer.Reset();
 	_sceneRT.Reset();
 	_depthRT.Reset();

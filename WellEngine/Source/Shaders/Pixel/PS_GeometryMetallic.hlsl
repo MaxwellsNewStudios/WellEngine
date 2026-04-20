@@ -60,11 +60,15 @@ PixelShaderOutput main(PixelShaderInput input)
 	
 	bool sampleNormal, sampleSpecular, sampleGlossiness, sampleReflective, sampleAmbient, sampleOcclusion;
 	GetSampleFlags(sampleNormal, sampleSpecular, sampleGlossiness, sampleReflective, sampleAmbient, sampleOcclusion);
-
+	
 	const float2 uv = input.tex_coord;
 	const float3 pos = input.world_position.xyz;
 	const float3 viewDir = normalize(cam_position.xyz - pos);
-	const float3 geoNormal = normalize(input.normal);
+	
+	// If surface normal and view direction are in same direction, invert normal.
+	const float3 correctedNormal = normalize(input.normal);
+	const float faceSign = sign(sign(dot(viewDir, correctedNormal)) - 0.1);
+	const float3 geoNormal = correctedNormal * faceSign;
 	
 	const float4 diffuseColW = MatProp_baseColor * Texture.Sample(Sampler, uv);
 	const float3 diffuseCol = diffuseColW.rgb;

@@ -165,6 +165,58 @@ void Graphics::SetGaussianWeightsBuffer(StructuredBufferD3D11 *buffer, float *co
 		return;
 	}
 }
+
+ID3D11RasterizerState *Graphics::GetRasterizerDefault() const
+{
+	return _frontFaceRasterizer.Get();
+}
+ID3D11RasterizerState *Graphics::GetRasterizerByCullMode(FaceCullingType cullMode) const
+{
+	switch (cullMode)
+	{
+	default:
+	case FaceCullingType::BACK:
+		return _frontFaceRasterizer.Get();
+
+	case FaceCullingType::FRONT:
+		return _backFaceRasterizer.Get();
+
+	case FaceCullingType::NONE:
+		return _doubleSidedRasterizer.Get();
+	}
+}
+ID3D11RasterizerState *Graphics::GetWireframeRasterizerDefault() const
+{
+	return _wireframeFrontFaceRasterizer.Get();
+}
+ID3D11RasterizerState *Graphics::GetWireframeRasterizerByCullMode(FaceCullingType cullMode) const
+{
+	switch (cullMode)
+	{
+	default:
+	case FaceCullingType::BACK:
+		return _wireframeFrontFaceRasterizer.Get();
+
+	case FaceCullingType::FRONT:
+		return _wireframeBackFaceRasterizer.Get();
+
+	case FaceCullingType::NONE:
+		return _wireframeDoubleSidedRasterizer.Get();
+	}
+}
+
+void Graphics::SetRasterizerState(ID3D11RasterizerState *rs)
+{
+	if (rs == nullptr)
+		return;
+
+	if (_currRasterizer == rs)
+		return;
+
+	_currRasterizer = rs;
+	_context->RSSetState(rs);
+}
+
 void Graphics::SetFogGaussianWeightsBuffer(float *const weights, UINT count)
 {
 	SetGaussianWeightsBuffer(&_fogGaussianWeightsBuffer, weights, count);

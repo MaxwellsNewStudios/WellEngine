@@ -1665,6 +1665,12 @@ bool MeshBehaviour::RenderUI()
 		if (ImGui::RadioButton("Shadows Only", _shadowsOnly))
 			_shadowsOnly = !_shadowsOnly;
 
+		const char *cullingModes = "None\0Front\0Back\0";
+		int currentCulling = (int)_cullMode;
+
+		if (ImGui::Combo("Culling Mode", &currentCulling, cullingModes))
+			_cullMode = (FaceCullingType)currentCulling;
+
 		if (ImGui::SliderFloat("Metallic", &_metallic, 0.0f, 1.0f))
 			_updateMatBuffer = true;
 
@@ -1905,6 +1911,7 @@ bool MeshBehaviour::Serialize(json::Document::AllocatorType &docAlloc, json::Val
 	obj.AddMember("Transparent", _isTransparent, docAlloc);
 	obj.AddMember("Shadow Caster", _castShadows, docAlloc);
 	obj.AddMember("Shadows Only", _shadowsOnly, docAlloc);
+	obj.AddMember("Culling Mode", (int)_cullMode, docAlloc);
 	obj.AddMember("Base Color", SerializerUtils::SerializeVec(_baseColor, docAlloc), docAlloc);
 	obj.AddMember("Alpha Cutoff", _alphaCutoff, docAlloc);
 	obj.AddMember("Normal Factor", _normalFactor, docAlloc);
@@ -2032,6 +2039,9 @@ bool MeshBehaviour::Deserialize(const json::Value &obj, Scene *scene)
 	
 	if (obj.HasMember("Shadows Only"))
 		_shadowsOnly = obj["Shadows Only"].GetBool();
+	
+	if (obj.HasMember("Culling Mode"))
+		_cullMode = (FaceCullingType)obj["Culling Mode"].GetInt();
 
 	if (obj.HasMember("Base Color"))
 		SerializerUtils::DeserializeVec(_baseColor, obj["Base Color"]);
@@ -2256,6 +2266,10 @@ void MeshBehaviour::SetBounds(BoundingOrientedBox &newBounds)
 	_bounds = newBounds;
 	_recalculateBounds = true;
 }
+void WellEngine::MeshBehaviour::SetCullMode(FaceCullingType cullMode)
+{
+	_cullMode = cullMode;
+}
 
 UINT MeshBehaviour::GetMeshID() const
 {
@@ -2276,6 +2290,10 @@ const dx::XMFLOAT4 &MeshBehaviour::GetColor() const
 float MeshBehaviour::GetAlphaCutoff() const
 {
 	return _alphaCutoff;
+}
+FaceCullingType WellEngine::MeshBehaviour::GetCullMode() const
+{
+	return _cullMode;
 }
 
 void MeshBehaviour::SetLastUsedLOD(UINT lodIndex, float normalizedDist)

@@ -3186,10 +3186,9 @@ bool Scene::RenderGizmoUI()
 		auto mState = input.GetMouse();
 		ImGuizmo::SetViewManipulatorDelta(skipNextDelta ? ImVec2(0, 0) : ImVec2(mState.delta * input.GetMouseSensitivity()));
 
-		float camUp[3] = { 0.f, 1.f, 0.f };
 		//float camUp[3] = { 0.0f, u.y > 0.0f ? 1.0f : -1.0f, 0.0f };
 		//float camUp[3] = { u.x, u.y, u.z };
-		ImGuizmo::SetViewManipulatorUp(camUp);
+		//ImGuizmo::SetViewManipulatorUp(camUp);
 
 		ImGuizmo::ViewManipulate(
 			&(camView.m[0][0]), 
