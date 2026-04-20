@@ -366,16 +366,16 @@ bool Graphics::RenderUI(TimeUtils &time)
 
 					float farPlane = _currViewCamera->GetPlanes().farZ;
 
-					ImGui::DragFloat("Depth Fade Begin", &_currFogSettings.depthFadeBegin, 0.1f, 0.001f, farPlane);
+					ImGui::DragFloat("Depth Fade Begin", &_currFogSettings.depthFadeBegin, 0.001f, 0.001f, 1.0f);
 					ImGuiUtils::LockMouseOnActive();
 
-					ImGui::DragFloat("Depth Fade End", &_currFogSettings.depthFadeEnd, 0.1f, 0.001f, farPlane);
+					ImGui::DragFloat("Depth Fade End", &_currFogSettings.depthFadeEnd, 0.001f, 0.001f, 1.0f);
 					ImGuiUtils::LockMouseOnActive();
 
-					ImGui::DragFloat("Depth Fade Exponent", &_currFogSettings.depthFadeExp, 0.01f, 0.001f);
+					ImGui::DragFloat("Depth Fade Exponent", &_currFogSettings.depthFadeExp, 0.001f, 0.001f);
 					ImGuiUtils::LockMouseOnActive();
 
-					if (ImGui::DragInt("Blur Iterations", &_fogBlurIterations, 0.1f, 0, 16))
+					if (ImGui::DragInt("Blur Iterations", &_fogBlurIterations, 0.01f, 0, 16))
 					{
 						constexpr float clearFog[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
 						_context->ClearRenderTargetView(_fogRT.GetRTV(), clearFog);

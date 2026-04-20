@@ -197,10 +197,18 @@ bool CameraBehaviour::RenderUI()
 	bool valueChanged = false;
 
 	CameraPlanes planes = GetPlanes();
-	valueChanged |= ImGui::DragFloat("NearZ:", &planes.nearZ);
+	if (ImGui::DragFloat("NearZ:", &planes.nearZ))
+	{
+		planes.nearZ = CLAMP(planes.nearZ, 0.001f, max(0.001f, planes.farZ - 1.0f));
+		valueChanged = true;
+	}
 	ImGuiUtils::LockMouseOnActive();
 
-	valueChanged |= ImGui::DragFloat("FarZ:", &planes.farZ);
+	if (ImGui::DragFloat("FarZ:", &planes.farZ))
+	{
+		planes.farZ = CLAMP(planes.farZ, min(1000.0f, planes.nearZ + 1.0f), 1000.0f);
+		valueChanged = true;
+	}
 	ImGuiUtils::LockMouseOnActive();
 
 	if (valueChanged)
@@ -210,15 +218,16 @@ bool CameraBehaviour::RenderUI()
 	ImGui::Text("FOV:"); ImGui::SameLine();
 	if (_ortho)
 	{
-		if (ImGui::DragFloat("##FOVDrag", &fov, 1.0f, 0.1f))
+		if (ImGui::DragFloat("##FovOrtho", &fov, 1.0f, 0.1f))
 			SetFOV(max(fov, 0.1f));
 		ImGuiUtils::LockMouseOnActive();
 	}
 	else
 	{
 		fov *= RAD_TO_DEG;
-		if (ImGui::SliderFloat("##FOVSlider", &fov, 0.1f, 179.9f))
-			SetFOV(std::clamp(fov, 0.1f, 179.9f) * DEG_TO_RAD);
+		if (ImGui::DragFloat("##FovPerspective", &fov, 0.1f))
+			SetFOV(std::clamp(fov, 1.0f, 179.9f) * DEG_TO_RAD);
+		ImGuiUtils::LockMouseOnActive();
 	}
 
 	float aspect = _currProjInfo.aspectRatio;
@@ -1314,8 +1323,8 @@ void CameraBehaviour::SetInverted(bool state)
 }
 void CameraBehaviour::SetPlanes(CameraPlanes planes)
 {
-	planes.nearZ = max(planes.nearZ, 0.0001f);
-	planes.farZ = max(planes.farZ, planes.nearZ + 0.0001f);
+	planes.nearZ = max(planes.nearZ, 0.001f);
+	planes.farZ = max(planes.farZ, planes.nearZ + 1.0f);
 
 	_currProjInfo.planes = planes;
 

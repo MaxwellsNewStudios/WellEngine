@@ -418,7 +418,7 @@ void CameraCubeBehaviour::SetRendererInfo(const RendererInfo &rendererInfo)
 }
 void CameraCubeBehaviour::SetFarZ(float farZ)
 {
-	_cameraPlanes.farZ = farZ;
+	_cameraPlanes.farZ = max(farZ, _cameraPlanes.nearZ + 1.0f);
 
 	_isDirty = true;
 	_recalculateBounds = true;
