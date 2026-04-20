@@ -10,10 +10,6 @@
 Input::Input()
 {
 	KeyboardWinHook &keyboardHook = KeyboardWinHook::Instance();
-	/*for (int i = 0; i < 255; i++)
-	{
-		_vKeys[i] = (GetAsyncKeyState(i) & 0x8000) ? true : false;
-	}*/
 
 	SDL_GetMouseState(&_mousePos.x, &_mousePos.y);
 
@@ -58,9 +54,8 @@ bool Input::Update(Window &window)
 		}
 		else
 		{
+			_lMousePos = _mousePos;
 			SDL_GetMouseState(&_mousePos.x, &_mousePos.y);
-			_lMousePos.x = 0;
-			_lMousePos.y = 0;
 		}
 	}
 	else
@@ -473,6 +468,7 @@ bool Input::ToggleLockCursor(Window &window)
 	SDL_SetWindowRelativeMouseMode(sdl_window, !_cursorLocked);
 	_cursorLocked = SDL_GetWindowRelativeMouseMode(sdl_window);
 
+	_lMousePos = {0, 0};
 	return _cursorLocked;
 }
 

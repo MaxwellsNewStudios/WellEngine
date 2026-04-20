@@ -3126,8 +3126,10 @@ bool Scene::RenderGizmoUI()
 	}
 
 	// Camera orientation gizmo
-	if (DebugData::Get().showViewManipGizmo && _viewCamera)
+	if (DebugData::Get().showViewManipGizmo)
 	{
+		constexpr float viewManipGizmoSize = 96.0f;
+
 		Transform *camTransform = _viewCamera.Get()->GetTransform();
 
 		XMFLOAT3A
@@ -3158,9 +3160,12 @@ bool Scene::RenderGizmoUI()
 		static float pivotDist = FLT_MAX;
 		static bool hasPivotDist = false;
 		static bool needsPivotDist = false;
+		static bool skipNextDelta = false;
 
 		if (needsPivotDist && !hasPivotDist)
 		{
+			skipNextDelta = false;
+
 			// Get distance to pivot
 			pivotDist = FLT_MAX;
 			bool foundDist = false;
@@ -3178,18 +3183,33 @@ bool Scene::RenderGizmoUI()
 			hasPivotDist = true;
 		}
 
-		ImGuizmo::ViewManipulate(&(camView.m[0][0]), pivotDist, ImVec2(sceneWidth + scenePosX - 16 - 96, scenePosY + 16), ImVec2(96, 96), 0x10101010);
+		auto mState = input.GetMouse();
+		ImGuizmo::SetViewManipulatorDelta(skipNextDelta ? ImVec2(0, 0) : ImVec2(mState.delta * input.GetMouseSensitivity()));
 
-		bool isUsingViewManip = ImGuizmo::IsUsingViewManipulate();
-		if (isUsingViewManip)
+		float camUp[3] = { 0.f, 1.f, 0.f };
+		//float camUp[3] = { 0.0f, u.y > 0.0f ? 1.0f : -1.0f, 0.0f };
+		//float camUp[3] = { u.x, u.y, u.z };
+		ImGuizmo::SetViewManipulatorUp(camUp);
+
+		ImGuizmo::ViewManipulate(
+			&(camView.m[0][0]), 
+			pivotDist, 
+			ImVec2(sceneWidth + scenePosX - 16 - viewManipGizmoSize, scenePosY + 16),
+			ImVec2(viewManipGizmoSize, viewManipGizmoSize),
+			0x10101010
+		);
+
+		if (ImGuizmo::IsUsingViewManipulate())
 		{
 			if (hasPivotDist)
 			{
+				skipNextDelta = input.TryWrapMouse(true);
+
 				// Draw dot at pivot point
 				{
 					XMFLOAT3A pivot;
 					Store(pivot, Load(camPos) + (Load(camDir) * pivotDist));
-					DebugDrawer::Instance().DrawRay(pivot, { 0, 0.1f, 0 }, 0.15f, { 1,1,1,1 });
+					DebugDrawer::Instance().DrawSphere(pivot, 0.1f, 3, { 1,1,1,1 });
 				}
 
 				XMMATRIX view = Load(camView);
@@ -3218,7 +3238,6 @@ bool Scene::RenderGizmoUI()
 				camTransform->SetRotation(orient, World);
 
 				// Zoom based on mouse scroll
-				MouseState mState = input.GetMouse();
 				float scroll = mState.scroll.y * -0.1f;
 
 				if (scroll != 0.0f)
@@ -3246,7 +3265,7 @@ bool Scene::RenderGizmoUI()
 
 		if (!input.GetMouseAbsorbed())
 		{
-			if (isUsingViewManip || ImGuizmo::IsViewManipulateHovered() ||
+			if (ImGuizmo::IsUsingViewManipulate() || ImGuizmo::IsViewManipulateHovered() ||
 				ImGuizmo::IsOver() || ImGuizmo::IsUsingAny())
 			{
 				input.SetMouseAbsorbed(true);

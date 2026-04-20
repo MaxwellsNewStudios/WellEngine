@@ -899,7 +899,7 @@ bool DebugPlayerBehaviour::HandleCameraMovement(TimeUtils &time, const Input &in
 			}
 		}
 	}
-	else if ((isMouseMovingCamera || acceptMouse) && input.HasKeyboardFocus())
+	else if ((isMouseMovingCamera || acceptMouse) && input.HasKeyboardFocus() && !_cursorPositioningTarget)
 	{
 		switch (movementMode)
 		{
@@ -1242,14 +1242,12 @@ bool DebugPlayerBehaviour::HandleCameraMovement(TimeUtils &time, const Input &in
 
 			if (input.IsMouseWithinSceneView() && scroll != 0.0f)
 			{
-				float &speed = debugData.movementSpeed;
-
 				if (holdingM2)
 				{
 					// Adjust speed
-					speed = std::clamp(speed * (1.0f + scroll * 0.1f), 0.01f, 10.0f);
+					debugData.movementSpeed = std::clamp(debugData.movementSpeed * (1.0f + scroll * 0.1f), 0.01f, 10.0f);
 
-					std::string newSpeedMsg = "Camera speed set to " + std::to_string(speed);
+					std::string newSpeedMsg = "Camera speed set to " + std::to_string(debugData.movementSpeed);
 
 					auto notif = graphics->GetNotification("CAM_SPEED_CHANGE");
 					if (notif)
@@ -1267,7 +1265,7 @@ bool DebugPlayerBehaviour::HandleCameraMovement(TimeUtils &time, const Input &in
 				{
 					// Mouse scroll move
 					CameraBehaviour *cam = _currCameraPtr.GetAs<CameraBehaviour>();
-					camTransform->MoveRelative({ 0, 0, scroll * speed }, Local);
+					camTransform->MoveRelative({ 0, 0, scroll * debugData.movementSpeed }, Local);
 				}
 			}
 
