@@ -63,12 +63,12 @@ bool Content::RenderUI(ID3D11Device *device)
 
 		static float previewHeight = 128.0f;
 		if (ImGui::DragFloat("Preview Scale", &previewHeight))
-			previewHeight = max(4.0f, previewHeight);
+			previewHeight = MAX(4.0f, previewHeight);
 		ImGuiUtils::LockMouseOnActive();
 
 		static float imageHeight = 512.0f;
 		if (ImGui::DragFloat("Image Scale", &imageHeight))
-			imageHeight = max(128.0f, imageHeight);
+			imageHeight = MAX(128.0f, imageHeight);
 		ImGuiUtils::LockMouseOnActive();
 
 		if (ImGui::BeginTabBar("HierarchyTab"))
@@ -303,7 +303,7 @@ bool Content::RenderUI(ID3D11Device *device)
 				const float availableWidth = ImGui::GetContentRegionAvail().x - scrollBarWidth;
 
 				const int tableItemSize = previewHeight + texPadding;
-				const int columnsCount = max(1, (int)(availableWidth / tableItemSize));
+				const int columnsCount = MAX(1, (int)(availableWidth / tableItemSize));
 				const int rowsCount = (count + columnsCount - 1) / columnsCount;
 
 				const float widthPerColumn = (float)(columnsCount * tableItemSize);
@@ -630,7 +630,7 @@ bool Content::RenderUI(ID3D11Device *device)
 				const float availableWidth = ImGui::GetContentRegionAvail().x - scrollBarWidth;
 
 				const int tableItemSize = previewHeight + texPadding;
-				const int columnsCount = max(1, (int)(availableWidth / tableItemSize));
+				const int columnsCount = MAX(1, (int)(availableWidth / tableItemSize));
 				const int rowsCount = (count + columnsCount - 1) / columnsCount;
 
 				const float widthPerColumn = (float)(columnsCount * tableItemSize);

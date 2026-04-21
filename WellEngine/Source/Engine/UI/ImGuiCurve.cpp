@@ -23,7 +23,7 @@ static bool IsMouseHoveringLine(const ImVec2& p1, const ImVec2& p2, float thickn
 	ImVec2 toMouse = mousePos - p1;
 
 	float t = toMouse.x * lineDir.x + toMouse.y * lineDir.y;
-	t = max(0.0f, min(lineLength, t));
+	t = MAX(0.0f, MIN(lineLength, t));
 
 	ImVec2 closestPoint = p1 + ImVec2(lineDir.x * t, lineDir.y * t);
 	ImVec2 diff = mousePos - closestPoint;
@@ -516,7 +516,7 @@ bool ImGui::CurveEdit(const char* label, std::vector<BezierPoint>* points,
 					if (clampY)
 					{
 						float newPosY = unSnappedPos.position.y + delta.y;
-						newPosY = max(pointBounds.Min.y, min(pointBounds.Max.y, newPosY));
+						newPosY = MAX(pointBounds.Min.y, MIN(pointBounds.Max.y, newPosY));
 
 						float newDeltaY = newPosY - unSnappedPos.position.y;
 						deltaBuffer.y += (delta.y - newDeltaY); // Track how much delta was negated
@@ -718,8 +718,8 @@ bool ImGui::CurveEdit(const char* label, std::vector<BezierPoint>* points,
 						continue;
 
 					ImVec2 closestPoint = ImVec2(
-						CLAMP(mousePos.x, min(p1.x, p2.x), max(p1.x, p2.x)),
-						CLAMP(mousePos.y, min(p1.y, p2.y), max(p1.y, p2.y))
+						CLAMP(mousePos.x, MIN(p1.x, p2.x), MAX(p1.x, p2.x)),
+						CLAMP(mousePos.y, MIN(p1.y, p2.y), MAX(p1.y, p2.y))
 					);
 
 					float distanceSq = ImLengthSqr(mousePos - closestPoint);
@@ -803,7 +803,7 @@ bool ImGui::CurveEdit(const char* label, std::vector<BezierPoint>* points,
 						}
 					}
 
-					float boundsDim = max(pointBounds.GetWidth(), pointBounds.GetHeight());
+					float boundsDim = MAX(pointBounds.GetWidth(), pointBounds.GetHeight());
 
 					// Insert new point into curve
 					BezierPoint newPoint;

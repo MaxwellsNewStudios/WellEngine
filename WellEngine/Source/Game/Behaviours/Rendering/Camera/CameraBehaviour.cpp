@@ -199,14 +199,14 @@ bool CameraBehaviour::RenderUI()
 	CameraPlanes planes = GetPlanes();
 	if (ImGui::DragFloat("NearZ:", &planes.nearZ))
 	{
-		planes.nearZ = CLAMP(planes.nearZ, 0.001f, max(0.001f, planes.farZ - 1.0f));
+		planes.nearZ = CLAMP(planes.nearZ, 0.001f, MAX(0.001f, planes.farZ - 1.0f));
 		valueChanged = true;
 	}
 	ImGuiUtils::LockMouseOnActive();
 
 	if (ImGui::DragFloat("FarZ:", &planes.farZ))
 	{
-		planes.farZ = CLAMP(planes.farZ, min(1000.0f, planes.nearZ + 1.0f), 1000.0f);
+		planes.farZ = CLAMP(planes.farZ, MIN(1000.0f, planes.nearZ + 1.0f), 1000.0f);
 		valueChanged = true;
 	}
 	ImGuiUtils::LockMouseOnActive();
@@ -219,7 +219,7 @@ bool CameraBehaviour::RenderUI()
 	if (_ortho)
 	{
 		if (ImGui::DragFloat("##FovOrtho", &fov, 1.0f, 0.1f))
-			SetFOV(max(fov, 0.1f));
+			SetFOV(MAX(fov, 0.1f));
 		ImGuiUtils::LockMouseOnActive();
 	}
 	else
@@ -603,8 +603,8 @@ bool CameraBehaviour::FitPlanesToPoints(const std::vector<XMFLOAT4A> &points)
 			maxDist = dot;
 	}
 
-	//_currProjInfo.planes.nearZ = max(minDist, _defaultProjInfo.planes.nearZ);
-	_currProjInfo.planes.farZ = min(maxDist, _defaultProjInfo.planes.farZ);
+	//_currProjInfo.planes.nearZ = MAX(minDist, _defaultProjInfo.planes.nearZ);
+	_currProjInfo.planes.farZ = MIN(maxDist, _defaultProjInfo.planes.farZ);
 
 	if (_currProjInfo.planes.farZ - _currProjInfo.planes.nearZ < 0.001f)
 	{
@@ -1323,8 +1323,8 @@ void CameraBehaviour::SetInverted(bool state)
 }
 void CameraBehaviour::SetPlanes(CameraPlanes planes)
 {
-	planes.nearZ = max(planes.nearZ, 0.001f);
-	planes.farZ = max(planes.farZ, planes.nearZ + 1.0f);
+	planes.nearZ = MAX(planes.nearZ, 0.001f);
+	planes.farZ = MAX(planes.farZ, planes.nearZ + 1.0f);
 
 	_currProjInfo.planes = planes;
 

@@ -9,7 +9,9 @@
 
 #pragma region Defines
 #define SIGN(x)	(x > 0 ? 1 : -1)
-#define CLAMP(x, a, b) min(max(x, a), b)
+#define MIN(a, b) (a > b ? b : a)
+#define MAX(a, b) (a > b ? a : b)
+#define CLAMP(x, a, b) MIN(MAX(x, a), b)
 
 static constexpr float DEG_TO_RAD = (DirectX::XM_PI / 180.0f);
 static constexpr float RAD_TO_DEG = (180.0f / DirectX::XM_PI);
@@ -489,7 +491,7 @@ namespace WellEngine
 	{
 		T val = v[0];
 		for (int i = 1; i < c; i++)
-			val = min(val, v[i]);
+			val = MIN(val, v[i]);
 		return val;
 	}
 	template<typename T>
@@ -497,7 +499,7 @@ namespace WellEngine
 	{
 		T val = v[0];
 		for (int i = 1; i < c; i++)
-			val = max(val, v[i]);
+			val = MAX(val, v[i]);
 		return val;
 	}
 
@@ -505,26 +507,26 @@ namespace WellEngine
 	static inline void Min(int c, T *dest, const T *a, T b) noexcept
 	{
 		for (int i = 0; i < c; i++)
-			dest[i] = min(a[i], b);
+			dest[i] = MIN(a[i], b);
 	}
 	template<typename T>
 	static inline void Max(int c, T *dest, const T *a, T b) noexcept
 	{
 		for (int i = 0; i < c; i++)
-			dest[i] = max(a[i], b);
+			dest[i] = MAX(a[i], b);
 	}
 
 	template<typename T>
 	static inline void Min(int c, T *dest, const T *a, const T *b) noexcept
 	{
 		for (int i = 0; i < c; i++)
-			dest[i] = min(a[i], b[i]);
+			dest[i] = MIN(a[i], b[i]);
 	}
 	template<typename T>
 	static inline void Max(int c, T *dest, const T *a, const T *b) noexcept
 	{
 		for (int i = 0; i < c; i++)
-			dest[i] = max(a[i], b[i]);
+			dest[i] = MAX(a[i], b[i]);
 	}
 
 	template<typename T>
@@ -561,17 +563,19 @@ namespace WellEngine
 	template<typename T>
 	[[nodiscard]] static inline size_t NumericLimit() noexcept
 	{
-	#undef max
+#pragma push_macro("max")
+#undef max
 		return std::numeric_limits<T>::max();
-	#define max(a, b) (((a) > (b)) ? (a) : (b))
+#pragma pop_macro("max")
 	};
 
 	template<typename T>
 	[[nodiscard]] static inline size_t NumericLimit(T number) noexcept
 	{
-	#undef max
+#pragma push_macro("max")
+#undef max
 		return std::numeric_limits<T>::max();
-	#define max(a, b) (((a) > (b)) ? (a) : (b))
+#pragma pop_macro("max")
 	};
 
 	/// Calculate the reach of a light based on its falloff and color value.
@@ -583,7 +587,7 @@ namespace WellEngine
 		// Must match the value of the same name in CutoffLight().
 		float intensityCutoff = LIGHT_MIN_INTENSITY;
 
-		float value = max(color.x, max(color.y, color.z));
+		float value = MAX(color.x, MAX(color.y, color.z));
 
 		// intensity = value / (1 + (distance * falloff)^2)
 		return sqrt((value / intensityCutoff) - 1.0f) / falloff;
@@ -596,8 +600,8 @@ namespace WellEngine
 			g = rgb.y,
 			b = rgb.z;
 
-		float max = max(r, max(g, b));
-		float min = min(r, min(g, b));
+		float max = MAX(r, MAX(g, b));
+		float min = MIN(r, MIN(g, b));
 		float diff = max - min;
 
 		float h = 0.0, s, v;
@@ -1042,10 +1046,10 @@ namespace WellEngine::GameCollision
 			extentMem.y * std::abs(Vec3::UnitY().ToOp().Dot3(axis)) +
 			extentMem.z * std::abs(Vec3::UnitZ().ToOp().Dot3(axis));
 
-		const float minP = min(p0, min(p1, p2));
-		const float maxP = max(p0, max(p1, p2));
+		const float minP = MIN(p0, MIN(p1, p2));
+		const float maxP = MAX(p0, MAX(p1, p2));
 
-		return !(max(-maxP, minP) > r);
+		return !(MAX(-maxP, minP) > r);
 	}
 	static inline bool _IntersectsTriangleAABBB(const Shape::Tri &tri, const dx::BoundingBox &aabb)
 	{

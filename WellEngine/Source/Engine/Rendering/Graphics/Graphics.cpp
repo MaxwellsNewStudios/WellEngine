@@ -844,7 +844,7 @@ bool Graphics::RenderSpotlights()
 				// Get the LOD index.
 				lodIndex = static_cast<UINT>(normalizedDist * (subMeshCount - 1));
 				if (dot < 0.0f)
-					lodIndex = min(lodIndex + 1, subMeshCount - 1);
+					lodIndex = MIN(lodIndex + 1, subMeshCount - 1);
 			}
 
 			{
@@ -1058,7 +1058,7 @@ bool Graphics::RenderPointlights()
 				// Get the LOD index.
 				lodIndex = static_cast<UINT>(normalizedDist * (subMeshCount - 1));
 				if (dot < 0.0f)
-					lodIndex = min(lodIndex + 1, subMeshCount - 1);
+					lodIndex = MIN(lodIndex + 1, subMeshCount - 1);
 			}
 
 			{
@@ -1862,7 +1862,7 @@ bool Graphics::RenderOpaque(
 		TracyD3D11NamedZoneXC(_tracyD3D11Context, clearRTVsD3D11Zone, "Clear Targets", RandomUniqueColor(), true);
 
 		ProjectionInfo proj = _currViewCamera->GetCurrProjectionInfo();
-		float farDist = max(proj.planes.nearZ, proj.planes.farZ);
+		float farDist = MAX(proj.planes.nearZ, proj.planes.farZ);
 
 		// Clear & bind render targets
 		if (!overlayStage) // Skip clearing scene render target if on the overlay-stage
@@ -2001,7 +2001,7 @@ bool Graphics::RenderCustom(
 		TracyD3D11NamedZoneXC(_tracyD3D11Context, clearRTVsD3D11Zone, "Clear Targets", RandomUniqueColor(), true);
 
 		ProjectionInfo proj = _currViewCamera->GetCurrProjectionInfo();
-		float farDist = max(proj.planes.nearZ, proj.planes.farZ);
+		float farDist = MAX(proj.planes.nearZ, proj.planes.farZ);
 
 		// Clear & bind render targets
 		if (!overlayStage) // Skip clearing scene render target if on the overlay-stage

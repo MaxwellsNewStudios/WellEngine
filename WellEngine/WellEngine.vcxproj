@@ -633,6 +633,7 @@
     <ClInclude Include="Dependencies\tinyfiledialogs\tinyfiledialogs.h" />
     <ClInclude Include="Dependencies\tracy-0.11.1\public\tracy\Tracy.hpp" />
     <ClInclude Include="Dependencies\tracy-0.11.1\public\tracy\TracyD3D11.hpp" />
+    <ClInclude Include="Source\Engine\Content\DirectoryManager.h" />
     <ClInclude Include="Source\Engine\Content\DefaultVertex.h" />
     <ClInclude Include="Source\Engine\Content\FontAtlas.h" />
     <ClInclude Include="Source\Engine\Audio\SoundEngine.h" />
@@ -674,6 +675,7 @@
     <ClInclude Include="Source\Engine\Physics\JoltManager.h" />
     <ClInclude Include="Source\Engine\Physics\JoltPhysicsInstance.h" />
     <ClInclude Include="Source\Engine\Rendering\Graphics\GraphicsTypes.h" />
+    <ClInclude Include="Source\Engine\Content\ShaderSettings.h" />
     <ClInclude Include="Source\Engine\UI\Fonts\IconsCodicons.h" />
     <ClInclude Include="Source\Engine\UI\Fonts\IconsFontaudio.h" />
     <ClInclude Include="Source\Engine\UI\Fonts\IconsFontAwesome6.h" />
@@ -1523,6 +1525,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="Source\Engine\Content\DirectoryManager.cpp" />
     <ClCompile Include="Source\Engine\Audio\SoundEngine.cpp" />
     <ClCompile Include="Source\Engine\Audio\SoundSource.cpp" />
     <ClCompile Include="Source\Engine\Collision\Colliders.cpp" />
@@ -1907,6 +1910,11 @@
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
+    </FxCompile>
+    <FxCompile Include="Source\Shaders\Pixel\PS_Cel.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
     </FxCompile>
     <FxCompile Include="Source\Shaders\Pixel\PS_DebugDraw.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>

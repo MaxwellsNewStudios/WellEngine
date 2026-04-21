@@ -396,6 +396,12 @@ SniperMagazine Raw_Specular.png
 SniperMagazine Raw_Glossiness.png
 SniperMagazine Raw_Occlusion.png
 
+Arcade_Diffuse.png
+Arcade_Normal.png
+Arcade_Specular.png
+Arcade_Glossiness.png
+Arcade_Ambient.png
+
 sponza\sponza_arch_ddn.dds
 sponza\sponza_arch_diff.dds
 sponza\sponza_arch_spec.dds

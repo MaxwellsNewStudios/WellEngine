@@ -95,7 +95,7 @@ bool SimplePointLightBehaviour::RenderUI()
 	}
 
 	float color[3] = { _color.x, _color.y, _color.z };
-	float colorStrength = max(color[0], max(color[1], color[2]));
+	float colorStrength = MAX(color[0], MAX(color[1], color[2]));
 
 	color[0] /= colorStrength;
 	color[1] /= colorStrength;
@@ -108,14 +108,14 @@ bool SimplePointLightBehaviour::RenderUI()
 	bool newStrength = false;
 	if (ImGui::DragFloat("Intensity", &colorStrength, 0.01f, LIGHT_MIN_INTENSITY))
 	{
-		colorStrength = max(colorStrength, LIGHT_MIN_INTENSITY);
+		colorStrength = MAX(colorStrength, LIGHT_MIN_INTENSITY);
 		newStrength = true;
 	}
 	ImGuiUtils::LockMouseOnActive();
 
 	if (newColor || newStrength)
 	{
-		float inputStr = max(color[0], max(color[1], color[2]));
+		float inputStr = MAX(color[0], MAX(color[1], color[2]));
 
 		if (inputStr > LIGHT_MIN_INTENSITY)
 		{
@@ -127,7 +127,7 @@ bool SimplePointLightBehaviour::RenderUI()
 
 	if (ImGui::DragFloat("Falloff", &_falloff, 0.01f, 0.001f))
 	{
-		_falloff = max(_falloff, 0.001f);
+		_falloff = MAX(_falloff, 0.001f);
 	}
 	ImGuiUtils::LockMouseOnActive();
 

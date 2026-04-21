@@ -383,8 +383,8 @@ bool Scene::RenderEntityHierarchyUI(Entity *root, UINT depth, bool skipCulling, 
 					};
 					NewLine();
 
-					rect.Max.x = max(100.0f, rect.Max.x * 0.75f - 50.0f);
-					rect.Max.y = max(150.0f, rect.Max.y * 0.75f - 50.0f);
+					rect.Max.x = MAX(100.0f, rect.Max.x * 0.75f - 50.0f);
+					rect.Max.y = MAX(150.0f, rect.Max.y * 0.75f - 50.0f);
 
 					rect.Min.x -= rect.Max.x;
 
@@ -682,7 +682,7 @@ bool Scene::RenderEntityHierarchyUI(Entity *root, UINT depth, bool skipCulling, 
 	else
 	{
 		// If not visible, just add a dummy to keep the same spacing
-		Dummy({ GetContentRegionAvail().x, max(lastHeight, frameHeight)});
+		Dummy({ GetContentRegionAvail().x, MAX(lastHeight, frameHeight)});
 	}
 
 	EndGroup();
@@ -1537,7 +1537,7 @@ bool Scene::RenderSceneUI()
 			static int pointlightRes = (int)_pointlights->GetShadowResolution();
 			if (DragInt("##PointlightRes", &pointlightRes))
 			{
-				pointlightRes = max(1, pointlightRes);
+				pointlightRes = MAX(1, pointlightRes);
 				_pointlights->SetShadowResolution((UINT)pointlightRes);
 			}
 
@@ -1545,7 +1545,7 @@ bool Scene::RenderSceneUI()
 			static int spotlightRes = (int)_spotlights->GetShadowResolution();
 			if (DragInt("##SpotlightRes", &spotlightRes))
 			{
-				spotlightRes = max(1, spotlightRes);
+				spotlightRes = MAX(1, spotlightRes);
 				_spotlights->SetShadowResolution((UINT)spotlightRes);
 			}
 
@@ -2467,8 +2467,8 @@ bool Scene::RenderSceneUI()
 			ImGuiUtils::LockMouseOnActive();
 			if (DragInt2("Grid Lines##CurveEditor", &gridLines.x, 0.05f))
 			{
-				gridLines.x = max(gridLines.x, 0);
-				gridLines.y = max(gridLines.y, 0);
+				gridLines.x = MAX(gridLines.x, 0);
+				gridLines.y = MAX(gridLines.y, 0);
 			}
 			ImGuiUtils::LockMouseOnActive();
 			DragFloat4("Padding##CurveEditor", &padding.Min.x, 0.01f, 0.0f, 0.0f, "%.2f");

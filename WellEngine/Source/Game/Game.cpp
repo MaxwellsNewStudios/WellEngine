@@ -83,7 +83,6 @@ bool Game::CompileContent(const std::vector<std::string> &meshNames)
 	writer.close();
 	return true;
 }
-
 bool Game::DecompileContent()
 {
 	ZoneScopedC(RandomUniqueColor());
@@ -480,7 +479,26 @@ bool Game::Setup(TimeUtils &time, Window window)
 	}
 
 	if (compileFile != nullptr)
+	{
 		fclose(compileFile);
+
+#ifdef AUTO_RECOMPILE_CONTENT_ON_CHANGE
+		// Compare the age of the compiled file to the newest mesh file, if the compiled file is older than any mesh file then recompile anyways
+		if (!compileContent)
+		{
+			std::filesystem::path compiledPath(ASSET_COMPILED_FILE_MESHES);
+
+			std::filesystem::file_time_type compiledTime = std::filesystem::last_write_time(compiledPath);
+			std::filesystem::file_time_type newestMeshTime = DirectoryManager::GetMostRecentFileDate(ASSET_PATH_MESHES);
+
+			if (newestMeshTime > compiledTime)
+			{
+				compileContent = true;
+				DbgMsg("Compiled content file is older than source mesh files. Recompiling...");
+			}
+		}
+#endif
+	}
 #endif
 
 	if (compileContent)
@@ -807,6 +825,7 @@ bool Game::Setup(TimeUtils &time, Window window)
 		{ ShaderType::PIXEL_SHADER,			"PS_Geometry",					"Pixel/PS_Geometry"					},
 		{ ShaderType::PIXEL_SHADER,			"PS_GeometryMetallic",			"Pixel/PS_GeometryMetallic"			},
 		{ ShaderType::PIXEL_SHADER,			"PS_TriPlanar",					"Pixel/PS_TriPlanar"				},
+		{ ShaderType::PIXEL_SHADER,			"PS_Cel",						"Pixel/PS_Cel"						},
 		{ ShaderType::PIXEL_SHADER,			"PS_ReflectionProbe",			"Pixel/PS_ReflectionProbe"			},
 		{ ShaderType::PIXEL_SHADER,			"PS_Static",					"Pixel/PS_Static"					},
 		{ ShaderType::PIXEL_SHADER,			"PS_Transparent",				"Pixel/PS_Transparent"				},
@@ -1634,9 +1653,9 @@ bool Game::RenderUI(TimeUtils &time)
 					ImGui::Text("Extents:"); ImGui::SameLine();
 					if (ImGui::DragFloat3("##NewSceneExtents", &newSceneBounds.Extents.x))
 					{
-						newSceneBounds.Extents.x = max(0.1f, newSceneBounds.Extents.x);
-						newSceneBounds.Extents.y = max(0.1f, newSceneBounds.Extents.y);
-						newSceneBounds.Extents.z = max(0.1f, newSceneBounds.Extents.z);
+						newSceneBounds.Extents.x = MAX(0.1f, newSceneBounds.Extents.x);
+						newSceneBounds.Extents.y = MAX(0.1f, newSceneBounds.Extents.y);
+						newSceneBounds.Extents.z = MAX(0.1f, newSceneBounds.Extents.z);
 					}
 
 					ImGui::Text("Transitional:"); ImGui::SameLine();
@@ -1905,8 +1924,8 @@ bool Game::RenderUI(TimeUtils &time)
 
 					if (ImGui::DragInt2("##WindowResolutionInput", &windowResolution.x, 0.33f))
 					{
-						windowResolution.x = max(1, windowResolution.x);
-						windowResolution.y = max(1, windowResolution.y);
+						windowResolution.x = MAX(1, windowResolution.x);
+						windowResolution.y = MAX(1, windowResolution.y);
 					}
 					ImGuiUtils::LockMouseOnActive();
 
@@ -1938,8 +1957,8 @@ bool Game::RenderUI(TimeUtils &time)
 
 				if (ImGui::DragInt2("##SceneResolutionInput", &sceneResolution.x, 0.33f))
 				{
-					sceneResolution.x = max(1, sceneResolution.x);
-					sceneResolution.y = max(1, sceneResolution.y);
+					sceneResolution.x = MAX(1, sceneResolution.x);
+					sceneResolution.y = MAX(1, sceneResolution.y);
 				}
 				ImGuiUtils::LockMouseOnActive();
 
@@ -2139,7 +2158,7 @@ bool Game::RenderUI(TimeUtils &time)
 		ImGui::Dummy({ 0, 2 });
 
 		if (ImGui::DragFloat("ImGui Font Scale", &imGuiFontScale, 0.01f))
-			imGuiFontScale = max(0.25f, imGuiFontScale);
+			imGuiFontScale = MAX(0.25f, imGuiFontScale);
 		ImGuiUtils::LockMouseOnActive();
 
 		if (ImGui::Button("Reset Font Scale"))
@@ -2149,7 +2168,7 @@ bool Game::RenderUI(TimeUtils &time)
 
 		if (ImGui::DragFloat("Volume", &_gameVolume, 0.01f))
 		{
-			_gameVolume = max(0, _gameVolume);
+			_gameVolume = MAX(0, _gameVolume);
 			_scenes[_activeSceneIndex]->SetSceneVolume(_gameVolume);
 		}
 		ImGuiUtils::LockMouseOnActive(); 
@@ -2158,7 +2177,7 @@ bool Game::RenderUI(TimeUtils &time)
 
 		float timeScale = time.GetTimeScale();
 		if (ImGui::DragFloat("Time Scale", &timeScale, 0.005f, 0, 0, "%.3f"))
-			time.SetTimeScale(max(timeScale, 0.0f));
+			time.SetTimeScale(MAX(timeScale, 0.0f));
 		ImGuiUtils::LockMouseOnActive();
 
 		float fixedDeltaTime = time.GetFixedDeltaTime();
@@ -2169,7 +2188,7 @@ bool Game::RenderUI(TimeUtils &time)
 		float physDeltaTime = time.GetPhysDeltaTime();
 		if (ImGui::DragFloat("Phys Time Step", &physDeltaTime, 0.001f, 0, 0, "%.3f"))
 		{
-			physDeltaTime = max(0.001f, physDeltaTime);
+			physDeltaTime = MAX(0.001f, physDeltaTime);
 			time.SetPhysDeltaTime(physDeltaTime);
 		}
 		ImGuiUtils::LockMouseOnActive();
@@ -2367,8 +2386,8 @@ bool Game::RenderUI(TimeUtils &time)
 				float avgValue = 0.0f;
 				for (int i = 0; i < plotFpsData.size(); i++)
 				{
-					minValue = min(minValue, plotFpsData[i].y);
-					maxValue = max(maxValue, plotFpsData[i].y);
+					minValue = MIN(minValue, plotFpsData[i].y);
+					maxValue = MAX(maxValue, plotFpsData[i].y);
 					avgValue += plotFpsData[i].y;
 				}
 				avgValue /= plotFpsData.size();

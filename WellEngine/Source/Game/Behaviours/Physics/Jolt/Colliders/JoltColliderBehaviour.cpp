@@ -113,7 +113,7 @@ bool JoltColliderBehaviour::LateUpdate(TimeUtils &time, const Input &input)
 		transform->SetPosition(newPos, World);
 		transform->SetRotation(newRot, World);
 
-		_lerpTime = max(_lerpTime - time.GetDeltaTime(), 0.0f);
+		_lerpTime = MAX(_lerpTime - time.GetDeltaTime(), 0.0f);
 	}
 
 	return true;
@@ -489,22 +489,22 @@ bool JoltColliderBehaviour::RenderUI()
 		labelWidth = 0.0f;
 
 		ImGui::Text("Body ID");
-		labelWidth = max(labelWidth, ImGui::GetItemRectSize().x);
+		labelWidth = MAX(labelWidth, ImGui::GetItemRectSize().x);
 		ImGui::SameLine(prevLabelWidth, padding);
 		ImGui::Text("%d", GetBodyID().GetIndex());
 
 		ImGui::Text("Mass (kg)");
-		labelWidth = max(labelWidth, ImGui::GetItemRectSize().x);
+		labelWidth = MAX(labelWidth, ImGui::GetItemRectSize().x);
 		ImGui::SameLine(prevLabelWidth, padding);
 		ImGui::Text("%.4f", GetMass());
 
 		ImGui::Text("Lin Vel");
-		labelWidth = max(labelWidth, ImGui::GetItemRectSize().x);
+		labelWidth = MAX(labelWidth, ImGui::GetItemRectSize().x);
 		ImGui::SameLine(prevLabelWidth, padding);
 		ImGui::Text("(%.3f, %.3f, %.3f)", linVel.x, linVel.y, linVel.z);
 
 		ImGui::Text("Ang Vel");
-		labelWidth = max(labelWidth, ImGui::GetItemRectSize().x);
+		labelWidth = MAX(labelWidth, ImGui::GetItemRectSize().x);
 		ImGui::SameLine(prevLabelWidth, padding);
 		ImGui::Text("(%.3f, %.3f, %.3f)", angVel.x, angVel.y, angVel.z);
 

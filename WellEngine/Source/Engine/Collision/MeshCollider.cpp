@@ -37,13 +37,13 @@ void MeshCollider::Node::CalculateCompactBounds()
 
 			for (const dx::XMFLOAT3 &vert : verts)
 			{
-				minPos.x = min(minPos.x, vert.x);
-				minPos.y = min(minPos.y, vert.y);
-				minPos.z = min(minPos.z, vert.z);
+				minPos.x = MIN(minPos.x, vert.x);
+				minPos.y = MIN(minPos.y, vert.y);
+				minPos.z = MIN(minPos.z, vert.z);
 
-				maxPos.x = max(maxPos.x, vert.x);
-				maxPos.y = max(maxPos.y, vert.y);
-				maxPos.z = max(maxPos.z, vert.z);
+				maxPos.x = MAX(maxPos.x, vert.x);
+				maxPos.y = MAX(maxPos.y, vert.y);
+				maxPos.z = MAX(maxPos.z, vert.z);
 			}
 		}
 	}
@@ -71,13 +71,13 @@ void MeshCollider::Node::CalculateCompactBounds()
 				childCompactBounds.Center.z + childCompactBounds.Extents.z
 			};
 
-			minPos.x = min(minPos.x, childMin.x);
-			minPos.y = min(minPos.y, childMin.y);
-			minPos.z = min(minPos.z, childMin.z);
+			minPos.x = MIN(minPos.x, childMin.x);
+			minPos.y = MIN(minPos.y, childMin.y);
+			minPos.z = MIN(minPos.z, childMin.z);
 
-			maxPos.x = max(maxPos.x, childMax.x);
-			maxPos.y = max(maxPos.y, childMax.y);
-			maxPos.z = max(maxPos.z, childMax.z);
+			maxPos.x = MAX(maxPos.x, childMax.x);
+			maxPos.y = MAX(maxPos.y, childMax.y);
+			maxPos.z = MAX(maxPos.z, childMax.z);
 		}
 	}
 
@@ -93,13 +93,13 @@ void MeshCollider::Node::CalculateCompactBounds()
 		bounds.Center.z + bounds.Extents.z
 	};
 
-	minPos.x = max(minPos.x, boundsMin.x);
-	minPos.y = max(minPos.y, boundsMin.y);
-	minPos.z = max(minPos.z, boundsMin.z);
+	minPos.x = MAX(minPos.x, boundsMin.x);
+	minPos.y = MAX(minPos.y, boundsMin.y);
+	minPos.z = MAX(minPos.z, boundsMin.z);
 
-	maxPos.x = min(maxPos.x, boundsMax.x);
-	maxPos.y = min(maxPos.y, boundsMax.y);
-	maxPos.z = min(maxPos.z, boundsMax.z);
+	maxPos.x = MIN(maxPos.x, boundsMax.x);
+	maxPos.y = MIN(maxPos.y, boundsMax.y);
+	maxPos.z = MIN(maxPos.z, boundsMax.z);
 
 	dx::BoundingBox::CreateFromPoints(
 		compactBounds,

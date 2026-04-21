@@ -361,7 +361,7 @@ bool Graphics::RenderUI(TimeUtils &time)
 
 					int maxSteps = _currFogSettings.maxSteps;
 					if (ImGui::DragInt("Max Samples", &maxSteps, 1))
-						_currFogSettings.maxSteps = max(maxSteps, 0);
+						_currFogSettings.maxSteps = MAX(maxSteps, 0);
 					ImGuiUtils::LockMouseOnActive();
 
 					float farPlane = _currViewCamera->GetPlanes().farZ;
@@ -403,7 +403,7 @@ bool Graphics::RenderUI(TimeUtils &time)
 
 						static float valueRange[2] = { 0.0f, 1.0f };
 						if (ImGui::DragFloat2("Range", valueRange, 0.01f))
-							valueRange[1] = max(valueRange[1], valueRange[0]);
+							valueRange[1] = MAX(valueRange[1], valueRange[0]);
 						ImGuiUtils::LockMouseOnActive();
 
 						static bool normalizeWeights = true;
@@ -429,7 +429,7 @@ bool Graphics::RenderUI(TimeUtils &time)
 						int weightCount = gaussWeights.size();
 						if (ImGui::InputInt("Weight Count", &weightCount))
 						{
-							weightCount = max(weightCount, 1);
+							weightCount = MAX(weightCount, 1);
 
 							if (weightCount != gaussWeights.size())
 							{
@@ -592,7 +592,7 @@ bool Graphics::RenderUI(TimeUtils &time)
 
 						static float valueRange[2] = { 0.0f, 1.0f };
 						if (ImGui::DragFloat2("Range", valueRange, 0.01f))
-							valueRange[1] = max(valueRange[1], valueRange[0]);
+							valueRange[1] = MAX(valueRange[1], valueRange[0]);
 						ImGuiUtils::LockMouseOnActive();
 
 						static bool normalizeWeights = true;
@@ -618,7 +618,7 @@ bool Graphics::RenderUI(TimeUtils &time)
 						int weightCount = gaussWeights.size();
 						if (ImGui::InputInt("Weight Count", &weightCount))
 						{
-							weightCount = max(weightCount, 1);
+							weightCount = MAX(weightCount, 1);
 
 							if (weightCount != gaussWeights.size())
 							{
@@ -775,7 +775,7 @@ bool Graphics::RenderUI(TimeUtils &time)
 
 						static float valueRange[2] = { 0.0f, 1.0f };
 						if (ImGui::DragFloat2("Range", valueRange, 0.01f))
-							valueRange[1] = max(valueRange[1], valueRange[0]);
+							valueRange[1] = MAX(valueRange[1], valueRange[0]);
 						ImGuiUtils::LockMouseOnActive();
 
 						static bool normalizeWeights = true;
@@ -801,7 +801,7 @@ bool Graphics::RenderUI(TimeUtils &time)
 						int weightCount = gaussWeights.size();
 						if (ImGui::InputInt("Weight Count", &weightCount))
 						{
-							weightCount = max(weightCount, 1);
+							weightCount = MAX(weightCount, 1);
 
 							if (weightCount != gaussWeights.size())
 							{
@@ -963,7 +963,7 @@ bool Graphics::RenderUI(TimeUtils &time)
 
 						static float valueRange[2] = { 0.0f, 1.0f };
 						if (ImGui::DragFloat2("Range", valueRange, 0.01f))
-							valueRange[1] = max(valueRange[1], valueRange[0]);
+							valueRange[1] = MAX(valueRange[1], valueRange[0]);
 						ImGuiUtils::LockMouseOnActive();
 
 						static bool normalizeWeights = true;
@@ -989,7 +989,7 @@ bool Graphics::RenderUI(TimeUtils &time)
 						int weightCount = gaussWeights.size();
 						if (ImGui::InputInt("Weight Count", &weightCount))
 						{
-							weightCount = max(weightCount, 1);
+							weightCount = MAX(weightCount, 1);
 
 							if (weightCount != gaussWeights.size())
 							{
@@ -1092,7 +1092,7 @@ bool Graphics::RenderUI(TimeUtils &time)
 		ImGui::SliderFloat("Begin Depth##RenderDistanceFogBeginDepth", &_generalDataSettings.fadeoutDepthBegin, 0.0f, 1.0f);
 
 		if (ImGui::DragFloat("Exponent##RenderDistanceFogExponent", &_generalDataSettings.fadeoutExponent, 0.01f))
-			_generalDataSettings.fadeoutExponent = max(_generalDataSettings.fadeoutExponent, 0.01f);
+			_generalDataSettings.fadeoutExponent = MAX(_generalDataSettings.fadeoutExponent, 0.01f);
 		ImGuiUtils::LockMouseOnActive();
 
 		ImGui::TreePop();

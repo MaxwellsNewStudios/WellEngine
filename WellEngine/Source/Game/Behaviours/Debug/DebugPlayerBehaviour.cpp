@@ -92,7 +92,7 @@ bool DebugPlayerBehaviour::Start()
 		ent->SetSerialization(false);
 
 		ProjectionInfo projInfo = ProjectionInfo(
-			2.0f * max(sceneBounds.Extents.x, sceneBounds.Extents.z), 
+			2.0f * MAX(sceneBounds.Extents.x, sceneBounds.Extents.z), 
 			16.0f / 9.0f, 
 			{ 1.0f, 1000.0f }
 		);
@@ -887,7 +887,7 @@ bool DebugPlayerBehaviour::HandleCameraMovement(TimeUtils &time, const Input &in
 				if (cam->GetOrtho())
 				{
 					float currFOV = cam->GetFOV();
-					float newFOV = max(currFOV * (1.0f + 0.05f * scroll), 0.1f);
+					float newFOV = MAX(currFOV * (1.0f + 0.05f * scroll), 0.1f);
 					cam->SetFOV(newFOV);
 				}
 				else
@@ -1170,7 +1170,7 @@ bool DebugPlayerBehaviour::HandleCameraMovement(TimeUtils &time, const Input &in
 						if (cam->GetOrtho())
 						{
 							float currFOV = cam->GetFOV();
-							float newFOV = max(currFOV * (1.0f + 0.05f * scroll), 0.1f);
+							float newFOV = MAX(currFOV * (1.0f + 0.05f * scroll), 0.1f);
 							cam->SetFOV(newFOV);
 						}
 						else
@@ -1317,10 +1317,10 @@ bool DebugPlayerBehaviour::HandleCameraMovement(TimeUtils &time, const Input &in
 				containingItems.reserve(lastSelectionCount);
 
 				dx::XMFLOAT4 fixedMinMax = {
-					min(minMax.x, minMax.z),
-					min(1.0f - minMax.y, 1.0f - minMax.w),
-					max(minMax.x, minMax.z),
-					max(1.0f - minMax.y, 1.0f - minMax.w)
+					MIN(minMax.x, minMax.z),
+					MIN(1.0f - minMax.y, 1.0f - minMax.w),
+					MAX(minMax.x, minMax.z),
+					MAX(1.0f - minMax.y, 1.0f - minMax.w)
 				};
 
 				const float minMaxEpsilon = 0.0025f;

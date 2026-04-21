@@ -74,7 +74,7 @@ bool SimpleSpotLightBehaviour::RenderUI()
 		Entity *ent = GetEntity();
 
 		ProjectionInfo projInfo = ProjectionInfo(
-			min(_angle, 179.9f * DEG_TO_RAD), 
+			MIN(_angle, 179.9f * DEG_TO_RAD),
 			1.0f, 
 			{ 0.1f, CalculateLightReach(_color, _falloff) }
 		);
@@ -98,7 +98,7 @@ bool SimpleSpotLightBehaviour::RenderUI()
 	}
 
 	float color[3] = { _color.x, _color.y, _color.z };
-	float colorStrength = max(color[0], max(color[1], color[2]));
+	float colorStrength = MAX(color[0], MAX(color[1], color[2]));
 
 	color[0] /= colorStrength;
 	color[1] /= colorStrength;
@@ -114,7 +114,7 @@ bool SimpleSpotLightBehaviour::RenderUI()
 	bool newStrength = false;
 	if (ImGui::DragFloat("Intensity", &colorStrength, 0.01f, LIGHT_MIN_INTENSITY))
 	{
-		colorStrength = max(colorStrength, LIGHT_MIN_INTENSITY);
+		colorStrength = MAX(colorStrength, LIGHT_MIN_INTENSITY);
 		newStrength = true;
 		_recalculateBounds = true;
 	}
@@ -122,7 +122,7 @@ bool SimpleSpotLightBehaviour::RenderUI()
 
 	if (newColor || newStrength)
 	{
-		float inputStr = max(color[0], max(color[1], color[2]));
+		float inputStr = MAX(color[0], MAX(color[1], color[2]));
 
 		if (inputStr > LIGHT_MIN_INTENSITY)
 		{
@@ -134,7 +134,7 @@ bool SimpleSpotLightBehaviour::RenderUI()
 
 	if (ImGui::DragFloat("Falloff", &_falloff, 0.01f, 0.001f))
 	{
-		_falloff = max(_falloff, 0.001f);
+		_falloff = MAX(_falloff, 0.001f);
 		_recalculateBounds = true;
 	}
 	ImGuiUtils::LockMouseOnActive();

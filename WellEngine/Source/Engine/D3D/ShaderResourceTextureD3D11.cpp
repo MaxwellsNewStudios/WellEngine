@@ -7,7 +7,7 @@
 
 static void FormatCubemapTexture(std::vector<unsigned char> cubeFaces[6], const void *textureData, const UINT width, const UINT height, const UINT channels, const UINT bytesPerChannel)
 {
-	UINT cubeFaceSize = max(1, width / 4);
+	UINT cubeFaceSize = MAX(1, width / 4);
 	UINT texMid = height / 2;
 
 	const dx::XMUINT4 faceRects[6] = {
@@ -59,8 +59,8 @@ bool ShaderResourceTextureD3D11::Initialize(ID3D11Device* device, ID3D11DeviceCo
 		_dim = TexDim::Cubemap;
 
 	D3D11_TEXTURE2D_DESC textureDesc = { };
-	textureDesc.Width = cubemap ? max(1, width / 4) : width;
-	textureDesc.Height = cubemap ? max(1, width / 4) : height;
+	textureDesc.Width = cubemap ? MAX(1, width / 4) : width;
+	textureDesc.Height = cubemap ? MAX(1, width / 4) : height;
 	textureDesc.ArraySize = cubemap ? 6 : 1;
 	textureDesc.MipLevels = (_mipmapped) ? 0 : 1;
 	textureDesc.Format = _format;
@@ -88,7 +88,7 @@ bool ShaderResourceTextureD3D11::Initialize(ID3D11Device* device, ID3D11DeviceCo
 		std::vector<unsigned char> cubeFaces[6]{};
 		FormatCubemapTexture(cubeFaces, textureData, width, height, 4, 1);
 		
-		UINT cubeFaceSize = max(1, width / 4);
+		UINT cubeFaceSize = MAX(1, width / 4);
 		D3D11_SUBRESOURCE_DATA srData[6]{};
 		for (UINT i = 0; i < 6; i++)
 		{
@@ -145,7 +145,7 @@ bool ShaderResourceTextureD3D11::Initialize(ID3D11Device* device, ID3D11DeviceCo
 			std::vector<unsigned char> cubeFaces[6]{};
 			FormatCubemapTexture(cubeFaces, textureData, width, height, 4, 1);
 
-			UINT cubeFaceSize = max(1, width / 4);
+			UINT cubeFaceSize = MAX(1, width / 4);
 
 			for (UINT i = 0; i < 6; i++)
 			{
@@ -182,8 +182,8 @@ bool ShaderResourceTextureD3D11::Initialize(ID3D11Device* device, ID3D11DeviceCo
 	UINT bytesPerPixel = bytesPerChannel * channelCount;
 
 	D3D11_TEXTURE2D_DESC textureDesc = { };
-	textureDesc.Width = cubemap ? max(1, width / 4) : width;
-	textureDesc.Height = cubemap ? max(1, width / 4) : height;
+	textureDesc.Width = cubemap ? MAX(1, width / 4) : width;
+	textureDesc.Height = cubemap ? MAX(1, width / 4) : height;
 	textureDesc.ArraySize = cubemap ? 6 : 1;
 	textureDesc.MipLevels = (_mipmapped) ? 0 : 1;
 	textureDesc.Format = _format;
@@ -211,7 +211,7 @@ bool ShaderResourceTextureD3D11::Initialize(ID3D11Device* device, ID3D11DeviceCo
 		std::vector<unsigned char> cubeFaces[6]{};
 		FormatCubemapTexture(cubeFaces, textureData, width, height, channelCount, bytesPerChannel);
 		
-		UINT cubeFaceSize = max(1, width / 4);
+		UINT cubeFaceSize = MAX(1, width / 4);
 		D3D11_SUBRESOURCE_DATA srData[6]{};
 		for (UINT i = 0; i < 6; i++)
 		{
@@ -268,7 +268,7 @@ bool ShaderResourceTextureD3D11::Initialize(ID3D11Device* device, ID3D11DeviceCo
 			std::vector<unsigned char> cubeFaces[6]{};
 			FormatCubemapTexture(cubeFaces, textureData, width, height, channelCount, bytesPerChannel);
 
-			UINT cubeFaceSize = max(1, width / 4);
+			UINT cubeFaceSize = MAX(1, width / 4);
 
 			for (UINT i = 0; i < 6; i++)
 			{
@@ -338,7 +338,7 @@ bool ShaderResourceTextureD3D11::Initialize(ID3D11Device *device, ID3D11DeviceCo
 			std::vector<unsigned char> cubeFaces[6]{};
 			FormatCubemapTexture(cubeFaces, srData->pSysMem, _size.x, _size.y, channelCount, bytesPerChannel);
 
-			UINT cubeFaceSize = max(1, _size.x / 4);
+			UINT cubeFaceSize = MAX(1, _size.x / 4);
 
 			for (UINT i = 0; i < 6; i++)
 			{

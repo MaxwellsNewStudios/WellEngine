@@ -425,7 +425,7 @@ bool SceneHolder::RenderUI(Scene *scene)
 	if (ImGui::DragFloat3("Extents##SceneTreeParams", (float *)&_newBounds.Extents, 0.1f))
 	{
 		for (int i = 0; i < 3; i++)
-			*(((float *)&_newBounds.Extents.x) + i) = max(0.1f, *(((float *)&_newBounds.Extents.x) + i));
+			*(((float *)&_newBounds.Extents.x) + i) = MAX(0.1f, *(((float *)&_newBounds.Extents.x) + i));
 		_unsavedChanges = true;
 	}
 	ImGuiUtils::LockMouseOnActive();
@@ -433,14 +433,14 @@ bool SceneHolder::RenderUI(Scene *scene)
 	ImGui::Text("Max Depth:"); ImGui::SameLine();
 	if (ImGui::InputScalar("##MaxDepthSceneTreeParams", ImGuiDataType_U32, &_newMaxDepth))
 	{
-		_newMaxDepth = max(1, _newMaxDepth);
+		_newMaxDepth = MAX(1, _newMaxDepth);
 		_unsavedChanges = true;
 	}
 
 	ImGui::Text("Split Threshold:"); ImGui::SameLine();
 	if (ImGui::InputScalar("##MaxItemsInNodeSceneTreeParams", ImGuiDataType_U32, &_newMaxItemsInNode))
 	{
-		_newMaxItemsInNode = max(1, _newMaxItemsInNode);
+		_newMaxItemsInNode = MAX(1, _newMaxItemsInNode);
 		_unsavedChanges = true;
 	}
 

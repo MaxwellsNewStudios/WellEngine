@@ -3163,7 +3163,7 @@ bool Scene::CreateSpotLightEntity(Entity **out, const std::string &name, dx::XMF
 		return false;
 	}
 
-	ProjectionInfo projInfo = ProjectionInfo(angle * DEG_TO_RAD, 1.0f, { max(0.1f, nearZ), CalculateLightReach(color, falloff) });
+	ProjectionInfo projInfo = ProjectionInfo(angle * DEG_TO_RAD, 1.0f, { MAX(0.1f, nearZ), CalculateLightReach(color, falloff) });
 	SpotLightBehaviour *light = new SpotLightBehaviour(projInfo, color, falloff, fogStrength, ortho, updateFrequency);
 
 	if (!light->Initialize(*out))
@@ -3184,7 +3184,7 @@ bool Scene::CreatePointLightEntity(Entity **out, const std::string &name, dx::XM
 		return false;
 	}
 
-	PointLightBehaviour *light = new PointLightBehaviour({ max(0.1f, nearZ), CalculateLightReach(color, falloff) }, color, falloff, updateFrequency);
+	PointLightBehaviour *light = new PointLightBehaviour({ MAX(0.1f, nearZ), CalculateLightReach(color, falloff) }, color, falloff, updateFrequency);
 
 	if (!light->Initialize(*out))
 	{

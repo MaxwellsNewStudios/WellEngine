@@ -27,7 +27,7 @@ bool SphereJoltColliderBehaviour::Start()
 	dx::XMFLOAT3A scale = transform->GetScale();
 
 	// Get the maximum scale component to apply to the radius
-	float maxScale = max(0.0001f, max(fabsf(scale.x), max(fabsf(scale.y), fabsf(scale.z))));
+	float maxScale = MAX(0.0001f, MAX(fabsf(scale.x), MAX(fabsf(scale.y), fabsf(scale.z))));
 
 	JPH::BodyInterface &bodyInterface = GetBodyInterface();
 
@@ -108,7 +108,7 @@ void SphereJoltColliderBehaviour::RecalculatePhysicsBody()
 	dx::XMFLOAT3A scale = transform->GetScale();
 
 	// Get the maximum scale component to apply to the radius
-	float maxScale = max(0.0001f, max(fabsf(scale.x), max(fabsf(scale.y), fabsf(scale.z))));
+	float maxScale = MAX(0.0001f, MAX(fabsf(scale.x), MAX(fabsf(scale.y), fabsf(scale.z))));
 
 	JPH::BodyInterface &bodyInterface = GetBodyInterface();
 	JPH::BodyID bodyID = GetBodyID();
@@ -154,7 +154,7 @@ bool SphereJoltColliderBehaviour::RenderUI()
 	// Radius
 	if (ImGui::DragFloat("Radius", &_radius, 0.01f))
 	{
-		_radius = max(0.001f, _radius);
+		_radius = MAX(0.001f, _radius);
 		RecalculatePhysicsBody();
 	}
 	ImGuiUtils::LockMouseOnActive();

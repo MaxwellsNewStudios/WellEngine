@@ -226,7 +226,7 @@ bool MeshBehaviour::RenderUI()
 				ImVec2 currSize = ImGui::GetContentRegionMax();
 				const float popupMinWidth = 100.0f;
 				float padding = ImGui::GetStyle().WindowPadding.x;
-				float popupWidth = max(currSize.x - padding, popupMinWidth);
+				float popupWidth = MAX(currSize.x - padding, popupMinWidth);
 				float inputBoxPosX = ImGui::GetCursorPosX();
 
 				if (ImGui::IsWindowAppearing())
@@ -308,7 +308,7 @@ bool MeshBehaviour::RenderUI()
 				ImVec2 currSize = ImGui::GetContentRegionMax();
 				const float popupMinWidth = 100.0f;
 				float padding = ImGui::GetStyle().WindowPadding.x;
-				float popupWidth = max(currSize.x - padding, popupMinWidth);
+				float popupWidth = MAX(currSize.x - padding, popupMinWidth);
 				float inputBoxPosX = ImGui::GetCursorPosX();
 
 				if (ImGui::IsWindowAppearing())
@@ -412,7 +412,7 @@ bool MeshBehaviour::RenderUI()
 				ImVec2 currSize = ImGui::GetContentRegionMax();
 				const float popupMinWidth = 100.0f;
 				float padding = ImGui::GetStyle().WindowPadding.x;
-				float popupWidth = max(currSize.x - padding, popupMinWidth);
+				float popupWidth = MAX(currSize.x - padding, popupMinWidth);
 				float inputBoxPosX = ImGui::GetCursorPosX();
 
 				if (ImGui::IsWindowAppearing())
@@ -528,7 +528,7 @@ bool MeshBehaviour::RenderUI()
 				ImVec2 currSize = ImGui::GetContentRegionMax();
 				const float popupMinWidth = 100.0f;
 				float padding = ImGui::GetStyle().WindowPadding.x;
-				float popupWidth = max(currSize.x - padding, popupMinWidth);
+				float popupWidth = MAX(currSize.x - padding, popupMinWidth);
 				float inputBoxPosX = ImGui::GetCursorPosX();
 
 				if (ImGui::IsWindowAppearing())
@@ -644,7 +644,7 @@ bool MeshBehaviour::RenderUI()
 				ImVec2 currSize = ImGui::GetContentRegionMax();
 				const float popupMinWidth = 100.0f;
 				float padding = ImGui::GetStyle().WindowPadding.x;
-				float popupWidth = max(currSize.x - padding, popupMinWidth);
+				float popupWidth = MAX(currSize.x - padding, popupMinWidth);
 				float inputBoxPosX = ImGui::GetCursorPosX();
 
 				if (ImGui::IsWindowAppearing())
@@ -760,7 +760,7 @@ bool MeshBehaviour::RenderUI()
 				ImVec2 currSize = ImGui::GetContentRegionMax();
 				const float popupMinWidth = 100.0f;
 				float padding = ImGui::GetStyle().WindowPadding.x;
-				float popupWidth = max(currSize.x - padding, popupMinWidth);
+				float popupWidth = MAX(currSize.x - padding, popupMinWidth);
 				float inputBoxPosX = ImGui::GetCursorPosX();
 
 				if (ImGui::IsWindowAppearing())
@@ -872,7 +872,7 @@ bool MeshBehaviour::RenderUI()
 				ImVec2 currSize = ImGui::GetContentRegionMax();
 				const float popupMinWidth = 100.0f;
 				float padding = ImGui::GetStyle().WindowPadding.x;
-				float popupWidth = max(currSize.x - padding, popupMinWidth);
+				float popupWidth = MAX(currSize.x - padding, popupMinWidth);
 				float inputBoxPosX = ImGui::GetCursorPosX();
 
 				if (ImGui::IsWindowAppearing())
@@ -985,7 +985,7 @@ bool MeshBehaviour::RenderUI()
 				ImVec2 currSize = ImGui::GetContentRegionMax();
 				const float popupMinWidth = 100.0f;
 				float padding = ImGui::GetStyle().WindowPadding.x;
-				float popupWidth = max(currSize.x - padding, popupMinWidth);
+				float popupWidth = MAX(currSize.x - padding, popupMinWidth);
 				float inputBoxPosX = ImGui::GetCursorPosX();
 
 				if (ImGui::IsWindowAppearing())
@@ -1101,7 +1101,7 @@ bool MeshBehaviour::RenderUI()
 				ImVec2 currSize = ImGui::GetContentRegionMax();
 				const float popupMinWidth = 100.0f;
 				float padding = ImGui::GetStyle().WindowPadding.x;
-				float popupWidth = max(currSize.x - padding, popupMinWidth);
+				float popupWidth = MAX(currSize.x - padding, popupMinWidth);
 				float inputBoxPosX = ImGui::GetCursorPosX();
 
 				if (ImGui::IsWindowAppearing())
@@ -1210,7 +1210,7 @@ bool MeshBehaviour::RenderUI()
 				ImVec2 currSize = ImGui::GetContentRegionMax();
 				const float popupMinWidth = 100.0f;
 				float padding = ImGui::GetStyle().WindowPadding.x;
-				float popupWidth = max(currSize.x - padding, popupMinWidth);
+				float popupWidth = MAX(currSize.x - padding, popupMinWidth);
 				float inputBoxPosX = ImGui::GetCursorPosX();
 
 				if (ImGui::IsWindowAppearing())
@@ -1319,7 +1319,7 @@ bool MeshBehaviour::RenderUI()
 				ImVec2 currSize = ImGui::GetContentRegionMax();
 				const float popupMinWidth = 100.0f;
 				float padding = ImGui::GetStyle().WindowPadding.x;
-				float popupWidth = max(currSize.x - padding, popupMinWidth);
+				float popupWidth = MAX(currSize.x - padding, popupMinWidth);
 				float inputBoxPosX = ImGui::GetCursorPosX();
 
 				if (ImGui::IsWindowAppearing())
@@ -1431,7 +1431,7 @@ bool MeshBehaviour::RenderUI()
 				ImVec2 currSize = ImGui::GetContentRegionMax();
 				const float popupMinWidth = 100.0f;
 				float padding = ImGui::GetStyle().WindowPadding.x;
-				float popupWidth = max(currSize.x - padding, popupMinWidth);
+				float popupWidth = MAX(currSize.x - padding, popupMinWidth);
 				float inputBoxPosX = ImGui::GetCursorPosX();
 
 				if (ImGui::IsWindowAppearing())
@@ -1697,67 +1697,46 @@ bool MeshBehaviour::RenderUI()
 			_updateMatBuffer = true;
 		ImGuiUtils::LockMouseOnActive();
 
-		if (ImGui::TreeNode("Shader Settings"))
+		// Show shader settings, if any
 		{
-			// Get all pixel shaders with unique settings
-			static const UINT triPlanarID = content->GetShaderID("PS_TriPlanar");
+			std::string shaderName = content->GetShaderName(_material->psID);
 
-			if (_psSettings.data)
+			// Check if name is registered in shader settings map
+			if (Shaders::HasShaderSettings(shaderName))
 			{
-				if (_material->psID == triPlanarID)
+				const Shaders::GenericSettings *settingsManager = Shaders::GetShaderSettings(shaderName);
+
+				if (!_psSettings.data)
 				{
-					ImGui::SeparatorText("Triplanar Settings");
-
-					TriplanarSettings *settings = _psSettings.GetData<TriplanarSettings>();
-
-					ImGui::Text("Texture Scale:"); ImGui::SameLine();
-					if (ImGui::DragFloat2("##TextureScale", &(settings->texSize.x), 0.01f))
-						_psSettings.dirty = true;
-					ImGuiUtils::LockMouseOnActive();
-
-					ImGui::Text("Blend Sharpness:"); ImGui::SameLine();
-					if (ImGui::DragFloat("##BlendSharpness", &(settings->blendSharpness), 0.01f))
-					{
-						settings->blendSharpness = max(settings->blendSharpness, 0.001f);
-						_psSettings.dirty = true;
-					}
-					ImGuiUtils::LockMouseOnActive();
-
-					if (ImGui::Checkbox("Correct Normals", &(settings->flipWithNormal)))
-						_psSettings.dirty = true;
+					if (ImGui::Button(std::format("Create {} Settings Buffer", shaderName).c_str()))
+						settingsManager->constructFunc(_psSettings, nullptr);
 				}
-
-				ImGui::Separator();
-
-				if (ImGui::Button("Copy Settings To All Instances"))
+				else if (ImGui::TreeNode(std::format("{} Settings", shaderName).c_str()))
 				{
-					SceneContents::SceneIterator entIter = GetScene()->GetSceneHolder()->GetEntities();
-					while (Entity *ent = entIter.Step())
+					if (settingsManager->drawUIFunc(_psSettings))
+						_psSettings.dirty = true;
+
+					ImGui::Separator();
+
+					if (ImGui::Button("Copy Settings To All Instances"))
 					{
-						MeshBehaviour *mesh = nullptr;
-						if (ent->GetBehaviourByType<MeshBehaviour>(mesh))
+						SceneContents::SceneIterator entIter = GetScene()->GetSceneHolder()->GetEntities();
+						while (Entity *ent = entIter.Step())
 						{
-							if (mesh->GetMaterial()->psID == _material->psID)
-							{
-								mesh->CopyPSSettings(_psSettings);
-							}
+							MeshBehaviour *mesh = nullptr;
+							if (!ent->GetBehaviourByType<MeshBehaviour>(mesh))
+								continue;
+							
+							if (mesh->GetMaterial()->psID != _material->psID)
+								continue;
+								
+							mesh->CopyPSSettings(_psSettings);
 						}
 					}
-				}
-			}
-			else
-			{
-				if (ImGui::Button("Create PS Settings Buffer"))
-				{
-					if (_material->psID == triPlanarID)
-					{
-						TriplanarSettings settings{};
-						SetPSSettings<TriplanarSettings>(settings);
-					}
-				}
-			}
 
-			ImGui::TreePop();
+					ImGui::TreePop();
+				}
+			}
 		}
 
 		ImGui::TreePop();
@@ -1888,7 +1867,7 @@ bool MeshBehaviour::BindBuffers(ID3D11DeviceContext *context)
 	if (_psSettings.buffer)
 	{
 		ID3D11Buffer *const psSettingsBuffer = _psSettings.buffer.get()->GetBuffer();
-		context->PSSetConstantBuffers(4, 1, &psSettingsBuffer);
+		context->PSSetConstantBuffers(Shaders::SETTINGS_REGISTER_PS, 1, &psSettingsBuffer);
 	}
 
 	return true;
@@ -2081,7 +2060,7 @@ bool MeshBehaviour::Deserialize(const json::Value &obj, Scene *scene)
 		for (UINT i = 0; i < psSettingsSize; i++)
 			psSettingsData[i] = (char)dataArr[i].GetUint();
 
-		_psSettings = ShaderSettings(); // Reset previous settings
+		_psSettings = Shaders::SettingsContainer(); // Reset previous settings
 		_psSettings.size = psSettingsSize;
 		_psSettings.data = std::make_unique<char[]>(psSettingsSize);
 		_psSettings.dirty = true;
@@ -2180,7 +2159,7 @@ void MeshBehaviour::PostDeserialize()
 		mat.psID = content->GetShaderID(_deserializedMesh->ps);
 
 	SetMeshID(_meshID, true);
-	if (!SetMaterial(&mat))
+	if (!SetMaterial(&mat, false))
 		ErrMsg("Failed to set material!");
 
 	_deserializedMesh = nullptr;
@@ -2221,7 +2200,7 @@ void MeshBehaviour::SetBlendStateID(UINT blendStateID)
 {
 	_blendStateID = blendStateID;
 }
-bool MeshBehaviour::SetMaterial(const Material *material)
+bool MeshBehaviour::SetMaterial(const Material *material, float discardSettings)
 {
 	if (IsInitialized())
 	{
@@ -2231,6 +2210,9 @@ bool MeshBehaviour::SetMaterial(const Material *material)
 			return false;
 		}
 	}
+
+	if (discardSettings && _psSettings.data && _material->psID != material->psID)
+		_psSettings = Shaders::SettingsContainer(); // Reset previous settings
 
 	_material = material;
 	_updateMatBuffer = true;

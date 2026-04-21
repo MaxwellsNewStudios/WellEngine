@@ -395,8 +395,8 @@ dx::XMUINT2 Input::GetSceneRenderSize() const
 bool Input::HasResizedSceneView()
 {
 	auto &debugData = DebugData::Get();
-	UINT newWidth = max(debugData.sceneViewSizeX, 1u);
-	UINT newHeight = max(debugData.sceneViewSizeY, 1u);
+	UINT newWidth = MAX(debugData.sceneViewSizeX, 1u);
+	UINT newHeight = MAX(debugData.sceneViewSizeY, 1u);
 
 	if (_sceneRenderSize.x != newWidth || _sceneRenderSize.y != newHeight)
 	{

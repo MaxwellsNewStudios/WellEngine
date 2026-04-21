@@ -435,7 +435,7 @@ bool Behaviour::InitialRenderUI()
 	float refTextWidth = ImGui::CalcTextSize(refText.c_str()).x + 4.0f;
 	float availWidth = ImGui::GetContentRegionAvail().x;
 	ImGui::NewLine();
-	float refTextoffset = max(2.0f, availWidth - refTextWidth);
+	float refTextoffset = MAX(2.0f, availWidth - refTextWidth);
 
 	ImGui::SameLine(0.0f, refTextoffset);
 	ImGui::Text(refText.c_str());

@@ -1769,7 +1769,7 @@ namespace IMGUIZMO_NAMESPACE
 				}
 				float boundDistance = sqrtf(ImLengthSqr(worldBound1 - worldBound2));
 				int stepCount = (int)(boundDistance / 10.f);
-				stepCount = min(stepCount, 1000);
+				stepCount = MIN(stepCount, 1000);
 				for (int j = 0; j < stepCount; j++)
 				{
 					float stepLength = 1.f / (float)stepCount;
@@ -2346,12 +2346,12 @@ namespace IMGUIZMO_NAMESPACE
 				vec_t baseVector = gContext.mTranslationPlanOrigin - gContext.mModelLocal.v.position;
 				float ratio = Dot(axisValue, baseVector + delta) / Dot(axisValue, baseVector);
 
-				gContext.mScale[axisIndex] = max(ratio, 0.001f);
+				gContext.mScale[axisIndex] = MAX(ratio, 0.001f);
 			}
 			else
 			{
 				float scaleDelta = (io.MousePos.x - gContext.mSaveMousePosx) * 0.01f;
-				gContext.mScale.Set(max(1.f + scaleDelta, 0.001f));
+				gContext.mScale.Set(MAX(1.f + scaleDelta, 0.001f));
 			}
 
 			// snap
@@ -2363,7 +2363,7 @@ namespace IMGUIZMO_NAMESPACE
 
 			// no 0 allowed
 			for (int i = 0; i < 3; i++)
-				gContext.mScale[i] = max(gContext.mScale[i], 0.001f);
+				gContext.mScale[i] = MAX(gContext.mScale[i], 0.001f);
 
 			if (gContext.mScaleLast != gContext.mScale)
 			{

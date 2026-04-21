@@ -640,7 +640,7 @@ namespace GraphEditor {
 
         ImVec2 imgPos = nodeRectangleMin + ImVec2(14, 25);
         ImVec2 imgSize = nodeRectangleMax + ImVec2(-5, -5) - imgPos;
-        float imgSizeComp = min(imgSize.x, imgSize.y);
+        float imgSizeComp = MIN(imgSize.x, imgSize.y);
 
         drawList->AddRectFilled(nodeRectangleMin, nodeRectangleMax, node_bg_color, options.mRounding);
         /*float progress = delegate->NodeProgress(nodeIndex);

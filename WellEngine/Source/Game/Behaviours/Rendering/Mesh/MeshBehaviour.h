@@ -3,33 +3,10 @@
 #include "Game/Behaviour.h"
 #include "Engine/Rendering/Graphics/GraphicsTypes.h"
 #include "Engine/Content/Content.h"
+#include "Engine/Content/ShaderSettings.h"
 
 namespace WellEngine
 {
-	struct TriplanarSettings
-	{
-		dx::XMFLOAT2 texSize = {1, 1};
-		float blendSharpness = 1.0f;
-		bool flipWithNormal = true;
-	};
-
-	struct ShaderSettings
-	{
-		std::unique_ptr<ConstantBufferD3D11> buffer = nullptr;
-		std::unique_ptr<char[]> data = nullptr; // Pointer to struct containing settings
-		UINT size = 0; // Size of the struct in bytes
-		bool dirty = true;
-
-		template<typename T>
-		T *GetData()
-		{
-			if (!data || size < sizeof(T))
-				return nullptr;
-
-			return reinterpret_cast<T *>(data.get());
-		}
-	};
-
 	class [[register_behaviour]] MeshBehaviour final : public Behaviour, public IRefTarget<MeshBehaviour>
 	{
 	private:
@@ -80,7 +57,7 @@ namespace WellEngine
 			_materialBuffer,
 			_posBuffer;
 
-		ShaderSettings _psSettings;
+		Shaders::SettingsContainer _psSettings;
 
 		dx::BoundingOrientedBox 
 			_bounds,
@@ -121,7 +98,7 @@ namespace WellEngine
 
 		void SetMeshID(UINT meshID, bool updateBounds = false);
 		void SetBlendStateID(UINT blendStateID);
-		[[nodiscard]] bool SetMaterial(const Material *material);
+		[[nodiscard]] bool SetMaterial(const Material *material, float discardSettings = true);
 		void SetTransparent(bool state);
 		void SetOverlay(bool state);
 		void SetCastShadows(bool state);
@@ -152,11 +129,11 @@ namespace WellEngine
 		void PostDeserialize() override;
 
 
-		void CopyPSSettings(const ShaderSettings &newSettings)
+		void CopyPSSettings(const Shaders::SettingsContainer &newSettings)
 		{
 			if (!_psSettings.data || _psSettings.size != newSettings.size)
 			{
-				_psSettings = ShaderSettings();
+				_psSettings = Shaders::SettingsContainer();
 				_psSettings.size = newSettings.size;
 				_psSettings.data = std::make_unique<char[]>(newSettings.size);
 			}
@@ -170,7 +147,7 @@ namespace WellEngine
 		{
 			if (!_psSettings.data || _psSettings.size != sizeof(T))
 			{
-				_psSettings = ShaderSettings();
+				_psSettings = Shaders::SettingsContainer();
 				_psSettings.size = sizeof(T);
 				_psSettings.data = std::make_unique<char[]>(_psSettings.size);
 			}

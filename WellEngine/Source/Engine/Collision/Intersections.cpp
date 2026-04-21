@@ -211,7 +211,7 @@ XMFLOAT3 Collisions::ClosestPoint(const LineSegment &seg, const XMFLOAT3 &point)
 
 	float abSquareDist = XMVectorGetX(XMVector3Dot(ba, ba));
 	float t = XMVectorGetX(XMVector3Dot(XMVectorSubtract(p, a), ba)) / abSquareDist;
-	float tSaturated = min(max(t, 0), 1);
+	float tSaturated = CLAMP(t, 0, 1);
 
 	XMFLOAT3 res;
 	XMStoreFloat3(&res, XMVectorAdd(a, XMVectorScale(ba, tSaturated)));
@@ -955,7 +955,7 @@ bool Collisions::OBBOBBIntersection(const OBB &obb1, const OBB &obb2, XMFLOAT3 &
 			return false;
 
 		// Get overlap
-		float overlap = min(max1, max2) - max(min1, min2);
+		float overlap = MIN(max1, max2) - MAX(min1, min2);
 		if (overlap < depth)
 		{
 			depth = overlap;
@@ -1367,7 +1367,7 @@ bool Collisions::TerrainRayIntersection(const Terrain &t, const Ray &r, dx::XMFL
         tFactorX = (x - start.x) / static_cast<float>(end.x - start.x + 1);
         tFactorZ = (y - start.y) / static_cast<float>(end.y - start.y + 1);
         
-        float tFactor = max(tFactorX, tFactorZ);
+        float tFactor = MAX(tFactorX, tFactorZ);
         refY = r.origin.y + tFactor * r.dir.y * r.length;
 
         if (t.GetHeight(x, y, height))

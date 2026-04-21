@@ -94,8 +94,8 @@ dx::XMFLOAT2 FontAtlas::CalcTextSize(std::wstring_view text) const
 
 		default:
 			auto glyph = GetGlyph((UINT)codepoint);
-			size.x = max(size.x, cursor.x + glyph->size.x - glyph->offset.x);
-			size.y = max(size.y, cursor.y + glyph->size.y - glyph->offset.y);
+			size.x = MAX(size.x, cursor.x + glyph->size.x - glyph->offset.x);
+			size.y = MAX(size.y, cursor.y + glyph->size.y - glyph->offset.y);
 			cursor.x += glyph->advance;
 			break;
 		}
@@ -213,12 +213,12 @@ MeshData *FontAtlas::ToMesh(const std::vector<GlyphVertex> &verts) const
 		ContentData::FormattedVertex *v = (ContentData::FormattedVertex *)&meshData->vertexInfo.vertexData[i * vertOutSizeF];
 
 		dx::XMFLOAT3 *minVert = (dx::XMFLOAT3 *)&(v[1].px);
-		minBounds.x = min(minBounds.x, minVert->x);
-		minBounds.y = min(minBounds.y, minVert->y);
+		minBounds.x = MIN(minBounds.x, minVert->x);
+		minBounds.y = MIN(minBounds.y, minVert->y);
 
 		dx::XMFLOAT3 *maxVert = (dx::XMFLOAT3 *)&(v[2].px);
-		maxBounds.x = max(maxBounds.x, maxVert->x);
-		maxBounds.y = max(maxBounds.y, maxVert->y);
+		maxBounds.x = MAX(maxBounds.x, maxVert->x);
+		maxBounds.y = MAX(maxBounds.y, maxVert->y);
 	}
 
 	meshData->boundingBox.Center = { (minBounds.x + maxBounds.x) / 2.0f, (minBounds.y + maxBounds.y) / 2.0f, 0.0f };
@@ -403,7 +403,7 @@ bool FontAtlas::RenderUI(const Content *content)
 			ImVec2 currSize = ImGui::GetContentRegionMax();
 			const float popupMinWidth = 100.0f;
 			float padding = ImGui::GetStyle().WindowPadding.x;
-			float popupWidth = max(currSize.x - padding, popupMinWidth);
+			float popupWidth = MAX(currSize.x - padding, popupMinWidth);
 			float inputBoxPosX = ImGui::GetCursorPosX();
 
 			if (ImGui::IsWindowAppearing())
@@ -823,7 +823,7 @@ bool FontAtlas::RenderUI(const Content *content)
 			ImVec2 texSizeImVec = ImVec2(texSize.x, texSize.y) * zoom;
 
 			ImVec2 windowSize = texSizeImVec;
-			windowSize.x = min(windowSize.x, ImGui::GetContentRegionAvail().x - ImGui::GetStyle().ScrollbarSize);
+			windowSize.x = MIN(windowSize.x, ImGui::GetContentRegionAvail().x - ImGui::GetStyle().ScrollbarSize);
 
 			ImGuiChildFlags childFlags = ImGuiChildFlags_Borders | ImGuiChildFlags_ResizeX | ImGuiChildFlags_ResizeY;
 			ImGuiWindowFlags windowFlags = ImGuiWindowFlags_None | ImGuiWindowFlags_HorizontalScrollbar;
@@ -1213,7 +1213,7 @@ bool FontAtlas::RenderUI(const Content *content)
 					bool isSelected = selection.Contains((ImGuiID)codepoint);
 					ImGui::TableNextRow();
 
-					float rowHeight = max(ImGui::GetTextLineHeightWithSpacing(), glyph.size.y);
+					float rowHeight = MAX(ImGui::GetTextLineHeightWithSpacing(), glyph.size.y);
 
 					// Preview
 					ImGui::TableSetColumnIndex(0);
@@ -1630,10 +1630,10 @@ bool FontAtlas::RenderUI(const Content *content)
 				posMin, posMax, uvMin, uvMax
 			);
 
-			textSize.x = max(textSize.x, (posMin.x - startPos.x));
-			textSize.y = max(textSize.y, (posMin.y - startPos.y));
-			textSize.x = max(textSize.x, (posMax.x - startPos.x));
-			textSize.y = max(textSize.y, (posMax.y - startPos.y));
+			textSize.x = MAX(textSize.x, (posMin.x - startPos.x));
+			textSize.y = MAX(textSize.y, (posMin.y - startPos.y));
+			textSize.x = MAX(textSize.x, (posMax.x - startPos.x));
+			textSize.y = MAX(textSize.y, (posMax.y - startPos.y));
 		}
 
 		ImGui::SeparatorText("Info");

@@ -4,6 +4,8 @@ SniperBolt
 SniperTrigger
 SniperMagazine
 
+Arcade
+
 GraniteRock
 DecimatedMan
 Support_Beam

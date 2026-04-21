@@ -123,6 +123,7 @@ namespace json = rapidjson;
 #include "Engine/Utils/SerializerUtils.h"
 #include "Engine/Utils/RepeatTracker.h"
 #include "Engine/Content/Material.h"
+#include "Engine/Content/DirectoryManager.h"
 #include "Engine/Rendering/RendererInfo.h"
 #include "Engine/Rendering/RenderQueuer.h"
 #include "Engine/Window/Window.h"
@@ -132,7 +133,6 @@ namespace json = rapidjson;
 #include "Engine/Collision/ColliderShapes.h"
 #include "Engine/Collision/Raycast.h"
 #include "Engine/Debug/ErrMsg.h"
-
 #include "Engine/D3D/D3D11Helper.h"
 #include "Engine/D3D/D3D11FormatData.h"
 #include "Engine/D3D/ConstantBufferD3D11.h"
@@ -157,8 +157,11 @@ namespace json = rapidjson;
 // Game
 #include "Game/Transform.h"
 
+#undef min
+#undef max
 
 using namespace WellEngine;
+
 
 
 

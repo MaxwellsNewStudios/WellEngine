@@ -14,6 +14,9 @@
 	/// FORCE_COMPILE_CONTENT enables recompilation of the content file upon startup. Required after modifying or adding new meshes.
 	/// Disabled by default as it slightly increases load time.
 	//#define FORCE_COMPILE_CONTENT
+	
+	/// AUTO_RECOMPILE_CONTENT_ON_CHANGE enables automatic detection of changes in source content files and recompilation of the content file if any changes are detected.
+	#define AUTO_RECOMPILE_CONTENT_ON_CHANGE
 
 	/// FORCE_BAKE_TEXTURES causes textures to be baked into their post-processed form after loading.
 	//#define FORCE_BAKE_TEXTURES

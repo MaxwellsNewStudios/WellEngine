@@ -26,7 +26,7 @@ bool JoltPhysicsInstance::Initialize(JoltManager *manager)
 
 	_settings.mBaumgarte = 0.5f;
 
-	_sys = std::make_unique<JoltSystemData>(JPH::cMaxPhysicsJobs, JPH::cMaxPhysicsBarriers, max(std::thread::hardware_concurrency() - 2, 1));
+	_sys = std::make_unique<JoltSystemData>(JPH::cMaxPhysicsJobs, JPH::cMaxPhysicsBarriers, MAX(std::thread::hardware_concurrency() - 2, 1));
 
 	_sys->physicsSystem.Init(
 		manager->cMaxBodies, manager->cNumBodyMutexes, manager->cMaxBodyPairs, manager->cMaxContactConstraints,

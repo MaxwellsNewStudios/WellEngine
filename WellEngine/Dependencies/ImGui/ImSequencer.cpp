@@ -654,7 +654,7 @@ namespace ImSequencer
          {
 #if 0
             frameOverCursor = *firstFrame + (int)(visibleFrameCount * ((io.MousePos.x - (float)legendWidth - canvas_pos.x) / (canvas_size.x - legendWidth)));
-            //frameOverCursor = max(min(*firstFrame - visibleFrameCount / 2, frameCount - visibleFrameCount), 0);
+            //frameOverCursor = MAX(MIN(*firstFrame - visibleFrameCount / 2, frameCount - visibleFrameCount), 0);
 
             /**firstFrame -= frameOverCursor;
             *firstFrame *= framePixelWidthTarget / framePixelWidth;

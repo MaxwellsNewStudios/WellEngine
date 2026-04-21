@@ -37,7 +37,7 @@ bool MipRenderTargetD3D11::Initialize(ID3D11Device *device, D3D11_TEXTURE2D_DESC
 	{
 		if (desc.MipLevels == 0)
 		{
-			UINT maxDimension = max(desc.Width, desc.Height);
+			UINT maxDimension = MAX(desc.Width, desc.Height);
 			desc.MipLevels = static_cast<UINT>(std::floor(std::log2(maxDimension))) + 1;
 		}
 
@@ -66,8 +66,8 @@ bool MipRenderTargetD3D11::Initialize(ID3D11Device *device, D3D11_TEXTURE2D_DESC
 		_mipLevels[i].width = mipWidth;
 		_mipLevels[i].height = mipHeight;
 
-		mipWidth = max(1u, (UINT)std::ceil((float)mipWidth * 0.5f));
-		mipHeight = max(1u, (UINT)std::ceil((float)mipHeight * 0.5f));
+		mipWidth = MAX(1u, (UINT)std::ceil((float)mipWidth * 0.5f));
+		mipHeight = MAX(1u, (UINT)std::ceil((float)mipHeight * 0.5f));
 
 		D3D11_RENDER_TARGET_VIEW_DESC rtvDesc{};
 		rtvDesc.Format = desc.Format;

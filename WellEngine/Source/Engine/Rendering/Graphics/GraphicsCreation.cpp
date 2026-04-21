@@ -429,8 +429,8 @@ bool Graphics::ResizeWindowBuffers(bool fullscreen, UINT newWidth, UINT newHeigh
 {
 	ZoneScopedC(RandomUniqueColor());
 
-	newWidth = max(newWidth, DIM_FORCED_MULTIPLE);
-	newHeight = max(newHeight, DIM_FORCED_MULTIPLE);
+	newWidth = MAX(newWidth, DIM_FORCED_MULTIPLE);
+	newHeight = MAX(newHeight, DIM_FORCED_MULTIPLE);
 
 	if (newWidth % DIM_FORCED_MULTIPLE != 0)
 		newWidth -= newWidth % DIM_FORCED_MULTIPLE;
@@ -460,7 +460,7 @@ bool Graphics::ResizeWindowBuffers(bool fullscreen, UINT newWidth, UINT newHeigh
 
 #ifdef TRACY_SCREEN_CAPTURE
 	float screenAspect = static_cast<float>(newWidth) / static_cast<float>(newHeight);
-	_tracyCaptureWidth = min((UINT)std::ceil(TRACY_CAPTURE_WIDTH), newWidth);
+	_tracyCaptureWidth = MIN((UINT)std::ceil(TRACY_CAPTURE_WIDTH), newWidth);
 	_tracyCaptureHeight = (UINT)std::ceil(_tracyCaptureWidth / screenAspect);
 
 	// Ensure resolution is multiple of 4 for tracy capture
@@ -502,8 +502,8 @@ bool Graphics::ResizeSceneViewBuffers(UINT newWidth, UINT newHeight)
 {
 	ZoneScopedC(RandomUniqueColor());
 
-	newWidth = max(newWidth, DIM_FORCED_MULTIPLE);
-	newHeight = max(newHeight, DIM_FORCED_MULTIPLE);
+	newWidth = MAX(newWidth, DIM_FORCED_MULTIPLE);
+	newHeight = MAX(newHeight, DIM_FORCED_MULTIPLE);
 
 	if (newWidth % DIM_FORCED_MULTIPLE != 0)
 		newWidth -= newWidth % DIM_FORCED_MULTIPLE;

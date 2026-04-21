@@ -43,9 +43,9 @@ bool BoxJoltColliderBehaviour::Start()
 
 	JPH::BodyCreationSettings boxSettings(
 		new JPH::BoxShape(JPH::Vec3Arg(
-			max(0.0001f, _halfExtents.x * fabsf(scale.x)),
-			max(0.0001f, _halfExtents.y * fabsf(scale.y)),
-			max(0.0001f, _halfExtents.z * fabsf(scale.z))
+			MAX(0.0001f, _halfExtents.x * fabsf(scale.x)),
+			MAX(0.0001f, _halfExtents.y * fabsf(scale.y)),
+			MAX(0.0001f, _halfExtents.z * fabsf(scale.z))
 		)),
 		JPH::RVec3(wPos.x + offset.x, wPos.y + offset.y, wPos.z + offset.z),
 		JPH::Quat(wRot.x, wRot.y, wRot.z, wRot.w),
@@ -169,9 +169,9 @@ void BoxJoltColliderBehaviour::RecalculatePhysicsBody()
 	}
 
 	JPH::Vec3Arg extents = JPH::Vec3Arg(
-		max(0.0001f, _halfExtents.x * fabsf(scale.x)),
-		max(0.0001f, _halfExtents.y * fabsf(scale.y)),
-		max(0.0001f, _halfExtents.z * fabsf(scale.z))
+		MAX(0.0001f, _halfExtents.x * fabsf(scale.x)),
+		MAX(0.0001f, _halfExtents.y * fabsf(scale.y)),
+		MAX(0.0001f, _halfExtents.z * fabsf(scale.z))
 	);
 
 	bodyInterface.SetShape(bodyID, new JPH::BoxShape(extents), true, JPH::EActivation::DontActivate);
@@ -230,9 +230,9 @@ bool BoxJoltColliderBehaviour::RenderUI()
 	// Extents
 	if (ImGui::DragFloat3("Half Extents", &_halfExtents.x, 0.01f))
 	{
-		_halfExtents.x = max(0.0001f, _halfExtents.x);
-		_halfExtents.y = max(0.0001f, _halfExtents.y);
-		_halfExtents.z = max(0.0001f, _halfExtents.z);
+		_halfExtents.x = MAX(0.0001f, _halfExtents.x);
+		_halfExtents.y = MAX(0.0001f, _halfExtents.y);
+		_halfExtents.z = MAX(0.0001f, _halfExtents.z);
 
 		RecalculatePhysicsBody();
 	}

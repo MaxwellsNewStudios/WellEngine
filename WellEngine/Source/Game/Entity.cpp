@@ -1046,7 +1046,7 @@ bool Entity::UIContextMenu()
 			{
 				targetPos = bounds.Center;
 				// Increase distance based on bounds size
-				distance = max(distance, max(bounds.Extents.x, max(bounds.Extents.y, bounds.Extents.z)) * 2.0f);
+				distance = MAX(distance, MAX(bounds.Extents.x, MAX(bounds.Extents.y, bounds.Extents.z)) * 2.0f);
 			}
 			else
 			{
@@ -1074,7 +1074,7 @@ bool Entity::UIContextMenu()
 			{
 				originPos = bounds.Center;
 				// Increase distance based on bounds size
-				distance = max(distance, max(bounds.Extents.x, max(bounds.Extents.y, bounds.Extents.z)) * 2.0f);
+				distance = MAX(distance, MAX(bounds.Extents.x, MAX(bounds.Extents.y, bounds.Extents.z)) * 2.0f);
 			}
 			else
 			{
@@ -1554,7 +1554,7 @@ bool Entity::InitialRenderUI()
 		ImGui::SetItemTooltip(entEnabled ? "Disable" : "Enable");
 
 		ImGui::SameLine();
-		ImGui::SetNextItemWidth(max(0, ImGui::GetContentRegionAvail().x - buttonsWidth));
+		ImGui::SetNextItemWidth(MAX(0, ImGui::GetContentRegionAvail().x - buttonsWidth));
 
 		std::string entName = GetName();
 		if (ImGui::InputText("##EntName", &entName, ImGuiInputTextFlags_AutoSelectAll))
@@ -2216,7 +2216,7 @@ bool Entity::InitialRenderUI()
 				ImVec2 currSize = ImGui::GetWindowSize();
 				const float popupMinWidth = 300.0f;
 				float padding = ImGui::GetStyle().WindowPadding.x;
-				float popupWidth = max(currSize.x - padding, popupMinWidth);
+				float popupWidth = MAX(currSize.x - padding, popupMinWidth);
 				float inputBoxPosX = ImGui::GetCursorPosX();
 
 				if (ImGui::IsWindowAppearing())

@@ -112,7 +112,7 @@ bool BillboardMeshBehaviour::ParallelUpdate(const TimeUtils &time, const Input &
 	XMVECTOR lookDir = XMVector3Normalize(toCam);
 
 	// If the camera is within the normal offset distance or the cameras near plane, disable the billboard mesh & return
-	if (XMVectorGetX(XMVector3Length(toCam)) <= max(_normalOffset, viewCamera->GetPlanes().nearZ))
+	if (XMVectorGetX(XMVector3Length(toCam)) <= MAX(_normalOffset, viewCamera->GetPlanes().nearZ))
 	{
 		_meshBehaviour.Get()->GetEntity()->Disable();
 		return true;

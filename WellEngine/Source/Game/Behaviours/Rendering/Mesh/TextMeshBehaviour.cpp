@@ -116,7 +116,7 @@ bool TextMeshBehaviour::RenderUI()
 		ImVec2 currSize = ImGui::GetContentRegionMax();
 		const float popupMinWidth = 100.0f;
 		float padding = ImGui::GetStyle().WindowPadding.x;
-		float popupWidth = max(currSize.x - padding, popupMinWidth);
+		float popupWidth = MAX(currSize.x - padding, popupMinWidth);
 		float inputBoxPosX = ImGui::GetCursorPosX();
 
 		if (ImGui::IsWindowAppearing())

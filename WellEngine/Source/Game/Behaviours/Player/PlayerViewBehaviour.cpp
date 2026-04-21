@@ -117,7 +117,7 @@ bool PlayerViewBehaviour::Update(TimeUtils &time, const Input &input)
 	XMVECTOR target = Load(_targetPos);
 
 	_targetLerpTime += time.GetDeltaTime();
-	XMVECTOR lerp = XMVectorLerp(start, target, min(_targetLerpTime * _targetLerpTimeTotalInverse, 1.0f));
+	XMVECTOR lerp = XMVectorLerp(start, target, MIN(_targetLerpTime * _targetLerpTimeTotalInverse, 1.0f));
 
 	XMFLOAT3A lerpPos;
 	Store(lerpPos, lerp);

@@ -152,7 +152,7 @@ bool PointLightBehaviour::RenderUI()
 	}
 
 	float color[3] = { _color.x, _color.y, _color.z };
-	float colorStrength = max(color[0], max(color[1], color[2]));
+	float colorStrength = MAX(color[0], MAX(color[1], color[2]));
 
 	color[0] /= colorStrength;
 	color[1] /= colorStrength;
@@ -167,7 +167,7 @@ bool PointLightBehaviour::RenderUI()
 	bool newStrength = false;
 	if (ImGui::DragFloat("Intensity", &colorStrength, 0.01f, LIGHT_MIN_INTENSITY))
 	{
-		colorStrength = max(colorStrength, LIGHT_MIN_INTENSITY);
+		colorStrength = MAX(colorStrength, LIGHT_MIN_INTENSITY);
 		newStrength = true;
 	}
 	ImGuiUtils::LockMouseOnActive();
@@ -175,7 +175,7 @@ bool PointLightBehaviour::RenderUI()
 	if (newColor || newStrength)
 	{
 		recalculateReach = true;
-		float inputStr = max(color[0], max(color[1], color[2]));
+		float inputStr = MAX(color[0], MAX(color[1], color[2]));
 
 		if (inputStr > LIGHT_MIN_INTENSITY)
 		{
@@ -187,7 +187,7 @@ bool PointLightBehaviour::RenderUI()
 
 	if (ImGui::DragFloat("Falloff", &_falloff, 0.01f, 0.001f))
 	{
-		_falloff = max(_falloff, 0.001f);
+		_falloff = MAX(_falloff, 0.001f);
 		recalculateReach = true;
 	}
 	ImGuiUtils::LockMouseOnActive();
@@ -204,7 +204,7 @@ bool PointLightBehaviour::RenderUI()
 	UINT step = 1;
 	UINT stepFast = 5;
 	if (ImGui::InputScalar("Shadow Update Frequency", ImGuiDataType_U32, &_updateFrequency, &step, &stepFast))
-		_updateFrequency = max(_updateFrequency, 1);
+		_updateFrequency = MAX(_updateFrequency, 1);
 
 	static bool drawBounds = false;
 	ImGui::Checkbox("Draw Bounds", &drawBounds);
@@ -304,7 +304,7 @@ UINT PointLightBehaviour::GetUpdateFrequency() const
 }
 void PointLightBehaviour::SetUpdateFrequency(UINT frequency)
 {
-	_updateFrequency = max(1, frequency);
+	_updateFrequency = MAX(1, frequency);
 }
 int PointLightBehaviour::GetUpdateTimer() const
 {
@@ -373,7 +373,7 @@ void PointLightBehaviour::SetLightBufferData(XMFLOAT3 color, float falloff, floa
 
 void PointLightBehaviour::SetIntensity(float intensity)
 {
-	float maxChannel = max(_color.x, max(_color.y, _color.z));
+	float maxChannel = MAX(_color.x, MAX(_color.y, _color.z));
 	_color.x = (_color.x / maxChannel) * intensity;
 	_color.y = (_color.y / maxChannel) * intensity;
 	_color.z = (_color.z / maxChannel) * intensity;

@@ -87,19 +87,19 @@ bool AmbientSoundBehaviour::RenderUI()
 	ImGui::Checkbox("Loop", &_loop);
 
 	if (ImGui::DragFloat("Min Delay", &_delayMin, 0.01f, 0.0f, 0.0f, "%.2f"))
-		_delayMin = max(0.0f, min(_delayMin, _delayMax));
+		_delayMin = MAX(0.0f, MIN(_delayMin, _delayMax));
 	ImGuiUtils::LockMouseOnActive();
 
 	if (ImGui::DragFloat("Max Delay", &_delayMax, 0.01f, 0.0f, 0.0f, "%.2f"))
-		_delayMax = max(_delayMin, _delayMax);
+		_delayMax = MAX(_delayMin, _delayMax);
 	ImGuiUtils::LockMouseOnActive();
 
 	if (ImGui::DragFloat("Distance scaler", &_distanceScaler, 0.01f))
-		_distanceScaler = max(0.0f, _distanceScaler);
+		_distanceScaler = MAX(0.0f, _distanceScaler);
 	ImGuiUtils::LockMouseOnActive();
 
 	if (ImGui::DragFloat("Reverb scaler", &_reverbScaler, 0.01f))
-		_reverbScaler = max(0.0f, _reverbScaler);
+		_reverbScaler = MAX(0.0f, _reverbScaler);
 	ImGuiUtils::LockMouseOnActive();
 
 	return true;

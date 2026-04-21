@@ -164,7 +164,7 @@ namespace WellEngine
 
 		if (a > -MINVAL && a < MINVAL)
 		{
-			float scaledMinVal = MINVAL * min(edge1.Length3(), edge2.Length3());
+			float scaledMinVal = MINVAL * MIN(edge1.Length3(), edge2.Length3());
 			if (a > -scaledMinVal && a < scaledMinVal)
 				return false;
 		}
