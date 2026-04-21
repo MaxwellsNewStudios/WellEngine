@@ -1,0 +1,698 @@
+{
+    "f": {
+        "sponza": {
+            "f": {},
+            "a": {
+                "sponza_CurtainPoles": {
+                    "n": "sponza\\sponza_CurtainPoles",
+                    "t": "mesh"
+                },
+                "sponza_CurtainsBlue": {
+                    "n": "sponza\\sponza_CurtainsBlue",
+                    "t": "mesh"
+                },
+                "sponza_CurtainsGreen": {
+                    "n": "sponza\\sponza_CurtainsGreen",
+                    "t": "mesh"
+                },
+                "sponza_CurtainsRed": {
+                    "n": "sponza\\sponza_CurtainsRed",
+                    "t": "mesh"
+                },
+                "sponza_EmptyFrame": {
+                    "n": "sponza\\sponza_EmptyFrame",
+                    "t": "mesh"
+                },
+                "sponza_Floor": {
+                    "n": "sponza\\sponza_Floor",
+                    "t": "mesh"
+                },
+                "sponza_FountainChains": {
+                    "n": "sponza\\sponza_FountainChains",
+                    "t": "mesh"
+                },
+                "sponza_FountainsLarge": {
+                    "n": "sponza\\sponza_FountainsLarge",
+                    "t": "mesh"
+                },
+                "sponza_HangingClothBlue": {
+                    "n": "sponza\\sponza_HangingClothBlue",
+                    "t": "mesh"
+                },
+                "sponza_HangingClothGreen": {
+                    "n": "sponza\\sponza_HangingClothGreen",
+                    "t": "mesh"
+                },
+                "sponza_HangingClothRed": {
+                    "n": "sponza\\sponza_HangingClothRed",
+                    "t": "mesh"
+                },
+                "sponza_HangingFountains": {
+                    "n": "sponza\\sponza_HangingFountains",
+                    "t": "mesh"
+                },
+                "sponza_InnerArches": {
+                    "n": "sponza\\sponza_InnerArches",
+                    "t": "mesh"
+                },
+                "sponza_LionFrames": {
+                    "n": "sponza\\sponza_LionFrames",
+                    "t": "mesh"
+                },
+                "sponza_LionHeads": {
+                    "n": "sponza\\sponza_LionHeads",
+                    "t": "mesh"
+                },
+                "sponza_OuterArches": {
+                    "n": "sponza\\sponza_OuterArches",
+                    "t": "mesh"
+                },
+                "sponza_OuterWall": {
+                    "n": "sponza\\sponza_OuterWall",
+                    "t": "mesh"
+                },
+                "sponza_PillarFoliage": {
+                    "n": "sponza\\sponza_PillarFoliage",
+                    "t": "mesh"
+                },
+                "sponza_PillarsLower": {
+                    "n": "sponza\\sponza_PillarsLower",
+                    "t": "mesh"
+                },
+                "sponza_PillarsUpper": {
+                    "n": "sponza\\sponza_PillarsUpper",
+                    "t": "mesh"
+                },
+                "sponza_PillarsUpperSquare": {
+                    "n": "sponza\\sponza_PillarsUpperSquare",
+                    "t": "mesh"
+                },
+                "sponza_Roof": {
+                    "n": "sponza\\sponza_Roof",
+                    "t": "mesh"
+                },
+                "sponza_SmallPots": {
+                    "n": "sponza\\sponza_SmallPots",
+                    "t": "mesh"
+                },
+                "sponza_SmallPotsFoliage": {
+                    "n": "sponza\\sponza_SmallPotsFoliage",
+                    "t": "mesh"
+                },
+                "sponza_WindowsDoors": {
+                    "n": "sponza\\sponza_WindowsDoors",
+                    "t": "mesh"
+                }
+            }
+        }
+    },
+    "a": {
+        "Error": {
+            "n": "Error",
+            "t": "mesh"
+        },
+        "Fallback": {
+            "n": "Fallback",
+            "t": "mesh"
+        },
+        "Cube": {
+            "n": "Cube",
+            "t": "mesh"
+        },
+        "Plane": {
+            "n": "Plane",
+            "t": "mesh"
+        },
+        "SniperBody": {
+            "n": "SniperBody",
+            "t": "mesh"
+        },
+        "SniperBolt": {
+            "n": "SniperBolt",
+            "t": "mesh"
+        },
+        "SniperTrigger": {
+            "n": "SniperTrigger",
+            "t": "mesh"
+        },
+        "SniperMagazine": {
+            "n": "SniperMagazine",
+            "t": "mesh"
+        },
+        "Arcade": {
+            "n": "Arcade",
+            "t": "mesh"
+        },
+        "GraniteRock": {
+            "n": "GraniteRock",
+            "t": "mesh"
+        },
+        "DecimatedMan": {
+            "n": "DecimatedMan",
+            "t": "mesh"
+        },
+        "Support_Beam": {
+            "n": "Support_Beam",
+            "t": "mesh"
+        },
+        "Camera": {
+            "n": "Camera",
+            "t": "mesh"
+        },
+        "FlashlightBody": {
+            "n": "FlashlightBody",
+            "t": "mesh"
+        },
+        "FlashlightLever": {
+            "n": "FlashlightLever",
+            "t": "mesh"
+        },
+        "Cave_Wall": {
+            "n": "Cave_Wall",
+            "t": "mesh"
+        },
+        "SupportBeams": {
+            "n": "SupportBeams",
+            "t": "mesh"
+        },
+        "Rails_Straight_0": {
+            "n": "Rails_Straight_0",
+            "t": "mesh"
+        },
+        "Rails_Straight_1": {
+            "n": "Rails_Straight_1",
+            "t": "mesh"
+        },
+        "Rails_Straight_2": {
+            "n": "Rails_Straight_2",
+            "t": "mesh"
+        },
+        "Rails_Straight_3": {
+            "n": "Rails_Straight_3",
+            "t": "mesh"
+        },
+        "Rails_Straight_4": {
+            "n": "Rails_Straight_4",
+            "t": "mesh"
+        },
+        "Rails_Straight_5": {
+            "n": "Rails_Straight_5",
+            "t": "mesh"
+        },
+        "Rails_Straight_6": {
+            "n": "Rails_Straight_6",
+            "t": "mesh"
+        },
+        "Rails_Straight_7": {
+            "n": "Rails_Straight_7",
+            "t": "mesh"
+        },
+        "Rails_Straight_8": {
+            "n": "Rails_Straight_8",
+            "t": "mesh"
+        },
+        "Rails_Turn_0": {
+            "n": "Rails_Turn_0",
+            "t": "mesh"
+        },
+        "Rails_Turn_1": {
+            "n": "Rails_Turn_1",
+            "t": "mesh"
+        },
+        "Rails_Turn_2": {
+            "n": "Rails_Turn_2",
+            "t": "mesh"
+        },
+        "Rails_Turn_3": {
+            "n": "Rails_Turn_3",
+            "t": "mesh"
+        },
+        "Rails_Turn_4": {
+            "n": "Rails_Turn_4",
+            "t": "mesh"
+        },
+        "Rails_Turn_5": {
+            "n": "Rails_Turn_5",
+            "t": "mesh"
+        },
+        "Rails_End_0": {
+            "n": "Rails_End_0",
+            "t": "mesh"
+        },
+        "Rails_End_1": {
+            "n": "Rails_End_1",
+            "t": "mesh"
+        },
+        "Minecart": {
+            "n": "Minecart",
+            "t": "mesh"
+        },
+        "MineSection": {
+            "n": "MineSection",
+            "t": "mesh"
+        },
+        "pickaxe": {
+            "n": "pickaxe",
+            "t": "mesh"
+        },
+        "brokenfenceotherUV": {
+            "n": "brokenfenceotherUV",
+            "t": "mesh"
+        },
+        "Barrel2": {
+            "n": "Barrel2",
+            "t": "mesh"
+        },
+        "dynamitebox": {
+            "n": "dynamitebox",
+            "t": "mesh"
+        },
+        "dynamitebundle": {
+            "n": "dynamitebundle",
+            "t": "mesh"
+        },
+        "multipledynamite": {
+            "n": "multipledynamite",
+            "t": "mesh"
+        },
+        "lockerDoor": {
+            "n": "lockerDoor",
+            "t": "mesh"
+        },
+        "locker": {
+            "n": "locker",
+            "t": "mesh"
+        },
+        "singledynamite2": {
+            "n": "singledynamite2",
+            "t": "mesh"
+        },
+        "BrokenTable2": {
+            "n": "BrokenTable2",
+            "t": "mesh"
+        },
+        "fence2": {
+            "n": "fence2",
+            "t": "mesh"
+        },
+        "ropewheelstand3": {
+            "n": "ropewheelstand3",
+            "t": "mesh"
+        },
+        "ropewheel2": {
+            "n": "ropewheel2",
+            "t": "mesh"
+        },
+        "fence3": {
+            "n": "fence3",
+            "t": "mesh"
+        },
+        "minesign2legsflipped": {
+            "n": "minesign2legsflipped",
+            "t": "mesh"
+        },
+        "minesign2legs": {
+            "n": "minesign2legs",
+            "t": "mesh"
+        },
+        "pickaxe2": {
+            "n": "pickaxe2",
+            "t": "mesh"
+        },
+        "mushroom": {
+            "n": "mushroom",
+            "t": "mesh"
+        },
+        "Breadcrumb": {
+            "n": "Breadcrumb",
+            "t": "mesh"
+        },
+        "Breadcrumb_Collection": {
+            "n": "Breadcrumb_Collection",
+            "t": "mesh"
+        },
+        "GenericPicture": {
+            "n": "GenericPicture",
+            "t": "mesh"
+        },
+        "PileOfRocks": {
+            "n": "PileOfRocks",
+            "t": "mesh"
+        },
+        "SmallPileOfRocks": {
+            "n": "SmallPileOfRocks",
+            "t": "mesh"
+        },
+        "Chair": {
+            "n": "Chair",
+            "t": "mesh"
+        },
+        "shovel": {
+            "n": "shovel",
+            "t": "mesh"
+        },
+        "statueOfMaxwell": {
+            "n": "statueOfMaxwell",
+            "t": "mesh"
+        },
+        "Picture_part1": {
+            "n": "Picture_part1",
+            "t": "mesh"
+        },
+        "Picture_part2": {
+            "n": "Picture_part2",
+            "t": "mesh"
+        },
+        "Picture_part3": {
+            "n": "Picture_part3",
+            "t": "mesh"
+        },
+        "Picture_part4": {
+            "n": "Picture_part4",
+            "t": "mesh"
+        },
+        "Picture_part5": {
+            "n": "Picture_part5",
+            "t": "mesh"
+        },
+        "Stalagmites_Large_1": {
+            "n": "Stalagmites_Large_1",
+            "t": "mesh"
+        },
+        "Stalagmites_Large_2": {
+            "n": "Stalagmites_Large_2",
+            "t": "mesh"
+        },
+        "Stalagmites_Medium_1": {
+            "n": "Stalagmites_Medium_1",
+            "t": "mesh"
+        },
+        "Stalagmites_Medium_2": {
+            "n": "Stalagmites_Medium_2",
+            "t": "mesh"
+        },
+        "Stalagmites_Small_1": {
+            "n": "Stalagmites_Small_1",
+            "t": "mesh"
+        },
+        "Stalagmites_Small_2": {
+            "n": "Stalagmites_Small_2",
+            "t": "mesh"
+        },
+        "LightButton1": {
+            "n": "LightButton1",
+            "t": "mesh"
+        },
+        "Barrel": {
+            "n": "Barrel",
+            "t": "mesh"
+        },
+        "OldLamp_Metal": {
+            "n": "OldLamp_Metal",
+            "t": "mesh"
+        },
+        "OldLamp_Glass": {
+            "n": "OldLamp_Glass",
+            "t": "mesh"
+        },
+        "CompassFlipped": {
+            "n": "CompassFlipped",
+            "t": "mesh"
+        },
+        "CompassNeedle": {
+            "n": "CompassNeedle",
+            "t": "mesh"
+        },
+        "cave_map_small_000": {
+            "n": "cave_map_small_000",
+            "t": "mesh"
+        },
+        "cave_map_small_001": {
+            "n": "cave_map_small_001",
+            "t": "mesh"
+        },
+        "cave_map_small_002": {
+            "n": "cave_map_small_002",
+            "t": "mesh"
+        },
+        "cave_map_small_003": {
+            "n": "cave_map_small_003",
+            "t": "mesh"
+        },
+        "cave_map_small_004": {
+            "n": "cave_map_small_004",
+            "t": "mesh"
+        },
+        "cave_map_small_005": {
+            "n": "cave_map_small_005",
+            "t": "mesh"
+        },
+        "cave_map_small_006": {
+            "n": "cave_map_small_006",
+            "t": "mesh"
+        },
+        "cave_map_small_007": {
+            "n": "cave_map_small_007",
+            "t": "mesh"
+        },
+        "cave_map_small_008": {
+            "n": "cave_map_small_008",
+            "t": "mesh"
+        },
+        "cave_map_small_009": {
+            "n": "cave_map_small_009",
+            "t": "mesh"
+        },
+        "cave_map_small_010": {
+            "n": "cave_map_small_010",
+            "t": "mesh"
+        },
+        "cave_map_small_011": {
+            "n": "cave_map_small_011",
+            "t": "mesh"
+        },
+        "cave_map_small_012": {
+            "n": "cave_map_small_012",
+            "t": "mesh"
+        },
+        "cave_map_small_013": {
+            "n": "cave_map_small_013",
+            "t": "mesh"
+        },
+        "cave_map_small_014": {
+            "n": "cave_map_small_014",
+            "t": "mesh"
+        },
+        "cave_map_small_015": {
+            "n": "cave_map_small_015",
+            "t": "mesh"
+        },
+        "cave_map_small_016": {
+            "n": "cave_map_small_016",
+            "t": "mesh"
+        },
+        "cave_map_small_017": {
+            "n": "cave_map_small_017",
+            "t": "mesh"
+        },
+        "cave_map_small_018": {
+            "n": "cave_map_small_018",
+            "t": "mesh"
+        },
+        "cave_map_small_019": {
+            "n": "cave_map_small_019",
+            "t": "mesh"
+        },
+        "cave_map_small_020": {
+            "n": "cave_map_small_020",
+            "t": "mesh"
+        },
+        "cave_map_small_021": {
+            "n": "cave_map_small_021",
+            "t": "mesh"
+        },
+        "cave_map_small_022": {
+            "n": "cave_map_small_022",
+            "t": "mesh"
+        },
+        "cave_map_small_023": {
+            "n": "cave_map_small_023",
+            "t": "mesh"
+        },
+        "cave_map_small_024": {
+            "n": "cave_map_small_024",
+            "t": "mesh"
+        },
+        "cave_map_small_025": {
+            "n": "cave_map_small_025",
+            "t": "mesh"
+        },
+        "cave_map_small_026": {
+            "n": "cave_map_small_026",
+            "t": "mesh"
+        },
+        "cave_map_small_027": {
+            "n": "cave_map_small_027",
+            "t": "mesh"
+        },
+        "cave_map_small_028": {
+            "n": "cave_map_small_028",
+            "t": "mesh"
+        },
+        "cave_map_small_029": {
+            "n": "cave_map_small_029",
+            "t": "mesh"
+        },
+        "cave_map_small_030": {
+            "n": "cave_map_small_030",
+            "t": "mesh"
+        },
+        "cave_map_small_031": {
+            "n": "cave_map_small_031",
+            "t": "mesh"
+        },
+        "cave_map_small_032": {
+            "n": "cave_map_small_032",
+            "t": "mesh"
+        },
+        "cave_map_small_033": {
+            "n": "cave_map_small_033",
+            "t": "mesh"
+        },
+        "cave_map_large_000": {
+            "n": "cave_map_large_000",
+            "t": "mesh"
+        },
+        "cave_map_large_001": {
+            "n": "cave_map_large_001",
+            "t": "mesh"
+        },
+        "cave_map_large_002": {
+            "n": "cave_map_large_002",
+            "t": "mesh"
+        },
+        "cave_map_large_003": {
+            "n": "cave_map_large_003",
+            "t": "mesh"
+        },
+        "cave_map_large_004": {
+            "n": "cave_map_large_004",
+            "t": "mesh"
+        },
+        "cave_map_large_005": {
+            "n": "cave_map_large_005",
+            "t": "mesh"
+        },
+        "cave_map_large_006": {
+            "n": "cave_map_large_006",
+            "t": "mesh"
+        },
+        "cave_map_large_007": {
+            "n": "cave_map_large_007",
+            "t": "mesh"
+        },
+        "cave_map_large_008": {
+            "n": "cave_map_large_008",
+            "t": "mesh"
+        },
+        "cave_map_large_009": {
+            "n": "cave_map_large_009",
+            "t": "mesh"
+        },
+        "cave_map_large_010": {
+            "n": "cave_map_large_010",
+            "t": "mesh"
+        },
+        "cave_map_large_011": {
+            "n": "cave_map_large_011",
+            "t": "mesh"
+        },
+        "cave_map_large_012": {
+            "n": "cave_map_large_012",
+            "t": "mesh"
+        },
+        "cave_map_large_013": {
+            "n": "cave_map_large_013",
+            "t": "mesh"
+        },
+        "cave_map_large_014": {
+            "n": "cave_map_large_014",
+            "t": "mesh"
+        },
+        "Maxwell": {
+            "n": "Maxwell",
+            "t": "mesh",
+            "Debug": true
+        },
+        "Whiskers": {
+            "n": "Whiskers",
+            "t": "mesh",
+            "Debug": true
+        },
+        "Character1": {
+            "n": "Character1",
+            "t": "mesh",
+            "Debug": true
+        },
+        "Sphere": {
+            "n": "Sphere",
+            "t": "mesh",
+            "Debug": true
+        },
+        "HighPolySphere": {
+            "n": "HighPolySphere",
+            "t": "mesh",
+            "Debug": true
+        },
+        "IsoSphereSmooth": {
+            "n": "IsoSphereSmooth",
+            "t": "mesh",
+            "Debug": true
+        },
+        "WireframeCube": {
+            "n": "WireframeCube",
+            "t": "mesh",
+            "Debug": true
+        },
+        "WireframeSphere": {
+            "n": "WireframeSphere",
+            "t": "mesh",
+            "Debug": true
+        },
+        "WireframeCylinder": {
+            "n": "WireframeCylinder",
+            "t": "mesh",
+            "Debug": true
+        },
+        "WireframeCapsule": {
+            "n": "WireframeCapsule",
+            "t": "mesh",
+            "Debug": true
+        },
+        "HeightMapExample": {
+            "n": "HeightMapExample",
+            "t": "mesh",
+            "Debug": true
+        },
+        "TranslationGizmo": {
+            "n": "TranslationGizmo",
+            "t": "mesh",
+            "Debug": true
+        },
+        "RotationGizmo": {
+            "n": "RotationGizmo",
+            "t": "mesh",
+            "Debug": true
+        },
+        "ScalingGizmo": {
+            "n": "ScalingGizmo",
+            "t": "mesh",
+            "Debug": true
+        },
+        "Cornell": {
+            "n": "Cornell",
+            "t": "mesh",
+            "Debug": true
+        }
+    }
+}

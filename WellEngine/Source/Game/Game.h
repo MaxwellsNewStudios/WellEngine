@@ -51,9 +51,6 @@ namespace WellEngine
 		std::string _pendingLayoutChange = "";
 	#endif
 
-		[[nodiscard]] bool CompileContent(const std::vector<std::string> &meshNames);
-		[[nodiscard]] bool DecompileContent();
-
 		[[nodiscard]] bool LoadContent(
 			const std::vector<TextureData> &textureNames,
 			const std::vector<TextureData> &cubemapNames,

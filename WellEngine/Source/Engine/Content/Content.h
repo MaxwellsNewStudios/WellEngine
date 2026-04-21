@@ -250,6 +250,11 @@ namespace WellEngine
 		[[nodiscard]] const Material *GetDefaultMaterial();
 		[[nodiscard]] const Material *GetErrorMaterial();
 
+
+		[[nodiscard]] bool CompileContent(const std::vector<std::string> &meshNames) const;
+		[[nodiscard]] bool DecompileContent(ID3D11Device *device);
+
+
 	#ifdef USE_IMGUI
 		[[nodiscard]] bool RenderUI(ID3D11Device *device);
 	#endif

@@ -41,100 +41,6 @@ Game::~Game()
 #endif
 }
 
-bool Game::CompileContent(const std::vector<std::string> &meshNames)
-{
-	ZoneScopedC(RandomUniqueColor());
-
-	std::ofstream writer;
-	writer.open(ASSET_COMPILED_FILE_MESHES, std::ios::binary | std::ios::ate);
-	if (!writer.is_open())
-	{
-		ErrMsg("Failed to open compiled content file!");
-		return false;
-	}
-
-	for (int i = 0; i < meshNames.size(); i++)
-	{
-		const std::string &meshName = meshNames[i];
-		std::string meshPath = std::format("{}\\{}.obj", ASSET_PATH_MESHES, meshName);
-
-		// Ensure the file exists
-		struct stat buffer;
-		if (stat(meshPath.c_str(), &buffer) != 0)
-			continue;
-
-		CompiledData data = _content.GetMeshData(meshPath.c_str());
-
-		size_t meshNameStart = meshName.find_last_of("/\\");
-		if (meshNameStart == std::string::npos)
-			meshNameStart = 0;
-		else
-			meshNameStart += 1;
-
-		std::string name = meshName.substr(meshNameStart);
-
-		// Write name of file, size of contents, then contents
-		writer.write((char *)(name + '\0').data(), name.size() + 1);
-		writer.write((char *)&data.size, sizeof(size_t));
-		writer.write(data.data, data.size);
-		writer.flush();
-	}
-
-	writer.close();
-	return true;
-}
-bool Game::DecompileContent()
-{
-	ZoneScopedC(RandomUniqueColor());
-
-	std::ifstream reader(ASSET_COMPILED_FILE_MESHES, std::ios::binary | std::ios::in | std::ios::ate);
-	if (!reader.is_open())
-	{
-		ErrMsg("Failed to open compiled content file! Try running once with FORCE_COMPILE_CONTENT enabled.");
-		return false;
-	}
-
-	size_t fileSize = reader.tellg();
-	reader.seekg(0, std::ios::beg);
-
-	while (reader.tellg() < fileSize)
-	{
-		std::string meshName = "";
-		while (true)
-		{
-			char c = 0;
-			reader.read(&c, 1);
-
-			if (c == '\0')
-				break;
-
-			meshName += c;
-		}
-
-		size_t size = 0;
-		reader.read((char *)&size, sizeof(size_t));
-
-		std::vector<char> data;
-		data.resize(size);
-		reader.read(data.data(), size);
-
-		MeshData *meshData = new MeshData();
-
-		size_t offset = 0;
-		meshData->Decompile(data, offset);
-
-		if (_content.AddMesh(_device.Get(), std::format("{}", meshName), &meshData, false) == CONTENT_NULL)
-		{
-			ErrMsgF("Failed to add Mesh {}!", meshName);
-			reader.close();
-			return false;
-		}
-	}
-
-	reader.close();
-	return true;
-}
-
 bool Game::LoadContent(
 	const std::vector<TextureData> &textureNames,
 	const std::vector<TextureData> &cubemapNames,
@@ -145,7 +51,7 @@ bool Game::LoadContent(
 	ZoneScopedC(RandomUniqueColor());
 
 	DbgMsg("Decompiling Content (Meshes)...");
-	if (!DecompileContent())
+	if (!_content.DecompileContent(_device.Get()))
 	{
 		ErrMsg("Failed to decompile content!");
 		return false;
@@ -483,27 +389,44 @@ bool Game::Setup(TimeUtils &time, Window window)
 		fclose(compileFile);
 
 #ifdef AUTO_RECOMPILE_CONTENT_ON_CHANGE
-		// Compare the age of the compiled file to the newest mesh file, if the compiled file is older than any mesh file then recompile anyways
+		// Compare the age of the compiled file to the registry file & newest mesh file.
+		// If the compiled file is older then recompile anyways.
 		if (!compileContent)
 		{
 			std::filesystem::path compiledPath(ASSET_COMPILED_FILE_MESHES);
 
 			std::filesystem::file_time_type compiledTime = std::filesystem::last_write_time(compiledPath);
-			std::filesystem::file_time_type newestMeshTime = DirectoryManager::GetMostRecentFileDate(ASSET_PATH_MESHES);
+			std::filesystem::file_time_type registryFile = std::filesystem::last_write_time(ASSET_REGISTRY_FILE_MESHES);
 
-			if (newestMeshTime > compiledTime)
+			if (registryFile > compiledTime)
 			{
 				compileContent = true;
-				DbgMsg("Compiled content file is older than source mesh files. Recompiling...");
+				DbgMsg("Compiled content file is older than registry file. Recompiling...");
 			}
+			else
+			{
+				std::filesystem::file_time_type newestMeshTime = DirectoryManager::GetMostRecentFileDate(ASSET_PATH_MESHES);
+
+				if (newestMeshTime > compiledTime)
+				{
+					compileContent = true;
+					DbgMsg("Compiled content file is older than source mesh files. Recompiling...");
+				}
+			}
+
 		}
 #endif
 	}
 #endif
 
 	if (compileContent)
-	{ 
-		std::vector<std::string> meshNames = { "Error", "Fallback", "Cube", "Plane" };
+	{
+		ContentRegistry &cReg = ContentRegistry::Instance();
+		if (!cReg.OpenRegistry())
+		{
+			ErrMsg("Failed to open content registry!");
+			return false;
+		}
 
 		std::ifstream fileStream(ASSET_REGISTRY_FILE_MESHES);
 		if (!fileStream)
@@ -511,6 +434,9 @@ bool Game::Setup(TimeUtils &time, Window window)
 			ErrMsg("Could not load file for meshes");
 			return false;
 		}
+
+		std::vector<std::string> meshNames;
+		bool isDebug = false;
 
 		while (std::getline(fileStream, line))
 		{
@@ -523,7 +449,10 @@ bool Game::Setup(TimeUtils &time, Window window)
 
 			if (line.starts_with("<DEBUG>"))
 #ifdef DEBUG_BUILD
+			{
+				isDebug = true;
 				continue;
+			}
 #else
 				break;
 #endif
@@ -533,12 +462,39 @@ bool Game::Setup(TimeUtils &time, Window window)
 			if (it != meshNames.end())
 				continue;
 
+			json::Value meshObj(json::kObjectType);
+			{
+				using namespace SerializerUtils;
+				using namespace WellEngine::ContentRegistryTags;
+
+				auto &docAlloc = *cReg.GetDocAlloc();
+
+				meshObj.AddMember(SerializeString(NAME_TAG, docAlloc), SerializeString(line, docAlloc), docAlloc);
+				meshObj.AddMember(SerializeString(TYPE_TAG, docAlloc), SerializeString("mesh", docAlloc), docAlloc);
+
+				if (isDebug) 
+					meshObj.AddMember("Debug", true, docAlloc);
+			}
+			
+			if (!cReg.AddAssetToRegistry(line, meshObj, true))
+			{
+				ErrMsgF("Failed to add mesh {} to registry!", line);
+				return false;
+			}
+
 			meshNames.emplace_back(line);
 		}
 		fileStream.close();
 
+		if (!cReg.SaveRegistry())
+		{
+			ErrMsg("Failed to save content registry!");
+			return false;
+		}
+		cReg.CloseRegistry();
+
 		time.TakeSnapshot("CompileContent");
-		if (!CompileContent(meshNames))
+		if (!_content.CompileContent(meshNames))
 		{
 			ErrMsg("Failed to compile content!");
 			return false;

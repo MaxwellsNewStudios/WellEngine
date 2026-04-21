@@ -279,6 +279,7 @@
   <ItemGroup>
     <ClInclude Include="..\Tests\TestUtils.h" />
     <ClInclude Include="AppMain.h" />
+    <ClInclude Include="Source\Engine\Content\ContentRegistry.h" />
     <ClInclude Include="Dependencies\ImGui\GraphEditor.h" />
     <ClInclude Include="Dependencies\ImGui\imconfig.h" />
     <ClInclude Include="Dependencies\ImGui\ImCurveEdit.h" />
@@ -783,6 +784,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AppMain.cpp" />
+    <ClCompile Include="Source\Engine\Content\ContentRegistry.cpp" />
     <ClCompile Include="Dependencies\ImGui\GraphEditor.cpp" />
     <ClCompile Include="Dependencies\ImGui\ImCurveEdit.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">NotUsing</PrecompiledHeader>

@@ -50,6 +50,130 @@ void Content::Shutdown()
 	_hasShutDown = true;
 }
 
+// Looks for material with the same properties as the arguments.
+// If one exists, that one is returned. Otherwise it is created and returned.
+const Material *Content::GetOrAddMaterial(Material mat)
+{
+	auto it = _materialSet.find(&mat);
+	if (it != _materialSet.end())
+		return (*it);
+
+	Material *newMat = new Material(mat);
+
+	_materialVec.emplace_back(newMat);
+	_materialSet.insert(newMat);
+
+	return newMat;
+}
+const Material *Content::GetDefaultMaterial()
+{
+	return GetOrAddMaterial(Material(GetTextureID("Fallback")));
+}
+const Material *Content::GetErrorMaterial()
+{
+	Material mat;
+	mat.textureID = GetTextureID("Error");
+	mat.ambientID = GetTextureID("Red");
+
+	return GetOrAddMaterial(mat);
+}
+
+
+bool Content::CompileContent(const std::vector<std::string> &meshNames) const
+{
+	ZoneScopedC(RandomUniqueColor());
+
+	std::ofstream writer;
+	writer.open(ASSET_COMPILED_FILE_MESHES, std::ios::binary | std::ios::ate);
+	if (!writer.is_open())
+	{
+		ErrMsg("Failed to open compiled content file!");
+		return false;
+	}
+
+	for (int i = 0; i < meshNames.size(); i++)
+	{
+		const std::string &meshName = meshNames[i];
+		std::string meshPath = std::format("{}\\{}.obj", ASSET_PATH_MESHES, meshName);
+
+		// Ensure the file exists
+		struct stat buffer;
+		if (stat(meshPath.c_str(), &buffer) != 0)
+			continue;
+
+		CompiledData data = GetMeshData(meshPath.c_str());
+
+		size_t meshNameStart = meshName.find_last_of("/\\");
+		if (meshNameStart == std::string::npos)
+			meshNameStart = 0;
+		else
+			meshNameStart += 1;
+
+		std::string name = meshName.substr(meshNameStart);
+
+		// Write name of file, size of contents, then contents
+		writer.write((char *)(name + '\0').data(), name.size() + 1);
+		writer.write((char *)&data.size, sizeof(size_t));
+		writer.write(data.data, data.size);
+		writer.flush();
+	}
+
+	writer.close();
+	return true;
+}
+bool Content::DecompileContent(ID3D11Device *device)
+{
+	ZoneScopedC(RandomUniqueColor());
+
+	std::ifstream reader(ASSET_COMPILED_FILE_MESHES, std::ios::binary | std::ios::in | std::ios::ate);
+	if (!reader.is_open())
+	{
+		ErrMsg("Failed to open compiled content file! Try running once with FORCE_COMPILE_CONTENT enabled.");
+		return false;
+	}
+
+	size_t fileSize = reader.tellg();
+	reader.seekg(0, std::ios::beg);
+
+	while (reader.tellg() < fileSize)
+	{
+		std::string meshName = "";
+		while (true)
+		{
+			char c = 0;
+			reader.read(&c, 1);
+
+			if (c == '\0')
+				break;
+
+			meshName += c;
+		}
+
+		size_t size = 0;
+		reader.read((char *)&size, sizeof(size_t));
+
+		std::vector<char> data;
+		data.resize(size);
+		reader.read(data.data(), size);
+
+		MeshData *meshData = new MeshData();
+
+		size_t offset = 0;
+		meshData->Decompile(data, offset);
+
+		if (AddMesh(device, std::format("{}", meshName), &meshData, false) == CONTENT_NULL)
+		{
+			ErrMsgF("Failed to add Mesh {}!", meshName);
+			reader.close();
+			return false;
+		}
+	}
+
+	reader.close();
+	return true;
+}
+
+
 #ifdef USE_IMGUI
 bool Content::RenderUI(ID3D11Device *device)
 {
@@ -2785,32 +2909,4 @@ HeightMap *Content::GetHeightMap(UINT id) const
 		return nullptr;
 
 	return &_heightTextures[id]->data;
-}
-
-// Looks for material with the same properties as the arguments.
-// If one exists, that one is returned. Otherwise it is created and returned.
-const Material *Content::GetOrAddMaterial(Material mat)
-{
-	auto it = _materialSet.find(&mat);
-	if (it != _materialSet.end())
-		return (*it);
-
-	Material *newMat = new Material(mat);
-
-	_materialVec.emplace_back(newMat);
-	_materialSet.insert(newMat);
-
-	return newMat;
-}
-const Material *Content::GetDefaultMaterial()
-{
-	return GetOrAddMaterial(Material(GetTextureID("Fallback")));
-}
-const Material *Content::GetErrorMaterial()
-{
-	Material mat;
-	mat.textureID = GetTextureID("Error");
-	mat.ambientID = GetTextureID("Red");
-
-	return GetOrAddMaterial(mat);
 }
