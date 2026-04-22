@@ -41,7 +41,7 @@ bool SimpleSpotLightBehaviour::Start()
 
 	SpotLightCollection *spotlights = GetScene()->GetSpotlights();
 
-	if (spotlights)
+	if (spotlights && IsEnabled())
 	{
 		if (!spotlights->RegisterSimpleLight(this))
 		{

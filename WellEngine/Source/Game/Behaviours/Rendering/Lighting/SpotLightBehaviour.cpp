@@ -96,7 +96,7 @@ bool SpotLightBehaviour::Start()
 
 	SpotLightCollection *spotlights = GetScene()->GetSpotlights();
 
-	if (spotlights)
+	if (spotlights && IsEnabled())
 	{
 		if (!spotlights->RegisterLight(this))
 		{

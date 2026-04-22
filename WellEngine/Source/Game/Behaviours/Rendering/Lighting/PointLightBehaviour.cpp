@@ -89,10 +89,13 @@ bool PointLightBehaviour::Start()
 		return false;
 	}
 
-	if (!pointlights->RegisterLight(this))
+	if (IsEnabled())
 	{
-		ErrMsg("Failed to register pointlight!");
-		return false;
+		if (!pointlights->RegisterLight(this))
+		{
+			ErrMsg("Failed to register pointlight!");
+			return false;
+		}
 	}
 
 #ifdef DEBUG_BUILD

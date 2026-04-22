@@ -46,10 +46,13 @@ bool SimplePointLightBehaviour::Start()
 		return false;
 	}
 
-	if (!pointlights->RegisterSimpleLight(this))
+	if (IsEnabled())
 	{
-		ErrMsg("Failed to register simple pointlight!");
-		return false;
+		if (!pointlights->RegisterSimpleLight(this))
+		{
+			ErrMsg("Failed to register simple pointlight!");
+			return false;
+		}
 	}
 
 #ifdef DEBUG_BUILD
