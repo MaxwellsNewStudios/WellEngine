@@ -303,6 +303,18 @@ bool Game::LoadContent(
 			ErrMsg("Failed to add IL_DebugDraw!");
 			return false;
 		}
+		const std::vector<Semantic> debugDrawBezierInputLayout{
+			{ "POSITION",	DXGI_FORMAT_R32G32B32A32_FLOAT	},
+			{ "CONTROL",	DXGI_FORMAT_R32G32B32_FLOAT		},
+			{ "TESSFACTOR",	DXGI_FORMAT_R32_FLOAT			},
+			{ "COLOR",		DXGI_FORMAT_R32G32B32A32_FLOAT	}
+		};
+
+		if (_content.AddInputLayout(_device.Get(), "DebugDrawBezier", debugDrawBezierInputLayout, _content.GetShaderID("VS_DebugDrawBezier")) == CONTENT_NULL)
+		{
+			ErrMsg("Failed to add IL_DebugDrawBezier!");
+			return false;
+		}
 
 		const std::vector<Semantic> debugDrawTriInputLayout{
 			{ "POSITION",	DXGI_FORMAT_R32G32B32A32_FLOAT	},
@@ -814,9 +826,13 @@ bool Game::Setup(TimeUtils &time, Window window)
 #ifdef DEBUG_BUILD
 		{ ShaderType::VERTEX_SHADER,		"VS_DebugDraw",					"Vertex/VS_DebugDraw"				},
 		{ ShaderType::VERTEX_SHADER,		"VS_DebugDrawStrip",			"Vertex/VS_DebugDrawStrip"			},
+		{ ShaderType::VERTEX_SHADER,		"VS_DebugDrawBezier",			"Vertex/VS_DebugDrawBezier"			},
 		{ ShaderType::VERTEX_SHADER,		"VS_DebugDrawTri",				"Vertex/VS_DebugDrawTri"			},
 		{ ShaderType::VERTEX_SHADER,		"VS_DebugDrawSprite",			"Vertex/VS_DebugDrawSprite"			},
 		{ ShaderType::VERTEX_SHADER,		"VS_DebugDrawMesh",				"Vertex/VS_DebugDrawMesh"			},
+
+		{ ShaderType::HULL_SHADER,			"HS_DebugBezier",				"Hull/HS_DebugBezier"				},
+		{ ShaderType::DOMAIN_SHADER,		"DS_DebugBezier",				"Domain/DS_DebugBezier"				},
 
 		{ ShaderType::GEOMETRY_SHADER,		"GS_DebugLine",					"Geometry/GS_DebugLine"				},
 		{ ShaderType::GEOMETRY_SHADER,		"GS_DebugDrawSprite",			"Geometry/GS_DebugDrawSprite"		},

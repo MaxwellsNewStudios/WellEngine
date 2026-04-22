@@ -17,6 +17,23 @@ namespace WellEngine
 
 	namespace DebugDraw
 	{
+		struct LineBezier
+		{
+			dx::XMFLOAT3 p0, p1, p2, p3;
+			dx::XMFLOAT4 color0, color1;
+			float tessFactor = 16.0f;
+
+			LineBezier() = default;
+			LineBezier(const LineBezier &) = default;
+			LineBezier(LineBezier &&) = default;
+
+			LineBezier &operator=(const LineBezier &) = default;
+			LineBezier &operator=(LineBezier &&) = default;
+
+			constexpr LineBezier(dx::XMFLOAT3 p0, dx::XMFLOAT3 p1, dx::XMFLOAT3 p2, dx::XMFLOAT3 p3, dx::XMFLOAT4 color0, dx::XMFLOAT4 color1, float tessFactor = 16.0f) noexcept :
+				p0(p0), p1(p1), p2(p2), p3(p3), color0(color0), color1(color1), tessFactor(tessFactor) {}
+		};
+
 		struct LineStrip
 		{
 			std::vector<dx::XMFLOAT3> points;
@@ -153,6 +170,9 @@ namespace WellEngine
 		std::vector<DD::LineStrip>	_sceneStripList, _overlayStripList, _screenStripList;
 		SimpleMeshD3D11				_sceneStripMesh, _overlayStripMesh, _screenStripMesh;
 
+		std::vector<DD::LineBezier>	_sceneBezierList, _overlayBezierList, _screenBezierList;
+		SimpleMeshD3D11				_sceneBezierMesh, _overlayBezierMesh, _screenBezierMesh;
+
 		std::vector<DD::Tri> _sceneTriList, _overlayTriList, _screenTriList;
 		SimpleMeshD3D11		 _sceneTriMesh, _overlayTriMesh, _screenTriMesh;
 
@@ -177,6 +197,9 @@ namespace WellEngine
 		[[nodiscard]] bool CreateMesh(std::vector<DD::LineStrip> *lineStripList, SimpleMeshD3D11 *mesh);
 		[[nodiscard]] bool RenderLineStrips(std::vector<DD::LineStrip> *lineStripList, SimpleMeshD3D11 *mesh);
 
+		[[nodiscard]] bool CreateMesh(std::vector<DD::LineBezier> *lineBezierList, SimpleMeshD3D11 *mesh);
+		[[nodiscard]] bool RenderLineBeziers(std::vector<DD::LineBezier> *lineBezierList, SimpleMeshD3D11 *mesh);
+
 		[[nodiscard]] bool CreateMesh(std::vector<DD::Tri> *triList, SimpleMeshD3D11 *mesh, bool screenSpace);
 		[[nodiscard]] bool RenderTris(std::vector<DD::Tri> *triList, SimpleMeshD3D11 *mesh);
 
@@ -191,6 +214,10 @@ namespace WellEngine
 		[[nodiscard]] bool HasSceneLineStripDraws() const;
 		[[nodiscard]] bool HasOverlayLineStripDraws() const;
 		[[nodiscard]] bool HasScreenLineStripDraws() const;
+
+		[[nodiscard]] bool HasSceneLineBezierDraws() const;
+		[[nodiscard]] bool HasOverlayLineBezierDraws() const;
+		[[nodiscard]] bool HasScreenLineBezierDraws() const;
 
 		[[nodiscard]] bool HasSceneTriDraws() const;
 		[[nodiscard]] bool HasOverlayTriDraws() const;
@@ -268,6 +295,13 @@ namespace WellEngine
 		void DrawStripThreadSafe(const DD::LineStrip &strip, bool useDepth = true);
 
 
+		/// TODO: Describe
+		void DrawBezier(const DD::LineBezier &bezier, bool useDepth = true);
+
+		/// TODO: Describe
+		void DrawBezierThreadSafe(const DD::LineBezier &bezier, bool useDepth = true);
+
+
 		/// Push a multi-colored triangle to the debug draw list. It will be drawn on the next render call, then discarded.
 		void DrawTri(const DD::Tri &tri, bool useDepth = true, bool twoSided = false);
 		/// Push a triangle to the debug draw list. It will be drawn on the next render call, then discarded.
@@ -301,6 +335,8 @@ namespace WellEngine
 
 		/// TODO: Describe
 		void DrawStripSS(const DD::LineStrip &strip);
+		/// TODO: Describe
+		void DrawBezierSS(const DD::LineBezier &bezier);
 		/// TODO: Describe
 		void DrawTriSS(const DD::Tri &tri);
 		/// TODO: Describe

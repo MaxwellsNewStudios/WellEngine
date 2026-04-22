@@ -1869,6 +1869,14 @@
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">Compute</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Compute</ShaderType>
     </FxCompile>
+    <FxCompile Include="Source\Shaders\Domain\DS_DebugBezier.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Domain</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">Domain</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">5.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Domain</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
+    </FxCompile>
     <FxCompile Include="Source\Shaders\Geometry\GS_Billboard.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Geometry</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">Geometry</ShaderType>
@@ -1912,6 +1920,14 @@
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
+    </FxCompile>
+    <FxCompile Include="Source\Shaders\Hull\HS_DebugBezier.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Hull</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">Hull</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">5.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Hull</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
     </FxCompile>
     <FxCompile Include="Source\Shaders\Pixel\PS_Cel.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
@@ -2243,6 +2259,11 @@
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
+    </FxCompile>
+    <FxCompile Include="Source\Shaders\Vertex\VS_DebugDrawBezier.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
     </FxCompile>
     <FxCompile Include="Source\Shaders\Vertex\VS_DebugDrawMesh.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>

@@ -44,6 +44,54 @@ namespace WellEngine
 		}
 	};
 
+	struct SimpleBezierPoint
+	{
+		float
+			px, py, pz, pw,
+			cx, cy, cz, 
+			tf,
+			cr, cg, cb, ca;
+
+		SimpleBezierPoint() :
+			px(0.0f), py(0.0f), pz(0.0f), pw(0.0f),
+			cx(0.0f), cy(0.0f), cz(0.0f),
+			tf(0.0f),
+			cr(0.0f), cg(0.0f), cb(0.0f), ca(0.0f)
+		{ }
+
+		SimpleBezierPoint(
+			float px, float py, float pz, float pw,
+			float cx, float cy, float cz,
+			float tf,
+			float cr, float cg, float cb, float ca) :
+			px(px), py(py), pz(pz), pw(pw),
+			cx(cx), cy(cy), cz(cz),
+			tf(tf),
+			cr(cr), cg(cg), cb(cb), ca(ca)
+		{ }
+
+		bool operator==(const SimpleBezierPoint &other) const
+		{
+			if (px != other.px) return false;
+			if (py != other.py) return false;
+			if (pz != other.pz) return false;
+			if (pw != other.pw) return false;
+
+			if (cx != other.cx) return false;
+			if (cy != other.cy) return false;
+			if (cz != other.cz) return false;
+
+			if (tf != other.tf) return false;
+
+			if (cr != other.cr) return false;
+			if (cg != other.cg) return false;
+			if (cb != other.cb) return false;
+			if (ca != other.ca) return false;
+
+			return true;
+		}
+	};
+
 	struct SimpleSpritePoint
 	{
 		float

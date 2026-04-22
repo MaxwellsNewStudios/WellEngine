@@ -719,6 +719,7 @@ bool CameraBehaviour::BindDebugDrawBuffers() const
 		return true;
 	}
 	context->VSSetConstantBuffers(0, 1, &camViewProjBuffer);
+	context->DSSetConstantBuffers(0, 1, &camViewProjBuffer);
 
 	ID3D11Buffer *const camPosBuffer = GetCameraCSBuffer();
 	if (camPosBuffer == nullptr)

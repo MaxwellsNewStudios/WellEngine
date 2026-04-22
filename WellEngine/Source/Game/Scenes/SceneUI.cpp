@@ -2468,6 +2468,57 @@ bool Scene::RenderSceneUI()
 				TreePop();
 			}
 
+			if (TreeNode("Bezier Tests"))
+			{
+				PushID("BezierTests");
+
+				static DebugDraw::LineBezier bezier;
+				static bool depth = true;
+				static bool screenSpace = false;
+
+				DragFloat3("P0", &bezier.p0.x, 0.05f);
+				ImGuiUtils::LockMouseOnActive();
+
+				DragFloat3("P1", &bezier.p1.x, 0.05f);
+				ImGuiUtils::LockMouseOnActive();
+
+				DragFloat3("P2", &bezier.p2.x, 0.05f);
+				ImGuiUtils::LockMouseOnActive();
+
+				DragFloat3("P3", &bezier.p3.x, 0.05f);
+				ImGuiUtils::LockMouseOnActive();
+
+				ColorEdit4("Color0", &bezier.color0.x);
+
+				ColorEdit4("Color1", &bezier.color1.x);
+
+				DragFloat("Tess Factor", &bezier.tessFactor, 0.1f, 0.1f, 64.0f);
+
+				Text("Depth:"); SameLine();
+				Checkbox("##Depth", &depth);
+
+				Text("Screen-Space:"); SameLine();
+				Checkbox("##ScreenSpace", &screenSpace);
+
+				if (screenSpace)
+				{
+					DebugDrawer::Instance().DrawBezierSS(bezier);
+				}
+				else
+				{
+					DebugDrawer &drawer = DebugDrawer::Instance();
+
+					drawer.DrawSphere(bezier.p0, 0.05f, 0, { 1,0,0,0.5f }, depth);
+					drawer.DrawSphere(bezier.p1, 0.03f, 0, { 1,1,0,0.5f }, depth);
+					drawer.DrawSphere(bezier.p2, 0.03f, 0, { 1,1,0,0.5f }, depth);
+					drawer.DrawSphere(bezier.p3, 0.05f, 0, { 1,0,0,0.5f }, depth);
+					drawer.DrawBezier(bezier, depth);
+				}
+
+				PopID();
+				TreePop();
+			}
+
 			Separator();
 			TreePop();
 		}
