@@ -2419,6 +2419,55 @@ bool Scene::RenderSceneUI()
 				TreePop();
 			}
 
+			if (TreeNode("Strip Tests"))
+			{
+				PushID("StripTests");
+
+				static DebugDraw::LineStrip strip;
+				static bool depth = true;
+				static bool screenSpace = false;
+
+				int pointCount = strip.points.size();
+				if (DragInt("Point Count##StripTests", &pointCount, 0.1f, 0, 128))
+				{
+					pointCount = MAX(pointCount, 0);
+					strip.points.resize(pointCount);
+				}
+				ImGuiUtils::LockMouseOnActive();
+
+				if (TreeNode("Points"))
+				{
+					BeginChild("PointsChild", ImVec2(0, 200), true);
+					for (int i = 0; i < strip.points.size(); i++)
+					{
+						DragFloat3(std::format("Point {}", i).c_str(), &strip.points[i].x, 0.05f);
+						ImGuiUtils::LockMouseOnActive();
+					}
+					EndChild();
+					TreePop();
+				}
+
+				ColorEdit4("Color", &strip.color.x);
+
+				Text("Depth:"); SameLine();
+				Checkbox("##Depth", &depth);
+
+				Text("Screen-Space:"); SameLine();
+				Checkbox("##ScreenSpace", &screenSpace);
+
+				if (screenSpace)
+				{
+					DebugDrawer::Instance().DrawStripSS(strip);
+				}
+				else
+				{
+					DebugDrawer::Instance().DrawStrip(strip, depth);
+				}
+
+				PopID();
+				TreePop();
+			}
+
 			Separator();
 			TreePop();
 		}

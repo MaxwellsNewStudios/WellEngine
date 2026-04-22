@@ -120,6 +120,9 @@ void DebugDrawer::Shutdowm()
 	_screenDirBuffer.Reset();
 	_sceneLineMesh.Reset();
 	_overlayLineMesh.Reset();
+	_sceneStripMesh.Reset();
+	_overlayStripMesh.Reset();
+	_screenStripMesh.Reset();
 	_sceneTriMesh.Reset();
 	_overlayTriMesh.Reset();
 	_screenTriMesh.Reset();
@@ -228,6 +231,7 @@ bool DebugDrawer::CreateRasterizerStates()
 	rasterizerDesc.FillMode = D3D11_FILL_WIREFRAME;
 	rasterizerDesc.CullMode = D3D11_CULL_NONE;
 	rasterizerDesc.AntialiasedLineEnable = true;
+	rasterizerDesc.MultisampleEnable = true;
 
 	if (FAILED(_device->CreateRasterizerState(&rasterizerDesc, &_wireframeRasterizer)))
 	{
@@ -245,6 +249,18 @@ bool DebugDrawer::HasSceneLineDraws() const
 bool DebugDrawer::HasOverlayLineDraws() const
 {
 	return _overlayLineList.size() > 0;
+}
+bool DebugDrawer::HasSceneLineStripDraws() const
+{
+	return _sceneStripList.size() > 0;
+}
+bool DebugDrawer::HasOverlayLineStripDraws() const
+{
+	return _overlayStripList.size() > 0;
+}
+bool DebugDrawer::HasScreenLineStripDraws() const
+{
+	return _screenStripList.size() > 0;
 }
 bool DebugDrawer::HasSceneTriDraws() const
 {
@@ -294,6 +310,14 @@ void DebugDrawer::Clear()
 	_overlayLineList.clear();
 	_overlayLineList.reserve(overlayLineCount);
 
+	UINT sceneStripCount = static_cast<UINT>(_sceneStripList.size());
+	_sceneStripList.clear();
+	_sceneStripList.reserve(sceneStripCount);
+
+	UINT overlayStripCount = static_cast<UINT>(_overlayStripList.size());
+	_overlayStripList.clear();
+	_overlayStripList.reserve(overlayStripCount);
+
 	UINT sceneTriCount = static_cast<UINT>(_sceneTriList.size());
 	_sceneTriList.clear();
 	_sceneTriList.reserve(sceneTriCount);
@@ -314,6 +338,10 @@ void DebugDrawer::ClearScreenSpace()
 	return;
 #endif
 	ZoneScopedXC(RandomUniqueColor());
+
+	UINT screenStripCount = static_cast<UINT>(_screenStripList.size());
+	_screenStripList.clear();
+	_screenStripList.reserve(screenStripCount);
 
 	UINT screenTriCount = static_cast<UINT>(_screenTriList.size());
 	_screenTriList.clear();
@@ -339,6 +367,9 @@ bool DebugDrawer::Render(ID3D11RenderTargetView *targetRTV,
 	bool hasSceneLineDraws = HasSceneLineDraws();
 	bool hasOverlayLineDraws = HasOverlayLineDraws();
 
+	bool hasSceneLineStripDraws = HasSceneLineStripDraws();
+	bool hasOverlayLineStripDraws = HasOverlayLineStripDraws();
+
 	bool hasSceneTriDraws = HasSceneTriDraws();
 	bool hasOverlayTriDraws = HasOverlayTriDraws();
 
@@ -349,6 +380,7 @@ bool DebugDrawer::Render(ID3D11RenderTargetView *targetRTV,
 	bool hasOverlayMeshDraws = HasOverlayMeshDraws();
 
 	if (!hasSceneLineDraws && !hasOverlayLineDraws && 
+		!hasSceneLineStripDraws && !hasOverlayLineStripDraws &&
 		!hasSceneTriDraws && !hasOverlayTriDraws &&
 		!hasSceneSpriteDraws && !hasOverlaySpriteDraws &&
 		!hasSceneMeshDraws && !hasOverlayMeshDraws)
@@ -375,7 +407,7 @@ bool DebugDrawer::Render(ID3D11RenderTargetView *targetRTV,
 	ID3D11Buffer *const camDirBuffer = _camDirBuffer.GetBuffer();
 	_context->GSSetConstantBuffers(1, 1, &camDirBuffer);
 
-	if (hasSceneLineDraws || hasSceneTriDraws || hasSceneSpriteDraws || hasSceneMeshDraws)
+	if (hasSceneLineDraws || hasSceneLineStripDraws || hasSceneTriDraws || hasSceneSpriteDraws || hasSceneMeshDraws)
 	{
 		// Draw with depth
 		_context->OMSetRenderTargets(1, &targetRTV, targetDSV);
@@ -386,6 +418,15 @@ bool DebugDrawer::Render(ID3D11RenderTargetView *targetRTV,
 			if (!RenderLines(&_sceneLineList, &_sceneLineMesh))
 			{
 				ErrMsg("Failed to render lines in scene!");
+				return false;
+			}
+		}
+
+		if (hasSceneLineStripDraws)
+		{
+			if (!RenderLineStrips(&_sceneStripList, &_sceneStripMesh))
+			{
+				ErrMsg("Failed to render line strips in scene!");
 				return false;
 			}
 		}
@@ -418,7 +459,7 @@ bool DebugDrawer::Render(ID3D11RenderTargetView *targetRTV,
 		}
 	}
 
-	if (hasOverlayLineDraws || hasOverlayTriDraws || hasOverlaySpriteDraws || hasOverlayMeshDraws)
+	if (hasOverlayLineDraws || hasOverlayLineStripDraws || hasOverlayTriDraws || hasOverlaySpriteDraws || hasOverlayMeshDraws)
 	{
 		// Draw Overlay
 		_context->ClearDepthStencilView(_overlayDSV.Get(), D3D11_CLEAR_DEPTH, 0.0f, 0);
@@ -434,6 +475,15 @@ bool DebugDrawer::Render(ID3D11RenderTargetView *targetRTV,
 			if (!RenderLines(&_overlayLineList, &_overlayLineMesh))
 			{
 				ErrMsg("Failed to render lines in scene!");
+				return false;
+			}
+		}
+
+		if (hasOverlayLineStripDraws)
+		{
+			if (!RenderLineStrips(&_overlayStripList, &_overlayStripMesh))
+			{
+				ErrMsg("Failed to render line strips in scene!");
 				return false;
 			}
 		}
@@ -487,10 +537,11 @@ bool DebugDrawer::RenderScreenSpace(ID3D11RenderTargetView *targetRTV,
 #endif
 	ZoneScopedC(RandomUniqueColor());
 
+	bool hasScreenLineStripDraws = HasScreenLineStripDraws();
 	bool hasScreenTriDraws = HasScreenTriDraws();
 	bool hasScreenSpriteDraws = HasScreenSpriteDraws();
 
-	if (!hasScreenTriDraws && !hasScreenSpriteDraws)
+	if (!hasScreenLineStripDraws && !hasScreenTriDraws && !hasScreenSpriteDraws)
 		return true;
 
 	ID3D11BlendState *prevBlendState;
@@ -518,6 +569,15 @@ bool DebugDrawer::RenderScreenSpace(ID3D11RenderTargetView *targetRTV,
 		ID3D11DepthStencilState *prevDepthStencilState;
 		_context->OMGetDepthStencilState(&prevDepthStencilState, 0);
 		_context->OMSetDepthStencilState(_dss.Get(), 0);
+
+		if (hasScreenLineStripDraws)
+		{
+			if (!RenderLineStrips(&_screenStripList, &_screenStripMesh))
+			{
+				ErrMsg("Failed to render screen-space line strips!");
+				return false;
+			}
+		}
 
 		if (hasScreenTriDraws)
 		{
@@ -597,6 +657,41 @@ bool DebugDrawer::RenderLines(std::vector<Line> *lineList, SimpleMeshD3D11 *mesh
 	mesh->PerformDrawCall(_context);
 
 	_context->GSSetShader(nullptr, nullptr, 0);
+
+	return true;
+}
+bool DebugDrawer::RenderLineStrips(std::vector<::LineStrip> *lineStripList, SimpleMeshD3D11 *mesh)
+{
+	ZoneScopedC(RandomUniqueColor());
+
+	if (lineStripList->size() <= 0)
+		return true;
+
+	if (!CreateMesh(lineStripList, mesh))
+	{
+		ErrMsg("Failed to create mesh!");
+		return false;
+	}
+
+	_context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
+	_context->RSSetState(_wireframeRasterizer.Get());
+
+	_context->IASetInputLayout(_content->GetInputLayout("DebugDraw")->GetInputLayout());
+
+	if (!_content->GetShader("VS_DebugDrawStrip")->BindShader(_context))
+	{
+		ErrMsg("Failed to bind debug vertex shader!");
+		return false;
+	}
+
+	if (!_content->GetShader("PS_DebugDraw")->BindShader(_context))
+	{
+		ErrMsg("Failed to bind debug pixel shader!");
+		return false;
+	}
+
+	mesh->BindMeshBuffers(_context);
+	mesh->PerformDrawCall(_context);
 
 	return true;
 }
@@ -952,6 +1047,49 @@ bool DebugDrawer::CreateMesh(std::vector<Line> *lineList, SimpleMeshD3D11 *mesh)
 
 	return true;
 }
+bool DebugDrawer::CreateMesh(std::vector<LineStrip> *lineStripList, SimpleMeshD3D11 *mesh)
+{
+	ZoneScopedXC(RandomUniqueColor());
+
+	UINT vertCount = 0;
+	for (const auto &lineStrip : *lineStripList)
+		vertCount += static_cast<UINT>((lineStrip.points.size() - 1) * 2);
+
+	SimpleVertex *verticeData = new SimpleVertex[vertCount];
+
+	UINT vertIndex = 0;
+	for (const auto &lineStrip : *lineStripList)
+	{
+		for (UINT i = 0; i < lineStrip.points.size() - 1; i++)
+		{
+			for (UINT j = 0; j < 2; j++)
+			{
+				size_t pointIndex = static_cast<size_t>(i) + j;
+				verticeData[vertIndex].x = lineStrip.points[pointIndex].x;
+				verticeData[vertIndex].y = lineStrip.points[pointIndex].y;
+				verticeData[vertIndex].z = lineStrip.points[pointIndex].z;
+				verticeData[vertIndex].r = lineStrip.color.x;
+				verticeData[vertIndex].g = lineStrip.color.y;
+				verticeData[vertIndex].b = lineStrip.color.z;
+				verticeData[vertIndex].a = lineStrip.color.w;
+				vertIndex++;
+			}
+		}
+	}
+
+	SimpleMeshData simpleMeshData;
+	simpleMeshData.vertexInfo.sizeOfVertex = sizeof(SimpleVertex);
+	simpleMeshData.vertexInfo.nrOfVerticesInBuffer = vertCount;
+	simpleMeshData.vertexInfo.vertexData = &(verticeData[0].x);
+
+	if (!mesh->Initialize(_device, simpleMeshData))
+	{
+		ErrMsg("Failed to initialize simple mesh!");
+		return false;
+	}
+
+	return true;
+}
 bool DebugDrawer::CreateMesh(std::vector<Tri> *triList, SimpleMeshD3D11 *mesh, bool screenSpace)
 {
 	ZoneScopedXC(RandomUniqueColor());
@@ -1231,6 +1369,34 @@ void DebugDrawer::DrawRayThreadSafe(const XMFLOAT3 &origin, const XMFLOAT3 &dir,
 	DrawLineThreadSafe({ {origin, size, color}, {end, size, color} }, useDepth);
 }
 
+void DebugDrawer::DrawStrip(const LineStrip &strip, bool useDepth)
+{
+#ifndef DEBUG_DRAW
+	return;
+#endif
+
+	if (strip.points.size() <= 1)
+		return;
+
+	auto &stripList = useDepth ? _sceneStripList : _overlayStripList;
+	stripList.emplace_back(strip);	
+}
+void DebugDrawer::DrawStripThreadSafe(const LineStrip &strip, bool useDepth)
+{
+#ifndef DEBUG_DRAW
+	return;
+#endif
+
+	if (strip.points.size() <= 1)
+		return;
+
+	auto &stripList = useDepth ? _sceneStripList : _overlayStripList;
+
+#pragma omp critical
+	{
+		stripList.emplace_back(strip);
+	}
+}
 
 void DebugDrawer::DrawTri(const Tri &tri, bool useDepth, bool twoSided)
 {
@@ -1474,6 +1640,17 @@ void DebugDrawer::DrawFrustum(const BoundingFrustum &frustum, const XMFLOAT4 &co
 }
 
 
+void DebugDrawer::DrawStripSS(const::LineStrip &strip)
+{
+#ifndef DEBUG_DRAW
+	return;
+#endif
+
+	if (strip.points.size() <= 1)
+		return;
+
+	_screenStripList.emplace_back(strip);
+}
 void DebugDrawer::DrawTriSS(const Tri &tri)
 {
 #ifndef DEBUG_DRAW

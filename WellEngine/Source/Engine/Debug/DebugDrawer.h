@@ -17,6 +17,27 @@ namespace WellEngine
 
 	namespace DebugDraw
 	{
+		struct LineStrip
+		{
+			std::vector<dx::XMFLOAT3> points;
+			dx::XMFLOAT4 color = { 1, 1, 1, 1 };
+
+			LineStrip() = default;
+			LineStrip(const LineStrip &) = default;
+			LineStrip(LineStrip &&) = default;
+
+			LineStrip &operator=(const LineStrip &) = default;
+			LineStrip &operator=(LineStrip &&) = default;
+
+			constexpr LineStrip(std::vector<dx::XMFLOAT3> points, dx::XMFLOAT4 color) noexcept : points(points), color(color) { }
+			constexpr LineStrip(dx::XMFLOAT3 *positions, size_t count, dx::XMFLOAT4 color) noexcept : color(color) 
+			{
+				points.reserve(count);
+				for (size_t i = 0; i < count; i++)
+					points.emplace_back(positions[i]);
+			}
+		};
+
 		struct LineSection
 		{
 			dx::XMFLOAT3 position;
@@ -108,7 +129,6 @@ namespace WellEngine
 	/// Allows for drawing debug shapes through simple function calls from anywhere.
 	class DebugDrawer
 	{
-
 	private:
 		ID3D11Device *_device			= nullptr;
 		ID3D11DeviceContext	*_context	= nullptr;
@@ -129,6 +149,9 @@ namespace WellEngine
 
 		std::vector<DD::Line> _sceneLineList, _overlayLineList;
 		SimpleMeshD3D11		  _sceneLineMesh, _overlayLineMesh;
+
+		std::vector<DD::LineStrip>	_sceneStripList, _overlayStripList, _screenStripList;
+		SimpleMeshD3D11				_sceneStripMesh, _overlayStripMesh, _screenStripMesh;
 
 		std::vector<DD::Tri> _sceneTriList, _overlayTriList, _screenTriList;
 		SimpleMeshD3D11		 _sceneTriMesh, _overlayTriMesh, _screenTriMesh;
@@ -151,6 +174,9 @@ namespace WellEngine
 		[[nodiscard]] bool CreateMesh(std::vector<DD::Line> *lineList, SimpleMeshD3D11 *mesh);
 		[[nodiscard]] bool RenderLines(std::vector<DD::Line> *lineList, SimpleMeshD3D11 *mesh);
 
+		[[nodiscard]] bool CreateMesh(std::vector<DD::LineStrip> *lineStripList, SimpleMeshD3D11 *mesh);
+		[[nodiscard]] bool RenderLineStrips(std::vector<DD::LineStrip> *lineStripList, SimpleMeshD3D11 *mesh);
+
 		[[nodiscard]] bool CreateMesh(std::vector<DD::Tri> *triList, SimpleMeshD3D11 *mesh, bool screenSpace);
 		[[nodiscard]] bool RenderTris(std::vector<DD::Tri> *triList, SimpleMeshD3D11 *mesh);
 
@@ -161,6 +187,10 @@ namespace WellEngine
 
 		[[nodiscard]] bool HasSceneLineDraws() const;
 		[[nodiscard]] bool HasOverlayLineDraws() const;
+
+		[[nodiscard]] bool HasSceneLineStripDraws() const;
+		[[nodiscard]] bool HasOverlayLineStripDraws() const;
+		[[nodiscard]] bool HasScreenLineStripDraws() const;
 
 		[[nodiscard]] bool HasSceneTriDraws() const;
 		[[nodiscard]] bool HasOverlayTriDraws() const;
@@ -231,6 +261,13 @@ namespace WellEngine
 		void DrawRayThreadSafe(const dx::XMFLOAT3 &origin, const dx::XMFLOAT3 &dir, float size, const dx::XMFLOAT4 &color, bool useDepth = true);
 
 
+		/// TODO: Describe
+		void DrawStrip(const DD::LineStrip &strip, bool useDepth = true);
+
+		/// TODO: Describe
+		void DrawStripThreadSafe(const DD::LineStrip &strip, bool useDepth = true);
+
+
 		/// Push a multi-colored triangle to the debug draw list. It will be drawn on the next render call, then discarded.
 		void DrawTri(const DD::Tri &tri, bool useDepth = true, bool twoSided = false);
 		/// Push a triangle to the debug draw list. It will be drawn on the next render call, then discarded.
@@ -262,6 +299,8 @@ namespace WellEngine
 		/// TODO: Describe
 		void DrawFrustum(const dx::BoundingFrustum &frustum, const dx::XMFLOAT4 &color, bool useDepth = true, bool twoSided = false);
 
+		/// TODO: Describe
+		void DrawStripSS(const DD::LineStrip &strip);
 		/// TODO: Describe
 		void DrawTriSS(const DD::Tri &tri);
 		/// TODO: Describe

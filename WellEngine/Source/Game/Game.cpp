@@ -813,6 +813,7 @@ bool Game::Setup(TimeUtils &time, Window window)
 
 #ifdef DEBUG_BUILD
 		{ ShaderType::VERTEX_SHADER,		"VS_DebugDraw",					"Vertex/VS_DebugDraw"				},
+		{ ShaderType::VERTEX_SHADER,		"VS_DebugDrawStrip",			"Vertex/VS_DebugDrawStrip"			},
 		{ ShaderType::VERTEX_SHADER,		"VS_DebugDrawTri",				"Vertex/VS_DebugDrawTri"			},
 		{ ShaderType::VERTEX_SHADER,		"VS_DebugDrawSprite",			"Vertex/VS_DebugDrawSprite"			},
 		{ ShaderType::VERTEX_SHADER,		"VS_DebugDrawMesh",				"Vertex/VS_DebugDrawMesh"			},
