@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "EngineCore.h"
 #include "Engine/Debug/DebugData.h"
-#include "Game/Behaviours/Rendering/Mesh/MeshBehaviour.h"
+#include "Game/Behaviours/Rendering/Mesh/B_Mesh.h"
 
 #ifdef LEAK_DETECTION
 #define new			DEBUG_NEW
@@ -277,8 +277,8 @@ int EngineCore::Run()
 						}
 						isPaused = true;
 
-						MeshBehaviour *mesh = nullptr;
-						_game.GetScene("MainMenu")->GetSceneHolder()->GetEntityByName("StartButton")->GetBehaviourByType<MeshBehaviour>(mesh);
+						B_Mesh *mesh = nullptr;
+						_game.GetScene("MainMenu")->GetSceneHolder()->GetEntityByName("StartButton")->GetBehaviourByType<B_Mesh>(mesh);
 						Material mat = Material(*mesh->GetMaterial());
 						mat.textureID = _game.GetScene("MainMenu")->GetContent()->GetTextureID("Button_Continue_Texture");
 						if (!mesh->SetMaterial(&mat))

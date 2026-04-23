@@ -13,7 +13,7 @@ namespace WellEngine
 	using Microsoft::WRL::ComPtr;
 
 	// Forward declarations
-	class CameraBehaviour;
+	class B_Camera;
 
 	namespace DebugDraw
 	{
@@ -160,7 +160,7 @@ namespace WellEngine
 
 		ConstantBufferD3D11 _screenViewProjBuffer;
 		ConstantBufferD3D11 _camDirBuffer, _screenDirBuffer;
-		CameraBehaviour *_camera = nullptr;
+		B_Camera *_camera = nullptr;
 
 		std::map<int, SimpleMeshD3D11> _cachedSphereMeshes;
 
@@ -250,7 +250,7 @@ namespace WellEngine
 
 		void Clear();
 		void ClearScreenSpace();
-		void SetCamera(CameraBehaviour *camera);
+		void SetCamera(B_Camera *camera);
 
 
 		/// Push a non-uniform line to the debug draw list. It will be drawn on the next render call, then discarded.

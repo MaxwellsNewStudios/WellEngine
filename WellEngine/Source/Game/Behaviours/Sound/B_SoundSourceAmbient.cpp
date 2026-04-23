@@ -1,0 +1,152 @@
+#include "stdafx.h"
+#include "B_SoundSourceAmbient.h"
+#include "Game/Scenes/Scene.h"
+#include "../Rendering/Mesh/B_MeshBillboard.h"
+
+#ifdef LEAK_DETECTION
+#define new			DEBUG_NEW
+#endif
+
+B_SoundSourceAmbient::B_SoundSourceAmbient(std::string fileName, dx::SOUND_EFFECT_INSTANCE_FLAGS flags, bool loop, float volume,
+	float distanceScaler, float reverbScaler, float minimumDelay, float maximumDelay)
+{
+	_fileName = std::move(fileName);
+	_soundEffectFlag = dx::SoundEffectInstance_Use3D | dx::SoundEffectInstance_ReverbUseFilters;
+	_loop = loop;
+	_volume = volume;
+	_distanceScaler = distanceScaler;
+	_reverbScaler = reverbScaler;
+	_delayMin = minimumDelay;
+	_delayMax = maximumDelay;
+}
+
+bool B_SoundSourceAmbient::Start()
+{
+	_soundBehaviour = new B_SoundSource(_fileName, _soundEffectFlag, _loop, _distanceScaler, _reverbScaler);
+	if (!_soundBehaviour->Initialize(GetEntity()))
+	{
+		Warn("Failed to Initialize sound behaviour!");
+		return true;
+	}
+
+	_soundBehaviour->SetVolume(_volume);
+	_soundBehaviour->SetSerialization(false);
+	_soundBehaviour->SetEmitterPosition(GetEntity()->GetTransform()->GetPosition(World));
+
+	_timer = RandomFloat(_delayMin, _delayMax);
+
+#ifdef DEBUG_BUILD
+	Content *content = GetScene()->GetContent();
+
+	Material mat;
+	mat.textureID = content->GetTextureID("SoundEmitter");
+	mat.ambientID = content->GetTextureID("White");
+
+	auto billboardMeshBehaviour = new B_MeshBillboard(mat, 0.0f, 0.0f, 0.5f, true, false, false, false, true);
+	if (!billboardMeshBehaviour->Initialize(GetEntity()))
+		Warn("Failed to Initialize billboard mesh behaviour!");
+#endif
+
+	QueueUpdate();
+
+    return true;
+}
+
+bool B_SoundSourceAmbient::Update(TimeUtils & time, const Input& input)
+{
+	dx::SoundState soundState = _soundBehaviour->GetSoundState();
+
+	if (soundState != dx::SoundState::PLAYING)
+	{
+		_timer -= time.GetDeltaTime();
+
+		if (_timer <= 0.0f)
+		{
+			_soundBehaviour->Play();
+			_timer += RandomFloat(_delayMin, _delayMax);
+		}
+	}
+
+	return true;
+}
+
+#ifdef USE_IMGUI
+bool B_SoundSourceAmbient::RenderUI()
+{
+	ImGui::Text("Play countdown: %.1f", _timer);
+	if (ImGui::Button("Play", ImVec2(50, 20)))
+		TriggerSound();
+
+	if (ImGui::DragFloat("Volume", &_volume, 0.01f))
+		_soundBehaviour->SetVolume(_volume);
+	ImGuiUtils::LockMouseOnActive();
+
+	ImGui::Checkbox("Loop", &_loop);
+
+	if (ImGui::DragFloat("Min Delay", &_delayMin, 0.01f, 0.0f, 0.0f, "%.2f"))
+		_delayMin = MAX(0.0f, MIN(_delayMin, _delayMax));
+	ImGuiUtils::LockMouseOnActive();
+
+	if (ImGui::DragFloat("Max Delay", &_delayMax, 0.01f, 0.0f, 0.0f, "%.2f"))
+		_delayMax = MAX(_delayMin, _delayMax);
+	ImGuiUtils::LockMouseOnActive();
+
+	if (ImGui::DragFloat("Distance scaler", &_distanceScaler, 0.01f))
+		_distanceScaler = MAX(0.0f, _distanceScaler);
+	ImGuiUtils::LockMouseOnActive();
+
+	if (ImGui::DragFloat("Reverb scaler", &_reverbScaler, 0.01f))
+		_reverbScaler = MAX(0.0f, _reverbScaler);
+	ImGuiUtils::LockMouseOnActive();
+
+	return true;
+}
+#endif
+
+bool B_SoundSourceAmbient::Serialize(json::Document::AllocatorType &docAlloc, json::Value &obj)
+{
+	obj.AddMember("File Name",			SerializerUtils::SerializeString(_fileName, docAlloc), docAlloc);
+	obj.AddMember("Flag",				(uint32_t)_soundEffectFlag, docAlloc);
+	obj.AddMember("Volume",				_volume, docAlloc);
+	obj.AddMember("Loop",				_loop, docAlloc);
+	obj.AddMember("Distance Scaler",	_distanceScaler, docAlloc);
+	obj.AddMember("Reverb Scaler",		_reverbScaler, docAlloc);
+	obj.AddMember("Delay Min",			_delayMin, docAlloc);
+	obj.AddMember("Delay Max",			_delayMax, docAlloc);
+	return true;
+}
+bool B_SoundSourceAmbient::Deserialize(const json::Value &obj, Scene *scene)
+{
+	_fileName			= obj["File Name"].GetString();
+
+	if (obj.HasMember("Flag"))
+		_soundEffectFlag = (dx::SOUND_EFFECT_INSTANCE_FLAGS)(obj["Flag"].GetUint());
+	else if (obj.HasMember("Sound Effect Flag")) // For backward compatibility
+		_soundEffectFlag = (dx::SOUND_EFFECT_INSTANCE_FLAGS)(obj["Sound Effect Flag"].GetUint());
+
+	_volume				= obj["Volume"].GetFloat();
+	_loop				= obj["Loop"].GetBool();
+	_distanceScaler		= obj["Distance Scaler"].GetFloat();
+	_reverbScaler		= obj["Reverb Scaler"].GetFloat();
+	_delayMin			= obj["Delay Min"].GetFloat();
+	_delayMax			= obj["Delay Max"].GetFloat();
+
+	return true;
+}
+
+
+void B_SoundSourceAmbient::TriggerSound()
+{
+	dx::SoundState soundState = _soundBehaviour->GetSoundState();
+
+	if (soundState != dx::SoundState::PLAYING)
+	{
+		_soundBehaviour->Play();
+		_timer = RandomFloat(_delayMin, _delayMax);
+	}
+}
+
+B_SoundSource *B_SoundSourceAmbient::GetB_SoundSource() const
+{
+	return _soundBehaviour;
+}

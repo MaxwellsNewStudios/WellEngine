@@ -4,7 +4,7 @@
 #include "Game/Scenes/Scene.h"
 #include "Game/Entity.h"
 #include "Game/Behaviour.h"
-#include "Game/Behaviours/Rendering/Mesh/MeshBehaviour.h"
+#include "Game/Behaviours/Rendering/Mesh/B_Mesh.h"
 
 #ifdef LEAK_DETECTION
 #define new			DEBUG_NEW
@@ -594,8 +594,8 @@ bool Quadtree::Node::RaycastNode(const dx::XMFLOAT3 &orig, const dx::XMFLOAT3 &d
 			{
 				const Shape::Ray ray(orig, dir);
 
-				MeshBehaviour *meshBehaviour = nullptr;
-				if (item->GetBehaviourByType<MeshBehaviour>(meshBehaviour))
+				B_Mesh *meshBehaviour = nullptr;
+				if (item->GetBehaviourByType<B_Mesh>(meshBehaviour))
 				{
 					performCheapCheck = false;
 
@@ -717,8 +717,8 @@ bool Quadtree::Node::RaycastNode(const Shape::Ray &ray, Shape::RayHit &hit, Enti
 			if (!item->IsRaycastTarget())
 				continue;
 			
-			MeshBehaviour *meshBehaviour = nullptr;
-			if (item->GetBehaviourByType<MeshBehaviour>(meshBehaviour))
+			B_Mesh *meshBehaviour = nullptr;
+			if (item->GetBehaviourByType<B_Mesh>(meshBehaviour))
 			{
 				MeshD3D11 *mesh = item->GetScene()->GetContent()->GetMesh(meshBehaviour->GetMeshID());
 				const MeshCollider &meshCollider = mesh->GetMeshCollider();
@@ -797,7 +797,7 @@ bool Quadtree::Node::RaycastNode(const Shape::Ray &ray, Shape::RayHit &hit, Enti
 }
 
 #ifdef USE_IMGUI
-#include "Game/Behaviours/Debug/DebugPlayerBehaviour.h"
+#include "Game/Behaviours/Debug/B_DebugManager.h"
 
 void Quadtree::Node::DebugGetStructure(std::vector<dx::BoundingBox> &boxCollection, bool full, bool culling) const
 {
@@ -927,7 +927,7 @@ bool Quadtree::Node::RenderUI(std::string &path, bool drawFullPath, bool drawDat
 
 					if (ImGui::Button(std::format("{}##TreeData{}", item->GetName(), (size_t)item).c_str()))
 					{
-						item->GetScene()->GetDebugPlayer()->Select(item, ImGui::GetIO().KeyShift);
+						item->GetScene()->GetDebugManager()->Select(item, ImGui::GetIO().KeyShift);
 					}
 				}
 

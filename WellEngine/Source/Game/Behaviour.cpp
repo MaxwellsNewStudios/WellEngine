@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "Behaviour.h"
 #include "BehaviourRegistry.h"
-#include "Behaviours/Rendering/Camera/CameraBehaviour.h"
+#include "Behaviours/Rendering/Camera/B_Camera.h"
 #include "Engine/Rendering/RenderQueuer.h"
 #include "Scenes/Scene.h"
 #include "Entity.h"
@@ -24,9 +24,10 @@ Behaviour::~Behaviour()
 	}
 }
 
-bool Behaviour::Initialize(Entity *entity, const std::string &behaviourName)
+bool Behaviour::Initialize(Entity *entity)
 {
 	ZoneScopedC(RandomUniqueColor());
+	ZoneTextX(_name.c_str(), _name.size());
 
 	if (_isInitialized)
 	{
@@ -44,11 +45,6 @@ bool Behaviour::Initialize(Entity *entity, const std::string &behaviourName)
 	_entity = entity;
 	entity->AddBehaviour(this);
 
-	if (behaviourName.empty())
-	{
-		_name = behaviourName;
-	}
-
 	if (!Start())
 	{
 		ErrMsg("Failed to initialize behaviour!");
@@ -57,13 +53,6 @@ bool Behaviour::Initialize(Entity *entity, const std::string &behaviourName)
 
 	if (_isDestroyed)
 		return true;
-
-#ifdef DEBUG_BUILD
-	if (_name.empty())
-		Warn("Behaviour name is empty! Did you forget to assign a name in Start?");
-#endif
-
-	ZoneTextX(_name.c_str(), _name.size());
 
 	_isInitialized = true;
 	return true;
@@ -173,15 +162,6 @@ Game *Behaviour::GetGame() const
 	return _entity->GetGame();
 }
 
-void Behaviour::SetName(const std::string &name)
-{
-	_name = name;
-}
-const std::string &Behaviour::GetName() const
-{
-	return _name;
-}
-
 bool Behaviour::IsEnabled() const
 {
 	return _entity->IsEnabled() && _isEnabledSelf;
@@ -239,8 +219,7 @@ bool Behaviour::InitialUpdate(TimeUtils &time, const Input &input)
 	}
 
 	ZoneScopedXC(RandomUniqueColor());
-	const std::string &name = GetName();
-	ZoneTextX(name.c_str(), name.size());
+	ZoneTextX(_name.c_str(), _name.size());
 
 	return Update(time, input);
 }
@@ -262,8 +241,7 @@ bool Behaviour::InitialParallelUpdate(const TimeUtils &time, const Input &input)
 	}
 
 	ZoneScopedXC(RandomUniqueColor());
-	const std::string &name = GetName();
-	ZoneTextX(name.c_str(), name.size());
+	ZoneTextX(_name.c_str(), _name.size());
 
 	return ParallelUpdate(time, input);
 }
@@ -284,8 +262,7 @@ bool Behaviour::InitialLateUpdate(TimeUtils &time, const Input &input)
 #endif
 
 	ZoneScopedXC(RandomUniqueColor());
-	const std::string &name = GetName();
-	ZoneTextX(name.c_str(), name.size());
+	ZoneTextX(_name.c_str(), _name.size());
 
 	return LateUpdate(time, input);
 }
@@ -306,8 +283,7 @@ bool Behaviour::InitialFixedUpdate(float deltaTime, const Input &input)
 #endif
 
 	ZoneScopedXC(RandomUniqueColor());
-	const std::string &name = GetName();
-	ZoneTextX(name.c_str(), name.size());
+	ZoneTextX(_name.c_str(), _name.size());
 
 	return FixedUpdate(deltaTime, input);
 }
@@ -328,16 +304,14 @@ bool Behaviour::InitialPhysicsUpdate(float deltaTime)
 #endif
 
 	ZoneScopedXC(RandomUniqueColor());
-	const std::string &name = GetName();
-	ZoneTextX(name.c_str(), name.size());
+	ZoneTextX(_name.c_str(), _name.size());
 
 	return PhysicsUpdate(deltaTime);
 }
 bool Behaviour::InitialBeforeRender()
 {
 	ZoneScopedXC(RandomUniqueColor());
-	const std::string &name = GetName();
-	ZoneTextX(name.c_str(), name.size());
+	ZoneTextX(_name.c_str(), _name.size());
 
 	return BeforeRender();
 }
@@ -359,6 +333,9 @@ bool Behaviour::InitialRender(const RenderQueuer &queuer, const RendererInfo &re
 
 	if (!IsEnabled())
 		return true;
+
+	ZoneScopedXC(RandomUniqueColor());
+	ZoneTextX(_name.c_str(), _name.size());
 
 	return Render(queuer, rendererInfo);
 }
@@ -431,7 +408,7 @@ bool Behaviour::InitialRenderUI()
 	ImGui::Checkbox("Serialized##behSerialize", &_doSerialize);
 
 	ImGui::SameLine();
-	std::string refText = std::format("References: {}", GetRefs().size());
+	std::string refText = std::format("Refs: {}", GetRefs().size());
 	float refTextWidth = ImGui::CalcTextSize(refText.c_str()).x + 4.0f;
 	float availWidth = ImGui::GetContentRegionAvail().x;
 	ImGui::NewLine();
@@ -465,27 +442,6 @@ bool Behaviour::InitialBindBuffers(ID3D11DeviceContext *context)
 	return BindBuffers(context);
 }
 
-bool Behaviour::InitialOnHover()
-{
-	if (!IsEnabled())
-		return true;
-
-	return OnHover();
-}
-bool Behaviour::InitialOffHover()
-{
-	if (!IsEnabled())
-		return true;
-
-	return OffHover();
-}
-bool Behaviour::InitialOnSelect()
-{
-	if (!IsEnabled())
-		return true;
-
-	return OnSelect();
-}
 bool Behaviour::InitialOnDebugSelect()
 {
 	return OnDebugSelect();
@@ -533,9 +489,9 @@ bool Behaviour::InitialDeserialize(const json::Value &obj, Scene *scene)
 
 	return true;
 }
-void Behaviour::InitialPostDeserialize()
+bool Behaviour::InitialPostDeserialize()
 {
-	PostDeserialize();
+	return PostDeserialize();
 }
 
 
@@ -558,14 +514,11 @@ bool Behaviour::BindBuffers(ID3D11DeviceContext *context) { return true; }
 void Behaviour::OnEnable() { }
 void Behaviour::OnDisable() { }
 void Behaviour::OnDirty() { }
-void Behaviour::OnEditTransform() { }
-void Behaviour::OnEditTransformRec() { }
-bool Behaviour::OnHover() { return true; }
-bool Behaviour::OffHover() { return true; }
-bool Behaviour::OnSelect() { return true; }
+bool Behaviour::OnEditTransform() { return true; }
+bool Behaviour::OnEditTransformRec() { return true; }
 bool Behaviour::OnDebugSelect() { return true; }
 
 bool Behaviour::Serialize(json::Document::AllocatorType &docAlloc, json::Value &obj) { return true; }
 bool Behaviour::Deserialize(const json::Value &obj, Scene *scene) { return true; }
-void Behaviour::PostDeserialize() { }
+bool Behaviour::PostDeserialize() { return true; }
 

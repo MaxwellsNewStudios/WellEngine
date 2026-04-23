@@ -29,11 +29,14 @@ namespace WellEngine
 	class Game;
 	class Scene;
 	class Entity;
-	class CameraBehaviour;
+	class B_Camera;
 	class RenderQueuer;
 
 	class Behaviour : public IRefTarget<Behaviour>
 	{
+	public:
+		virtual const std::string &GetName() const = 0;
+
 	private:
 		bool _isInitialized = false;
 		bool _isDestroyed = false;
@@ -50,8 +53,6 @@ namespace WellEngine
 		Entity *_entity = nullptr;
 
 	protected:
-		std::string _name = "";
-
 		void QueueUpdate();
 		void DequeueUpdate();
 
@@ -111,12 +112,12 @@ namespace WellEngine
 		// OnEditTransform runs when the Entity's transform is modified in the editor or in code.
 		// NOTE: Triggered manually by calling Entity::SignalTransformEdited(). 
 		// It is your responsibility to call after editing an entity.
-		virtual void OnEditTransform();
+		[[nodiscard]] virtual bool OnEditTransform();
 
 		// OnEditTransformRec runs when the Entity's transform or any of its parents' transforms are modified in the editor or in code.
 		// NOTE: Triggered manually by calling Entity::SignalTransformEdited(). 
 		// It is your responsibility to call after editing an entity.
-		virtual void OnEditTransformRec();
+		[[nodiscard]] virtual bool OnEditTransformRec();
 
 		// Serializes the behaviour to a string.
 		[[nodiscard]] virtual bool Serialize(json::Document::AllocatorType &docAlloc, json::Value &obj);
@@ -124,17 +125,14 @@ namespace WellEngine
 		// Deserializes the behaviour from a string.
 		[[nodiscard]] virtual bool Deserialize(const json::Value &obj, Scene *scene);
 
-		virtual void PostDeserialize();
-		[[nodiscard]] virtual bool OnHover();
-		[[nodiscard]] virtual bool OffHover();
-		[[nodiscard]] virtual bool OnSelect();
+		[[nodiscard]] virtual bool PostDeserialize();
 		[[nodiscard]] virtual bool OnDebugSelect();
 
 	public:
 		Behaviour() = default;
 		virtual ~Behaviour();
 
-		[[nodiscard]] bool Initialize(Entity *entity, const std::string &behaviourName = "");
+		[[nodiscard]] bool Initialize(Entity *entity);
 		[[nodiscard]] bool IsInitialized() const;
 
 		void Destroy();
@@ -149,16 +147,29 @@ namespace WellEngine
 		[[nodiscard]] Scene *GetScene() const;
 		[[nodiscard]] Game *GetGame() const;
 
-		void SetName(const std::string &name);
-		[[nodiscard]] const std::string &GetName() const;
+		[[nodiscard]] bool IsEnabled() const;
+		[[nodiscard]] bool IsEnabledSelf() const;
+		void InheritEnabled(bool state);
+		void SetEnabled(bool state);
+		void SetDirty();
 
 		[[nodiscard]] bool InitialUpdate(TimeUtils &time, const Input &input);
 		[[nodiscard]] bool InitialParallelUpdate(const TimeUtils &time, const Input &input);
 		[[nodiscard]] bool InitialLateUpdate(TimeUtils &time, const Input &input);
 		[[nodiscard]] bool InitialFixedUpdate(float deltaTime, const Input &input);
 		[[nodiscard]] bool InitialPhysicsUpdate(float deltaTime);
+
 		[[nodiscard]] bool InitialBeforeRender();
 		[[nodiscard]] bool InitialRender(const RenderQueuer &queuer, const RendererInfo &rendererInfo);
+		[[nodiscard]] bool InitialBindBuffers(ID3D11DeviceContext *context);
+
+		[[nodiscard]] bool InitialSerialize(json::Document::AllocatorType &docAlloc, json::Value &obj);
+		[[nodiscard]] bool InitialDeserialize(const json::Value &obj, Scene *scene);
+		[[nodiscard]] bool InitialPostDeserialize();
+
+		[[nodiscard]] bool InitialOnDebugSelect();
+		[[nodiscard]] bool InitialOnEditTransform();
+		[[nodiscard]] bool InitialOnEditTransformRec();
 
 	#ifdef USE_IMGUI
 		// Serialize behaviour to JSON and copy to clipboard
@@ -181,24 +192,6 @@ namespace WellEngine
 
 		[[nodiscard]] bool InitialRenderUI();
 	#endif
-		[[nodiscard]] bool InitialBindBuffers(ID3D11DeviceContext *context);
-
-		[[nodiscard]] bool InitialOnHover();
-		[[nodiscard]] bool InitialOffHover();
-		[[nodiscard]] bool InitialOnSelect();
-		[[nodiscard]] bool InitialOnDebugSelect();
-		void InitialOnEditTransform();
-		void InitialOnEditTransformRec();
-
-		[[nodiscard]] bool IsEnabled() const;
-		[[nodiscard]] bool IsEnabledSelf() const;
-		void InheritEnabled(bool state);
-		void SetEnabled(bool state);
-		void SetDirty();
-
-		[[nodiscard]] bool InitialSerialize(json::Document::AllocatorType &docAlloc, json::Value &obj);
-		[[nodiscard]] bool InitialDeserialize(const json::Value &obj, Scene *scene);
-		void InitialPostDeserialize();
 
 		TESTABLE
 	};

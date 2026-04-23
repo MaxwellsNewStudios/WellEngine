@@ -4,7 +4,7 @@
 #include "Game/Game.h"
 #include "Game/GraphManager.h"
 #include "Game/BehaviourFactory.h"
-#include "Game/Behaviours/Debug/DebugPlayerBehaviour.h"
+#include "Game/Behaviours/Debug/B_DebugManager.h"
 #include "Game/Behaviours/Navigation/GraphNodeBehaviour.h"
 #include "Engine/Utils/SerializerUtils.h"
 
@@ -534,7 +534,7 @@ bool Scene::DeserializeEntity(const json::Value &obj, Entity **out)
 			entTrans->SetScale(To3(scale));
 
 			ent->SetName(name);
-			ent->SetDeserializedID(deserializedID); // HACK: Doesn't work if prefab children reference the prefab root
+			ent->SetSerialID(deserializedID); // HACK: Doesn't work if prefab children reference the prefab root
 			ent->SetEnabledSelf(enabled);
 		}
 		else
@@ -560,7 +560,7 @@ bool Scene::DeserializeEntity(const json::Value &obj, Entity **out)
 			return false;
 		}
 
-		ent->SetDeserializedID(deserializedID);
+		ent->SetSerialID(deserializedID);
 		ent->SetEnabledSelf(enabled);
 		ent->SetStatic(isStatic);
 		ent->SetDebugSelectable(isSelectable);
@@ -657,7 +657,7 @@ void Scene::RunPostDeserializeCallbacks()
 	{
 		Entity *ent;
 		if (entRef.TryGet(ent))
-			ent->SetDeserializedID(-1);
+			ent->SetSerialID(-1);
 	}
 }
 void Scene::PostDeserialize()

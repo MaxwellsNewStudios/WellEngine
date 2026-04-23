@@ -32,9 +32,6 @@ void Content::Shutdown()
 	for (auto *item : _cubemaps)
 		delete item;
 
-	for (auto *item : _heightTextures)
-		delete item;
-
 	for (auto *item : _samplers)
 		delete item;
 	
@@ -1148,8 +1145,6 @@ bool Content::RenderUI(ID3D11Device *device)
 		ImGui::Text("Samplers: %d", _samplers.size());
 		ImGui::Text("Blend States: %d", _blendStates.size());
 		ImGui::Text("Input Layouts: %d", _inputLayouts.size());
-		ImGui::Text("Sounds: %d", _sounds.size());
-		ImGui::Text("Height Maps: %d", _heightTextures.size());
 
 		ImGui::TreePop();
 	}
@@ -1895,6 +1890,41 @@ UINT Content::AddCubemap(ID3D11Device *device, ID3D11DeviceContext *context, con
 	return id;
 }
 
+UINT Content::AddFontAtlas(const std::string &name)
+{
+	if (name.empty() || name == "_" || name == "Uninitialized")
+	{
+		ErrMsgF("The name '{}' is reserved!", name);
+		return CONTENT_NULL;
+	}
+
+	UINT id = CONTENT_NULL;
+	bool duplicateName = false;
+	id = (UINT)_textureFonts.size();
+	for (UINT i = 0; i < id; i++)
+	{
+		if (_textureFonts[i]->name != name)
+			continue;
+
+		duplicateName = true;
+		id = i;
+		break;
+	}
+
+	if (!duplicateName)
+	{
+		TextureFont *font = new TextureFont(name, id);
+		if (!font->data.Initialize(this, name))
+		{
+			ErrMsg("Failed to create font atlas");
+			return CONTENT_NULL;
+		}
+		_textureFonts.emplace_back(font);
+	}
+
+	return id;
+}
+
 UINT Content::AddSampler(ID3D11Device *device, const std::string &name, 
 	D3D11_TEXTURE_ADDRESS_MODE adressMode, D3D11_FILTER filter, D3D11_COMPARISON_FUNC comparisonFunc)
 {
@@ -2056,176 +2086,6 @@ UINT Content::AddInputLayout(ID3D11Device *device, const std::string &name, cons
 	}
 
 	return AddInputLayout(device, name, semantics, vShader->GetShaderByteData(), vShader->GetShaderByteSize());
-}
-
-static bool BlurHeightMap(const HeightMap &hm, const char* path)
-{
-	/*
-	std::vector<float> originalData(hm.GetHeightValues());  // Read-only in each iteration
-	std::vector<float> temp(originalData); // Buffer for updates
-
-	const UINT w = hm.GetWidth(), h = hm.GetHeight();
-	const float threshold = 0.97f;
-
-	for (UINT y = 0; y < h; y++)
-	{
-		for (UINT x = 0; x < w; x++)
-		{
-			if (originalData[y * w + x] >= threshold)
-			{
-				temp[y * w + x] = 0;
-			}
-		}
-	}
-
-	// Write final blurred heightmap
-	if (!WriteTextureToFile(path, w, h, temp, 1, false))
-	{
-		ErrMsg("Failed to blur height map");
-		return false;
-	}
-	*/
-
-	/*
-	std::vector<float> originalData(hm.GetHeightValues());  // Read-only in each iteration
-	std::vector<float> temp(originalData); // Buffer for updates
-
-	const UINT w = hm.GetWidth(), h = hm.GetHeight();
-	const float threshold = 0.6f;
-
-	for (UINT i = 0; i < 20; i++) 
-	{
-		for (UINT y = 0; y < h; y++)
-		{
-			for (UINT x = 0; x < w; x++)
-			{
-				if (originalData[y * w + x] >= threshold)
-				{
-					float avg = INFINITY;
-					int avgCount = 0;
-
-					for (int dy = -1; dy <= 1; dy++)
-						for (int dx = -1; dx <= 1; dx++)
-						{
-							int nx = x + dx, 
-								ny = y + dy;
-							if (dy != dx && nx >= 0 && nx < (int)w && ny >= 0 && ny < (int)h)
-								if (originalData[ny * w + nx] < threshold) 	
-								{
-									avg = std::min<float>(avg, originalData[ny * w + nx]);
-									avgCount = 1;
-								}
-						}
-
-					if (avgCount > 0)
-						temp[y * w + x] = avg / avgCount;
-				}
-			}
-		}
-
-		for (int i = 0; i < w * h; i++)
-			originalData[i] = temp[i];
-
-		DbgMsg(std::format("Iteration: {}/20"), i + 1);
-	}
-
-	// Write final blurred heightmap
-	if (!WriteTextureToFile(path, w, h, originalData, 1, false))
-	{
-		ErrMsg("Failed to blur height map");
-		return false;
-	}
-	*/
-	return true;
-}
-UINT Content::AddHeightMap(const std::string &name, const std::string &path)
-{
-	if (name.empty() || name == "_" || name == "Uninitialized")
-	{
-		ErrMsgF("The name '{}' is reserved!", name);
-		return CONTENT_NULL;
-	}
-
-	UINT width, height;
-	std::vector<float> texData;
-
-	if (!LoadTextureFromFile(path, width, height, texData, 1, true))
-	{
-		ErrMsgF("Failed to load heightmap from file '{}'!", path);
-		return CONTENT_NULL;
-	}
-
-	UINT id = CONTENT_NULL;
-#pragma omp critical
-	{
-		bool duplicateName = false;
-		id = (UINT)_heightTextures.size();
-		for (UINT i = 0; i < id; i++)
-		{
-			if (_heightTextures[i]->name != name)
-				continue;
-
-			duplicateName = true;
-			id = i;
-			break;
-		}
-
-		if (!duplicateName)
-		{
-			HeightTexture *ht = new HeightTexture(name, id);
-			ht->data.Initialize(texData, width, height, name);
-
-			_heightTextures.emplace_back(ht);
-		}
-	}
-
-#if(0)
-	if (name == "CaveHeightmap")
-	{
-		if (!BlurHeightMap(ht->data, path))
-		{
-			ErrMsg("Failed to add height map");
-			return false;
-		}
-	}
-#endif
-
-	return id;
-}
-
-UINT Content::AddFontAtlas(const std::string &name)
-{
-	if (name.empty() || name == "_" || name == "Uninitialized")
-	{
-		ErrMsgF("The name '{}' is reserved!", name);
-		return CONTENT_NULL;
-	}
-
-	UINT id = CONTENT_NULL;
-	bool duplicateName = false;
-	id = (UINT)_textureFonts.size();
-	for (UINT i = 0; i < id; i++)
-	{
-		if (_textureFonts[i]->name != name)
-			continue;
-
-		duplicateName = true;
-		id = i;
-		break;
-	}
-
-	if (!duplicateName)
-	{
-		TextureFont *font = new TextureFont(name, id);
-		if (!font->data.Initialize(this, name))
-		{
-			ErrMsg("Failed to create font atlas");
-			return CONTENT_NULL;
-		}
-		_textureFonts.emplace_back(font);
-	}
-
-	return id;
 }
 
 UINT Content::GetMeshCount() const
@@ -2841,72 +2701,4 @@ InputLayoutD3D11 *Content::GetInputLayout(const UINT id) const
 	}
 
 	return &_inputLayouts[id]->data;
-}
-
-UINT Content::GetSoundID(const std::string &name) const
-{
-	if (name == "_" || name == "Uninitialized")
-		return CONTENT_NULL;
-
-	const UINT count = static_cast<UINT>(_sounds.size());
-
-	for (UINT i = 0; i < count; i++)
-	{
-		if (_sounds[i]->name == name)
-			return i;
-	}
-
-	return CONTENT_NULL;
-}
-SoundSource *Content::GetSound(const std::string &name) const
-{
-	const UINT count = static_cast<UINT>(_sounds.size());
-
-	for (UINT i = 0; i < count; i++)
-	{
-		if (_sounds[i]->name == name)
-			return &_sounds[i]->data;
-	}
-
-	return nullptr;
-}
-SoundSource *Content::GetSound(UINT id) const
-{
-	if (id == CONTENT_NULL)
-		return nullptr;
-	if (id >= _sounds.size())
-		return nullptr;
-
-	return &_sounds[id]->data;
-}
-
-UINT Content::GetHeightMapID(const std::string &name) const
-{
-	const UINT count = static_cast<UINT>(_heightTextures.size());
-
-	for (UINT i = 0; i < count; i++)
-	{
-		if (_heightTextures[i]->name == name)
-			return i;
-	}
-
-	return CONTENT_NULL;
-}
-HeightMap *Content::GetHeightMap(const std::string &name) const
-{
-	const UINT count = static_cast<UINT>(_heightTextures.size());
-
-	for (UINT i = 0; i < count; i++)
-		if (_heightTextures[i]->name == name)
-			return &_heightTextures[i]->data;
-	return nullptr;
-}
-HeightMap *Content::GetHeightMap(UINT id) const
-{
-	if (id == CONTENT_NULL)
-		return nullptr;
-	if (id >= _heightTextures.size())
-		return nullptr;
-
-	return &_heightTextures[id]->data;
 }

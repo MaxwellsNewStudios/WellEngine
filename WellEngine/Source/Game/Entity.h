@@ -9,7 +9,6 @@
 #include "Engine/Rendering/Graphics/Graphics.h"
 #include "Engine/Rendering/Culling/CullingPlacement.h"
 #include "Engine/Rendering/RenderQueuer.h"
-#include "Engine/Collision/Colliders.h"
 
 namespace WellEngine
 {
@@ -24,7 +23,8 @@ namespace WellEngine
 	{
 	private:
 		UINT _entityID = -1;
-		UINT _deserializedID = -1;
+		UINT _serialID = -1;
+
 		std::string _name = "";
 		std::string _prefabName = "";
 
@@ -36,7 +36,6 @@ namespace WellEngine
 		bool _doSerialize = true;
 		std::atomic_bool _doRender = false;
 		UINT _inheritedDisabled = 0;
-
 		bool _skipInRaycast = false;
 
 		dx::BoundingOrientedBox _bounds = {{0,0,0}, {1,1,1}, {0,0,0,1}};
@@ -140,37 +139,41 @@ namespace WellEngine
 
 		void SetParent(Entity *parent, bool keepWorldTransform = false);
 		[[nodiscard]] Entity *GetParent() const;
+
 		[[nodiscard]] UINT GetChildCount() const;
 		[[nodiscard]] const std::vector<Entity *> *GetChildren() const;
 		void GetChildrenRecursive(std::vector<Entity *> &children) const;
+
 		void ReorderChild(Entity *child, UINT newIndex);
 		void ReorderChild(Entity *child, Entity *after);
+
 		[[nodiscard]] bool IsChildOf(const Entity *ent, bool immediate = false) const;
 		[[nodiscard]] bool IsParentOf(const Entity *ent, bool immediate = false) const;
 
 		[[nodiscard]] Culling::CullingPlacement &GetCullingPlacement();
 
-		void SetScene(Scene *scene);
-		// If this is called from a class with a circular dependency to Scene, you'll have to explicity include Scene.h from the caller.
+		// NOTE: If this is called from a class with a circular dependency to Scene, you must explicity include Scene.h from the caller.
 		[[nodiscard]] Scene *GetScene() const;
+		void SetScene(Scene *scene);
 
 		Game *GetGame() const;
 
 		[[nodiscard]] Transform *GetTransform();
 
-		void SetName(const std::string &name);
 		[[nodiscard]] const std::string &GetName() const;
+		void SetName(const std::string &name);
 
 		[[nodiscard]] UINT GetID() const;
 
-		[[nodiscard]] UINT GetDeserializedID() const;
-		void SetDeserializedID(UINT id);
+		[[nodiscard]] UINT GetSerialID() const;
+		void SetSerialID(UINT id);
 
 		[[nodiscard]] bool GetShowInHierarchy(bool ignoreShowHidden = false) const;
 		void SetShowInHierarchy(bool show);
 
 		bool HasBounds(bool includeTriggers, dx::BoundingOrientedBox &out);
 		bool GetFullBounds(bool includeTriggers, dx::BoundingOrientedBox &bounds);
+
 		void SetEntityBounds(dx::BoundingOrientedBox &bounds);
 		void StoreEntityBounds(dx::BoundingOrientedBox &bounds, ReferenceSpace space = ReferenceSpace::World);
 
@@ -183,19 +186,19 @@ namespace WellEngine
 		[[nodiscard]] bool InitialFixedUpdate(float deltaTime, const Input &input);
 		[[nodiscard]] bool InitialBeforeRender();
 		[[nodiscard]] bool InitialRender(const RenderQueuer &queuer, const RendererInfo &rendererInfo);
+		[[nodiscard]] bool InitialBindBuffers(ID3D11DeviceContext *context);
+		[[nodiscard]] bool InitialOnDebugSelect();
+
 	#ifdef USE_IMGUI
 		// Serialize entity to JSON and copy to clipboard
 		void CopyToClipboard();
+
 		[[nodiscard]] bool UIContextMenu();
 		[[nodiscard]] bool InitialRenderUI();
+
 		void SetVisibleInHierarchy(bool visible, float height) { _visibleInHierarchy = visible; _lastHeightInHierarchy = height; }
 		[[nodiscard]] bool IsVisibleInHierarchy(float &height) const { height = _lastHeightInHierarchy; return _visibleInHierarchy; }
 	#endif
-		[[nodiscard]] bool InitialBindBuffers(ID3D11DeviceContext *context);
-		[[nodiscard]] bool InitialOnHover();
-		[[nodiscard]] bool InitialOffHover();
-		[[nodiscard]] bool InitialOnSelect();
-		[[nodiscard]] bool InitialOnDebugSelect();
 
 		// For deserialization, use Scene::DeserializeEntity
 		[[nodiscard]] bool Serialize(json::Document::AllocatorType &docAlloc, json::Value &obj, bool forceSerialize = false);

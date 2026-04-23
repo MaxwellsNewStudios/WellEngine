@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "Graphics.h"
-#include "Game/Behaviours/Rendering/Camera/CameraBehaviour.h"
+#include "Game/Behaviours/Rendering/Camera/B_Camera.h"
 #include "Engine/Debug/DebugDrawer.h"
 #include "Engine/Debug/DebugData.h"
 #include "Engine/UI/UILayout.h"

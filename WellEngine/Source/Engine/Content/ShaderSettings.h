@@ -16,7 +16,6 @@ namespace WellEngine::Shaders
 {
 	constexpr UINT SETTINGS_REGISTER_PS = 4;
 
-
 	// Generic shader setting container
 	struct SettingsContainer
 	{
@@ -34,7 +33,6 @@ namespace WellEngine::Shaders
 			return reinterpret_cast<T *>(data.get());
 		}
 	};
-
 
 #pragma region PS Settings Structs
 
@@ -102,6 +100,8 @@ namespace WellEngine::Shaders
 #endif // USE_IMGUI
 	};
 
+	// NOTE: Define setting structs here...
+
 #pragma endregion // PS Settings Structs
 
 
@@ -152,7 +152,7 @@ namespace WellEngine::Shaders
 	static const std::unordered_map<std::string_view, GenericSettings> SettingsMap = {
 		REGISTER_SHADER_SETTINGS(TriplanarSettings),
 		REGISTER_SHADER_SETTINGS(CelSettings),
-		// NOTE: Add new setting structs here
+		// NOTE: Register setting structs here...
 	};
 
 	static bool HasShaderSettings(const std::string_view &name)

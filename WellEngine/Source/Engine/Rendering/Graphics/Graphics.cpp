@@ -1,8 +1,8 @@
 ﻿#include "stdafx.h"
 #include "Graphics.h"
 #include "Game/Entity.h"
-#include "Game/Behaviours/Rendering/Camera/CameraBehaviour.h"
-#include "Game/Behaviours/Rendering/Mesh/MeshBehaviour.h"
+#include "Game/Behaviours/Rendering/Camera/B_Camera.h"
+#include "Game/Behaviours/Rendering/Mesh/B_Mesh.h"
 #include "Engine/Debug/DebugDrawer.h"
 
 #ifdef LEAK_DETECTION
@@ -674,7 +674,7 @@ bool Graphics::RenderSpotlights()
 	ZoneScopedC(RandomUniqueColor());
 	TracyD3D11ZoneC(_tracyD3D11Context, "Spot Lights", RandomUniqueColor());
 
-	SpotLightCollection *collection = nullptr;
+	LightSpotCollection *collection = nullptr;
 	if (!_currSpotLightCollection.TryGet(collection))
 	{
 		ErrMsg("Failed to render spotlights, current spotlight collection is nullptr!");
@@ -730,7 +730,7 @@ bool Graphics::RenderSpotlights()
 		_context->OMSetRenderTargets(0, nullptr, dsView);
 
 		// Bind shadow-camera data
-		CameraBehaviour *spotlightCamera = lightBehaviour->GetShadowCamera();
+		B_Camera *spotlightCamera = lightBehaviour->GetShadowCamera();
 
 		if (!spotlightCamera->BindShadowCasterBuffers())
 		{
@@ -757,7 +757,7 @@ bool Graphics::RenderSpotlights()
 			if (!resources.shadowCaster)
 				continue;
 
-			MeshBehaviour *meshBehaviour = dynamic_cast<MeshBehaviour *>(instance.subject);
+			B_Mesh *meshBehaviour = dynamic_cast<B_Mesh *>(instance.subject);
 
 			if (!meshBehaviour)
 			{
@@ -873,8 +873,8 @@ bool Graphics::RenderPointlights()
 	ZoneScopedC(RandomUniqueColor());
 	TracyD3D11ZoneC(_tracyD3D11Context, "Point Lights", RandomUniqueColor());
 
-	PointLightCollection *collection = nullptr;
-	if (!_currPointLightCollection.TryGet(collection))
+	LightPointCollection *collection = nullptr;
+	if (!_currLightPointCollection.TryGet(collection))
 	{
 		ErrMsg("Failed to render pointlights, current pointlight collection is nullptr!");
 		return false;
@@ -946,7 +946,7 @@ bool Graphics::RenderPointlights()
 		_context->OMSetRenderTargets(0, nullptr, dsView);
 
 		// Bind shadow-camera data
-		CameraCubeBehaviour *pointlightCamera = lightBehaviour->GetShadowCameraCube();
+		B_CameraCube *pointlightCamera = lightBehaviour->GetShadowCameraCube();
 
 		if (!pointlightCamera->BindShadowCasterBuffers())
 		{
@@ -973,7 +973,7 @@ bool Graphics::RenderPointlights()
 			if (!resources.shadowCaster)
 				continue;
 
-			MeshBehaviour *meshBehaviour = dynamic_cast<MeshBehaviour *>(instance.subject);
+			B_Mesh *meshBehaviour = dynamic_cast<B_Mesh *>(instance.subject);
 
 			if (!meshBehaviour)
 			{
@@ -1261,7 +1261,7 @@ bool Graphics::RenderOutlinedGeometry()
 			const auto &instance = entry.instance;
 			const auto &resources = entry.resourceGroup;
 
-			MeshBehaviour *meshBehaviour = dynamic_cast<MeshBehaviour *>(instance.subject);
+			B_Mesh *meshBehaviour = dynamic_cast<B_Mesh *>(instance.subject);
 
 			if (!meshBehaviour)
 			{
@@ -1552,7 +1552,7 @@ bool Graphics::RenderGeometry(bool overlayStage, bool skipPixelShader)
 		if (resources.shadowsOnly)
 			continue;
 
-		MeshBehaviour *meshBehaviour = dynamic_cast<MeshBehaviour *>(instance.subject);
+		B_Mesh *meshBehaviour = dynamic_cast<B_Mesh *>(instance.subject);
 
 		if (!meshBehaviour)
 		{
@@ -1915,7 +1915,7 @@ bool Graphics::RenderOpaque(
 	}
 
 	// Bind pointlight collection
-	if (!_currPointLightCollection.Get()->BindPSBuffers(_context))
+	if (!_currLightPointCollection.Get()->BindPSBuffers(_context))
 	{
 		ErrMsg("Failed to bind pointlight buffers!");
 		return false;
@@ -1965,7 +1965,7 @@ bool Graphics::RenderOpaque(
 		TracyD3D11NamedZoneXC(_tracyD3D11Context, unbindBuffersD3D11Zone, "Unbind Buffers", RandomUniqueColor(), true);
 
 		// Unbind pointlight collection
-		if (!_currPointLightCollection.Get()->UnbindPSBuffers(_context))
+		if (!_currLightPointCollection.Get()->UnbindPSBuffers(_context))
 		{
 			ErrMsg("Failed to unbind pointlight buffers!");
 			return false;
@@ -2044,7 +2044,7 @@ bool Graphics::RenderCustom(
 	}
 
 	// Bind pointlight collection
-	if (!_currPointLightCollection.Get()->BindPSBuffers(_context))
+	if (!_currLightPointCollection.Get()->BindPSBuffers(_context))
 	{
 		ErrMsg("Failed to bind pointlight buffers!");
 		return false;
@@ -2090,7 +2090,7 @@ bool Graphics::RenderCustom(
 		TracyD3D11NamedZoneXC(_tracyD3D11Context, unbindBuffersD3D11Zone, "Unbind Buffers", RandomUniqueColor(), true);
 
 		// Unbind pointlight collection
-		if (!_currPointLightCollection.Get()->UnbindPSBuffers(_context))
+		if (!_currLightPointCollection.Get()->UnbindPSBuffers(_context))
 		{
 			ErrMsg("Failed to unbind pointlight buffers!");
 			return false;
@@ -2205,7 +2205,7 @@ bool Graphics::RenderTransparency(
 	}
 
 	// Bind pointlight collection
-	if (!_currPointLightCollection.Get()->BindPSBuffers(_context))
+	if (!_currLightPointCollection.Get()->BindPSBuffers(_context))
 	{
 		ErrMsg("Failed to bind pointlight buffers!");
 		return false;
@@ -2249,7 +2249,7 @@ bool Graphics::RenderTransparency(
 		if (resources.shadowsOnly)
 			continue;
 
-		MeshBehaviour *meshBehaviour = dynamic_cast<MeshBehaviour *>(instance.subject);
+		B_Mesh *meshBehaviour = dynamic_cast<B_Mesh *>(instance.subject);
 
 		if (!meshBehaviour)
 		{
@@ -2448,7 +2448,7 @@ bool Graphics::RenderTransparency(
 		TracyD3D11NamedZoneXC(_tracyD3D11Context, ubbindBuffersD3D11Zone, "Unbind Buffers", RandomUniqueColor(), true);
 
 		// Unbind pointlight collection
-		if (!_currPointLightCollection.Get()->UnbindPSBuffers(_context))
+		if (!_currLightPointCollection.Get()->UnbindPSBuffers(_context))
 		{
 			ErrMsg("Failed to unbind pointlight buffers!");
 			return false;
@@ -2532,7 +2532,7 @@ bool Graphics::RenderPostFX()
 			}
 
 			// Bind pointlight collection
-			if (!_currPointLightCollection.Get()->BindCSBuffers(_context))
+			if (!_currLightPointCollection.Get()->BindCSBuffers(_context))
 			{
 				ErrMsg("Failed to bind pointlight buffers!");
 				return false;
@@ -2570,7 +2570,7 @@ bool Graphics::RenderPostFX()
 
 
 			// Unbind pointlight collection
-			if (!_currPointLightCollection.Get()->UnbindCSBuffers(_context))
+			if (!_currLightPointCollection.Get()->UnbindCSBuffers(_context))
 			{
 				ErrMsg("Failed to unbind pointlight buffers!");
 				return false;
@@ -3600,9 +3600,9 @@ bool Graphics::ResetRenderState()
 			collection.GetLightBehaviour(i)->GetShadowCamera()->ResetRenderQueue();
 	}
 
-	if (_currPointLightCollection.IsValid())
+	if (_currLightPointCollection.IsValid())
 	{
-		auto &collection = *_currPointLightCollection.Get();
+		auto &collection = *_currLightPointCollection.Get();
 
 		for (UINT i = 0; i < collection.GetNrOfLights(); i++)
 			collection.GetLightBehaviour(i)->GetShadowCameraCube()->ResetRenderQueue();

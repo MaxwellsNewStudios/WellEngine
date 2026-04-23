@@ -12,17 +12,17 @@ namespace WellEngine
 	{
 	private:
 		bool _initialized = false;
-		std::unique_ptr<dx::AudioEngine> _soundEngine = nullptr;
+		std::unique_ptr<DirectX::AudioEngine> _soundEngine = nullptr;
 
 	public:
 		SoundEngine() = default;
 		~SoundEngine() = default;
-		bool Initialize(dx::AUDIO_ENGINE_FLAGS flags, dx::AUDIO_ENGINE_REVERB reverb, float gameVolume);
-		bool IsInitialized();
+		bool Initialize(DirectX::AUDIO_ENGINE_FLAGS flags, DirectX::AUDIO_ENGINE_REVERB reverb, float gameVolume);
+		bool IsInitialized() const;
 
 		bool Update();
 
-		dx::AudioEngine *GetAudioEngine();
+		DirectX::AudioEngine *GetAudioEngine();
 
 		void Suspend();
 		void Resume();

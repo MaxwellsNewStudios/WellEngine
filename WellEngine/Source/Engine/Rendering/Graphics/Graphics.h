@@ -4,8 +4,8 @@
 #include <wrl/client.h>
 
 #include "GraphicsTypes.h"
-#include "Engine/Rendering/Lighting/SpotLightCollection.h"
-#include "Engine/Rendering/Lighting/PointLightCollection.h"
+#include "Engine/Rendering/Lighting/LightSpotCollection.h"
+#include "Engine/Rendering/Lighting/LightPointCollection.h"
 #include "Engine/Content/Content.h"
 #include "Engine/Timing/TimeUtils.h"
 #include "Engine/Utils/RepeatTracker.h"
@@ -19,7 +19,7 @@
 namespace WellEngine
 {
 	// Forward declarations
-	class CameraBehaviour;
+	class B_Camera;
 
 	using Microsoft::WRL::ComPtr;
 
@@ -114,7 +114,7 @@ namespace WellEngine
 		int _fogBlurIterations = 2;
 		int _emissionBlurIterations = 4;
 
-		CameraBehaviour *_currViewCamera = nullptr;
+		B_Camera *_currViewCamera = nullptr;
 
 		LightTile *_lightGrid = nullptr;
 		StructuredBufferD3D11 _lightGridBuffer;
@@ -135,8 +135,8 @@ namespace WellEngine
 		StructuredBufferD3D11 _emissionGaussianWeightsBuffer;
 		StructuredBufferD3D11 _dofGaussianWeightsBuffer;
 
-		Ref<SpotLightCollection> _currSpotLightCollection = nullptr;
-		Ref<PointLightCollection> _currPointLightCollection = nullptr;
+		Ref<LightSpotCollection> _currSpotLightCollection = nullptr;
+		Ref<LightPointCollection> _currLightPointCollection = nullptr;
 
 		UINT _skyboxPsID = CONTENT_NULL;
 		UINT _environmentCubemapID = CONTENT_NULL;
@@ -264,9 +264,9 @@ namespace WellEngine
 
 		void Shutdown();
 
-		[[nodiscard]] bool SetCamera(CameraBehaviour *viewCamera);
-		[[nodiscard]] bool SetSpotlightCollection(SpotLightCollection *spotlights);
-		[[nodiscard]] bool SetPointlightCollection(PointLightCollection *pointlights);
+		[[nodiscard]] bool SetCamera(B_Camera *viewCamera);
+		[[nodiscard]] bool SetSpotlightCollection(LightSpotCollection *spotlights);
+		[[nodiscard]] bool SetLightPointCollection(LightPointCollection *pointlights);
 
 	#ifdef DEBUG_BUILD
 		size_t GetMainDrawCallCount() const noexcept		{ return _mainDrawCallTracker.GetCount(); }

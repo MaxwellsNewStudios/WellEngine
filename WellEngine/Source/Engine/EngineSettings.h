@@ -34,7 +34,7 @@
 
 #pragma region Performance
 	constexpr float FIXED_DELTA_TIME = 1.0f / 20.0f;
-	constexpr float PHYS_DELTA_TIME = 1.0f / 60.0f;
+	constexpr float PHYS_DELTA_TIME = 1.0f / 60.0f; // Default only
 
 	constexpr auto LOD_DIST_MIN_MULT = 10.0f; // The depth to start considering lower LODs, as multiple of near-plane.
 	constexpr auto LOD_DIST_MAX_MULT = 0.9f; // The depth that the lowest LOD is picked, as multiple of far-plane.
@@ -172,8 +172,8 @@
 
 
 #pragma region Graphics Settings
-	constexpr auto WINDOW_WIDTH =			/*1280*/	1600	/*1920*/;
-	constexpr auto WINDOW_HEIGHT =			/*720 */	900 	/*1080*/;
+	constexpr auto WINDOW_WIDTH = 1600;
+	constexpr auto WINDOW_HEIGHT = 900;
 
 	/// DIM_FORCED_MULTIPLE forces the scene render target dimensions to be a multiple of this value.
 	/// This is to ensure that post-processing effects that rely on downsampling work correctly.

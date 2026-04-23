@@ -12,12 +12,7 @@ namespace WellEngine
 			0.0f, 0.25f, 
 			0.708f, 1.0f 
 		};
-		/*constexpr X3DAUDIO_CONE ListenerCone = {
-			X3DAUDIO_PI * 5.0f / 6.0f, X3DAUDIO_PI * 11.0f / 6.0f, 
-			1.0f, 0.75f, 
-			0.0f, 0.25f, 
-			0.708f, 1.0f
-		};*/
+
 		constexpr X3DAUDIO_CONE EmitterCone = {
 			0.0f, 0.0f, 
 			0.0f, 1.0f, 
@@ -88,11 +83,11 @@ namespace WellEngine
 	class SoundSource
 	{
 	private:
-		std::unique_ptr<dx::SoundEffect> _sound;
-		std::unique_ptr<dx::SoundEffectInstance> _effect;
+		std::unique_ptr<DirectX::SoundEffect> _sound;
+		std::unique_ptr<DirectX::SoundEffectInstance> _effect;
 
-		dx::AudioListener _listener;
-		dx::AudioEmitter _emitter;
+		DirectX::AudioListener _listener;
+		DirectX::AudioEmitter _emitter;
 
 		X3DAUDIO_CONE _listenerCone = AudioPresets::ListenerCone;
 		X3DAUDIO_CONE _emitterCone = AudioPresets::EmitterCone;
@@ -101,13 +96,13 @@ namespace WellEngine
 		float _invDistanceScaler = 1.0f / 75.0f;
 		float _reverbScaler = 1.0f;
 
-		dx::SOUND_EFFECT_INSTANCE_FLAGS _soundEffectFlag = dx::SoundEffectInstance_Use3D | dx::SoundEffectInstance_ReverbUseFilters;
+		DirectX::SOUND_EFFECT_INSTANCE_FLAGS _soundEffectFlag = DirectX::SoundEffectInstance_Use3D | DirectX::SoundEffectInstance_ReverbUseFilters;
 
 	public:
 		SoundSource() = default;
 		~SoundSource() = default;
-		bool Initialize(dx::AudioEngine *audEngine, 
-			dx::SOUND_EFFECT_INSTANCE_FLAGS flags, std::string fileName, 
+		bool Initialize(DirectX::AudioEngine *audEngine, 
+			DirectX::SOUND_EFFECT_INSTANCE_FLAGS flags, std::string fileName, 
 			float distanceScaler = 75.0f, float reverbScaler = 1.0f);
 
 		void PlayAudio();
@@ -117,11 +112,11 @@ namespace WellEngine
 		void ResumeAudio();
 
 		size_t GetSoundLength(); // Sound length in milliseconds
-		dx::SoundState GetSoundState();
+		DirectX::SoundState GetSoundState();
 
-		void SetListenerPosition(dx::XMFLOAT3 position);
-		void SetListenerOrientation(dx::XMFLOAT3 forwardVec, dx::XMFLOAT3 upVec);
-		void SetEmitterPosition(dx::XMFLOAT3 position);
+		void SetListenerPosition(DirectX::XMFLOAT3 position);
+		void SetListenerOrientation(DirectX::XMFLOAT3 forwardVec, DirectX::XMFLOAT3 upVec);
+		void SetEmitterPosition(DirectX::XMFLOAT3 position);
 
 		float GetDistanceScaler() const;
 		void SetDistanceScaler(float scaler);

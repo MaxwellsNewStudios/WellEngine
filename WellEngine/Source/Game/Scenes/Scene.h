@@ -5,16 +5,12 @@
 #include "rapidjson/document.h"
 #include "SceneHolder.h"
 #include "Game/Entity.h"
-#include "Game/GraphManager.h"
-#include "Game/Behaviours/Rendering/Camera/CameraBehaviour.h"
 #include "Engine/Rendering/Graphics/Graphics.h"
-#include "Engine/Rendering/Lighting/SpotLightCollection.h"
-#include "Engine/Rendering/Lighting/PointLightCollection.h"
+#include "Engine/Rendering/Lighting/LightSpotCollection.h"
+#include "Engine/Rendering/Lighting/LightPointCollection.h"
 #include "Engine/Content/Material.h"
 #include "Engine/Audio/SoundEngine.h"
-#include "Engine/Collision/CollisionHandler.h"
 #include "Engine/Debug/DebugDrawer.h"
-#include "Engine/Timing/TimelineManager.h"
 #include "Engine/Utils/UIDHelper.h"
 #include "Engine/Physics/JoltPhysicsInstance.h"
 
@@ -24,54 +20,46 @@ namespace WellEngine
 
 	// Forward declarations
 	class Game;
-	class GraphNodeBehaviour;
-	class MonsterBehaviour;
+	class B_Camera;
+	class B_SoundListener;
 	#ifdef DEBUG_BUILD
-	class DebugPlayerBehaviour;
+	class B_DebugManager;
 	#endif
 
 	// Contains and manages entities, cameras and lights. Also handles queueing entities for rendering.
 	class Scene : public IRefTarget<Scene>, public Identifiable
 	{
 	private:
-		std::vector<std::unique_ptr<Entity>> _globalEntities = {};
-		std::unique_ptr<SpotLightCollection> _spotlights;
-		std::unique_ptr<PointLightCollection> _pointlights;
+		std::string _sceneName = "";
+
+		SceneHolder _sceneHolder;
+		JoltPhysicsInstance _physInstance;
+		SoundEngine _soundEngine;
+
+		std::unique_ptr<LightSpotCollection> _spotlights;
+		std::unique_ptr<LightPointCollection> _pointlights;
 
 		bool _initialized = false;
 		bool _isDestroyed = false;
 		bool _unentered = true;
 		bool _transitionScene = false;
 
-		Game *_game = nullptr;
 		ID3D11Device *_device = nullptr;
 		ID3D11DeviceContext *_context = nullptr;
+		Game *_game = nullptr;
 		Content *_content = nullptr;
 		Graphics *_graphics = nullptr;
-		GraphManager _graphManager = {};
-		SceneHolder _sceneHolder;
-		JoltPhysicsInstance _physInstance;
 		const Input *_input = nullptr;
 
-		Ref<CameraBehaviour>
-			_viewCamera = nullptr,
-			_playerCamera = nullptr,
-			_animationCamera = nullptr;
-
+		Ref<B_Camera> _mainCamera = nullptr;
+		Ref<B_SoundListener> _mainListener = nullptr;
 	#ifdef DEBUG_BUILD
-		Ref<DebugPlayerBehaviour> _debugPlayer = nullptr;
+		Ref<B_DebugManager> _debugManager = nullptr;
 	#endif
-		Ref<Entity> _player = nullptr;
-		Ref<Behaviour> _monster = nullptr;
-		Ref<Behaviour> _terrainBehaviour = nullptr;
-		const Collisions::Terrain *_terrain = nullptr;
-
-		CollisionHandler _collisionHandler;
-		SoundEngine _soundEngine;
-		TimelineManager _timelineManager;
 
 		dx::XMFLOAT3 _ambientColor = { 0.01f, 0.01f, 0.01f };
 		dx::XMFLOAT4 _skyboxColor = { 0, 0, 0, 0 };
+
 		UINT _envCubemapID = CONTENT_NULL;
 		UINT _skyboxShaderID = CONTENT_NULL;
 
@@ -100,20 +88,16 @@ namespace WellEngine
 		std::vector<Ref<Entity>> _collapsedEntities = {};
 	#endif
 
-		std::string _sceneName = "";
-
 		std::vector<Behaviour *> _updateCallbacks;
 		std::vector<Behaviour *> _parallelUpdateCallbacks;
 		std::vector<Behaviour *> _lateUpdateCallbacks;
 		std::vector<Behaviour *> _fixedUpdateCallbacks;
 		std::vector<Behaviour *> _physicsUpdateCallbacks;
-
 		std::vector<Behaviour *> _postDeserializeCallbacks;
 
 		[[nodiscard]] bool InitCommon();
 
 		[[nodiscard]] bool UpdateSound();
-		[[nodiscard]] bool MergeStaticEntities();
 
 	#ifdef USE_IMGUI
 		[[nodiscard]] bool RenderEntityCreatorUI();
@@ -133,10 +117,6 @@ namespace WellEngine
 
 		[[nodiscard]] bool InitializeNull(ID3D11Device *device, ID3D11DeviceContext *context, Game *game, Content *content, Graphics *graphics);
 		[[nodiscard]] bool InitializeBase(std::string sceneName, ID3D11Device *device, ID3D11DeviceContext *context, Game *game, Content *content, Graphics *graphics, float gameVolume);
-		[[nodiscard]] bool InitializeMenu(std::string sceneName, ID3D11Device *device, ID3D11DeviceContext *context, Game *game, Content *content, Graphics *graphics, float gameVolume);
-		[[nodiscard]] bool InitializeEntr(std::string sceneName, ID3D11Device *device, ID3D11DeviceContext *context, Game *game, Content *content, Graphics *graphics, float gameVolume);
-		[[nodiscard]] bool InitializeCave(std::string sceneName, ID3D11Device *device, ID3D11DeviceContext *context, Game *game, Content *content, Graphics *graphics, float gameVolume);
-		[[nodiscard]] bool InitializeCred(std::string sceneName, ID3D11Device *device, ID3D11DeviceContext *context, Game *game, Content *content, Graphics *graphics, float gameVolume);
 
 		void EnterScene();
 		void ExitScene();
@@ -147,12 +127,16 @@ namespace WellEngine
 	#pragma region Update
 		void AddUpdateCallback(Behaviour *beh);
 		void RemoveUpdateCallback(Behaviour *beh);
+
 		void AddParallelUpdateCallback(Behaviour *beh);
 		void RemoveParallelUpdateCallback(Behaviour *beh);
+
 		void AddLateUpdateCallback(Behaviour *beh);
 		void RemoveLateUpdateCallback(Behaviour *beh);
+
 		void AddFixedUpdateCallback(Behaviour *beh);
 		void RemoveFixedUpdateCallback(Behaviour *beh);
+
 		void AddPhysicsUpdateCallback(Behaviour *beh);
 		void RemovePhysicsUpdateCallback(Behaviour *beh);
 
@@ -211,44 +195,42 @@ namespace WellEngine
 		[[nodiscard]] bool IsInitialized() const;
 		[[nodiscard]] bool IsDestroyed() const;
 		[[nodiscard]] bool IsTransitionScene() const;
+
 		void SetTransitionScene(bool state);
 		void SetInitialized(bool state);
 		void SetSceneVolume(float volume);
 		void SuspendSceneSound();
 		void ResumeSceneSound();
-		[[nodiscard]] ID3D11Device *GetDevice() const;
-		[[nodiscard]] ID3D11DeviceContext *GetContext() const;
-		[[nodiscard]] Content *GetContent() const;
+
 		[[nodiscard]] SceneHolder *GetSceneHolder();
 		[[nodiscard]] JoltPhysicsInstance *GetPhysicsInstance();
+		[[nodiscard]] SoundEngine *GetSoundEngine();
+		[[nodiscard]] LightSpotCollection *GetSpotlights() const;
+		[[nodiscard]] LightPointCollection *GetPointlights() const;
+
+		[[nodiscard]] ID3D11Device *GetDevice() const;
+		[[nodiscard]] ID3D11DeviceContext *GetContext() const;
+		[[nodiscard]] Game *GetGame() const;
+		[[nodiscard]] Content *GetContent() const;
 		[[nodiscard]] Graphics *GetGraphics() const;
-		[[nodiscard]] GraphManager *GetGraphManager();
 		[[nodiscard]] const Input *GetInput() const;
-		[[nodiscard]] CollisionHandler *GetCollisionHandler();
-		[[nodiscard]] std::vector<std::unique_ptr<Entity>> *GetGlobalEntities();
-		[[nodiscard]] SpotLightCollection *GetSpotlights() const;
-		[[nodiscard]] PointLightCollection *GetPointlights() const;
+
 	#ifdef DEBUG_BUILD
-		[[nodiscard]] DebugPlayerBehaviour *GetDebugPlayer() const;
-		void SetDebugPlayer(DebugPlayerBehaviour *debugPlayer);
+		[[nodiscard]] B_DebugManager *GetDebugManager() const;
+		void SetDebugManager(B_DebugManager *debugPlayer);
 		void SetSelection(Entity *ent, bool additive = false);
 		[[nodiscard]] Entity *GetPrimarySelection() const;
 	#endif
-		[[nodiscard]] TimelineManager* GetTimelineManager();
-		[[nodiscard]] SoundEngine *GetSoundEngine();
-		[[nodiscard]] Game *GetGame() const;
+
 		[[nodiscard]] const std::string &GetName() const noexcept;
 		[[nodiscard]] bool SetName(const std::string &name);
-		[[nodiscard]] Entity *GetPlayer() const;
-		void SetPlayer(Entity *player);
-		[[nodiscard]] MonsterBehaviour *GetMonster() const;
-		void SetMonster(MonsterBehaviour *monster);
-		[[nodiscard]] ColliderBehaviour *GetTerrainBehaviour() const;
-		[[nodiscard]] const Collisions::Terrain *GetTerrain() const;
-		void SetViewCamera(CameraBehaviour *camera);
-		[[nodiscard]] CameraBehaviour *GetViewCamera();
-		[[nodiscard]] CameraBehaviour *GetPlayerCamera();
-		[[nodiscard]] CameraBehaviour *GetAnimationCamera();
+
+		void SetMainCamera(B_Camera *camera);
+		[[nodiscard]] B_Camera *GetMainCamera();
+
+		void SetMainListener(B_SoundListener *listener);
+		[[nodiscard]] B_SoundListener *GetMainListener();
+
 		[[nodiscard]] const FogSettingsBuffer &GetFogSettings() const;
 		void SetFogSettings(const FogSettingsBuffer &settings);
 		[[nodiscard]] const EmissionSettingsBuffer &GetEmissionSettings() const;
@@ -264,27 +246,8 @@ namespace WellEngine
 
 	#pragma region Entity Creation
 		[[nodiscard]] bool CreateEntity(Entity **out, const std::string &name, const dx::BoundingOrientedBox &bounds, bool hasVolume);
-		[[nodiscard]] bool CreateGlobalEntity(Entity **out, const std::string &name, const dx::BoundingOrientedBox &bounds, bool hasVolume);
 
 		[[nodiscard]] bool CreateMeshEntity(Entity **out, const std::string &name, UINT meshID, const Material &material, bool isTransparent = false, bool shadowCaster = true, bool isOverlay = false);
-		[[nodiscard]] bool CreateBillboardMeshEntity(Entity **out, const std::string &name, const Material &material, float rotation = 0.0f, float normalOffset = 0.0f, float size = 1.0f, bool keepUpright = true, bool isTransparent = true, bool shadowCaster = false, bool isOverlay = false);
-		[[nodiscard]] bool CreateGlobalMeshEntity(Entity **out, const std::string &name, UINT meshID, const Material &material, bool isTransparent = false, bool shadowCaster = true, bool isOverlay = false);
-
-		[[nodiscard]] bool CreateCameraEntity(Entity **out, const std::string &name, float fov, float aspect, float nearZ, float farZ);
-		[[nodiscard]] bool CreateAnimationCamera();
-
-		[[nodiscard]] bool CreatePlayerEntity(Entity **out);
-		[[nodiscard]] bool CreateMonsterEntity(Entity **out);
-
-		[[nodiscard]] bool CreateLanternEntity(Entity **out);
-
-		[[nodiscard]] bool CreateSpotLightEntity(Entity **out, const std::string &name, dx::XMFLOAT3 color, float falloff, float angle, bool ortho = false, float nearZ = 0.1f, UINT updateFrequency = 2, float fogStrength = 1.0f);
-		[[nodiscard]] bool CreatePointLightEntity(Entity **out, const std::string &name, dx::XMFLOAT3 color, float falloff, float nearZ = 0.1f, UINT updateFrequency = 3, float fogStrength = 1.0f);
-		[[nodiscard]] bool CreateSimpleSpotLightEntity(Entity **out, const std::string &name, dx::XMFLOAT3 color, float falloff, float angle, bool ortho = false, float fogStrength = 1.0f);
-		[[nodiscard]] bool CreateSimplePointLightEntity(Entity **out, const std::string &name, dx::XMFLOAT3 color, float falloff, float fogStrength = 1.0f);
-
-		[[nodiscard]] bool CreateGraphNodeEntity(Entity **out, GraphNodeBehaviour **node, dx::XMFLOAT3 pos);
-		[[nodiscard]] bool CreateSoundEmitterEntity(Entity** out, const std::string& name, const std::string& fileName, bool loop = false, float volume = 1.0f, float distanceScaler = 75.0f, float reverbScaler = 1.0f, float minimumDelay = 2.0f, float maximumDelay = 10.0f);
 	#pragma endregion
 
 		TESTABLE

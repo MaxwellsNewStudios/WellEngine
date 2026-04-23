@@ -11,7 +11,6 @@
 #include "Engine/D3D/ShaderResourceTextureD3D11.h"
 #include "Engine/Audio/SoundSource.h"
 #include "Material.h"
-#include "HeightMap.h"
 #include "FontAtlas.h"
 #include "Tests/TestUtils.h"
 
@@ -176,19 +175,6 @@ namespace WellEngine
 		Sound& operator=(Sound&& other) = delete;
 	};
 
-	class HeightTexture : public ContentBase
-	{
-	public:
-		HeightMap data;
-
-		HeightTexture(std::string name, const UINT id) : ContentBase(name, id) { }
-		~HeightTexture() = default;
-		HeightTexture(const HeightTexture &other) = delete;
-		HeightTexture &operator=(const HeightTexture &other) = delete;
-		HeightTexture(HeightTexture &&other) = delete;
-		HeightTexture &operator=(HeightTexture &&other) = delete;
-	};
-
 	class TextureFont : public ContentBase
 	{
 	public:
@@ -282,58 +268,74 @@ namespace WellEngine
 		[[nodiscard]] MeshD3D11 *GetMesh(UINT id) const;
 	#pragma endregion
 
-	#pragma region Sound
-	private:
-		std::vector<Sound *> _sounds;
-
-	public:
-		[[nodiscard]] UINT GetSoundID(const std::string &name) const;
-		[[nodiscard]] SoundSource *GetSound(const std::string &name) const;
-		[[nodiscard]] SoundSource *GetSound(UINT id) const;
-	#pragma endregion
-
 	#pragma region Texture
 	private:
 		std::vector<Texture *> _textures;
-		std::vector<Cubemap *> _cubemaps;
-		std::vector<HeightTexture *> _heightTextures;
 
 	public:
 		UINT AddTexture(ID3D11Device *device, ID3D11DeviceContext *context,
 			const std::string &name, const std::string &path, DXGI_FORMAT format,
 			bool useMipmaps, int downsample = 0);
-		UINT AddCubemap(ID3D11Device *device, ID3D11DeviceContext *context, 
-			const std::string &name, const std::string &path, DXGI_FORMAT format,
-			bool useMipmaps, int downsample = 0);
-		UINT AddHeightMap(const std::string &name, const std::string &path);
 
 		[[nodiscard]] UINT GetTextureCount() const;
-		[[nodiscard]] UINT GetCubemapCount() const;
 
 		void GetTextureNames(std::vector<std::string> *names) const;
-		void GetCubemapNames(std::vector<std::string> *names) const;
 
 		[[nodiscard]] bool HasTexture(const std::string &name) const;
-		[[nodiscard]] bool HasCubemap(const std::string &name) const;
 
 		[[nodiscard]] UINT GetTextureID(const std::string &name) const;
-		[[nodiscard]] UINT GetCubemapID(const std::string &name) const;
-		[[nodiscard]] UINT GetHeightMapID(const std::string &name) const;
 
 		[[nodiscard]] UINT GetTextureIDByPath(const std::string &path) const;
-		[[nodiscard]] UINT GetCubemapIDByPath(const std::string &path) const;
 
 		[[nodiscard]] std::string GetTextureName(UINT id) const;
-		[[nodiscard]] std::string GetCubemapName(UINT id) const;
 
 		[[nodiscard]] const Texture *GetTextureContainer(UINT id) const;
 		[[nodiscard]] const Texture *GetTextureContainer(const std::string &name) const;
+
 		[[nodiscard]] ShaderResourceTextureD3D11 *GetTexture(UINT id) const;
 		[[nodiscard]] ShaderResourceTextureD3D11 *GetTexture(const std::string &name) const;
+	#pragma endregion
+
+	#pragma region Cubemap
+	private:
+		std::vector<Cubemap *> _cubemaps;
+
+	public:
+		UINT AddCubemap(ID3D11Device *device, ID3D11DeviceContext *context, 
+			const std::string &name, const std::string &path, DXGI_FORMAT format,
+			bool useMipmaps, int downsample = 0);
+
+		[[nodiscard]] UINT GetCubemapCount() const;
+
+		void GetCubemapNames(std::vector<std::string> *names) const;
+
+		[[nodiscard]] bool HasCubemap(const std::string &name) const;
+
+		[[nodiscard]] UINT GetCubemapID(const std::string &name) const;
+
+		[[nodiscard]] UINT GetCubemapIDByPath(const std::string &path) const;
+
+		[[nodiscard]] std::string GetCubemapName(UINT id) const;
+
 		[[nodiscard]] ShaderResourceTextureD3D11 *GetCubemap(UINT id) const;
 		[[nodiscard]] ShaderResourceTextureD3D11 *GetCubemap(const std::string &name) const;
-		[[nodiscard]] HeightMap *GetHeightMap(const std::string &name) const;
-		[[nodiscard]] HeightMap *GetHeightMap(UINT id) const;
+	#pragma endregion
+
+	#pragma region Font Atlas
+	private:
+		std::vector<TextureFont *> _textureFonts;
+
+	public:
+		UINT AddFontAtlas(const std::string &name);
+
+		[[nodiscard]] UINT GetFontAtlasCount() const;
+		void GetFontAtlasNames(std::vector<std::string> *names) const;
+
+		[[nodiscard]] UINT GetFontAtlasID(const std::string &name) const;
+		[[nodiscard]] std::string GetFontAtlasName(UINT id) const;
+
+		[[nodiscard]] FontAtlas *GetFontAtlas(const std::string &name) const;
+		[[nodiscard]] FontAtlas *GetFontAtlas(UINT id) const;
 	#pragma endregion
 
 	#pragma region Shader
@@ -413,23 +415,6 @@ namespace WellEngine
 		[[nodiscard]] ID3D11BlendState *GetBlendState(UINT id) const;
 		[[nodiscard]] Microsoft::WRL::ComPtr<ID3D11BlendState> *GetBlendStateAddress(const std::string &name) const;
 		[[nodiscard]] Microsoft::WRL::ComPtr<ID3D11BlendState> *GetBlendStateAddress(UINT id) const;
-	#pragma endregion
-
-	#pragma region Font Atlas
-	private:
-		std::vector<TextureFont *> _textureFonts;
-
-	public:
-		UINT AddFontAtlas(const std::string &name);
-
-		[[nodiscard]] UINT GetFontAtlasCount() const;
-		void GetFontAtlasNames(std::vector<std::string> *names) const;
-
-		[[nodiscard]] UINT GetFontAtlasID(const std::string &name) const;
-		[[nodiscard]] std::string GetFontAtlasName(UINT id) const;
-
-		[[nodiscard]] FontAtlas *GetFontAtlas(const std::string &name) const;
-		[[nodiscard]] FontAtlas *GetFontAtlas(UINT id) const;
 	#pragma endregion
 
 		TESTABLE

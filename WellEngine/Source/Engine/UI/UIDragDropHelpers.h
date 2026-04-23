@@ -3,7 +3,7 @@
 #include <functional>
 #include "Dependencies/ImGui/imgui.h"
 
-namespace MyNamespace
+namespace WellEngine
 {
 	class Entity;
 }

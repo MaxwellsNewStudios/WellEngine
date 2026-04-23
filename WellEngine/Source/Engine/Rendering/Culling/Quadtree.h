@@ -9,6 +9,8 @@
 
 namespace WellEngine
 {
+	class Entity;
+
 	class Quadtree
 	{
 	private:

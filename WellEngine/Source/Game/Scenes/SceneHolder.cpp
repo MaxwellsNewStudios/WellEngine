@@ -327,7 +327,7 @@ bool SceneHolder::RenderUI(Scene *scene)
 		else
 		{
 			using namespace dx;
-			CameraBehaviour *viewCamera = scene->GetViewCamera();
+			B_Camera *viewCamera = scene->GetMainCamera();
 
 			if (viewCamera)
 			{
@@ -1012,7 +1012,7 @@ Entity *SceneHolder::GetEntityByDeserializedID(UINT id) const
 		if (ent->IsRemoved())
 			continue;
 
-		if (ent->GetDeserializedID() == id)
+		if (ent->GetSerialID() == id)
 			return ent;
 	}
 

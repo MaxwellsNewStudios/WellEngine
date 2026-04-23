@@ -5,7 +5,7 @@
 #include "../GraphManager.h"
 #include "../Behaviours/Interaction/BreadcrumbPileBehaviour.h"
 #include "../Behaviours/Monster/MonsterHintBehaviour.h"
-#include "../Behaviours/Debug/DebugPlayerBehaviour.h"
+#include "../Behaviours/Debug/B_DebugManager.h"
 #include "../Behaviours/Navigation/GraphNodeBehaviour.h"
 #include "Engine/Debug/DebugData.h"
 
@@ -1714,7 +1714,7 @@ bool Scene::RenderSceneUI()
 
 						if (Button("[Num5] New Connected Node At Camera") || _input->GetKey(KeyCode::NumPad5) == KeyState::Pressed)
 						{
-							Transform *cameraTransform = _viewCamera.Get()->GetTransform();
+							Transform *cameraTransform = _mainCamera.Get()->GetTransform();
 
 							Entity *copyEnt = nullptr;
 							GraphNodeBehaviour *copyNode = nullptr;
@@ -1795,23 +1795,11 @@ bool Scene::RenderSceneUI()
 			TreePop();
 		}
 
-		if (TreeNode("Timeline Manager"))
-		{
-			if (!_timelineManager.RenderUI(_viewCamera.Get()->GetTransform()))
-			{
-				TreePop();
-				return false;
-			}
-
-			Separator();
-			TreePop();
-		}
-
 		Dummy(ImVec2(0.0f, 2.0f));
 
 		if (Button("Clear All Duplicate Binds"))
 		{
-			_debugPlayer.Get()->ClearDuplicateBinds();
+			_debugManager.Get()->ClearDuplicateBinds();
 		}
 	}
 
@@ -1862,9 +1850,9 @@ bool Scene::RenderSceneUI()
 				static bool followingCamera = true;
 				Checkbox("Follow Camera##FogTests", &followingCamera);
 
-				if (_viewCamera && followingCamera)
+				if (_mainCamera && followingCamera)
 				{
-					Transform *camT = _viewCamera.Get()->GetTransform();
+					Transform *camT = _mainCamera.Get()->GetTransform();
 					ray.origin = camT->GetPosition(World);
 					ray.direction = camT->GetForward(World);
 				}
@@ -1992,9 +1980,9 @@ bool Scene::RenderSceneUI()
 						Store(ray.direction, dx::XMVector3Normalize(Load(ray.direction)));
 					ImGuiUtils::LockMouseOnActive();
 
-					if (_viewCamera && Button("Move Ray to View##RaycastTests"))
+					if (_mainCamera && Button("Move Ray to View##RaycastTests"))
 					{
-						Transform *camT = _viewCamera.Get()->GetTransform();
+						Transform *camT = _mainCamera.Get()->GetTransform();
 						ray.origin = camT->GetPosition(World);
 						ray.direction = camT->GetForward(World);
 					}
@@ -2084,8 +2072,8 @@ bool Scene::RenderSceneUI()
 				if (Button("Add Reference to Selected"))
 					entityRefs.emplace_back(std::make_pair(name, ent->AsRef()));
 
-				MeshBehaviour *mesh = nullptr;
-				if (ent->GetBehaviourByType<MeshBehaviour>(mesh))
+				B_Mesh *mesh = nullptr;
+				if (ent->GetBehaviourByType<B_Mesh>(mesh))
 				{
 					if (Button("Add Reference to Mesh"))
 						meshRef = mesh;
@@ -2125,8 +2113,8 @@ bool Scene::RenderSceneUI()
 			SeparatorText("Mesh Reference");
 			if (meshRef)
 			{
-				MeshBehaviour *mesh = nullptr;
-				Text("Mesh Reference State: %d", meshRef.TryGetAs<MeshBehaviour>(mesh));
+				B_Mesh *mesh = nullptr;
+				Text("Mesh Reference State: %d", meshRef.TryGetAs<B_Mesh>(mesh));
 				if (mesh)
 				{
 					Text("Mesh Name: %s", mesh->GetName().c_str());
@@ -2846,7 +2834,7 @@ bool Scene::RenderSceneUI()
 
 		Dummy(ImVec2(0.0f, 4.0f));
 
-		dx::XMFLOAT3A camPos = _viewCamera.Get()->GetTransform()->GetPosition();
+		dx::XMFLOAT3A camPos = _mainCamera.Get()->GetTransform()->GetPosition();
 		char camXCoord[32]{}, camYCoord[32]{}, camZCoord[32]{};
 		snprintf(camXCoord, sizeof(camXCoord), "%.2f", camPos.x);
 		snprintf(camYCoord, sizeof(camYCoord), "%.2f", camPos.y);
@@ -2875,7 +2863,7 @@ bool Scene::RenderGizmoUI()
 	ZoneScopedXC(RandomUniqueColor());
 	using namespace dx;
 
-	if (!_viewCamera)
+	if (!_mainCamera)
 		return true;
 
 	Input &input = Input::Instance();
@@ -2889,17 +2877,17 @@ bool Scene::RenderGizmoUI()
 	float sceneWidth = sceneSize.x;
 	float sceneHeight = sceneSize.y;
 
-	ImGuizmo::SetOrthographic(_viewCamera.Get()->GetOrtho());
+	ImGuizmo::SetOrthographic(_mainCamera.Get()->GetOrtho());
 
 	// Selection transform gizmo
-	if (auto dbgPlayer = GetDebugPlayer())
+	if (auto dbgPlayer = GetDebugManager())
 	{
 		Entity *primaryEnt = dbgPlayer->GetPrimarySelection();
 
 		if (primaryEnt)
 		{
-			XMFLOAT4X4A camView = _viewCamera.Get()->GetViewMatrix();
-			const XMFLOAT4X4A camProj = _viewCamera.Get()->GetProjectionMatrix();
+			XMFLOAT4X4A camView = _mainCamera.Get()->GetViewMatrix();
+			const XMFLOAT4X4A camProj = _mainCamera.Get()->GetProjectionMatrix();
 
 			Transform *primaryTrans = primaryEnt->GetTransform();
 
@@ -3230,7 +3218,7 @@ bool Scene::RenderGizmoUI()
 	{
 		constexpr float viewManipGizmoSize = 96.0f;
 
-		Transform *camTransform = _viewCamera.Get()->GetTransform();
+		Transform *camTransform = _mainCamera.Get()->GetTransform();
 
 		XMFLOAT3A
 			camPos = camTransform->GetPosition(World),

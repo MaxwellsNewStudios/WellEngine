@@ -1300,7 +1300,7 @@ bool DebugDrawer::CreateMesh(std::vector<Sprite> *spriteList, SimpleMeshD3D11 *m
 	return true;
 }
 
-void DebugDrawer::SetCamera(CameraBehaviour *camera)
+void DebugDrawer::SetCamera(B_Camera *camera)
 {
 #ifndef DEBUG_DRAW
 	return;

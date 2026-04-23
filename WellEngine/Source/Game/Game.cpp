@@ -1965,7 +1965,7 @@ bool Game::RenderUI(TimeUtils &time)
 				{
 					Scene *scene = _scenes[_activeSceneIndex].get();
 					SceneHolder *sceneHolder = scene->GetSceneHolder();
-					CameraBehaviour *viewCam = scene->GetViewCamera();
+					B_Camera *viewCam = scene->GetMainCamera();
 
 					if (ImGui::Button("Select View Camera"))
 						scene->SetSelection(viewCam->GetEntity());
@@ -1976,12 +1976,12 @@ bool Game::RenderUI(TimeUtils &time)
 
 						while (Entity *ent = entIter.Step())
 						{
-							CameraBehaviour *cam = nullptr;
-							if (!ent->GetBehaviourByType<CameraBehaviour>(cam))
+							B_Camera *cam = nullptr;
+							if (!ent->GetBehaviourByType<B_Camera>(cam))
 								continue;
 
 							if (ImGui::MenuItem(std::format("{}##SelectViewCamID{}", ent->GetName(), ent->GetID()).c_str(), NULL, cam == viewCam))
-								scene->SetViewCamera(cam);
+								scene->SetMainCamera(cam);
 						}
 
 						ImGui::EndMenu();

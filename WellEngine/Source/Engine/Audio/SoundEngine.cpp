@@ -25,7 +25,7 @@ bool SoundEngine::Initialize(dx::AUDIO_ENGINE_FLAGS flags, dx::AUDIO_ENGINE_REVE
 	return true;
 }
 
-bool SoundEngine::IsInitialized()
+bool SoundEngine::IsInitialized() const
 {
 	return _initialized;
 }

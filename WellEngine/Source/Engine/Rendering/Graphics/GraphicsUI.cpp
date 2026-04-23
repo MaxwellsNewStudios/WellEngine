@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "Graphics.h"
-#include "Game/Behaviours/Rendering/Camera/CameraBehaviour.h"
+#include "Game/Behaviours/Rendering/Camera/B_Camera.h"
 #include "Engine/Debug/DebugDrawer.h"
 #include "Engine/Debug/DebugData.h"
 
@@ -1421,13 +1421,13 @@ bool Graphics::RenderUI(TimeUtils &time)
 		ImGui::Text(std::format("Main Draws: {}", _currViewCamera->GetCullCount()).c_str());
 		for (UINT i = 0; i < _currSpotLightCollection.Get()->GetNrOfLights(); i++)
 		{
-			const CameraBehaviour *spotlightCamera = _currSpotLightCollection.Get()->GetLightBehaviour(i)->GetShadowCamera();
+			const B_Camera *spotlightCamera = _currSpotLightCollection.Get()->GetLightBehaviour(i)->GetShadowCamera();
 			ImGui::Text(std::format("Spotlight #{} Draws: {}", i, spotlightCamera->GetCullCount()).c_str());
 		}
 
-		for (UINT i = 0; i < _currPointLightCollection.Get()->GetNrOfLights(); i++)
+		for (UINT i = 0; i < _currLightPointCollection.Get()->GetNrOfLights(); i++)
 		{
-			const CameraCubeBehaviour *pointlightCamera = _currPointLightCollection.Get()->GetLightBehaviour(i)->GetShadowCameraCube();
+			const B_CameraCube *pointlightCamera = _currLightPointCollection.Get()->GetLightBehaviour(i)->GetShadowCameraCube();
 			ImGui::Text(std::format("Pointlight #{} Draws: {}", i, pointlightCamera->GetCullCount()).c_str());
 		}
 

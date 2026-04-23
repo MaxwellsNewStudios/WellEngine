@@ -13,7 +13,7 @@ namespace WellEngine
 	namespace we = WellEngine;
 	namespace dx = DirectX;
 
-	class CameraBehaviour;
+	class B_Camera;
 
 
 	enum class FaceCullingType

@@ -1,60 +1,51 @@
 #pragma once
 
 #include "RendererInfo.h"
-#include "Game/Behaviours/Rendering/Camera/CameraBehaviour.h"
-#include "Game/Behaviours/Rendering/Camera/CameraCubeBehaviour.h"
+#include "Engine/Utils/ReferenceHelper.h"
 
 namespace WellEngine
 {
-	class RenderQueuer
+	class Behaviour;
+
+	struct RenderInstance
 	{
-	public:
-		virtual void QueueGeometry(const RenderQueueEntry &entry) const = 0;
-		virtual void QueueTransparent(const RenderQueueEntry &entry) const = 0;
+		Behaviour *subject;
+		size_t subjectSize;
 	};
 
-	class CamRenderQueuer final : public RenderQueuer
+	struct RenderQueueEntry
 	{
-	private:
-		CameraBehaviour *_cameraBehaviour = nullptr;
+		ResourceGroup resourceGroup;
+		RenderInstance instance;
 
-	public:
-		CamRenderQueuer(CameraBehaviour *cameraBehaviour)
-		{
-			_cameraBehaviour = cameraBehaviour;
-		}
+		RenderQueueEntry(const ResourceGroup &resourceGroup, RenderInstance instance) : resourceGroup(resourceGroup), instance(instance) {}
+		RenderQueueEntry(const RenderQueueEntry &other) : resourceGroup(other.resourceGroup), instance(other.instance) {}
 
-		void QueueGeometry(const RenderQueueEntry &entry) const override
+		bool operator==(const RenderQueueEntry &other) const
 		{
-			_cameraBehaviour->QueueGeometry(entry);
+			return resourceGroup == other.resourceGroup;
 		}
-		void QueueTransparent(const RenderQueueEntry &entry) const override
+		bool operator<(const RenderQueueEntry &other) const
 		{
-			_cameraBehaviour->QueueTransparent(entry);
+			return resourceGroup < other.resourceGroup;
 		}
-
-		TESTABLE
+		bool operator>(const RenderQueueEntry &other) const
+		{
+			return !(resourceGroup < other.resourceGroup || resourceGroup == other.resourceGroup);
+		}
 	};
 
-	class CubeRenderQueuer final : public RenderQueuer
+
+	// Abstract class for behaviours that queue geometry for rendering, eg. cameras
+	class RenderQueuer : public IRefTarget<RenderQueuer>
 	{
-	private:
-		CameraCubeBehaviour *_cameraCubeBehaviour = nullptr;
-
 	public:
-		CubeRenderQueuer(CameraCubeBehaviour *cameraCubeBehaviour)
-		{
-			_cameraCubeBehaviour = cameraCubeBehaviour;
-		}
+		virtual void QueueGeometry(const RenderQueueEntry &entry) = 0;
+		virtual void QueueTransparent(const RenderQueueEntry &entry) = 0;
+		virtual void ResetRenderQueue() = 0;
 
-		void QueueGeometry(const RenderQueueEntry &entry) const override
-		{
-			_cameraCubeBehaviour->QueueGeometry(entry);
-		}
-		void QueueTransparent(const RenderQueueEntry &entry) const override
-		{
-			_cameraCubeBehaviour->QueueTransparent(entry);
-		}
+		[[nodiscard]] virtual const std::vector<RenderQueueEntry> &GetGeometryQueue() const = 0;
+		[[nodiscard]] virtual const std::vector<RenderQueueEntry> &GetTransparentQueue() const = 0;
 
 		TESTABLE
 	};

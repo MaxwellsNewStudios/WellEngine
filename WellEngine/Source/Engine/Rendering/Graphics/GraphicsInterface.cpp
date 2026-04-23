@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "Graphics.h"
 #include "Game/Entity.h"
-#include "Game/Behaviours/Rendering/Camera/CameraBehaviour.h"
+#include "Game/Behaviours/Rendering/Camera/B_Camera.h"
 
 #ifdef LEAK_DETECTION
 #define new			DEBUG_NEW
@@ -97,7 +97,7 @@ UINT Graphics::GetEnvironmentCubemapID() const
 
 
 #pragma region Setters
-bool Graphics::SetCamera(CameraBehaviour *viewCamera)
+bool Graphics::SetCamera(B_Camera *viewCamera)
 {
 	if (viewCamera == nullptr)
 	{
@@ -108,7 +108,7 @@ bool Graphics::SetCamera(CameraBehaviour *viewCamera)
 	_currViewCamera = viewCamera;
 	return true;
 }
-bool Graphics::SetSpotlightCollection(SpotLightCollection *spotlights)
+bool Graphics::SetSpotlightCollection(LightSpotCollection *spotlights)
 {
 	if (spotlights == nullptr)
 	{
@@ -119,7 +119,7 @@ bool Graphics::SetSpotlightCollection(SpotLightCollection *spotlights)
 	_currSpotLightCollection = spotlights;
 	return true;
 }
-bool Graphics::SetPointlightCollection(PointLightCollection *pointlights)
+bool Graphics::SetLightPointCollection(LightPointCollection *pointlights)
 {
 	if (pointlights == nullptr)
 	{
@@ -127,7 +127,7 @@ bool Graphics::SetPointlightCollection(PointLightCollection *pointlights)
 		return false;
 	}
 
-	_currPointLightCollection = pointlights;
+	_currLightPointCollection = pointlights;
 	return true;
 }
 
