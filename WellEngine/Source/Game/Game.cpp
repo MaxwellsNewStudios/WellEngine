@@ -378,7 +378,17 @@ bool Game::Setup(TimeUtils &time, Window window)
 
 	ZoneScopedC(RandomUniqueColor());
 
-	std::string line;
+	using namespace SerializerUtils;
+	using namespace WellEngine::ContentRegistryTags;
+
+	ContentRegistry &cReg = ContentRegistry::Instance();
+	if (!cReg.OpenRegistry())
+	{
+		ErrMsg("Failed to open content registry!");
+		return false;
+	}
+
+	auto &cDocAlloc = *cReg.GetDocAlloc();
 
 	// Determine if a compiled content file exists or if it needs to be created
 	bool compileContent = false;
@@ -431,15 +441,9 @@ bool Game::Setup(TimeUtils &time, Window window)
 	}
 #endif
 
+	std::string line;
 	if (compileContent)
 	{
-		ContentRegistry &cReg = ContentRegistry::Instance();
-		if (!cReg.OpenRegistry())
-		{
-			ErrMsg("Failed to open content registry!");
-			return false;
-		}
-
 		std::ifstream fileStream(ASSET_REGISTRY_FILE_MESHES);
 		if (!fileStream)
 		{
@@ -474,36 +478,24 @@ bool Game::Setup(TimeUtils &time, Window window)
 			if (it != meshNames.end())
 				continue;
 
-			json::Value meshObj(json::kObjectType);
 			{
-				using namespace SerializerUtils;
-				using namespace WellEngine::ContentRegistryTags;
-
-				auto &docAlloc = *cReg.GetDocAlloc();
-
-				meshObj.AddMember(SerializeString(NAME_TAG, docAlloc), SerializeString(line, docAlloc), docAlloc);
-				meshObj.AddMember(SerializeString(TYPE_TAG, docAlloc), SerializeString("mesh", docAlloc), docAlloc);
+				json::Value meshObj(json::kObjectType);
+				meshObj.AddMember(SerializeString(PATH_TAG, cDocAlloc), SerializeString(PATH_FILE_EXT(ASSET_PATH_MESHES, line, "obj"), cDocAlloc), cDocAlloc);
+				meshObj.AddMember(SerializeString(TYPE_TAG, cDocAlloc), SerializeString("mesh", cDocAlloc), cDocAlloc);
 
 				if (isDebug) 
-					meshObj.AddMember("Debug", true, docAlloc);
+					meshObj.AddMember("Debug", true, cDocAlloc);
+
+				if (!cReg.AddAsset("Meshes\\" + line, meshObj, NameConflictAction::Override))
+				{
+					ErrMsgF("Failed to add mesh '{}' to registry!", line);
+					return false;
+				}
 			}
 			
-			if (!cReg.AddAssetToRegistry(line, meshObj, true))
-			{
-				ErrMsgF("Failed to add mesh {} to registry!", line);
-				return false;
-			}
-
 			meshNames.emplace_back(line);
 		}
 		fileStream.close();
-
-		if (!cReg.SaveRegistry())
-		{
-			ErrMsg("Failed to save content registry!");
-			return false;
-		}
-		cReg.CloseRegistry();
 
 		time.TakeSnapshot("CompileContent");
 		if (!_content.CompileContent(meshNames))
@@ -578,6 +570,42 @@ bool Game::Setup(TimeUtils &time, Window window)
 		{ DXGI_FORMAT_UNKNOWN,			"Transparent2",					PATH_FILE(texPath, "Transparent2.dds"),					false,	2	},
 #endif
 	};
+
+	{
+		bool isDebug = false;
+		for (auto &tex : textureNames)
+		{
+			std::string fileNameExt = tex.path;
+			size_t lastSlash = fileNameExt.find_last_of("/\\");
+			if (lastSlash != std::string::npos)
+				fileNameExt = fileNameExt.substr(lastSlash + 1);
+
+			json::Value tex2dObj(json::kObjectType);
+			tex2dObj.AddMember(SerializeString(PATH_TAG, cDocAlloc), SerializeString(tex.path, cDocAlloc), cDocAlloc);
+			tex2dObj.AddMember(SerializeString(TYPE_TAG, cDocAlloc), SerializeString("tex2d", cDocAlloc), cDocAlloc);
+
+			if (tex.type != DXGI_FORMAT_UNKNOWN)
+				tex2dObj.AddMember("Format", SerializeString(D3D11FormatData::GetName(tex.type), cDocAlloc), cDocAlloc);
+
+			if (tex.mipmapped)
+				tex2dObj.AddMember("Mipmapped", true, cDocAlloc);
+
+			if (tex.downsample > 0)
+				tex2dObj.AddMember("Downsample", tex.downsample, cDocAlloc);
+
+			if (tex.name == "texture1")
+				isDebug = true;
+
+			if (isDebug)
+				tex2dObj.AddMember("Debug", true, cDocAlloc);
+
+			if (!cReg.AddAsset("Textures\\" + tex.name, tex2dObj, NameConflictAction::Override))
+			{
+				ErrMsgF("Failed to add tex2d '{}' to registry!", tex.name);
+				return false;
+			}
+		}
+	}
 
 	std::ifstream texStream(ASSET_REGISTRY_FILE_TEXTURES);
 	if (texStream)
@@ -735,9 +763,34 @@ bool Game::Setup(TimeUtils &time, Window window)
 				continue;
 #endif
 
+			std::string texRelPath = line.substr(0, dotPos);
 			line = PATH_FILE(ASSET_PATH_TEXTURES, line);
 
 			textureNames.emplace(textureNames.begin(), format, name, line, mipmapped, downsample);
+
+			{
+				json::Value tex2dObj(json::kObjectType);
+				tex2dObj.AddMember(SerializeString(PATH_TAG, cDocAlloc), SerializeString(line, cDocAlloc), cDocAlloc);
+				tex2dObj.AddMember(SerializeString(TYPE_TAG, cDocAlloc), SerializeString("tex2d", cDocAlloc), cDocAlloc);
+
+				if (format != DXGI_FORMAT_UNKNOWN)
+					tex2dObj.AddMember("Format", SerializeString(D3D11FormatData::GetName(format), cDocAlloc), cDocAlloc);
+
+				if (mipmapped)
+					tex2dObj.AddMember("Mipmapped", true, cDocAlloc);
+
+				if (downsample > 0)
+					tex2dObj.AddMember("Downsample", downsample, cDocAlloc);
+
+				if (editorOnly)
+					tex2dObj.AddMember("Debug", true, cDocAlloc);
+
+				if (!cReg.AddAsset("Textures\\" + texRelPath, tex2dObj, NameConflictAction::Override))
+				{
+					ErrMsgF("Failed to add tex2d '{}' to registry!", name);
+					return false;
+				}
+			}
 		}
 		texStream.close();
 	}
@@ -765,6 +818,35 @@ bool Game::Setup(TimeUtils &time, Window window)
 		{ DXGI_FORMAT_R8G8B8A8_UNORM,		"NeonCityNight",		PATH_FILE(texPath, "NeonCityNightCubemap.png"),			true,	0 },
 		{ DXGI_FORMAT_R16G16B16A16_UNORM,	"BarrenFieldHDR",		PATH_FILE(texPath, "BarrenFieldHDRCubemap.png"),		true,	0 },
 	};
+
+	{
+		for (auto &texCube : cubemapNames)
+		{
+			std::string fileNameExt = texCube.path;
+			size_t lastSlash = fileNameExt.find_last_of("/\\");
+			if (lastSlash != std::string::npos)
+				fileNameExt = fileNameExt.substr(lastSlash + 1);
+
+			json::Value texCubeObj(json::kObjectType);
+			texCubeObj.AddMember(SerializeString(PATH_TAG, cDocAlloc), SerializeString(texCube.path, cDocAlloc), cDocAlloc);
+			texCubeObj.AddMember(SerializeString(TYPE_TAG, cDocAlloc), SerializeString("texcube", cDocAlloc), cDocAlloc);
+
+			if (texCube.type != DXGI_FORMAT_UNKNOWN)
+				texCubeObj.AddMember("Format", SerializeString(D3D11FormatData::GetName(texCube.type), cDocAlloc), cDocAlloc);
+
+			if (texCube.mipmapped)
+				texCubeObj.AddMember("Mipmapped", true, cDocAlloc);
+
+			if (texCube.downsample > 0)
+				texCubeObj.AddMember("Downsample", texCube.downsample, cDocAlloc);
+
+			if (!cReg.AddAsset("Textures\\" + texCube.name, texCubeObj, NameConflictAction::Override))
+			{
+				ErrMsgF("Failed to add texcube '{}' to registry!", texCube.name);
+				return false;
+			}
+		}
+	}
 
 	// Height Maps should be placed in the Texture folder
 	std::vector<HeightMapData> heightMapNames = {
@@ -861,6 +943,27 @@ bool Game::Setup(TimeUtils &time, Window window)
 #endif
 	};
 
+	{
+		bool isDebug = false;
+		for (auto &shader : shaderNames)
+		{
+			json::Value shaderObj(json::kObjectType);
+			shaderObj.AddMember(SerializeString(PATH_TAG, cDocAlloc), SerializeString(shader.path + ".hlsl", cDocAlloc), cDocAlloc);
+			shaderObj.AddMember(SerializeString(TYPE_TAG, cDocAlloc), SerializeString("shader", cDocAlloc), cDocAlloc);
+
+			shaderObj.AddMember("Format", SerializeString(ShaderTypeUtils::ShaderTypeToString(shader.type), cDocAlloc), cDocAlloc);
+
+			if (isDebug)
+				shaderObj.AddMember("Debug", true, cDocAlloc);
+
+			if (!cReg.AddAsset("Shaders\\" + shader.path, shaderObj, NameConflictAction::Override))
+			{
+				ErrMsgF("Failed to add shader '{}' to registry!", shader.name);
+				return false;
+			}
+		}
+	}
+
 	// Search for all .atlas files in ASSET_PATH_FONTS
 	std::vector<std::string> fontAtlasNames;
 	for (const auto &entry : std::filesystem::directory_iterator(ASSET_PATH_FONTS))
@@ -874,7 +977,28 @@ bool Game::Setup(TimeUtils &time, Window window)
 
 		filename = filename.substr(0, filename.find_last_of('.'));
 		fontAtlasNames.emplace_back(filename);
+
+		{
+			json::Value atlasObj(json::kObjectType);
+			atlasObj.AddMember(SerializeString(PATH_TAG, cDocAlloc), SerializeString(path.string(), cDocAlloc), cDocAlloc);
+			atlasObj.AddMember(SerializeString(TYPE_TAG, cDocAlloc), SerializeString("atlas", cDocAlloc), cDocAlloc);
+
+			if (!cReg.AddAsset("Fonts\\" + filename, atlasObj, NameConflictAction::Override))
+			{
+				ErrMsgF("Failed to add atlas '{}' to registry!", filename);
+				return false;
+			}
+		}
 	}
+
+
+	if (!cReg.SaveRegistry())
+	{
+		ErrMsg("Failed to save content registry!");
+		return false;
+	}
+	cReg.CloseRegistry();
+
 
 	time.TakeSnapshot("LoadContent");
 	if (!LoadContent(textureNames, cubemapNames, shaderNames, heightMapNames, fontAtlasNames))

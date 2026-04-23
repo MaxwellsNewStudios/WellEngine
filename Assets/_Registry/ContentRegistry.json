@@ -1,698 +1,3380 @@
 {
     "f": {
-        "sponza": {
+        "Meshes": {
+            "f": {
+                "sponza": {
+                    "f": {},
+                    "a": {
+                        "sponza_CurtainPoles": {
+                            "p": "..\\Assets\\Meshes\\sponza\\sponza_CurtainPoles.obj",
+                            "t": "mesh"
+                        },
+                        "sponza_CurtainsBlue": {
+                            "p": "..\\Assets\\Meshes\\sponza\\sponza_CurtainsBlue.obj",
+                            "t": "mesh"
+                        },
+                        "sponza_CurtainsGreen": {
+                            "p": "..\\Assets\\Meshes\\sponza\\sponza_CurtainsGreen.obj",
+                            "t": "mesh"
+                        },
+                        "sponza_CurtainsRed": {
+                            "p": "..\\Assets\\Meshes\\sponza\\sponza_CurtainsRed.obj",
+                            "t": "mesh"
+                        },
+                        "sponza_EmptyFrame": {
+                            "p": "..\\Assets\\Meshes\\sponza\\sponza_EmptyFrame.obj",
+                            "t": "mesh"
+                        },
+                        "sponza_Floor": {
+                            "p": "..\\Assets\\Meshes\\sponza\\sponza_Floor.obj",
+                            "t": "mesh"
+                        },
+                        "sponza_FountainChains": {
+                            "p": "..\\Assets\\Meshes\\sponza\\sponza_FountainChains.obj",
+                            "t": "mesh"
+                        },
+                        "sponza_FountainsLarge": {
+                            "p": "..\\Assets\\Meshes\\sponza\\sponza_FountainsLarge.obj",
+                            "t": "mesh"
+                        },
+                        "sponza_HangingClothBlue": {
+                            "p": "..\\Assets\\Meshes\\sponza\\sponza_HangingClothBlue.obj",
+                            "t": "mesh"
+                        },
+                        "sponza_HangingClothGreen": {
+                            "p": "..\\Assets\\Meshes\\sponza\\sponza_HangingClothGreen.obj",
+                            "t": "mesh"
+                        },
+                        "sponza_HangingClothRed": {
+                            "p": "..\\Assets\\Meshes\\sponza\\sponza_HangingClothRed.obj",
+                            "t": "mesh"
+                        },
+                        "sponza_HangingFountains": {
+                            "p": "..\\Assets\\Meshes\\sponza\\sponza_HangingFountains.obj",
+                            "t": "mesh"
+                        },
+                        "sponza_InnerArches": {
+                            "p": "..\\Assets\\Meshes\\sponza\\sponza_InnerArches.obj",
+                            "t": "mesh"
+                        },
+                        "sponza_LionFrames": {
+                            "p": "..\\Assets\\Meshes\\sponza\\sponza_LionFrames.obj",
+                            "t": "mesh"
+                        },
+                        "sponza_LionHeads": {
+                            "p": "..\\Assets\\Meshes\\sponza\\sponza_LionHeads.obj",
+                            "t": "mesh"
+                        },
+                        "sponza_OuterArches": {
+                            "p": "..\\Assets\\Meshes\\sponza\\sponza_OuterArches.obj",
+                            "t": "mesh"
+                        },
+                        "sponza_OuterWall": {
+                            "p": "..\\Assets\\Meshes\\sponza\\sponza_OuterWall.obj",
+                            "t": "mesh"
+                        },
+                        "sponza_PillarFoliage": {
+                            "p": "..\\Assets\\Meshes\\sponza\\sponza_PillarFoliage.obj",
+                            "t": "mesh"
+                        },
+                        "sponza_PillarsLower": {
+                            "p": "..\\Assets\\Meshes\\sponza\\sponza_PillarsLower.obj",
+                            "t": "mesh"
+                        },
+                        "sponza_PillarsUpper": {
+                            "p": "..\\Assets\\Meshes\\sponza\\sponza_PillarsUpper.obj",
+                            "t": "mesh"
+                        },
+                        "sponza_PillarsUpperSquare": {
+                            "p": "..\\Assets\\Meshes\\sponza\\sponza_PillarsUpperSquare.obj",
+                            "t": "mesh"
+                        },
+                        "sponza_Roof": {
+                            "p": "..\\Assets\\Meshes\\sponza\\sponza_Roof.obj",
+                            "t": "mesh"
+                        },
+                        "sponza_SmallPots": {
+                            "p": "..\\Assets\\Meshes\\sponza\\sponza_SmallPots.obj",
+                            "t": "mesh"
+                        },
+                        "sponza_SmallPotsFoliage": {
+                            "p": "..\\Assets\\Meshes\\sponza\\sponza_SmallPotsFoliage.obj",
+                            "t": "mesh"
+                        },
+                        "sponza_WindowsDoors": {
+                            "p": "..\\Assets\\Meshes\\sponza\\sponza_WindowsDoors.obj",
+                            "t": "mesh"
+                        }
+                    }
+                }
+            },
+            "a": {
+                "Error": {
+                    "p": "..\\Assets\\Meshes\\Error.obj",
+                    "t": "mesh"
+                },
+                "Fallback": {
+                    "p": "..\\Assets\\Meshes\\Fallback.obj",
+                    "t": "mesh"
+                },
+                "Cube": {
+                    "p": "..\\Assets\\Meshes\\Cube.obj",
+                    "t": "mesh"
+                },
+                "Plane": {
+                    "p": "..\\Assets\\Meshes\\Plane.obj",
+                    "t": "mesh"
+                },
+                "SniperBody": {
+                    "p": "..\\Assets\\Meshes\\SniperBody.obj",
+                    "t": "mesh"
+                },
+                "SniperBolt": {
+                    "p": "..\\Assets\\Meshes\\SniperBolt.obj",
+                    "t": "mesh"
+                },
+                "SniperTrigger": {
+                    "p": "..\\Assets\\Meshes\\SniperTrigger.obj",
+                    "t": "mesh"
+                },
+                "SniperMagazine": {
+                    "p": "..\\Assets\\Meshes\\SniperMagazine.obj",
+                    "t": "mesh"
+                },
+                "Arcade": {
+                    "p": "..\\Assets\\Meshes\\Arcade.obj",
+                    "t": "mesh"
+                },
+                "GraniteRock": {
+                    "p": "..\\Assets\\Meshes\\GraniteRock.obj",
+                    "t": "mesh"
+                },
+                "DecimatedMan": {
+                    "p": "..\\Assets\\Meshes\\DecimatedMan.obj",
+                    "t": "mesh"
+                },
+                "Support_Beam": {
+                    "p": "..\\Assets\\Meshes\\Support_Beam.obj",
+                    "t": "mesh"
+                },
+                "Camera": {
+                    "p": "..\\Assets\\Meshes\\Camera.obj",
+                    "t": "mesh"
+                },
+                "FlashlightBody": {
+                    "p": "..\\Assets\\Meshes\\FlashlightBody.obj",
+                    "t": "mesh"
+                },
+                "FlashlightLever": {
+                    "p": "..\\Assets\\Meshes\\FlashlightLever.obj",
+                    "t": "mesh"
+                },
+                "Cave_Wall": {
+                    "p": "..\\Assets\\Meshes\\Cave_Wall.obj",
+                    "t": "mesh"
+                },
+                "SupportBeams": {
+                    "p": "..\\Assets\\Meshes\\SupportBeams.obj",
+                    "t": "mesh"
+                },
+                "Rails_Straight_0": {
+                    "p": "..\\Assets\\Meshes\\Rails_Straight_0.obj",
+                    "t": "mesh"
+                },
+                "Rails_Straight_1": {
+                    "p": "..\\Assets\\Meshes\\Rails_Straight_1.obj",
+                    "t": "mesh"
+                },
+                "Rails_Straight_2": {
+                    "p": "..\\Assets\\Meshes\\Rails_Straight_2.obj",
+                    "t": "mesh"
+                },
+                "Rails_Straight_3": {
+                    "p": "..\\Assets\\Meshes\\Rails_Straight_3.obj",
+                    "t": "mesh"
+                },
+                "Rails_Straight_4": {
+                    "p": "..\\Assets\\Meshes\\Rails_Straight_4.obj",
+                    "t": "mesh"
+                },
+                "Rails_Straight_5": {
+                    "p": "..\\Assets\\Meshes\\Rails_Straight_5.obj",
+                    "t": "mesh"
+                },
+                "Rails_Straight_6": {
+                    "p": "..\\Assets\\Meshes\\Rails_Straight_6.obj",
+                    "t": "mesh"
+                },
+                "Rails_Straight_7": {
+                    "p": "..\\Assets\\Meshes\\Rails_Straight_7.obj",
+                    "t": "mesh"
+                },
+                "Rails_Straight_8": {
+                    "p": "..\\Assets\\Meshes\\Rails_Straight_8.obj",
+                    "t": "mesh"
+                },
+                "Rails_Turn_0": {
+                    "p": "..\\Assets\\Meshes\\Rails_Turn_0.obj",
+                    "t": "mesh"
+                },
+                "Rails_Turn_1": {
+                    "p": "..\\Assets\\Meshes\\Rails_Turn_1.obj",
+                    "t": "mesh"
+                },
+                "Rails_Turn_2": {
+                    "p": "..\\Assets\\Meshes\\Rails_Turn_2.obj",
+                    "t": "mesh"
+                },
+                "Rails_Turn_3": {
+                    "p": "..\\Assets\\Meshes\\Rails_Turn_3.obj",
+                    "t": "mesh"
+                },
+                "Rails_Turn_4": {
+                    "p": "..\\Assets\\Meshes\\Rails_Turn_4.obj",
+                    "t": "mesh"
+                },
+                "Rails_Turn_5": {
+                    "p": "..\\Assets\\Meshes\\Rails_Turn_5.obj",
+                    "t": "mesh"
+                },
+                "Rails_End_0": {
+                    "p": "..\\Assets\\Meshes\\Rails_End_0.obj",
+                    "t": "mesh"
+                },
+                "Rails_End_1": {
+                    "p": "..\\Assets\\Meshes\\Rails_End_1.obj",
+                    "t": "mesh"
+                },
+                "Minecart": {
+                    "p": "..\\Assets\\Meshes\\Minecart.obj",
+                    "t": "mesh"
+                },
+                "MineSection": {
+                    "p": "..\\Assets\\Meshes\\MineSection.obj",
+                    "t": "mesh"
+                },
+                "pickaxe": {
+                    "p": "..\\Assets\\Meshes\\pickaxe.obj",
+                    "t": "mesh"
+                },
+                "brokenfenceotherUV": {
+                    "p": "..\\Assets\\Meshes\\brokenfenceotherUV.obj",
+                    "t": "mesh"
+                },
+                "Barrel2": {
+                    "p": "..\\Assets\\Meshes\\Barrel2.obj",
+                    "t": "mesh"
+                },
+                "dynamitebox": {
+                    "p": "..\\Assets\\Meshes\\dynamitebox.obj",
+                    "t": "mesh"
+                },
+                "dynamitebundle": {
+                    "p": "..\\Assets\\Meshes\\dynamitebundle.obj",
+                    "t": "mesh"
+                },
+                "multipledynamite": {
+                    "p": "..\\Assets\\Meshes\\multipledynamite.obj",
+                    "t": "mesh"
+                },
+                "lockerDoor": {
+                    "p": "..\\Assets\\Meshes\\lockerDoor.obj",
+                    "t": "mesh"
+                },
+                "locker": {
+                    "p": "..\\Assets\\Meshes\\locker.obj",
+                    "t": "mesh"
+                },
+                "singledynamite2": {
+                    "p": "..\\Assets\\Meshes\\singledynamite2.obj",
+                    "t": "mesh"
+                },
+                "BrokenTable2": {
+                    "p": "..\\Assets\\Meshes\\BrokenTable2.obj",
+                    "t": "mesh"
+                },
+                "fence2": {
+                    "p": "..\\Assets\\Meshes\\fence2.obj",
+                    "t": "mesh"
+                },
+                "ropewheelstand3": {
+                    "p": "..\\Assets\\Meshes\\ropewheelstand3.obj",
+                    "t": "mesh"
+                },
+                "ropewheel2": {
+                    "p": "..\\Assets\\Meshes\\ropewheel2.obj",
+                    "t": "mesh"
+                },
+                "fence3": {
+                    "p": "..\\Assets\\Meshes\\fence3.obj",
+                    "t": "mesh"
+                },
+                "minesign2legsflipped": {
+                    "p": "..\\Assets\\Meshes\\minesign2legsflipped.obj",
+                    "t": "mesh"
+                },
+                "minesign2legs": {
+                    "p": "..\\Assets\\Meshes\\minesign2legs.obj",
+                    "t": "mesh"
+                },
+                "pickaxe2": {
+                    "p": "..\\Assets\\Meshes\\pickaxe2.obj",
+                    "t": "mesh"
+                },
+                "mushroom": {
+                    "p": "..\\Assets\\Meshes\\mushroom.obj",
+                    "t": "mesh"
+                },
+                "Breadcrumb": {
+                    "p": "..\\Assets\\Meshes\\Breadcrumb.obj",
+                    "t": "mesh"
+                },
+                "Breadcrumb_Collection": {
+                    "p": "..\\Assets\\Meshes\\Breadcrumb_Collection.obj",
+                    "t": "mesh"
+                },
+                "GenericPicture": {
+                    "p": "..\\Assets\\Meshes\\GenericPicture.obj",
+                    "t": "mesh"
+                },
+                "PileOfRocks": {
+                    "p": "..\\Assets\\Meshes\\PileOfRocks.obj",
+                    "t": "mesh"
+                },
+                "SmallPileOfRocks": {
+                    "p": "..\\Assets\\Meshes\\SmallPileOfRocks.obj",
+                    "t": "mesh"
+                },
+                "Chair": {
+                    "p": "..\\Assets\\Meshes\\Chair.obj",
+                    "t": "mesh"
+                },
+                "shovel": {
+                    "p": "..\\Assets\\Meshes\\shovel.obj",
+                    "t": "mesh"
+                },
+                "statueOfMaxwell": {
+                    "p": "..\\Assets\\Meshes\\statueOfMaxwell.obj",
+                    "t": "mesh"
+                },
+                "Picture_part1": {
+                    "p": "..\\Assets\\Meshes\\Picture_part1.obj",
+                    "t": "mesh"
+                },
+                "Picture_part2": {
+                    "p": "..\\Assets\\Meshes\\Picture_part2.obj",
+                    "t": "mesh"
+                },
+                "Picture_part3": {
+                    "p": "..\\Assets\\Meshes\\Picture_part3.obj",
+                    "t": "mesh"
+                },
+                "Picture_part4": {
+                    "p": "..\\Assets\\Meshes\\Picture_part4.obj",
+                    "t": "mesh"
+                },
+                "Picture_part5": {
+                    "p": "..\\Assets\\Meshes\\Picture_part5.obj",
+                    "t": "mesh"
+                },
+                "Stalagmites_Large_1": {
+                    "p": "..\\Assets\\Meshes\\Stalagmites_Large_1.obj",
+                    "t": "mesh"
+                },
+                "Stalagmites_Large_2": {
+                    "p": "..\\Assets\\Meshes\\Stalagmites_Large_2.obj",
+                    "t": "mesh"
+                },
+                "Stalagmites_Medium_1": {
+                    "p": "..\\Assets\\Meshes\\Stalagmites_Medium_1.obj",
+                    "t": "mesh"
+                },
+                "Stalagmites_Medium_2": {
+                    "p": "..\\Assets\\Meshes\\Stalagmites_Medium_2.obj",
+                    "t": "mesh"
+                },
+                "Stalagmites_Small_1": {
+                    "p": "..\\Assets\\Meshes\\Stalagmites_Small_1.obj",
+                    "t": "mesh"
+                },
+                "Stalagmites_Small_2": {
+                    "p": "..\\Assets\\Meshes\\Stalagmites_Small_2.obj",
+                    "t": "mesh"
+                },
+                "LightButton1": {
+                    "p": "..\\Assets\\Meshes\\LightButton1.obj",
+                    "t": "mesh"
+                },
+                "Barrel": {
+                    "p": "..\\Assets\\Meshes\\Barrel.obj",
+                    "t": "mesh"
+                },
+                "OldLamp_Metal": {
+                    "p": "..\\Assets\\Meshes\\OldLamp_Metal.obj",
+                    "t": "mesh"
+                },
+                "OldLamp_Glass": {
+                    "p": "..\\Assets\\Meshes\\OldLamp_Glass.obj",
+                    "t": "mesh"
+                },
+                "CompassFlipped": {
+                    "p": "..\\Assets\\Meshes\\CompassFlipped.obj",
+                    "t": "mesh"
+                },
+                "CompassNeedle": {
+                    "p": "..\\Assets\\Meshes\\CompassNeedle.obj",
+                    "t": "mesh"
+                },
+                "cave_map_small_000": {
+                    "p": "..\\Assets\\Meshes\\cave_map_small_000.obj",
+                    "t": "mesh"
+                },
+                "cave_map_small_001": {
+                    "p": "..\\Assets\\Meshes\\cave_map_small_001.obj",
+                    "t": "mesh"
+                },
+                "cave_map_small_002": {
+                    "p": "..\\Assets\\Meshes\\cave_map_small_002.obj",
+                    "t": "mesh"
+                },
+                "cave_map_small_003": {
+                    "p": "..\\Assets\\Meshes\\cave_map_small_003.obj",
+                    "t": "mesh"
+                },
+                "cave_map_small_004": {
+                    "p": "..\\Assets\\Meshes\\cave_map_small_004.obj",
+                    "t": "mesh"
+                },
+                "cave_map_small_005": {
+                    "p": "..\\Assets\\Meshes\\cave_map_small_005.obj",
+                    "t": "mesh"
+                },
+                "cave_map_small_006": {
+                    "p": "..\\Assets\\Meshes\\cave_map_small_006.obj",
+                    "t": "mesh"
+                },
+                "cave_map_small_007": {
+                    "p": "..\\Assets\\Meshes\\cave_map_small_007.obj",
+                    "t": "mesh"
+                },
+                "cave_map_small_008": {
+                    "p": "..\\Assets\\Meshes\\cave_map_small_008.obj",
+                    "t": "mesh"
+                },
+                "cave_map_small_009": {
+                    "p": "..\\Assets\\Meshes\\cave_map_small_009.obj",
+                    "t": "mesh"
+                },
+                "cave_map_small_010": {
+                    "p": "..\\Assets\\Meshes\\cave_map_small_010.obj",
+                    "t": "mesh"
+                },
+                "cave_map_small_011": {
+                    "p": "..\\Assets\\Meshes\\cave_map_small_011.obj",
+                    "t": "mesh"
+                },
+                "cave_map_small_012": {
+                    "p": "..\\Assets\\Meshes\\cave_map_small_012.obj",
+                    "t": "mesh"
+                },
+                "cave_map_small_013": {
+                    "p": "..\\Assets\\Meshes\\cave_map_small_013.obj",
+                    "t": "mesh"
+                },
+                "cave_map_small_014": {
+                    "p": "..\\Assets\\Meshes\\cave_map_small_014.obj",
+                    "t": "mesh"
+                },
+                "cave_map_small_015": {
+                    "p": "..\\Assets\\Meshes\\cave_map_small_015.obj",
+                    "t": "mesh"
+                },
+                "cave_map_small_016": {
+                    "p": "..\\Assets\\Meshes\\cave_map_small_016.obj",
+                    "t": "mesh"
+                },
+                "cave_map_small_017": {
+                    "p": "..\\Assets\\Meshes\\cave_map_small_017.obj",
+                    "t": "mesh"
+                },
+                "cave_map_small_018": {
+                    "p": "..\\Assets\\Meshes\\cave_map_small_018.obj",
+                    "t": "mesh"
+                },
+                "cave_map_small_019": {
+                    "p": "..\\Assets\\Meshes\\cave_map_small_019.obj",
+                    "t": "mesh"
+                },
+                "cave_map_small_020": {
+                    "p": "..\\Assets\\Meshes\\cave_map_small_020.obj",
+                    "t": "mesh"
+                },
+                "cave_map_small_021": {
+                    "p": "..\\Assets\\Meshes\\cave_map_small_021.obj",
+                    "t": "mesh"
+                },
+                "cave_map_small_022": {
+                    "p": "..\\Assets\\Meshes\\cave_map_small_022.obj",
+                    "t": "mesh"
+                },
+                "cave_map_small_023": {
+                    "p": "..\\Assets\\Meshes\\cave_map_small_023.obj",
+                    "t": "mesh"
+                },
+                "cave_map_small_024": {
+                    "p": "..\\Assets\\Meshes\\cave_map_small_024.obj",
+                    "t": "mesh"
+                },
+                "cave_map_small_025": {
+                    "p": "..\\Assets\\Meshes\\cave_map_small_025.obj",
+                    "t": "mesh"
+                },
+                "cave_map_small_026": {
+                    "p": "..\\Assets\\Meshes\\cave_map_small_026.obj",
+                    "t": "mesh"
+                },
+                "cave_map_small_027": {
+                    "p": "..\\Assets\\Meshes\\cave_map_small_027.obj",
+                    "t": "mesh"
+                },
+                "cave_map_small_028": {
+                    "p": "..\\Assets\\Meshes\\cave_map_small_028.obj",
+                    "t": "mesh"
+                },
+                "cave_map_small_029": {
+                    "p": "..\\Assets\\Meshes\\cave_map_small_029.obj",
+                    "t": "mesh"
+                },
+                "cave_map_small_030": {
+                    "p": "..\\Assets\\Meshes\\cave_map_small_030.obj",
+                    "t": "mesh"
+                },
+                "cave_map_small_031": {
+                    "p": "..\\Assets\\Meshes\\cave_map_small_031.obj",
+                    "t": "mesh"
+                },
+                "cave_map_small_032": {
+                    "p": "..\\Assets\\Meshes\\cave_map_small_032.obj",
+                    "t": "mesh"
+                },
+                "cave_map_small_033": {
+                    "p": "..\\Assets\\Meshes\\cave_map_small_033.obj",
+                    "t": "mesh"
+                },
+                "cave_map_large_000": {
+                    "p": "..\\Assets\\Meshes\\cave_map_large_000.obj",
+                    "t": "mesh"
+                },
+                "cave_map_large_001": {
+                    "p": "..\\Assets\\Meshes\\cave_map_large_001.obj",
+                    "t": "mesh"
+                },
+                "cave_map_large_002": {
+                    "p": "..\\Assets\\Meshes\\cave_map_large_002.obj",
+                    "t": "mesh"
+                },
+                "cave_map_large_003": {
+                    "p": "..\\Assets\\Meshes\\cave_map_large_003.obj",
+                    "t": "mesh"
+                },
+                "cave_map_large_004": {
+                    "p": "..\\Assets\\Meshes\\cave_map_large_004.obj",
+                    "t": "mesh"
+                },
+                "cave_map_large_005": {
+                    "p": "..\\Assets\\Meshes\\cave_map_large_005.obj",
+                    "t": "mesh"
+                },
+                "cave_map_large_006": {
+                    "p": "..\\Assets\\Meshes\\cave_map_large_006.obj",
+                    "t": "mesh"
+                },
+                "cave_map_large_007": {
+                    "p": "..\\Assets\\Meshes\\cave_map_large_007.obj",
+                    "t": "mesh"
+                },
+                "cave_map_large_008": {
+                    "p": "..\\Assets\\Meshes\\cave_map_large_008.obj",
+                    "t": "mesh"
+                },
+                "cave_map_large_009": {
+                    "p": "..\\Assets\\Meshes\\cave_map_large_009.obj",
+                    "t": "mesh"
+                },
+                "cave_map_large_010": {
+                    "p": "..\\Assets\\Meshes\\cave_map_large_010.obj",
+                    "t": "mesh"
+                },
+                "cave_map_large_011": {
+                    "p": "..\\Assets\\Meshes\\cave_map_large_011.obj",
+                    "t": "mesh"
+                },
+                "cave_map_large_012": {
+                    "p": "..\\Assets\\Meshes\\cave_map_large_012.obj",
+                    "t": "mesh"
+                },
+                "cave_map_large_013": {
+                    "p": "..\\Assets\\Meshes\\cave_map_large_013.obj",
+                    "t": "mesh"
+                },
+                "cave_map_large_014": {
+                    "p": "..\\Assets\\Meshes\\cave_map_large_014.obj",
+                    "t": "mesh"
+                },
+                "Maxwell": {
+                    "p": "..\\Assets\\Meshes\\Maxwell.obj",
+                    "t": "mesh",
+                    "Debug": true
+                },
+                "Whiskers": {
+                    "p": "..\\Assets\\Meshes\\Whiskers.obj",
+                    "t": "mesh",
+                    "Debug": true
+                },
+                "Character1": {
+                    "p": "..\\Assets\\Meshes\\Character1.obj",
+                    "t": "mesh",
+                    "Debug": true
+                },
+                "Sphere": {
+                    "p": "..\\Assets\\Meshes\\Sphere.obj",
+                    "t": "mesh",
+                    "Debug": true
+                },
+                "HighPolySphere": {
+                    "p": "..\\Assets\\Meshes\\HighPolySphere.obj",
+                    "t": "mesh",
+                    "Debug": true
+                },
+                "IsoSphereSmooth": {
+                    "p": "..\\Assets\\Meshes\\IsoSphereSmooth.obj",
+                    "t": "mesh",
+                    "Debug": true
+                },
+                "WireframeCube": {
+                    "p": "..\\Assets\\Meshes\\WireframeCube.obj",
+                    "t": "mesh",
+                    "Debug": true
+                },
+                "WireframeSphere": {
+                    "p": "..\\Assets\\Meshes\\WireframeSphere.obj",
+                    "t": "mesh",
+                    "Debug": true
+                },
+                "WireframeCylinder": {
+                    "p": "..\\Assets\\Meshes\\WireframeCylinder.obj",
+                    "t": "mesh",
+                    "Debug": true
+                },
+                "WireframeCapsule": {
+                    "p": "..\\Assets\\Meshes\\WireframeCapsule.obj",
+                    "t": "mesh",
+                    "Debug": true
+                },
+                "HeightMapExample": {
+                    "p": "..\\Assets\\Meshes\\HeightMapExample.obj",
+                    "t": "mesh",
+                    "Debug": true
+                },
+                "TranslationGizmo": {
+                    "p": "..\\Assets\\Meshes\\TranslationGizmo.obj",
+                    "t": "mesh",
+                    "Debug": true
+                },
+                "RotationGizmo": {
+                    "p": "..\\Assets\\Meshes\\RotationGizmo.obj",
+                    "t": "mesh",
+                    "Debug": true
+                },
+                "ScalingGizmo": {
+                    "p": "..\\Assets\\Meshes\\ScalingGizmo.obj",
+                    "t": "mesh",
+                    "Debug": true
+                },
+                "Cornell": {
+                    "p": "..\\Assets\\Meshes\\Cornell.obj",
+                    "t": "mesh",
+                    "Debug": true
+                }
+            }
+        },
+        "Textures": {
+            "f": {
+                "sponza": {
+                    "f": {},
+                    "a": {
+                        "sponza_arch_ddn": {
+                            "p": "..\\Assets\\Textures\\sponza\\sponza_arch_ddn.dds",
+                            "t": "tex2d",
+                            "Mipmapped": true
+                        },
+                        "sponza_arch_diff": {
+                            "p": "..\\Assets\\Textures\\sponza\\sponza_arch_diff.dds",
+                            "t": "tex2d",
+                            "Mipmapped": true
+                        },
+                        "sponza_arch_spec": {
+                            "p": "..\\Assets\\Textures\\sponza\\sponza_arch_spec.dds",
+                            "t": "tex2d",
+                            "Mipmapped": true
+                        },
+                        "sponza_background": {
+                            "p": "..\\Assets\\Textures\\sponza\\sponza_background.dds",
+                            "t": "tex2d",
+                            "Mipmapped": true
+                        },
+                        "sponza_background_ddn": {
+                            "p": "..\\Assets\\Textures\\sponza\\sponza_background_ddn.dds",
+                            "t": "tex2d",
+                            "Mipmapped": true
+                        },
+                        "sponza_background_spec": {
+                            "p": "..\\Assets\\Textures\\sponza\\sponza_background_spec.dds",
+                            "t": "tex2d",
+                            "Mipmapped": true
+                        },
+                        "sponza_bricks_a_ddn": {
+                            "p": "..\\Assets\\Textures\\sponza\\sponza_bricks_a_ddn.dds",
+                            "t": "tex2d",
+                            "Mipmapped": true
+                        },
+                        "sponza_bricks_a_diff": {
+                            "p": "..\\Assets\\Textures\\sponza\\sponza_bricks_a_diff.dds",
+                            "t": "tex2d",
+                            "Mipmapped": true
+                        },
+                        "sponza_bricks_a_spec": {
+                            "p": "..\\Assets\\Textures\\sponza\\sponza_bricks_a_spec.dds",
+                            "t": "tex2d",
+                            "Mipmapped": true
+                        },
+                        "sponza_ceiling_a_ddn": {
+                            "p": "..\\Assets\\Textures\\sponza\\sponza_ceiling_a_ddn.dds",
+                            "t": "tex2d",
+                            "Mipmapped": true
+                        },
+                        "sponza_ceiling_a_diff": {
+                            "p": "..\\Assets\\Textures\\sponza\\sponza_ceiling_a_diff.dds",
+                            "t": "tex2d",
+                            "Mipmapped": true
+                        },
+                        "sponza_ceiling_a_spec": {
+                            "p": "..\\Assets\\Textures\\sponza\\sponza_ceiling_a_spec.dds",
+                            "t": "tex2d",
+                            "Mipmapped": true
+                        },
+                        "sponza_chain_texture": {
+                            "p": "..\\Assets\\Textures\\sponza\\sponza_chain_texture.dds",
+                            "t": "tex2d",
+                            "Mipmapped": true
+                        },
+                        "sponza_chain_texture_ddn": {
+                            "p": "..\\Assets\\Textures\\sponza\\sponza_chain_texture_ddn.dds",
+                            "t": "tex2d",
+                            "Mipmapped": true
+                        },
+                        "sponza_column_a_ddn": {
+                            "p": "..\\Assets\\Textures\\sponza\\sponza_column_a_ddn.dds",
+                            "t": "tex2d",
+                            "Mipmapped": true
+                        },
+                        "sponza_column_a_diff": {
+                            "p": "..\\Assets\\Textures\\sponza\\sponza_column_a_diff.dds",
+                            "t": "tex2d",
+                            "Mipmapped": true
+                        },
+                        "sponza_column_a_spec": {
+                            "p": "..\\Assets\\Textures\\sponza\\sponza_column_a_spec.dds",
+                            "t": "tex2d",
+                            "Mipmapped": true
+                        },
+                        "sponza_column_b_ddn": {
+                            "p": "..\\Assets\\Textures\\sponza\\sponza_column_b_ddn.dds",
+                            "t": "tex2d",
+                            "Mipmapped": true
+                        },
+                        "sponza_column_b_diff": {
+                            "p": "..\\Assets\\Textures\\sponza\\sponza_column_b_diff.dds",
+                            "t": "tex2d",
+                            "Mipmapped": true
+                        },
+                        "sponza_column_b_spec": {
+                            "p": "..\\Assets\\Textures\\sponza\\sponza_column_b_spec.dds",
+                            "t": "tex2d",
+                            "Mipmapped": true
+                        },
+                        "sponza_column_c_ddn": {
+                            "p": "..\\Assets\\Textures\\sponza\\sponza_column_c_ddn.dds",
+                            "t": "tex2d",
+                            "Mipmapped": true
+                        },
+                        "sponza_column_c_diff": {
+                            "p": "..\\Assets\\Textures\\sponza\\sponza_column_c_diff.dds",
+                            "t": "tex2d",
+                            "Mipmapped": true
+                        },
+                        "sponza_column_c_spec": {
+                            "p": "..\\Assets\\Textures\\sponza\\sponza_column_c_spec.dds",
+                            "t": "tex2d",
+                            "Mipmapped": true
+                        },
+                        "sponza_curtain_blue_diff": {
+                            "p": "..\\Assets\\Textures\\sponza\\sponza_curtain_blue_diff.dds",
+                            "t": "tex2d",
+                            "Mipmapped": true
+                        },
+                        "sponza_curtain_ddn": {
+                            "p": "..\\Assets\\Textures\\sponza\\sponza_curtain_ddn.dds",
+                            "t": "tex2d",
+                            "Mipmapped": true
+                        },
+                        "sponza_curtain_diff": {
+                            "p": "..\\Assets\\Textures\\sponza\\sponza_curtain_diff.dds",
+                            "t": "tex2d",
+                            "Mipmapped": true
+                        },
+                        "sponza_curtain_green_diff": {
+                            "p": "..\\Assets\\Textures\\sponza\\sponza_curtain_green_diff.dds",
+                            "t": "tex2d",
+                            "Mipmapped": true
+                        },
+                        "sponza_curtain_spec": {
+                            "p": "..\\Assets\\Textures\\sponza\\sponza_curtain_spec.dds",
+                            "t": "tex2d",
+                            "Mipmapped": true
+                        },
+                        "sponza_details_ddn": {
+                            "p": "..\\Assets\\Textures\\sponza\\sponza_details_ddn.dds",
+                            "t": "tex2d",
+                            "Mipmapped": true
+                        },
+                        "sponza_details_diff": {
+                            "p": "..\\Assets\\Textures\\sponza\\sponza_details_diff.dds",
+                            "t": "tex2d",
+                            "Mipmapped": true
+                        },
+                        "sponza_details_spec": {
+                            "p": "..\\Assets\\Textures\\sponza\\sponza_details_spec.dds",
+                            "t": "tex2d",
+                            "Mipmapped": true
+                        },
+                        "sponza_dummy": {
+                            "p": "..\\Assets\\Textures\\sponza\\sponza_dummy.dds",
+                            "t": "tex2d",
+                            "Mipmapped": true
+                        },
+                        "sponza_dummy_ddn": {
+                            "p": "..\\Assets\\Textures\\sponza\\sponza_dummy_ddn.dds",
+                            "t": "tex2d",
+                            "Mipmapped": true
+                        },
+                        "sponza_dummy_specular": {
+                            "p": "..\\Assets\\Textures\\sponza\\sponza_dummy_specular.dds",
+                            "t": "tex2d",
+                            "Mipmapped": true
+                        },
+                        "sponza_fabric_blue_diff": {
+                            "p": "..\\Assets\\Textures\\sponza\\sponza_fabric_blue_diff.dds",
+                            "t": "tex2d",
+                            "Mipmapped": true
+                        },
+                        "sponza_fabric_ddn": {
+                            "p": "..\\Assets\\Textures\\sponza\\sponza_fabric_ddn.dds",
+                            "t": "tex2d",
+                            "Mipmapped": true
+                        },
+                        "sponza_fabric_diff": {
+                            "p": "..\\Assets\\Textures\\sponza\\sponza_fabric_diff.dds",
+                            "t": "tex2d",
+                            "Mipmapped": true
+                        },
+                        "sponza_fabric_green_diff": {
+                            "p": "..\\Assets\\Textures\\sponza\\sponza_fabric_green_diff.dds",
+                            "t": "tex2d",
+                            "Mipmapped": true
+                        },
+                        "sponza_fabric_spec": {
+                            "p": "..\\Assets\\Textures\\sponza\\sponza_fabric_spec.dds",
+                            "t": "tex2d",
+                            "Mipmapped": true
+                        },
+                        "sponza_flagpole_ddn": {
+                            "p": "..\\Assets\\Textures\\sponza\\sponza_flagpole_ddn.dds",
+                            "t": "tex2d",
+                            "Mipmapped": true
+                        },
+                        "sponza_flagpole_diff": {
+                            "p": "..\\Assets\\Textures\\sponza\\sponza_flagpole_diff.dds",
+                            "t": "tex2d",
+                            "Mipmapped": true
+                        },
+                        "sponza_flagpole_spec": {
+                            "p": "..\\Assets\\Textures\\sponza\\sponza_flagpole_spec.dds",
+                            "t": "tex2d",
+                            "Mipmapped": true
+                        },
+                        "sponza_floor_a_ddn": {
+                            "p": "..\\Assets\\Textures\\sponza\\sponza_floor_a_ddn.dds",
+                            "t": "tex2d",
+                            "Mipmapped": true
+                        },
+                        "sponza_floor_a_diff": {
+                            "p": "..\\Assets\\Textures\\sponza\\sponza_floor_a_diff.dds",
+                            "t": "tex2d",
+                            "Mipmapped": true
+                        },
+                        "sponza_floor_a_spec": {
+                            "p": "..\\Assets\\Textures\\sponza\\sponza_floor_a_spec.dds",
+                            "t": "tex2d",
+                            "Mipmapped": true
+                        },
+                        "sponza_lion": {
+                            "p": "..\\Assets\\Textures\\sponza\\sponza_lion.dds",
+                            "t": "tex2d",
+                            "Mipmapped": true
+                        },
+                        "sponza_lion_ddn": {
+                            "p": "..\\Assets\\Textures\\sponza\\sponza_lion_ddn.dds",
+                            "t": "tex2d",
+                            "Mipmapped": true
+                        },
+                        "sponza_lion_spec": {
+                            "p": "..\\Assets\\Textures\\sponza\\sponza_lion_spec.dds",
+                            "t": "tex2d",
+                            "Mipmapped": true
+                        },
+                        "sponza_roof_ddn": {
+                            "p": "..\\Assets\\Textures\\sponza\\sponza_roof_ddn.dds",
+                            "t": "tex2d",
+                            "Mipmapped": true
+                        },
+                        "sponza_roof_diff": {
+                            "p": "..\\Assets\\Textures\\sponza\\sponza_roof_diff.dds",
+                            "t": "tex2d",
+                            "Mipmapped": true
+                        },
+                        "sponza_thorn_ddn": {
+                            "p": "..\\Assets\\Textures\\sponza\\sponza_thorn_ddn.dds",
+                            "t": "tex2d",
+                            "Mipmapped": true
+                        },
+                        "sponza_thorn_diff": {
+                            "p": "..\\Assets\\Textures\\sponza\\sponza_thorn_diff.dds",
+                            "t": "tex2d",
+                            "Mipmapped": true
+                        },
+                        "sponza_thorn_spec": {
+                            "p": "..\\Assets\\Textures\\sponza\\sponza_thorn_spec.dds",
+                            "t": "tex2d",
+                            "Mipmapped": true
+                        },
+                        "sponza_vase_diff": {
+                            "p": "..\\Assets\\Textures\\sponza\\sponza_vase_diff.dds",
+                            "t": "tex2d",
+                            "Mipmapped": true
+                        },
+                        "sponza_vase_ddn": {
+                            "p": "..\\Assets\\Textures\\sponza\\sponza_vase_ddn.dds",
+                            "t": "tex2d",
+                            "Mipmapped": true
+                        },
+                        "sponza_vase_hanging_diff": {
+                            "p": "..\\Assets\\Textures\\sponza\\sponza_vase_hanging_diff.dds",
+                            "t": "tex2d",
+                            "Mipmapped": true
+                        },
+                        "sponza_vase_plant": {
+                            "p": "..\\Assets\\Textures\\sponza\\sponza_vase_plant.dds",
+                            "t": "tex2d",
+                            "Mipmapped": true
+                        },
+                        "sponza_vase_plant_spec": {
+                            "p": "..\\Assets\\Textures\\sponza\\sponza_vase_plant_spec.dds",
+                            "t": "tex2d",
+                            "Mipmapped": true
+                        },
+                        "sponza_vase_round": {
+                            "p": "..\\Assets\\Textures\\sponza\\sponza_vase_round.dds",
+                            "t": "tex2d",
+                            "Mipmapped": true
+                        },
+                        "sponza_vase_round_ddn": {
+                            "p": "..\\Assets\\Textures\\sponza\\sponza_vase_round_ddn.dds",
+                            "t": "tex2d",
+                            "Mipmapped": true
+                        },
+                        "sponza_vase_round_spec": {
+                            "p": "..\\Assets\\Textures\\sponza\\sponza_vase_round_spec.dds",
+                            "t": "tex2d",
+                            "Mipmapped": true
+                        },
+                        "sponza_vase_spec": {
+                            "p": "..\\Assets\\Textures\\sponza\\sponza_vase_spec.dds",
+                            "t": "tex2d",
+                            "Mipmapped": true
+                        }
+                    }
+                }
+            },
+            "a": {
+                "Error": {
+                    "p": "..\\Assets\\Textures\\Error.dds",
+                    "t": "tex2d",
+                    "Downsample": 1
+                },
+                "Fallback": {
+                    "p": "..\\Assets\\Textures\\FallbackCubemap.png",
+                    "t": "texcube",
+                    "Format": "R8G8B8A8_UNORM",
+                    "Mipmapped": true
+                },
+                "White": {
+                    "p": "..\\Assets\\Textures\\White.png",
+                    "t": "tex2d",
+                    "Format": "R8G8B8A8_UNORM"
+                },
+                "Black": {
+                    "p": "..\\Assets\\Textures\\Black.png",
+                    "t": "tex2d",
+                    "Format": "R8G8B8A8_UNORM"
+                },
+                "Ambient": {
+                    "p": "..\\Assets\\Textures\\Ambient.png",
+                    "t": "tex2d",
+                    "Format": "R8G8B8A8_UNORM"
+                },
+                "AmbientBright": {
+                    "p": "..\\Assets\\Textures\\AmbientBright.png",
+                    "t": "tex2d",
+                    "Format": "R8G8B8A8_UNORM"
+                },
+                "Red": {
+                    "p": "..\\Assets\\Textures\\Red.png",
+                    "t": "tex2d",
+                    "Format": "R8G8B8A8_UNORM"
+                },
+                "Green": {
+                    "p": "..\\Assets\\Textures\\Green.png",
+                    "t": "tex2d",
+                    "Format": "R8G8B8A8_UNORM"
+                },
+                "Blue": {
+                    "p": "..\\Assets\\Textures\\Blue.png",
+                    "t": "tex2d",
+                    "Format": "R8G8B8A8_UNORM"
+                },
+                "Noise": {
+                    "p": "..\\Assets\\Textures\\Noise.dds",
+                    "t": "tex2d"
+                },
+                "Maxwell": {
+                    "p": "..\\Assets\\Textures\\Maxwell.dds",
+                    "t": "tex2d"
+                },
+                "Whiskers": {
+                    "p": "..\\Assets\\Textures\\Whiskers.dds",
+                    "t": "tex2d"
+                },
+                "Gray": {
+                    "p": "..\\Assets\\Textures\\Gray.png",
+                    "t": "tex2d",
+                    "Format": "R8G8B8A8_UNORM"
+                },
+                "DarkGray": {
+                    "p": "..\\Assets\\Textures\\DarkGray.png",
+                    "t": "tex2d",
+                    "Format": "R8G8B8A8_UNORM"
+                },
+                "Default_Normal": {
+                    "p": "..\\Assets\\Textures\\Default_Normal.png",
+                    "t": "tex2d",
+                    "Format": "R8G8B8A8_UNORM",
+                    "Mipmapped": true
+                },
+                "Metal_Normal": {
+                    "p": "..\\Assets\\Textures\\Metal_Normal.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true,
+                    "Downsample": 1
+                },
+                "Support_Beam_Normal": {
+                    "p": "..\\Assets\\Textures\\Support_Beam_Normal.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true,
+                    "Downsample": 1
+                },
+                "Camera_Normal": {
+                    "p": "..\\Assets\\Textures\\Camera_Normal.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true,
+                    "Downsample": 1
+                },
+                "FlashlightBody_Normal": {
+                    "p": "..\\Assets\\Textures\\FlashlightBody_Normal.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true,
+                    "Downsample": 1
+                },
+                "FlashlightLever_Normal": {
+                    "p": "..\\Assets\\Textures\\FlashlightLever_Normal.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true,
+                    "Downsample": 1
+                },
+                "Cave_Wall_Normal": {
+                    "p": "..\\Assets\\Textures\\Cave_Wall_Normal.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "Default_Specular": {
+                    "p": "..\\Assets\\Textures\\AmbientBright.png",
+                    "t": "tex2d",
+                    "Format": "R8G8B8A8_UNORM",
+                    "Mipmapped": true
+                },
+                "Black_Specular": {
+                    "p": "..\\Assets\\Textures\\Black.png",
+                    "t": "tex2d",
+                    "Format": "R8G8B8A8_UNORM",
+                    "Mipmapped": true
+                },
+                "DarkGray_Specular": {
+                    "p": "..\\Assets\\Textures\\DarkGray.png",
+                    "t": "tex2d",
+                    "Format": "R8G8B8A8_UNORM",
+                    "Mipmapped": true
+                },
+                "Gray_Specular": {
+                    "p": "..\\Assets\\Textures\\Gray.png",
+                    "t": "tex2d",
+                    "Format": "R8G8B8A8_UNORM",
+                    "Mipmapped": true
+                },
+                "White_Specular": {
+                    "p": "..\\Assets\\Textures\\White.png",
+                    "t": "tex2d",
+                    "Format": "R8G8B8A8_UNORM",
+                    "Mipmapped": true
+                },
+                "Red_Specular": {
+                    "p": "..\\Assets\\Textures\\Red.png",
+                    "t": "tex2d",
+                    "Format": "R8G8B8A8_UNORM",
+                    "Mipmapped": true
+                },
+                "Green_Specular": {
+                    "p": "..\\Assets\\Textures\\Green.png",
+                    "t": "tex2d",
+                    "Format": "R8G8B8A8_UNORM",
+                    "Mipmapped": true
+                },
+                "Blue_Specular": {
+                    "p": "..\\Assets\\Textures\\Blue.png",
+                    "t": "tex2d",
+                    "Format": "R8G8B8A8_UNORM",
+                    "Mipmapped": true
+                },
+                "Metal_Specular": {
+                    "p": "..\\Assets\\Textures\\Metal_Specular.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true,
+                    "Downsample": 2
+                },
+                "Support_Beam_Specular": {
+                    "p": "..\\Assets\\Textures\\Support_Beam_Specular.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true,
+                    "Downsample": 2
+                },
+                "Camera_Specular": {
+                    "p": "..\\Assets\\Textures\\Camera_Specular.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true,
+                    "Downsample": 2
+                },
+                "FlashlightBody_Specular": {
+                    "p": "..\\Assets\\Textures\\FlashlightBody_Specular.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true,
+                    "Downsample": 2
+                },
+                "FlashlightLever_Specular": {
+                    "p": "..\\Assets\\Textures\\FlashlightLever_Specular.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true,
+                    "Downsample": 2
+                },
+                "Default_Glossiness": {
+                    "p": "..\\Assets\\Textures\\Gray.png",
+                    "t": "tex2d",
+                    "Format": "R8G8B8A8_UNORM"
+                },
+                "White_Glossiness": {
+                    "p": "..\\Assets\\Textures\\White.png",
+                    "t": "tex2d",
+                    "Format": "R8G8B8A8_UNORM"
+                },
+                "Black_Glossiness": {
+                    "p": "..\\Assets\\Textures\\Black.png",
+                    "t": "tex2d",
+                    "Format": "R8G8B8A8_UNORM"
+                },
+                "DarkGray_Glossiness": {
+                    "p": "..\\Assets\\Textures\\DarkGray.png",
+                    "t": "tex2d",
+                    "Format": "R8G8B8A8_UNORM"
+                },
+                "FlashlightBody_Glossiness": {
+                    "p": "..\\Assets\\Textures\\FlashlightBody_Glossiness.dds",
+                    "t": "tex2d",
+                    "Downsample": 1
+                },
+                "FlashlightLever_Glossiness": {
+                    "p": "..\\Assets\\Textures\\FlashlightLever_Glossiness.dds",
+                    "t": "tex2d",
+                    "Downsample": 1
+                },
+                "Default_Occlusion": {
+                    "p": "..\\Assets\\Textures\\White.png",
+                    "t": "tex2d",
+                    "Format": "R8G8B8A8_UNORM",
+                    "Mipmapped": true
+                },
+                "Support_Beam_Occlusion": {
+                    "p": "..\\Assets\\Textures\\Support_Beam_Occlusion.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true,
+                    "Downsample": 1
+                },
+                "Camera_Occlusion": {
+                    "p": "..\\Assets\\Textures\\Camera_Occlusion.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true,
+                    "Downsample": 2
+                },
+                "texture1": {
+                    "p": "..\\Assets\\Textures\\texture1.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true,
+                    "Downsample": 2,
+                    "Debug": true
+                },
+                "Character_Texture": {
+                    "p": "..\\Assets\\Textures\\Character_Texture.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true,
+                    "Debug": true
+                },
+                "Sphere": {
+                    "p": "..\\Assets\\Textures\\Sphere.dds",
+                    "t": "tex2d",
+                    "Downsample": 2,
+                    "Debug": true
+                },
+                "Fade": {
+                    "p": "..\\Assets\\Textures\\Fade.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true,
+                    "Debug": true
+                },
+                "TransformGizmo": {
+                    "p": "..\\Assets\\Textures\\TransformGizmo.png",
+                    "t": "tex2d",
+                    "Format": "R8G8B8A8_UNORM",
+                    "Debug": true
+                },
+                "Cornell": {
+                    "p": "..\\Assets\\Textures\\Cornell.dds",
+                    "t": "tex2d",
+                    "Downsample": 2,
+                    "Debug": true
+                },
+                "SoundEmitter": {
+                    "p": "..\\Assets\\Textures\\SoundEmitter.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true,
+                    "Downsample": 1,
+                    "Debug": true
+                },
+                "LightSource": {
+                    "p": "..\\Assets\\Textures\\LightSource.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true,
+                    "Downsample": 1,
+                    "Debug": true
+                },
+                "Cornell_Light": {
+                    "p": "..\\Assets\\Textures\\Cornell_Light.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true,
+                    "Downsample": 2,
+                    "Debug": true
+                },
+                "Transparent": {
+                    "p": "..\\Assets\\Textures\\Transparent.dds",
+                    "t": "tex2d",
+                    "Downsample": 2,
+                    "Debug": true
+                },
+                "Transparent2": {
+                    "p": "..\\Assets\\Textures\\Transparent2.dds",
+                    "t": "tex2d",
+                    "Downsample": 2,
+                    "Debug": true
+                },
+                "CaveSystem": {
+                    "p": "..\\Assets\\Textures\\CaveSystem.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "CaveSystem_Large": {
+                    "p": "..\\Assets\\Textures\\CaveSystem_Large.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "MineSection": {
+                    "p": "..\\Assets\\Textures\\MineSection.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "Cave_Wall_Texture": {
+                    "p": "..\\Assets\\Textures\\Cave_Wall_Texture.png",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "plastered_stone": {
+                    "p": "..\\Assets\\Textures\\plastered_stone.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true,
+                    "Downsample": 2
+                },
+                "Stalagmites_Large_1": {
+                    "p": "..\\Assets\\Textures\\Stalagmites_Large_1.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "Stalagmites_Large_2": {
+                    "p": "..\\Assets\\Textures\\Stalagmites_Large_2.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "Stalagmites_Medium_1": {
+                    "p": "..\\Assets\\Textures\\Stalagmites_Medium_1.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "Stalagmites_Medium_2": {
+                    "p": "..\\Assets\\Textures\\Stalagmites_Medium_2.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "Stalagmites_Small_1": {
+                    "p": "..\\Assets\\Textures\\Stalagmites_Small_1.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true,
+                    "Downsample": 1
+                },
+                "Stalagmites_Small_2": {
+                    "p": "..\\Assets\\Textures\\Stalagmites_Small_2.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true,
+                    "Downsample": 1
+                },
+                "mushroom_DefaultMaterial_Diffuse": {
+                    "p": "..\\Assets\\Textures\\mushroom_DefaultMaterial_Diffuse.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true,
+                    "Downsample": 1
+                },
+                "mushroom_DefaultMaterial_Ambient": {
+                    "p": "..\\Assets\\Textures\\mushroom_DefaultMaterial_Ambient.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true,
+                    "Downsample": 1
+                },
+                "Rails_Straight_0": {
+                    "p": "..\\Assets\\Textures\\Rails_Straight_0.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true,
+                    "Downsample": 1
+                },
+                "Rails_Straight_1": {
+                    "p": "..\\Assets\\Textures\\Rails_Straight_1.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true,
+                    "Downsample": 1
+                },
+                "Rails_Turn_0": {
+                    "p": "..\\Assets\\Textures\\Rails_Turn_0.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true,
+                    "Downsample": 1
+                },
+                "Rails_End_0": {
+                    "p": "..\\Assets\\Textures\\Rails_End_0.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true,
+                    "Downsample": 1
+                },
+                "Rails_End_1": {
+                    "p": "..\\Assets\\Textures\\Rails_End_1.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true,
+                    "Downsample": 1
+                },
+                "Minecart_Material": {
+                    "p": "..\\Assets\\Textures\\Minecart_Material.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true,
+                    "Downsample": 1
+                },
+                "SupportBeams_Material_Diffuse": {
+                    "p": "..\\Assets\\Textures\\SupportBeams_Material_Diffuse.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "SupportBeams_Material_BaseColor": {
+                    "p": "..\\Assets\\Textures\\SupportBeams_Material_BaseColor.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "SupportBeams_MaterialNoHeight_Diffuse": {
+                    "p": "..\\Assets\\Textures\\SupportBeams_MaterialNoHeight_Diffuse.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "brokenfenceotherUV_Material_Diffuse": {
+                    "p": "..\\Assets\\Textures\\brokenfenceotherUV_Material_Diffuse.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "fence_Material_Diffuse": {
+                    "p": "..\\Assets\\Textures\\fence_Material_Diffuse.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "fence2_Material_Diffuse": {
+                    "p": "..\\Assets\\Textures\\fence2_Material_Diffuse.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "fence3_Material_Diffuse": {
+                    "p": "..\\Assets\\Textures\\fence3_Material_Diffuse.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "minesign2legs_Exposive_storage_Diffuse": {
+                    "p": "..\\Assets\\Textures\\minesign2legs_Exposive_storage_Diffuse.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "minesign2legs_Minecart_station_Diffuse": {
+                    "p": "..\\Assets\\Textures\\minesign2legs_Minecart_station_Diffuse.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "minesign2legs_Old_Mine_Entrace_Diffuse": {
+                    "p": "..\\Assets\\Textures\\minesign2legs_Old_Mine_Entrace_Diffuse.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "minesign2legs_Storage_Room_Diffuse": {
+                    "p": "..\\Assets\\Textures\\minesign2legs_Storage_Room_Diffuse.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "minesign2legs_The_Pit_Diffuse": {
+                    "p": "..\\Assets\\Textures\\minesign2legs_The_Pit_Diffuse.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "minesign2legs_ControllsSign_Diffuse": {
+                    "p": "..\\Assets\\Textures\\minesign2legs_ControllsSign_Diffuse.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "statueOfMaxwell_DefaultMaterial_Diffuse": {
+                    "p": "..\\Assets\\Textures\\statueOfMaxwell_DefaultMaterial_Diffuse.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "ropewheel2_DefaultMaterial_Diffuse": {
+                    "p": "..\\Assets\\Textures\\ropewheel2_DefaultMaterial_Diffuse.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "ropewheelstand3_DefaultMaterial_Diffuse": {
+                    "p": "..\\Assets\\Textures\\ropewheelstand3_DefaultMaterial_Diffuse.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "rope_DefaultMaterial_Diffuse": {
+                    "p": "..\\Assets\\Textures\\rope_DefaultMaterial_Diffuse.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "Support_Beam": {
+                    "p": "..\\Assets\\Textures\\Support_Beam.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true,
+                    "Downsample": 1
+                },
+                "locker_Material_Diffuse": {
+                    "p": "..\\Assets\\Textures\\locker_Material_Diffuse.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "lockerDoor_Material_Diffuse": {
+                    "p": "..\\Assets\\Textures\\lockerDoor_Material_Diffuse.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true,
+                    "Downsample": 1
+                },
+                "Chair_DefaultMaterial_Diffuse": {
+                    "p": "..\\Assets\\Textures\\Chair_DefaultMaterial_Diffuse.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "Barrel2_DefaultMaterial_Diffuse": {
+                    "p": "..\\Assets\\Textures\\Barrel2_DefaultMaterial_Diffuse.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "BrokenTable_Material_BaseColor": {
+                    "p": "..\\Assets\\Textures\\BrokenTable_Material_BaseColor.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "BrokenTable2_Material.001_BaseColor": {
+                    "p": "..\\Assets\\Textures\\BrokenTable2_Material.001_BaseColor.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true,
+                    "Downsample": 1
+                },
+                "OldLamp_Metal": {
+                    "p": "..\\Assets\\Textures\\OldLamp_Metal.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "OldLamp_Glass": {
+                    "p": "..\\Assets\\Textures\\OldLamp_Glass.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true,
+                    "Downsample": 2
+                },
+                "pickaxe_Material_Diffuse": {
+                    "p": "..\\Assets\\Textures\\pickaxe_Material_Diffuse.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "pickaxe2_Material_Diffuse": {
+                    "p": "..\\Assets\\Textures\\pickaxe2_Material_Diffuse.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "shovel_DefaultMaterial_Diffuse": {
+                    "p": "..\\Assets\\Textures\\shovel_DefaultMaterial_Diffuse.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "dynamitebox_DefaultMaterial_Diffuse": {
+                    "p": "..\\Assets\\Textures\\dynamitebox_DefaultMaterial_Diffuse.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "dynamitebundle_DefaultMaterial_Diffuse": {
+                    "p": "..\\Assets\\Textures\\dynamitebundle_DefaultMaterial_Diffuse.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "multipledynamite_DefaultMaterial_Diffuse": {
+                    "p": "..\\Assets\\Textures\\multipledynamite_DefaultMaterial_Diffuse.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "singledynamite2_DefaultMaterial_Diffuse": {
+                    "p": "..\\Assets\\Textures\\singledynamite2_DefaultMaterial_Diffuse.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "Breadcrumb_Collection": {
+                    "p": "..\\Assets\\Textures\\Breadcrumb_Collection.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "Breadcrumb_Collection_Light": {
+                    "p": "..\\Assets\\Textures\\Breadcrumb_Collection_Light.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "Breadcrumb_Red": {
+                    "p": "..\\Assets\\Textures\\Breadcrumb_Red.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "Breadcrumb_Red_Light": {
+                    "p": "..\\Assets\\Textures\\Breadcrumb_Red_Light.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "Breadcrumb_Green": {
+                    "p": "..\\Assets\\Textures\\Breadcrumb_Green.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "Breadcrumb_Green_Light": {
+                    "p": "..\\Assets\\Textures\\Breadcrumb_Green_Light.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "Breadcrumb_Blue": {
+                    "p": "..\\Assets\\Textures\\Breadcrumb_Blue.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "Breadcrumb_Blue_Light": {
+                    "p": "..\\Assets\\Textures\\Breadcrumb_Blue_Light.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "Compass_SpecularMaterial_Diffuse": {
+                    "p": "..\\Assets\\Textures\\Compass_SpecularMaterial_Diffuse.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "GenericPic_Texture": {
+                    "p": "..\\Assets\\Textures\\GenericPic_Texture.png",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "upprivenbilddelad": {
+                    "p": "..\\Assets\\Textures\\upprivenbilddelad.png",
+                    "t": "tex2d",
+                    "Mipmapped": true,
+                    "Downsample": 1
+                },
+                "FlashlightBody": {
+                    "p": "..\\Assets\\Textures\\FlashlightBody.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true,
+                    "Downsample": 1
+                },
+                "FlashlightLever": {
+                    "p": "..\\Assets\\Textures\\FlashlightLever.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true,
+                    "Downsample": 2
+                },
+                "Camera": {
+                    "p": "..\\Assets\\Textures\\Camera.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true,
+                    "Downsample": 2
+                },
+                "HighlightColor": {
+                    "p": "..\\Assets\\Textures\\HighlightColor.png",
+                    "t": "tex2d"
+                },
+                "transperancy": {
+                    "p": "..\\Assets\\Textures\\transperancy.png",
+                    "t": "tex2d",
+                    "Mipmapped": true,
+                    "Downsample": 1
+                },
+                "Particle": {
+                    "p": "..\\Assets\\Textures\\Particle.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "Flare": {
+                    "p": "..\\Assets\\Textures\\Flare.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true,
+                    "Downsample": 1
+                },
+                "Flare_Red": {
+                    "p": "..\\Assets\\Textures\\Flare_Red.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true,
+                    "Downsample": 1
+                },
+                "Flare_Green": {
+                    "p": "..\\Assets\\Textures\\Flare_Green.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true,
+                    "Downsample": 1
+                },
+                "Flare_Blue": {
+                    "p": "..\\Assets\\Textures\\Flare_Blue.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true,
+                    "Downsample": 1
+                },
+                "Flare_Golden": {
+                    "p": "..\\Assets\\Textures\\Flare_Golden.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true,
+                    "Downsample": 2
+                },
+                "Metal": {
+                    "p": "..\\Assets\\Textures\\Metal.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true,
+                    "Downsample": 1
+                },
+                "Button_Start_Texture": {
+                    "p": "..\\Assets\\Textures\\Button_Start_Texture.png",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "Button_Continue_Texture": {
+                    "p": "..\\Assets\\Textures\\Button_Continue_Texture.png",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "Button_Load_Texture": {
+                    "p": "..\\Assets\\Textures\\Button_Load_Texture.png",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "Button_Save_Texture": {
+                    "p": "..\\Assets\\Textures\\Button_Save_Texture.png",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "Button_NewSave_Texture": {
+                    "p": "..\\Assets\\Textures\\Button_NewSave_Texture.png",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "Button_Credits_Texture": {
+                    "p": "..\\Assets\\Textures\\Button_Credits_Texture.png",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "Button_Exit_Texture": {
+                    "p": "..\\Assets\\Textures\\Button_Exit_Texture.png",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "Credit_Logo_Texture": {
+                    "p": "..\\Assets\\Textures\\Credit_Logo_Texture.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "Credit_Devs_Texture": {
+                    "p": "..\\Assets\\Textures\\Credit_Devs_Texture.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "Credit_Testing_Texture": {
+                    "p": "..\\Assets\\Textures\\Credit_Testing_Texture.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "Credit_Assets_Texture": {
+                    "p": "..\\Assets\\Textures\\Credit_Assets_Texture.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "Credit_BTH_Texture": {
+                    "p": "..\\Assets\\Textures\\Credit_BTH_Texture.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "Credit_Story1_Texture": {
+                    "p": "..\\Assets\\Textures\\Credit_Story1_Texture.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "Credit_Special_Texture": {
+                    "p": "..\\Assets\\Textures\\Credit_Special_Texture.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "Rails_Straight_0_Normal": {
+                    "p": "..\\Assets\\Textures\\Rails_Straight_0_Normal.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "Rails_Straight_1_Normal": {
+                    "p": "..\\Assets\\Textures\\Rails_Straight_1_Normal.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "Rails_Turn_0_Normal": {
+                    "p": "..\\Assets\\Textures\\Rails_Turn_0_Normal.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "Rails_End_0_Normal": {
+                    "p": "..\\Assets\\Textures\\Rails_End_0_Normal.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "Rails_End_1_Normal": {
+                    "p": "..\\Assets\\Textures\\Rails_End_1_Normal.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "Minecart_Material_Normal": {
+                    "p": "..\\Assets\\Textures\\Minecart_Material_Normal.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "Rails_Straight_0_Specular": {
+                    "p": "..\\Assets\\Textures\\Rails_Straight_0_Specular.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true,
+                    "Downsample": 1
+                },
+                "Rails_Straight_1_Specular": {
+                    "p": "..\\Assets\\Textures\\Rails_Straight_1_Specular.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true,
+                    "Downsample": 1
+                },
+                "Rails_Turn_0_Specular": {
+                    "p": "..\\Assets\\Textures\\Rails_Turn_0_Specular.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true,
+                    "Downsample": 1
+                },
+                "Rails_End_0_Specular": {
+                    "p": "..\\Assets\\Textures\\Rails_End_0_Specular.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true,
+                    "Downsample": 1
+                },
+                "Rails_End_1_Specular": {
+                    "p": "..\\Assets\\Textures\\Rails_End_1_Specular.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true,
+                    "Downsample": 1
+                },
+                "Minecart_Material_Specular": {
+                    "p": "..\\Assets\\Textures\\Minecart_Material_Specular.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true,
+                    "Downsample": 1
+                },
+                "Rails_Straight_0_Glossiness": {
+                    "p": "..\\Assets\\Textures\\Rails_Straight_0_Glossiness.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true,
+                    "Downsample": 2
+                },
+                "Rails_Straight_1_Glossiness": {
+                    "p": "..\\Assets\\Textures\\Rails_Straight_1_Glossiness.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true,
+                    "Downsample": 2
+                },
+                "Rails_Turn_0_Glossiness": {
+                    "p": "..\\Assets\\Textures\\Rails_Turn_0_Glossiness.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true,
+                    "Downsample": 2
+                },
+                "Rails_End_0_Glossiness": {
+                    "p": "..\\Assets\\Textures\\Rails_End_0_Glossiness.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true,
+                    "Downsample": 2
+                },
+                "Rails_End_1_Glossiness": {
+                    "p": "..\\Assets\\Textures\\Rails_End_1_Glossiness.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true,
+                    "Downsample": 2
+                },
+                "Minecart_Material_Glossiness": {
+                    "p": "..\\Assets\\Textures\\Minecart_Material_Glossiness.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true,
+                    "Downsample": 2
+                },
+                "Rails_Straight_0_Occlusion": {
+                    "p": "..\\Assets\\Textures\\Rails_Straight_0_Occlusion.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true,
+                    "Downsample": 2
+                },
+                "Rails_Straight_1_Occlusion": {
+                    "p": "..\\Assets\\Textures\\Rails_Straight_1_Occlusion.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true,
+                    "Downsample": 2
+                },
+                "Rails_Straight_2_Occlusion": {
+                    "p": "..\\Assets\\Textures\\Rails_Straight_2_Occlusion.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true,
+                    "Downsample": 2
+                },
+                "Rails_Straight_3_Occlusion": {
+                    "p": "..\\Assets\\Textures\\Rails_Straight_3_Occlusion.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true,
+                    "Downsample": 2
+                },
+                "Rails_Straight_4_Occlusion": {
+                    "p": "..\\Assets\\Textures\\Rails_Straight_4_Occlusion.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true,
+                    "Downsample": 2
+                },
+                "Rails_Straight_5_Occlusion": {
+                    "p": "..\\Assets\\Textures\\Rails_Straight_5_Occlusion.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true,
+                    "Downsample": 2
+                },
+                "Rails_Straight_6_Occlusion": {
+                    "p": "..\\Assets\\Textures\\Rails_Straight_6_Occlusion.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true,
+                    "Downsample": 2
+                },
+                "Rails_Straight_7_Occlusion": {
+                    "p": "..\\Assets\\Textures\\Rails_Straight_7_Occlusion.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true,
+                    "Downsample": 2
+                },
+                "Rails_Straight_8_Occlusion": {
+                    "p": "..\\Assets\\Textures\\Rails_Straight_8_Occlusion.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true,
+                    "Downsample": 2
+                },
+                "Rails_Turn_0_Occlusion": {
+                    "p": "..\\Assets\\Textures\\Rails_Turn_0_Occlusion.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true,
+                    "Downsample": 2
+                },
+                "Rails_Turn_1_Occlusion": {
+                    "p": "..\\Assets\\Textures\\Rails_Turn_1_Occlusion.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true,
+                    "Downsample": 2
+                },
+                "Rails_Turn_2_Occlusion": {
+                    "p": "..\\Assets\\Textures\\Rails_Turn_2_Occlusion.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true,
+                    "Downsample": 2
+                },
+                "Rails_Turn_3_Occlusion": {
+                    "p": "..\\Assets\\Textures\\Rails_Turn_3_Occlusion.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true,
+                    "Downsample": 2
+                },
+                "Rails_Turn_4_Occlusion": {
+                    "p": "..\\Assets\\Textures\\Rails_Turn_4_Occlusion.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true,
+                    "Downsample": 2
+                },
+                "Rails_Turn_5_Occlusion": {
+                    "p": "..\\Assets\\Textures\\Rails_Turn_5_Occlusion.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true,
+                    "Downsample": 2
+                },
+                "Rails_End_0_Occlusion": {
+                    "p": "..\\Assets\\Textures\\Rails_End_0_Occlusion.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true,
+                    "Downsample": 2
+                },
+                "Rails_End_1_Occlusion": {
+                    "p": "..\\Assets\\Textures\\Rails_End_1_Occlusion.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true,
+                    "Downsample": 2
+                },
+                "Minecart_Material_Occlusion": {
+                    "p": "..\\Assets\\Textures\\Minecart_Material_Occlusion.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true,
+                    "Downsample": 2
+                },
+                "MineSection_Normal": {
+                    "p": "..\\Assets\\Textures\\MineSection_Normal.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true,
+                    "Downsample": 1
+                },
+                "MineSection_Specular": {
+                    "p": "..\\Assets\\Textures\\MineSection_Specular.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true,
+                    "Downsample": 1
+                },
+                "MineSection_Glossiness": {
+                    "p": "..\\Assets\\Textures\\MineSection_Glossiness.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true,
+                    "Downsample": 1
+                },
+                "MineSection_Occlusion": {
+                    "p": "..\\Assets\\Textures\\MineSection_Occlusion.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true,
+                    "Downsample": 1
+                },
+                "CaveSystem_Normal": {
+                    "p": "..\\Assets\\Textures\\CaveSystem_Normal.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "CaveSystem_Specular": {
+                    "p": "..\\Assets\\Textures\\CaveSystem_Specular.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "CaveSystem_Glossiness": {
+                    "p": "..\\Assets\\Textures\\CaveSystem_Glossiness.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "CaveSystem_Occlusion": {
+                    "p": "..\\Assets\\Textures\\CaveSystem_Occlusion.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "CaveSystem_Large_Normal": {
+                    "p": "..\\Assets\\Textures\\CaveSystem_Large_Normal.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "CaveSystem_Large_Specular": {
+                    "p": "..\\Assets\\Textures\\CaveSystem_Large_Specular.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "CaveSystem_Large_Glossiness": {
+                    "p": "..\\Assets\\Textures\\CaveSystem_Large_Glossiness.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "CaveSystem_Large_Occlusion": {
+                    "p": "..\\Assets\\Textures\\CaveSystem_Large_Occlusion.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "brokenfenceotherUV_Material_Normal": {
+                    "p": "..\\Assets\\Textures\\brokenfenceotherUV_Material_Normal.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "brokenfenceotherUV_Material_Specular": {
+                    "p": "..\\Assets\\Textures\\brokenfenceotherUV_Material_Specular.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "brokenfenceotherUV_Material_Glossiness": {
+                    "p": "..\\Assets\\Textures\\brokenfenceotherUV_Material_Glossiness.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "SupportBeams_MaterialNoHeight_Normal": {
+                    "p": "..\\Assets\\Textures\\SupportBeams_MaterialNoHeight_Normal.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "SupportBeams_MaterialNoHeight_Specular": {
+                    "p": "..\\Assets\\Textures\\SupportBeams_MaterialNoHeight_Specular.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "SupportBeams_MaterialNoHeight_Glossiness": {
+                    "p": "..\\Assets\\Textures\\SupportBeams_MaterialNoHeight_Glossiness.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "SupportBeams_Material_Specular": {
+                    "p": "..\\Assets\\Textures\\SupportBeams_Material_Specular.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "SupportBeams_Material_Glossiness": {
+                    "p": "..\\Assets\\Textures\\SupportBeams_Material_Glossiness.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "Breadcrumb_Collection_Normal": {
+                    "p": "..\\Assets\\Textures\\Breadcrumb_Collection_Normal.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "Breadcrumb_Collection_Specular": {
+                    "p": "..\\Assets\\Textures\\Breadcrumb_Collection_Specular.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "Breadcrumb_Collection_Glossiness": {
+                    "p": "..\\Assets\\Textures\\Breadcrumb_Collection_Glossiness.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "Breadcrumb_Collection_Occlusion": {
+                    "p": "..\\Assets\\Textures\\Breadcrumb_Collection_Occlusion.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "Breadcrumb_Normal": {
+                    "p": "..\\Assets\\Textures\\Breadcrumb_Normal.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "Breadcrumb_Red_Specular": {
+                    "p": "..\\Assets\\Textures\\Breadcrumb_Red_Specular.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true,
+                    "Downsample": 1
+                },
+                "Breadcrumb_Green_Specular": {
+                    "p": "..\\Assets\\Textures\\Breadcrumb_Green_Specular.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true,
+                    "Downsample": 1
+                },
+                "Breadcrumb_Blue_Specular": {
+                    "p": "..\\Assets\\Textures\\Breadcrumb_Blue_Specular.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true,
+                    "Downsample": 1
+                },
+                "Breadcrumb_Glossiness": {
+                    "p": "..\\Assets\\Textures\\Breadcrumb_Glossiness.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true,
+                    "Downsample": 1
+                },
+                "Breadcrumb_Occlusion": {
+                    "p": "..\\Assets\\Textures\\Breadcrumb_Occlusion.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true,
+                    "Downsample": 1
+                },
+                "minesign2legs_DefaultMaterial_Specular": {
+                    "p": "..\\Assets\\Textures\\minesign2legs_DefaultMaterial_Specular.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "minesign2legs_DefaultMaterial_Glossiness": {
+                    "p": "..\\Assets\\Textures\\minesign2legs_DefaultMaterial_Glossiness.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "minesign2legs_Minecart_station_Normal": {
+                    "p": "..\\Assets\\Textures\\minesign2legs_Minecart_station_Normal.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "minesign2legs_The_Pit_Normal": {
+                    "p": "..\\Assets\\Textures\\minesign2legs_The_Pit_Normal.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "minesign2legs_ControllsSign_Normal": {
+                    "p": "..\\Assets\\Textures\\minesign2legs_ControllsSign_Normal.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "minesign2legs_ControllsSign_Glossiness": {
+                    "p": "..\\Assets\\Textures\\minesign2legs_ControllsSign_Glossiness.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "minesign2legs_ControllsSign_Specular": {
+                    "p": "..\\Assets\\Textures\\minesign2legs_ControllsSign_Specular.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "locker_Material_Normal": {
+                    "p": "..\\Assets\\Textures\\locker_Material_Normal.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "locker_Material_Specular": {
+                    "p": "..\\Assets\\Textures\\locker_Material_Specular.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "locker_Material_Glossiness": {
+                    "p": "..\\Assets\\Textures\\locker_Material_Glossiness.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "lockerDoor_Material_Normal": {
+                    "p": "..\\Assets\\Textures\\lockerDoor_Material_Normal.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true,
+                    "Downsample": 2
+                },
+                "lockerDoor_Material_Specular": {
+                    "p": "..\\Assets\\Textures\\lockerDoor_Material_Specular.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true,
+                    "Downsample": 2
+                },
+                "lockerDoor_Material_Glossiness": {
+                    "p": "..\\Assets\\Textures\\lockerDoor_Material_Glossiness.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true,
+                    "Downsample": 2
+                },
+                "mushroom_DefaultMaterial_Normal": {
+                    "p": "..\\Assets\\Textures\\mushroom_DefaultMaterial_Normal.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true,
+                    "Downsample": 2
+                },
+                "mushroom_DefaultMaterial_Specular": {
+                    "p": "..\\Assets\\Textures\\mushroom_DefaultMaterial_Specular.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true,
+                    "Downsample": 2
+                },
+                "mushroom_DefaultMaterial_Glossiness": {
+                    "p": "..\\Assets\\Textures\\mushroom_DefaultMaterial_Glossiness.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true,
+                    "Downsample": 2
+                },
+                "Barrel2_DefaultMaterial_Normal": {
+                    "p": "..\\Assets\\Textures\\Barrel2_DefaultMaterial_Normal.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true,
+                    "Downsample": 1
+                },
+                "Barrel2_DefaultMaterial_Specular": {
+                    "p": "..\\Assets\\Textures\\Barrel2_DefaultMaterial_Specular.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true,
+                    "Downsample": 1
+                },
+                "Barrel2_DefaultMaterial_Glossiness": {
+                    "p": "..\\Assets\\Textures\\Barrel2_DefaultMaterial_Glossiness.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true,
+                    "Downsample": 1
+                },
+                "dynamitebox_DefaultMaterial_Normal": {
+                    "p": "..\\Assets\\Textures\\dynamitebox_DefaultMaterial_Normal.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "dynamitebox_DefaultMaterial_Specular": {
+                    "p": "..\\Assets\\Textures\\dynamitebox_DefaultMaterial_Specular.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "dynamitebox_DefaultMaterial_Glossiness": {
+                    "p": "..\\Assets\\Textures\\dynamitebox_DefaultMaterial_Glossiness.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "dynamitebundle_DefaultMaterial_Normal": {
+                    "p": "..\\Assets\\Textures\\dynamitebundle_DefaultMaterial_Normal.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "dynamitebundle_DefaultMaterial_Specular": {
+                    "p": "..\\Assets\\Textures\\dynamitebundle_DefaultMaterial_Specular.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "dynamitebundle_DefaultMaterial_Glossiness": {
+                    "p": "..\\Assets\\Textures\\dynamitebundle_DefaultMaterial_Glossiness.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "multipledynamite_DefaultMaterial_Normal": {
+                    "p": "..\\Assets\\Textures\\multipledynamite_DefaultMaterial_Normal.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "multipledynamite_DefaultMaterial_Specular": {
+                    "p": "..\\Assets\\Textures\\multipledynamite_DefaultMaterial_Specular.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "multipledynamite_DefaultMaterial_Glossiness": {
+                    "p": "..\\Assets\\Textures\\multipledynamite_DefaultMaterial_Glossiness.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "singledynamite2_DefaultMaterial_Normal": {
+                    "p": "..\\Assets\\Textures\\singledynamite2_DefaultMaterial_Normal.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "singledynamite2_DefaultMaterial_Specular": {
+                    "p": "..\\Assets\\Textures\\singledynamite2_DefaultMaterial_Specular.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "singledynamite2_DefaultMaterial_Glossiness": {
+                    "p": "..\\Assets\\Textures\\singledynamite2_DefaultMaterial_Glossiness.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "BrokenTable_Material_Normal": {
+                    "p": "..\\Assets\\Textures\\BrokenTable_Material_Normal.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "BrokenTable2_Material001_Specular": {
+                    "p": "..\\Assets\\Textures\\BrokenTable2_Material001_Specular.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "BrokenTable2_Material001_Glossiness": {
+                    "p": "..\\Assets\\Textures\\BrokenTable2_Material001_Glossiness.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "fence_Material_Normal": {
+                    "p": "..\\Assets\\Textures\\fence_Material_Normal.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "fence2_Material_Normal": {
+                    "p": "..\\Assets\\Textures\\fence2_Material_Normal.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "fence3_Material_Normal": {
+                    "p": "..\\Assets\\Textures\\fence3_Material_Normal.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "fence_Material_Specular": {
+                    "p": "..\\Assets\\Textures\\fence_Material_Specular.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "fence2_Material_Specular": {
+                    "p": "..\\Assets\\Textures\\fence2_Material_Specular.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "fence3_Material_Specular": {
+                    "p": "..\\Assets\\Textures\\fence3_Material_Specular.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "fence_Material_Glossiness": {
+                    "p": "..\\Assets\\Textures\\fence_Material_Glossiness.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "fence2_Material_Glossiness": {
+                    "p": "..\\Assets\\Textures\\fence2_Material_Glossiness.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "fence3_Material_Glossiness": {
+                    "p": "..\\Assets\\Textures\\fence3_Material_Glossiness.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "ropewheel2_DefaultMaterial_Normal": {
+                    "p": "..\\Assets\\Textures\\ropewheel2_DefaultMaterial_Normal.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "ropewheel2_DefaultMaterial_Specular": {
+                    "p": "..\\Assets\\Textures\\ropewheel2_DefaultMaterial_Specular.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "ropewheel2_DefaultMaterial_Glossiness": {
+                    "p": "..\\Assets\\Textures\\ropewheel2_DefaultMaterial_Glossiness.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "rope_DefaultMaterial_Glossiness": {
+                    "p": "..\\Assets\\Textures\\rope_DefaultMaterial_Glossiness.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "rope_DefaultMaterial_Normal": {
+                    "p": "..\\Assets\\Textures\\rope_DefaultMaterial_Normal.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "rope_DefaultMaterial_Specular": {
+                    "p": "..\\Assets\\Textures\\rope_DefaultMaterial_Specular.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "ropewheelstand3_DefaultMaterial_Glossiness": {
+                    "p": "..\\Assets\\Textures\\ropewheelstand3_DefaultMaterial_Glossiness.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "ropewheelstand3_DefaultMaterial_Normal": {
+                    "p": "..\\Assets\\Textures\\ropewheelstand3_DefaultMaterial_Normal.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "ropewheelstand3_DefaultMaterial_Specular": {
+                    "p": "..\\Assets\\Textures\\ropewheelstand3_DefaultMaterial_Specular.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "pickaxe_Material_Normal": {
+                    "p": "..\\Assets\\Textures\\pickaxe_Material_Normal.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "pickaxe_Material_Specular": {
+                    "p": "..\\Assets\\Textures\\pickaxe_Material_Specular.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "pickaxe_Material_Glossiness": {
+                    "p": "..\\Assets\\Textures\\pickaxe_Material_Glossiness.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "Chair_DefaultMaterial_Glossiness": {
+                    "p": "..\\Assets\\Textures\\Chair_DefaultMaterial_Glossiness.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true,
+                    "Downsample": 1
+                },
+                "Chair_DefaultMaterial_Normal": {
+                    "p": "..\\Assets\\Textures\\Chair_DefaultMaterial_Normal.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true,
+                    "Downsample": 1
+                },
+                "Chair_DefaultMaterial_Specular": {
+                    "p": "..\\Assets\\Textures\\Chair_DefaultMaterial_Specular.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true,
+                    "Downsample": 1
+                },
+                "pickaxe2_Material_Glossiness": {
+                    "p": "..\\Assets\\Textures\\pickaxe2_Material_Glossiness.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "pickaxe2_Material_Normal": {
+                    "p": "..\\Assets\\Textures\\pickaxe2_Material_Normal.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "pickaxe2_Material_Specular": {
+                    "p": "..\\Assets\\Textures\\pickaxe2_Material_Specular.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "shovel_DefaultMaterial_Glossiness": {
+                    "p": "..\\Assets\\Textures\\shovel_DefaultMaterial_Glossiness.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "shovel_DefaultMaterial_Normal": {
+                    "p": "..\\Assets\\Textures\\shovel_DefaultMaterial_Normal.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "shovel_DefaultMaterial_Specular": {
+                    "p": "..\\Assets\\Textures\\shovel_DefaultMaterial_Specular.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "statueOfMaxwell_DefaultMaterial_Normal": {
+                    "p": "..\\Assets\\Textures\\statueOfMaxwell_DefaultMaterial_Normal.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "statueOfMaxwell_DefaultMaterial_Specular": {
+                    "p": "..\\Assets\\Textures\\statueOfMaxwell_DefaultMaterial_Specular.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true,
+                    "Downsample": 1
+                },
+                "statueOfMaxwell_DefaultMaterial_Glossiness": {
+                    "p": "..\\Assets\\Textures\\statueOfMaxwell_DefaultMaterial_Glossiness.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true,
+                    "Downsample": 1
+                },
+                "LockerDoor_Highligt_Specular": {
+                    "p": "..\\Assets\\Textures\\LockerDoor_Highligt_Specular.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true,
+                    "Downsample": 2
+                },
+                "Stalagmites_Large_1_Normal": {
+                    "p": "..\\Assets\\Textures\\Stalagmites_Large_1_Normal.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "Stalagmites_Large_2_Normal": {
+                    "p": "..\\Assets\\Textures\\Stalagmites_Large_2_Normal.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "Stalagmites_Medium_1_Normal": {
+                    "p": "..\\Assets\\Textures\\Stalagmites_Medium_1_Normal.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "Stalagmites_Medium_2_Normal": {
+                    "p": "..\\Assets\\Textures\\Stalagmites_Medium_2_Normal.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "Stalagmites_Small_1_Normal": {
+                    "p": "..\\Assets\\Textures\\Stalagmites_Small_1_Normal.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true,
+                    "Downsample": 1
+                },
+                "Stalagmites_Small_2_Normal": {
+                    "p": "..\\Assets\\Textures\\Stalagmites_Small_2_Normal.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true,
+                    "Downsample": 1
+                },
+                "Stalagmites_Large_1_Specular": {
+                    "p": "..\\Assets\\Textures\\Stalagmites_Large_1_Specular.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "Stalagmites_Large_2_Specular": {
+                    "p": "..\\Assets\\Textures\\Stalagmites_Large_2_Specular.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "Stalagmites_Medium_1_Specular": {
+                    "p": "..\\Assets\\Textures\\Stalagmites_Medium_1_Specular.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "Stalagmites_Medium_2_Specular": {
+                    "p": "..\\Assets\\Textures\\Stalagmites_Medium_2_Specular.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "Stalagmites_Small_1_Specular": {
+                    "p": "..\\Assets\\Textures\\Stalagmites_Small_1_Specular.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true,
+                    "Downsample": 1
+                },
+                "Stalagmites_Small_2_Specular": {
+                    "p": "..\\Assets\\Textures\\Stalagmites_Small_2_Specular.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true,
+                    "Downsample": 1
+                },
+                "Stalagmites_Large_1_Glossiness": {
+                    "p": "..\\Assets\\Textures\\Stalagmites_Large_1_Glossiness.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true,
+                    "Downsample": 1
+                },
+                "Stalagmites_Large_2_Glossiness": {
+                    "p": "..\\Assets\\Textures\\Stalagmites_Large_2_Glossiness.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true,
+                    "Downsample": 1
+                },
+                "Stalagmites_Medium_1_Glossiness": {
+                    "p": "..\\Assets\\Textures\\Stalagmites_Medium_1_Glossiness.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true,
+                    "Downsample": 1
+                },
+                "Stalagmites_Medium_2_Glossiness": {
+                    "p": "..\\Assets\\Textures\\Stalagmites_Medium_2_Glossiness.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true,
+                    "Downsample": 1
+                },
+                "Stalagmites_Small_1_Glossiness": {
+                    "p": "..\\Assets\\Textures\\Stalagmites_Small_1_Glossiness.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true,
+                    "Downsample": 1
+                },
+                "Stalagmites_Small_2_Glossiness": {
+                    "p": "..\\Assets\\Textures\\Stalagmites_Small_2_Glossiness.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true,
+                    "Downsample": 1
+                },
+                "Stalagmites_Large_1_Occlusion": {
+                    "p": "..\\Assets\\Textures\\Stalagmites_Large_1_Occlusion.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true,
+                    "Downsample": 1
+                },
+                "Stalagmites_Large_2_Occlusion": {
+                    "p": "..\\Assets\\Textures\\Stalagmites_Large_2_Occlusion.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true,
+                    "Downsample": 1
+                },
+                "Stalagmites_Medium_1_Occlusion": {
+                    "p": "..\\Assets\\Textures\\Stalagmites_Medium_1_Occlusion.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true,
+                    "Downsample": 1
+                },
+                "Stalagmites_Medium_2_Occlusion": {
+                    "p": "..\\Assets\\Textures\\Stalagmites_Medium_2_Occlusion.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true,
+                    "Downsample": 1
+                },
+                "Stalagmites_Small_1_Occlusion": {
+                    "p": "..\\Assets\\Textures\\Stalagmites_Small_1_Occlusion.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true,
+                    "Downsample": 1
+                },
+                "Stalagmites_Small_2_Occlusion": {
+                    "p": "..\\Assets\\Textures\\Stalagmites_Small_2_Occlusion.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true,
+                    "Downsample": 1
+                },
+                "OldLamp_Metal_Normal": {
+                    "p": "..\\Assets\\Textures\\OldLamp_Metal_Normal.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "OldLamp_Glass_Normal": {
+                    "p": "..\\Assets\\Textures\\OldLamp_Glass_Normal.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "OldLamp_Metal_Specular": {
+                    "p": "..\\Assets\\Textures\\OldLamp_Metal_Specular.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "OldLamp_Glass_Specular": {
+                    "p": "..\\Assets\\Textures\\OldLamp_Glass_Specular.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "OldLamp_Metal_Glossiness": {
+                    "p": "..\\Assets\\Textures\\OldLamp_Metal_Glossiness.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "OldLamp_Glass_Glossiness": {
+                    "p": "..\\Assets\\Textures\\OldLamp_Glass_Glossiness.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "OldLamp_Metal_Occlusion": {
+                    "p": "..\\Assets\\Textures\\OldLamp_Metal_Occlusion.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "OldLamp_Glass_Occlusion": {
+                    "p": "..\\Assets\\Textures\\OldLamp_Glass_Occlusion.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "Compass_SpecularMaterial_Normal": {
+                    "p": "..\\Assets\\Textures\\Compass_SpecularMaterial_Normal.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "Compass_SpecularMaterial_Specular": {
+                    "p": "..\\Assets\\Textures\\Compass_SpecularMaterial_Specular.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "Compass_SpecularMaterial_Glossiness": {
+                    "p": "..\\Assets\\Textures\\Compass_SpecularMaterial_Glossiness.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "Sniper_Diffuse": {
+                    "p": "..\\Assets\\Textures\\Sniper_Diffuse.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "Sniper_Normal": {
+                    "p": "..\\Assets\\Textures\\Sniper_Normal.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "Sniper_Specular": {
+                    "p": "..\\Assets\\Textures\\Sniper_Specular.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "Sniper_Glossiness": {
+                    "p": "..\\Assets\\Textures\\Sniper_Glossiness.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "Sniper_Occlusion": {
+                    "p": "..\\Assets\\Textures\\Sniper_Occlusion.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "SniperMagazine_Diffuse": {
+                    "p": "..\\Assets\\Textures\\SniperMagazine_Diffuse.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "SniperMagazine_Normal": {
+                    "p": "..\\Assets\\Textures\\SniperMagazine_Normal.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "SniperMagazine_Specular": {
+                    "p": "..\\Assets\\Textures\\SniperMagazine_Specular.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "SniperMagazine_Glossiness": {
+                    "p": "..\\Assets\\Textures\\SniperMagazine_Glossiness.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "SniperMagazine_Occlusion": {
+                    "p": "..\\Assets\\Textures\\SniperMagazine_Occlusion.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "Sniper Raw_Diffuse": {
+                    "p": "..\\Assets\\Textures\\Sniper Raw_Diffuse.png",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "Sniper Raw_Normal": {
+                    "p": "..\\Assets\\Textures\\Sniper Raw_Normal.png",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "Sniper Raw_Specular": {
+                    "p": "..\\Assets\\Textures\\Sniper Raw_Specular.png",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "Sniper Raw_Glossiness": {
+                    "p": "..\\Assets\\Textures\\Sniper Raw_Glossiness.png",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "Sniper Raw_Occlusion": {
+                    "p": "..\\Assets\\Textures\\Sniper Raw_Occlusion.png",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "SniperMagazine Raw_Diffuse": {
+                    "p": "..\\Assets\\Textures\\SniperMagazine Raw_Diffuse.png",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "SniperMagazine Raw_Normal": {
+                    "p": "..\\Assets\\Textures\\SniperMagazine Raw_Normal.png",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "SniperMagazine Raw_Specular": {
+                    "p": "..\\Assets\\Textures\\SniperMagazine Raw_Specular.png",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "SniperMagazine Raw_Glossiness": {
+                    "p": "..\\Assets\\Textures\\SniperMagazine Raw_Glossiness.png",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "SniperMagazine Raw_Occlusion": {
+                    "p": "..\\Assets\\Textures\\SniperMagazine Raw_Occlusion.png",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "Arcade_Diffuse": {
+                    "p": "..\\Assets\\Textures\\Arcade_Diffuse.png",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "Arcade_Normal": {
+                    "p": "..\\Assets\\Textures\\Arcade_Normal.png",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "Arcade_Specular": {
+                    "p": "..\\Assets\\Textures\\Arcade_Specular.png",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "Arcade_Glossiness": {
+                    "p": "..\\Assets\\Textures\\Arcade_Glossiness.png",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "Arcade_Ambient": {
+                    "p": "..\\Assets\\Textures\\Arcade_Ambient.png",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "LUT_Default": {
+                    "p": "..\\Assets\\Textures\\LUT_Default.dds",
+                    "t": "tex2d"
+                },
+                "LUT_Experimental": {
+                    "p": "..\\Assets\\Textures\\LUT_Experimental.dds",
+                    "t": "tex2d"
+                },
+                "LUT_Test": {
+                    "p": "..\\Assets\\Textures\\LUT_Test.dds",
+                    "t": "tex2d"
+                },
+                "LUT_HueShift": {
+                    "p": "..\\Assets\\Textures\\LUT_HueShift.dds",
+                    "t": "tex2d"
+                },
+                "ExampleFont": {
+                    "p": "..\\Assets\\Textures\\ExampleFont.png",
+                    "t": "tex2d"
+                },
+                "SimpleFont": {
+                    "p": "..\\Assets\\Textures\\SimpleFont.png",
+                    "t": "tex2d"
+                },
+                "RundownIndustrial": {
+                    "p": "..\\Assets\\Textures\\RundownIndustrialCubemap.png",
+                    "t": "texcube",
+                    "Format": "R8G8B8A8_UNORM",
+                    "Mipmapped": true
+                },
+                "SandstoneCity": {
+                    "p": "..\\Assets\\Textures\\SandstoneCityCubemap.png",
+                    "t": "texcube",
+                    "Format": "R8G8B8A8_UNORM",
+                    "Mipmapped": true
+                },
+                "MonkstownCastle": {
+                    "p": "..\\Assets\\Textures\\MonkstownCastleCubemap.png",
+                    "t": "texcube",
+                    "Format": "R8G8B8A8_UNORM",
+                    "Mipmapped": true
+                },
+                "AutumnForest": {
+                    "p": "..\\Assets\\Textures\\AutumnForestCubemap.png",
+                    "t": "texcube",
+                    "Format": "R8G8B8A8_UNORM",
+                    "Mipmapped": true
+                },
+                "BlankSkybox": {
+                    "p": "..\\Assets\\Textures\\BlankSkyboxCubemap.png",
+                    "t": "texcube",
+                    "Format": "R8G8B8A8_UNORM",
+                    "Mipmapped": true
+                },
+                "ParkTrail": {
+                    "p": "..\\Assets\\Textures\\ParkTrailCubemap.png",
+                    "t": "texcube",
+                    "Format": "R8G8B8A8_UNORM",
+                    "Mipmapped": true
+                },
+                "SuburbanNight": {
+                    "p": "..\\Assets\\Textures\\SuburbanNightCubemap.png",
+                    "t": "texcube",
+                    "Format": "R8G8B8A8_UNORM",
+                    "Mipmapped": true
+                },
+                "RooftopNight": {
+                    "p": "..\\Assets\\Textures\\RooftopNightCubemap.png",
+                    "t": "texcube",
+                    "Format": "R8G8B8A8_UNORM",
+                    "Mipmapped": true
+                },
+                "BlueGrotto": {
+                    "p": "..\\Assets\\Textures\\BlueGrottoCubemap.png",
+                    "t": "texcube",
+                    "Format": "R8G8B8A8_UNORM",
+                    "Mipmapped": true
+                },
+                "BurntWarehouse": {
+                    "p": "..\\Assets\\Textures\\BurntWarehouseCubemap.png",
+                    "t": "texcube",
+                    "Format": "R8G8B8A8_UNORM",
+                    "Mipmapped": true
+                },
+                "CanaryWharf": {
+                    "p": "..\\Assets\\Textures\\CanaryWharfCubemap.png",
+                    "t": "texcube",
+                    "Format": "R8G8B8A8_UNORM",
+                    "Mipmapped": true
+                },
+                "SandstoneCove": {
+                    "p": "..\\Assets\\Textures\\SandstoneCoveCubemap.png",
+                    "t": "texcube",
+                    "Format": "R8G8B8A8_UNORM",
+                    "Mipmapped": true
+                },
+                "HospitalRoom": {
+                    "p": "..\\Assets\\Textures\\HospitalRoomCubemap.png",
+                    "t": "texcube",
+                    "Format": "R8G8B8A8_UNORM",
+                    "Mipmapped": true
+                },
+                "WoodsRiverbank": {
+                    "p": "..\\Assets\\Textures\\WoodsRiverbankCubemap.png",
+                    "t": "texcube",
+                    "Format": "R8G8B8A8_UNORM",
+                    "Mipmapped": true
+                },
+                "WinterCityNight": {
+                    "p": "..\\Assets\\Textures\\WinterCityNightCubemap.png",
+                    "t": "texcube",
+                    "Format": "R8G8B8A8_UNORM",
+                    "Mipmapped": true
+                },
+                "IndustrialAlley": {
+                    "p": "..\\Assets\\Textures\\IndustrialAlleyCubemap.png",
+                    "t": "texcube",
+                    "Format": "R8G8B8A8_UNORM",
+                    "Mipmapped": true
+                },
+                "CaveWall": {
+                    "p": "..\\Assets\\Textures\\CaveWallCubemap.png",
+                    "t": "texcube",
+                    "Format": "R8G8B8A8_UNORM",
+                    "Mipmapped": true
+                },
+                "NeonCityNight": {
+                    "p": "..\\Assets\\Textures\\NeonCityNightCubemap.png",
+                    "t": "texcube",
+                    "Format": "R8G8B8A8_UNORM",
+                    "Mipmapped": true
+                },
+                "BarrenFieldHDR": {
+                    "p": "..\\Assets\\Textures\\BarrenFieldHDRCubemap.png",
+                    "t": "texcube",
+                    "Format": "R16G16B16A16_UNORM",
+                    "Mipmapped": true
+                }
+            }
+        },
+        "Shaders": {
+            "f": {
+                "Vertex": {
+                    "f": {},
+                    "a": {
+                        "VS_Geometry": {
+                            "p": "Vertex/VS_Geometry.hlsl",
+                            "t": "shader",
+                            "Format": "Vertex"
+                        },
+                        "VS_GeometryDistortion": {
+                            "p": "Vertex/VS_GeometryDistortion.hlsl",
+                            "t": "shader",
+                            "Format": "Vertex"
+                        },
+                        "VS_TextDefault": {
+                            "p": "Vertex/VS_TextDefault.hlsl",
+                            "t": "shader",
+                            "Format": "Vertex"
+                        },
+                        "VS_Depth": {
+                            "p": "Vertex/VS_Depth.hlsl",
+                            "t": "shader",
+                            "Format": "Vertex"
+                        },
+                        "VS_DepthDistortion": {
+                            "p": "Vertex/VS_DepthDistortion.hlsl",
+                            "t": "shader",
+                            "Format": "Vertex"
+                        },
+                        "VS_DepthCubemap": {
+                            "p": "Vertex/VS_DepthCubemap.hlsl",
+                            "t": "shader",
+                            "Format": "Vertex"
+                        },
+                        "VS_DepthDistortionCubemap": {
+                            "p": "Vertex/VS_DepthDistortionCubemap.hlsl",
+                            "t": "shader",
+                            "Format": "Vertex"
+                        },
+                        "VS_ScreenEffect": {
+                            "p": "Vertex/VS_ScreenEffect.hlsl",
+                            "t": "shader",
+                            "Format": "Vertex"
+                        },
+                        "VS_DebugDraw": {
+                            "p": "Vertex/VS_DebugDraw.hlsl",
+                            "t": "shader",
+                            "Format": "Vertex"
+                        },
+                        "VS_DebugDrawStrip": {
+                            "p": "Vertex/VS_DebugDrawStrip.hlsl",
+                            "t": "shader",
+                            "Format": "Vertex"
+                        },
+                        "VS_DebugDrawBezier": {
+                            "p": "Vertex/VS_DebugDrawBezier.hlsl",
+                            "t": "shader",
+                            "Format": "Vertex"
+                        },
+                        "VS_DebugDrawTri": {
+                            "p": "Vertex/VS_DebugDrawTri.hlsl",
+                            "t": "shader",
+                            "Format": "Vertex"
+                        },
+                        "VS_DebugDrawSprite": {
+                            "p": "Vertex/VS_DebugDrawSprite.hlsl",
+                            "t": "shader",
+                            "Format": "Vertex"
+                        },
+                        "VS_DebugDrawMesh": {
+                            "p": "Vertex/VS_DebugDrawMesh.hlsl",
+                            "t": "shader",
+                            "Format": "Vertex"
+                        }
+                    }
+                },
+                "Geometry": {
+                    "f": {},
+                    "a": {
+                        "GS_Billboard": {
+                            "p": "Geometry/GS_Billboard.hlsl",
+                            "t": "shader",
+                            "Format": "Geometry"
+                        },
+                        "GS_DepthCubemap": {
+                            "p": "Geometry/GS_DepthCubemap.hlsl",
+                            "t": "shader",
+                            "Format": "Geometry"
+                        },
+                        "GS_DebugLine": {
+                            "p": "Geometry/GS_DebugLine.hlsl",
+                            "t": "shader",
+                            "Format": "Geometry"
+                        },
+                        "GS_DebugDrawSprite": {
+                            "p": "Geometry/GS_DebugDrawSprite.hlsl",
+                            "t": "shader",
+                            "Format": "Geometry"
+                        }
+                    }
+                },
+                "Pixel": {
+                    "f": {},
+                    "a": {
+                        "PS_Geometry": {
+                            "p": "Pixel/PS_Geometry.hlsl",
+                            "t": "shader",
+                            "Format": "Pixel"
+                        },
+                        "PS_GeometryMetallic": {
+                            "p": "Pixel/PS_GeometryMetallic.hlsl",
+                            "t": "shader",
+                            "Format": "Pixel"
+                        },
+                        "PS_TriPlanar": {
+                            "p": "Pixel/PS_TriPlanar.hlsl",
+                            "t": "shader",
+                            "Format": "Pixel"
+                        },
+                        "PS_Cel": {
+                            "p": "Pixel/PS_Cel.hlsl",
+                            "t": "shader",
+                            "Format": "Pixel"
+                        },
+                        "PS_ReflectionProbe": {
+                            "p": "Pixel/PS_ReflectionProbe.hlsl",
+                            "t": "shader",
+                            "Format": "Pixel"
+                        },
+                        "PS_Static": {
+                            "p": "Pixel/PS_Static.hlsl",
+                            "t": "shader",
+                            "Format": "Pixel"
+                        },
+                        "PS_Transparent": {
+                            "p": "Pixel/PS_Transparent.hlsl",
+                            "t": "shader",
+                            "Format": "Pixel"
+                        },
+                        "PS_TextDefault": {
+                            "p": "Pixel/PS_TextDefault.hlsl",
+                            "t": "shader",
+                            "Format": "Pixel"
+                        },
+                        "PS_DepthCubemap": {
+                            "p": "Pixel/PS_DepthCubemap.hlsl",
+                            "t": "shader",
+                            "Format": "Pixel"
+                        },
+                        "PS_SkyboxDefault": {
+                            "p": "Pixel/PS_SkyboxDefault.hlsl",
+                            "t": "shader",
+                            "Format": "Pixel"
+                        },
+                        "PS_SkyboxSolidColor": {
+                            "p": "Pixel/PS_SkyboxSolidColor.hlsl",
+                            "t": "shader",
+                            "Format": "Pixel"
+                        },
+                        "PS_SkyboxNormal": {
+                            "p": "Pixel/PS_SkyboxNormal.hlsl",
+                            "t": "shader",
+                            "Format": "Pixel"
+                        },
+                        "PS_SkyboxEnvironment": {
+                            "p": "Pixel/PS_SkyboxEnvironment.hlsl",
+                            "t": "shader",
+                            "Format": "Pixel"
+                        },
+                        "PS_ScreenEffectFog": {
+                            "p": "Pixel/PS_ScreenEffectFog.hlsl",
+                            "t": "shader",
+                            "Format": "Pixel"
+                        },
+                        "PS_SelectionOutline": {
+                            "p": "Pixel/PS_SelectionOutline.hlsl",
+                            "t": "shader",
+                            "Format": "Pixel"
+                        },
+                        "PS_DebugDraw": {
+                            "p": "Pixel/PS_DebugDraw.hlsl",
+                            "t": "shader",
+                            "Format": "Pixel"
+                        },
+                        "PS_DebugDrawSprite": {
+                            "p": "Pixel/PS_DebugDrawSprite.hlsl",
+                            "t": "shader",
+                            "Format": "Pixel"
+                        },
+                        "PS_DebugViewPosition": {
+                            "p": "Pixel/PS_DebugViewPosition.hlsl",
+                            "t": "shader",
+                            "Format": "Pixel"
+                        },
+                        "PS_DebugViewNormal": {
+                            "p": "Pixel/PS_DebugViewNormal.hlsl",
+                            "t": "shader",
+                            "Format": "Pixel"
+                        },
+                        "PS_DebugViewAmbient": {
+                            "p": "Pixel/PS_DebugViewAmbient.hlsl",
+                            "t": "shader",
+                            "Format": "Pixel"
+                        },
+                        "PS_DebugViewDiffuse": {
+                            "p": "Pixel/PS_DebugViewDiffuse.hlsl",
+                            "t": "shader",
+                            "Format": "Pixel"
+                        },
+                        "PS_DebugViewDepth": {
+                            "p": "Pixel/PS_DebugViewDepth.hlsl",
+                            "t": "shader",
+                            "Format": "Pixel"
+                        },
+                        "PS_DebugViewShadow": {
+                            "p": "Pixel/PS_DebugViewShadow.hlsl",
+                            "t": "shader",
+                            "Format": "Pixel"
+                        },
+                        "PS_DebugViewReflection": {
+                            "p": "Pixel/PS_DebugViewReflection.hlsl",
+                            "t": "shader",
+                            "Format": "Pixel"
+                        },
+                        "PS_DebugViewReflectivity": {
+                            "p": "Pixel/PS_DebugViewReflectivity.hlsl",
+                            "t": "shader",
+                            "Format": "Pixel"
+                        },
+                        "PS_DebugViewSpecular": {
+                            "p": "Pixel/PS_DebugViewSpecular.hlsl",
+                            "t": "shader",
+                            "Format": "Pixel"
+                        },
+                        "PS_DebugViewSpecStr": {
+                            "p": "Pixel/PS_DebugViewSpecStr.hlsl",
+                            "t": "shader",
+                            "Format": "Pixel"
+                        },
+                        "PS_DebugViewUVCoords": {
+                            "p": "Pixel/PS_DebugViewUVCoords.hlsl",
+                            "t": "shader",
+                            "Format": "Pixel"
+                        },
+                        "PS_DebugViewOcclusion": {
+                            "p": "Pixel/PS_DebugViewOcclusion.hlsl",
+                            "t": "shader",
+                            "Format": "Pixel"
+                        },
+                        "PS_DebugViewLightTiles": {
+                            "p": "Pixel/PS_DebugViewLightTiles.hlsl",
+                            "t": "shader",
+                            "Format": "Pixel"
+                        },
+                        "PS_DebugViewOverdraw": {
+                            "p": "Pixel/PS_DebugViewOverdraw.hlsl",
+                            "t": "shader",
+                            "Format": "Pixel"
+                        }
+                    }
+                },
+                "Compute": {
+                    "f": {},
+                    "a": {
+                        "CS_BlurHorizontalFX": {
+                            "p": "Compute/CS_BlurHorizontalFX.hlsl",
+                            "t": "shader",
+                            "Format": "Compute"
+                        },
+                        "CS_BlurVerticalFX": {
+                            "p": "Compute/CS_BlurVerticalFX.hlsl",
+                            "t": "shader",
+                            "Format": "Compute"
+                        },
+                        "CS_BlurHorizontalEmission": {
+                            "p": "Compute/CS_BlurHorizontalEmission.hlsl",
+                            "t": "shader",
+                            "Format": "Compute"
+                        },
+                        "CS_BlurVerticalEmission": {
+                            "p": "Compute/CS_BlurVerticalEmission.hlsl",
+                            "t": "shader",
+                            "Format": "Compute"
+                        },
+                        "CS_Downsample": {
+                            "p": "Compute/CS_Downsample.hlsl",
+                            "t": "shader",
+                            "Format": "Compute"
+                        },
+                        "CS_DownsampleCheap": {
+                            "p": "Compute/CS_DownsampleCheap.hlsl",
+                            "t": "shader",
+                            "Format": "Compute"
+                        },
+                        "CS_DownsampleHalf": {
+                            "p": "Compute/CS_DownsampleHalf.hlsl",
+                            "t": "shader",
+                            "Format": "Compute"
+                        },
+                        "CS_MergeEmissionMips": {
+                            "p": "Compute/CS_MergeEmissionMips.hlsl",
+                            "t": "shader",
+                            "Format": "Compute"
+                        },
+                        "CS_ColorLUT": {
+                            "p": "Compute/CS_ColorLUT.hlsl",
+                            "t": "shader",
+                            "Format": "Compute"
+                        },
+                        "CS_FogFX": {
+                            "p": "Compute/CS_FogFX.hlsl",
+                            "t": "shader",
+                            "Format": "Compute"
+                        },
+                        "CS_CombineFX": {
+                            "p": "Compute/CS_CombineFX.hlsl",
+                            "t": "shader",
+                            "Format": "Compute"
+                        },
+                        "CS_Upsample": {
+                            "p": "Compute/CS_Upsample.hlsl",
+                            "t": "shader",
+                            "Format": "Compute"
+                        },
+                        "CS_UpsampleDouble": {
+                            "p": "Compute/CS_UpsampleDouble.hlsl",
+                            "t": "shader",
+                            "Format": "Compute"
+                        },
+                        "CS_BlurHorizontalDof": {
+                            "p": "Compute/CS_BlurHorizontalDof.hlsl",
+                            "t": "shader",
+                            "Format": "Compute"
+                        },
+                        "CS_BlurVerticalDof": {
+                            "p": "Compute/CS_BlurVerticalDof.hlsl",
+                            "t": "shader",
+                            "Format": "Compute"
+                        },
+                        "CS_CircleOfConfusionFX": {
+                            "p": "Compute/CS_CircleOfConfusionFX.hlsl",
+                            "t": "shader",
+                            "Format": "Compute"
+                        },
+                        "CS_CombineDepthOfFieldFX": {
+                            "p": "Compute/CS_CombineDepthOfFieldFX.hlsl",
+                            "t": "shader",
+                            "Format": "Compute"
+                        },
+                        "CS_BlurHorizontalOutline": {
+                            "p": "Compute/CS_BlurHorizontalOutline.hlsl",
+                            "t": "shader",
+                            "Format": "Compute"
+                        },
+                        "CS_BlurVerticalOutline": {
+                            "p": "Compute/CS_BlurVerticalOutline.hlsl",
+                            "t": "shader",
+                            "Format": "Compute"
+                        },
+                        "CS_CombineOutlineFX": {
+                            "p": "Compute/CS_CombineOutlineFX.hlsl",
+                            "t": "shader",
+                            "Format": "Compute"
+                        }
+                    }
+                },
+                "Hull": {
+                    "f": {},
+                    "a": {
+                        "HS_DebugBezier": {
+                            "p": "Hull/HS_DebugBezier.hlsl",
+                            "t": "shader",
+                            "Format": "Hull"
+                        }
+                    }
+                },
+                "Domain": {
+                    "f": {},
+                    "a": {
+                        "DS_DebugBezier": {
+                            "p": "Domain/DS_DebugBezier.hlsl",
+                            "t": "shader",
+                            "Format": "Domain"
+                        }
+                    }
+                }
+            },
+            "a": {}
+        },
+        "Fonts": {
             "f": {},
             "a": {
-                "sponza_CurtainPoles": {
-                    "n": "sponza\\sponza_CurtainPoles",
-                    "t": "mesh"
+                "DefaultFont": {
+                    "p": "..\\Assets\\Fonts\\DefaultFont.atlas",
+                    "t": "atlas"
                 },
-                "sponza_CurtainsBlue": {
-                    "n": "sponza\\sponza_CurtainsBlue",
-                    "t": "mesh"
-                },
-                "sponza_CurtainsGreen": {
-                    "n": "sponza\\sponza_CurtainsGreen",
-                    "t": "mesh"
-                },
-                "sponza_CurtainsRed": {
-                    "n": "sponza\\sponza_CurtainsRed",
-                    "t": "mesh"
-                },
-                "sponza_EmptyFrame": {
-                    "n": "sponza\\sponza_EmptyFrame",
-                    "t": "mesh"
-                },
-                "sponza_Floor": {
-                    "n": "sponza\\sponza_Floor",
-                    "t": "mesh"
-                },
-                "sponza_FountainChains": {
-                    "n": "sponza\\sponza_FountainChains",
-                    "t": "mesh"
-                },
-                "sponza_FountainsLarge": {
-                    "n": "sponza\\sponza_FountainsLarge",
-                    "t": "mesh"
-                },
-                "sponza_HangingClothBlue": {
-                    "n": "sponza\\sponza_HangingClothBlue",
-                    "t": "mesh"
-                },
-                "sponza_HangingClothGreen": {
-                    "n": "sponza\\sponza_HangingClothGreen",
-                    "t": "mesh"
-                },
-                "sponza_HangingClothRed": {
-                    "n": "sponza\\sponza_HangingClothRed",
-                    "t": "mesh"
-                },
-                "sponza_HangingFountains": {
-                    "n": "sponza\\sponza_HangingFountains",
-                    "t": "mesh"
-                },
-                "sponza_InnerArches": {
-                    "n": "sponza\\sponza_InnerArches",
-                    "t": "mesh"
-                },
-                "sponza_LionFrames": {
-                    "n": "sponza\\sponza_LionFrames",
-                    "t": "mesh"
-                },
-                "sponza_LionHeads": {
-                    "n": "sponza\\sponza_LionHeads",
-                    "t": "mesh"
-                },
-                "sponza_OuterArches": {
-                    "n": "sponza\\sponza_OuterArches",
-                    "t": "mesh"
-                },
-                "sponza_OuterWall": {
-                    "n": "sponza\\sponza_OuterWall",
-                    "t": "mesh"
-                },
-                "sponza_PillarFoliage": {
-                    "n": "sponza\\sponza_PillarFoliage",
-                    "t": "mesh"
-                },
-                "sponza_PillarsLower": {
-                    "n": "sponza\\sponza_PillarsLower",
-                    "t": "mesh"
-                },
-                "sponza_PillarsUpper": {
-                    "n": "sponza\\sponza_PillarsUpper",
-                    "t": "mesh"
-                },
-                "sponza_PillarsUpperSquare": {
-                    "n": "sponza\\sponza_PillarsUpperSquare",
-                    "t": "mesh"
-                },
-                "sponza_Roof": {
-                    "n": "sponza\\sponza_Roof",
-                    "t": "mesh"
-                },
-                "sponza_SmallPots": {
-                    "n": "sponza\\sponza_SmallPots",
-                    "t": "mesh"
-                },
-                "sponza_SmallPotsFoliage": {
-                    "n": "sponza\\sponza_SmallPotsFoliage",
-                    "t": "mesh"
-                },
-                "sponza_WindowsDoors": {
-                    "n": "sponza\\sponza_WindowsDoors",
-                    "t": "mesh"
+                "SimpleFont": {
+                    "p": "..\\Assets\\Fonts\\SimpleFont.atlas",
+                    "t": "atlas"
                 }
             }
         }
     },
-    "a": {
-        "Error": {
-            "n": "Error",
-            "t": "mesh"
-        },
-        "Fallback": {
-            "n": "Fallback",
-            "t": "mesh"
-        },
-        "Cube": {
-            "n": "Cube",
-            "t": "mesh"
-        },
-        "Plane": {
-            "n": "Plane",
-            "t": "mesh"
-        },
-        "SniperBody": {
-            "n": "SniperBody",
-            "t": "mesh"
-        },
-        "SniperBolt": {
-            "n": "SniperBolt",
-            "t": "mesh"
-        },
-        "SniperTrigger": {
-            "n": "SniperTrigger",
-            "t": "mesh"
-        },
-        "SniperMagazine": {
-            "n": "SniperMagazine",
-            "t": "mesh"
-        },
-        "Arcade": {
-            "n": "Arcade",
-            "t": "mesh"
-        },
-        "GraniteRock": {
-            "n": "GraniteRock",
-            "t": "mesh"
-        },
-        "DecimatedMan": {
-            "n": "DecimatedMan",
-            "t": "mesh"
-        },
-        "Support_Beam": {
-            "n": "Support_Beam",
-            "t": "mesh"
-        },
-        "Camera": {
-            "n": "Camera",
-            "t": "mesh"
-        },
-        "FlashlightBody": {
-            "n": "FlashlightBody",
-            "t": "mesh"
-        },
-        "FlashlightLever": {
-            "n": "FlashlightLever",
-            "t": "mesh"
-        },
-        "Cave_Wall": {
-            "n": "Cave_Wall",
-            "t": "mesh"
-        },
-        "SupportBeams": {
-            "n": "SupportBeams",
-            "t": "mesh"
-        },
-        "Rails_Straight_0": {
-            "n": "Rails_Straight_0",
-            "t": "mesh"
-        },
-        "Rails_Straight_1": {
-            "n": "Rails_Straight_1",
-            "t": "mesh"
-        },
-        "Rails_Straight_2": {
-            "n": "Rails_Straight_2",
-            "t": "mesh"
-        },
-        "Rails_Straight_3": {
-            "n": "Rails_Straight_3",
-            "t": "mesh"
-        },
-        "Rails_Straight_4": {
-            "n": "Rails_Straight_4",
-            "t": "mesh"
-        },
-        "Rails_Straight_5": {
-            "n": "Rails_Straight_5",
-            "t": "mesh"
-        },
-        "Rails_Straight_6": {
-            "n": "Rails_Straight_6",
-            "t": "mesh"
-        },
-        "Rails_Straight_7": {
-            "n": "Rails_Straight_7",
-            "t": "mesh"
-        },
-        "Rails_Straight_8": {
-            "n": "Rails_Straight_8",
-            "t": "mesh"
-        },
-        "Rails_Turn_0": {
-            "n": "Rails_Turn_0",
-            "t": "mesh"
-        },
-        "Rails_Turn_1": {
-            "n": "Rails_Turn_1",
-            "t": "mesh"
-        },
-        "Rails_Turn_2": {
-            "n": "Rails_Turn_2",
-            "t": "mesh"
-        },
-        "Rails_Turn_3": {
-            "n": "Rails_Turn_3",
-            "t": "mesh"
-        },
-        "Rails_Turn_4": {
-            "n": "Rails_Turn_4",
-            "t": "mesh"
-        },
-        "Rails_Turn_5": {
-            "n": "Rails_Turn_5",
-            "t": "mesh"
-        },
-        "Rails_End_0": {
-            "n": "Rails_End_0",
-            "t": "mesh"
-        },
-        "Rails_End_1": {
-            "n": "Rails_End_1",
-            "t": "mesh"
-        },
-        "Minecart": {
-            "n": "Minecart",
-            "t": "mesh"
-        },
-        "MineSection": {
-            "n": "MineSection",
-            "t": "mesh"
-        },
-        "pickaxe": {
-            "n": "pickaxe",
-            "t": "mesh"
-        },
-        "brokenfenceotherUV": {
-            "n": "brokenfenceotherUV",
-            "t": "mesh"
-        },
-        "Barrel2": {
-            "n": "Barrel2",
-            "t": "mesh"
-        },
-        "dynamitebox": {
-            "n": "dynamitebox",
-            "t": "mesh"
-        },
-        "dynamitebundle": {
-            "n": "dynamitebundle",
-            "t": "mesh"
-        },
-        "multipledynamite": {
-            "n": "multipledynamite",
-            "t": "mesh"
-        },
-        "lockerDoor": {
-            "n": "lockerDoor",
-            "t": "mesh"
-        },
-        "locker": {
-            "n": "locker",
-            "t": "mesh"
-        },
-        "singledynamite2": {
-            "n": "singledynamite2",
-            "t": "mesh"
-        },
-        "BrokenTable2": {
-            "n": "BrokenTable2",
-            "t": "mesh"
-        },
-        "fence2": {
-            "n": "fence2",
-            "t": "mesh"
-        },
-        "ropewheelstand3": {
-            "n": "ropewheelstand3",
-            "t": "mesh"
-        },
-        "ropewheel2": {
-            "n": "ropewheel2",
-            "t": "mesh"
-        },
-        "fence3": {
-            "n": "fence3",
-            "t": "mesh"
-        },
-        "minesign2legsflipped": {
-            "n": "minesign2legsflipped",
-            "t": "mesh"
-        },
-        "minesign2legs": {
-            "n": "minesign2legs",
-            "t": "mesh"
-        },
-        "pickaxe2": {
-            "n": "pickaxe2",
-            "t": "mesh"
-        },
-        "mushroom": {
-            "n": "mushroom",
-            "t": "mesh"
-        },
-        "Breadcrumb": {
-            "n": "Breadcrumb",
-            "t": "mesh"
-        },
-        "Breadcrumb_Collection": {
-            "n": "Breadcrumb_Collection",
-            "t": "mesh"
-        },
-        "GenericPicture": {
-            "n": "GenericPicture",
-            "t": "mesh"
-        },
-        "PileOfRocks": {
-            "n": "PileOfRocks",
-            "t": "mesh"
-        },
-        "SmallPileOfRocks": {
-            "n": "SmallPileOfRocks",
-            "t": "mesh"
-        },
-        "Chair": {
-            "n": "Chair",
-            "t": "mesh"
-        },
-        "shovel": {
-            "n": "shovel",
-            "t": "mesh"
-        },
-        "statueOfMaxwell": {
-            "n": "statueOfMaxwell",
-            "t": "mesh"
-        },
-        "Picture_part1": {
-            "n": "Picture_part1",
-            "t": "mesh"
-        },
-        "Picture_part2": {
-            "n": "Picture_part2",
-            "t": "mesh"
-        },
-        "Picture_part3": {
-            "n": "Picture_part3",
-            "t": "mesh"
-        },
-        "Picture_part4": {
-            "n": "Picture_part4",
-            "t": "mesh"
-        },
-        "Picture_part5": {
-            "n": "Picture_part5",
-            "t": "mesh"
-        },
-        "Stalagmites_Large_1": {
-            "n": "Stalagmites_Large_1",
-            "t": "mesh"
-        },
-        "Stalagmites_Large_2": {
-            "n": "Stalagmites_Large_2",
-            "t": "mesh"
-        },
-        "Stalagmites_Medium_1": {
-            "n": "Stalagmites_Medium_1",
-            "t": "mesh"
-        },
-        "Stalagmites_Medium_2": {
-            "n": "Stalagmites_Medium_2",
-            "t": "mesh"
-        },
-        "Stalagmites_Small_1": {
-            "n": "Stalagmites_Small_1",
-            "t": "mesh"
-        },
-        "Stalagmites_Small_2": {
-            "n": "Stalagmites_Small_2",
-            "t": "mesh"
-        },
-        "LightButton1": {
-            "n": "LightButton1",
-            "t": "mesh"
-        },
-        "Barrel": {
-            "n": "Barrel",
-            "t": "mesh"
-        },
-        "OldLamp_Metal": {
-            "n": "OldLamp_Metal",
-            "t": "mesh"
-        },
-        "OldLamp_Glass": {
-            "n": "OldLamp_Glass",
-            "t": "mesh"
-        },
-        "CompassFlipped": {
-            "n": "CompassFlipped",
-            "t": "mesh"
-        },
-        "CompassNeedle": {
-            "n": "CompassNeedle",
-            "t": "mesh"
-        },
-        "cave_map_small_000": {
-            "n": "cave_map_small_000",
-            "t": "mesh"
-        },
-        "cave_map_small_001": {
-            "n": "cave_map_small_001",
-            "t": "mesh"
-        },
-        "cave_map_small_002": {
-            "n": "cave_map_small_002",
-            "t": "mesh"
-        },
-        "cave_map_small_003": {
-            "n": "cave_map_small_003",
-            "t": "mesh"
-        },
-        "cave_map_small_004": {
-            "n": "cave_map_small_004",
-            "t": "mesh"
-        },
-        "cave_map_small_005": {
-            "n": "cave_map_small_005",
-            "t": "mesh"
-        },
-        "cave_map_small_006": {
-            "n": "cave_map_small_006",
-            "t": "mesh"
-        },
-        "cave_map_small_007": {
-            "n": "cave_map_small_007",
-            "t": "mesh"
-        },
-        "cave_map_small_008": {
-            "n": "cave_map_small_008",
-            "t": "mesh"
-        },
-        "cave_map_small_009": {
-            "n": "cave_map_small_009",
-            "t": "mesh"
-        },
-        "cave_map_small_010": {
-            "n": "cave_map_small_010",
-            "t": "mesh"
-        },
-        "cave_map_small_011": {
-            "n": "cave_map_small_011",
-            "t": "mesh"
-        },
-        "cave_map_small_012": {
-            "n": "cave_map_small_012",
-            "t": "mesh"
-        },
-        "cave_map_small_013": {
-            "n": "cave_map_small_013",
-            "t": "mesh"
-        },
-        "cave_map_small_014": {
-            "n": "cave_map_small_014",
-            "t": "mesh"
-        },
-        "cave_map_small_015": {
-            "n": "cave_map_small_015",
-            "t": "mesh"
-        },
-        "cave_map_small_016": {
-            "n": "cave_map_small_016",
-            "t": "mesh"
-        },
-        "cave_map_small_017": {
-            "n": "cave_map_small_017",
-            "t": "mesh"
-        },
-        "cave_map_small_018": {
-            "n": "cave_map_small_018",
-            "t": "mesh"
-        },
-        "cave_map_small_019": {
-            "n": "cave_map_small_019",
-            "t": "mesh"
-        },
-        "cave_map_small_020": {
-            "n": "cave_map_small_020",
-            "t": "mesh"
-        },
-        "cave_map_small_021": {
-            "n": "cave_map_small_021",
-            "t": "mesh"
-        },
-        "cave_map_small_022": {
-            "n": "cave_map_small_022",
-            "t": "mesh"
-        },
-        "cave_map_small_023": {
-            "n": "cave_map_small_023",
-            "t": "mesh"
-        },
-        "cave_map_small_024": {
-            "n": "cave_map_small_024",
-            "t": "mesh"
-        },
-        "cave_map_small_025": {
-            "n": "cave_map_small_025",
-            "t": "mesh"
-        },
-        "cave_map_small_026": {
-            "n": "cave_map_small_026",
-            "t": "mesh"
-        },
-        "cave_map_small_027": {
-            "n": "cave_map_small_027",
-            "t": "mesh"
-        },
-        "cave_map_small_028": {
-            "n": "cave_map_small_028",
-            "t": "mesh"
-        },
-        "cave_map_small_029": {
-            "n": "cave_map_small_029",
-            "t": "mesh"
-        },
-        "cave_map_small_030": {
-            "n": "cave_map_small_030",
-            "t": "mesh"
-        },
-        "cave_map_small_031": {
-            "n": "cave_map_small_031",
-            "t": "mesh"
-        },
-        "cave_map_small_032": {
-            "n": "cave_map_small_032",
-            "t": "mesh"
-        },
-        "cave_map_small_033": {
-            "n": "cave_map_small_033",
-            "t": "mesh"
-        },
-        "cave_map_large_000": {
-            "n": "cave_map_large_000",
-            "t": "mesh"
-        },
-        "cave_map_large_001": {
-            "n": "cave_map_large_001",
-            "t": "mesh"
-        },
-        "cave_map_large_002": {
-            "n": "cave_map_large_002",
-            "t": "mesh"
-        },
-        "cave_map_large_003": {
-            "n": "cave_map_large_003",
-            "t": "mesh"
-        },
-        "cave_map_large_004": {
-            "n": "cave_map_large_004",
-            "t": "mesh"
-        },
-        "cave_map_large_005": {
-            "n": "cave_map_large_005",
-            "t": "mesh"
-        },
-        "cave_map_large_006": {
-            "n": "cave_map_large_006",
-            "t": "mesh"
-        },
-        "cave_map_large_007": {
-            "n": "cave_map_large_007",
-            "t": "mesh"
-        },
-        "cave_map_large_008": {
-            "n": "cave_map_large_008",
-            "t": "mesh"
-        },
-        "cave_map_large_009": {
-            "n": "cave_map_large_009",
-            "t": "mesh"
-        },
-        "cave_map_large_010": {
-            "n": "cave_map_large_010",
-            "t": "mesh"
-        },
-        "cave_map_large_011": {
-            "n": "cave_map_large_011",
-            "t": "mesh"
-        },
-        "cave_map_large_012": {
-            "n": "cave_map_large_012",
-            "t": "mesh"
-        },
-        "cave_map_large_013": {
-            "n": "cave_map_large_013",
-            "t": "mesh"
-        },
-        "cave_map_large_014": {
-            "n": "cave_map_large_014",
-            "t": "mesh"
-        },
-        "Maxwell": {
-            "n": "Maxwell",
-            "t": "mesh",
-            "Debug": true
-        },
-        "Whiskers": {
-            "n": "Whiskers",
-            "t": "mesh",
-            "Debug": true
-        },
-        "Character1": {
-            "n": "Character1",
-            "t": "mesh",
-            "Debug": true
-        },
-        "Sphere": {
-            "n": "Sphere",
-            "t": "mesh",
-            "Debug": true
-        },
-        "HighPolySphere": {
-            "n": "HighPolySphere",
-            "t": "mesh",
-            "Debug": true
-        },
-        "IsoSphereSmooth": {
-            "n": "IsoSphereSmooth",
-            "t": "mesh",
-            "Debug": true
-        },
-        "WireframeCube": {
-            "n": "WireframeCube",
-            "t": "mesh",
-            "Debug": true
-        },
-        "WireframeSphere": {
-            "n": "WireframeSphere",
-            "t": "mesh",
-            "Debug": true
-        },
-        "WireframeCylinder": {
-            "n": "WireframeCylinder",
-            "t": "mesh",
-            "Debug": true
-        },
-        "WireframeCapsule": {
-            "n": "WireframeCapsule",
-            "t": "mesh",
-            "Debug": true
-        },
-        "HeightMapExample": {
-            "n": "HeightMapExample",
-            "t": "mesh",
-            "Debug": true
-        },
-        "TranslationGizmo": {
-            "n": "TranslationGizmo",
-            "t": "mesh",
-            "Debug": true
-        },
-        "RotationGizmo": {
-            "n": "RotationGizmo",
-            "t": "mesh",
-            "Debug": true
-        },
-        "ScalingGizmo": {
-            "n": "ScalingGizmo",
-            "t": "mesh",
-            "Debug": true
-        },
-        "Cornell": {
-            "n": "Cornell",
-            "t": "mesh",
-            "Debug": true
-        }
-    }
+    "a": {}
 }

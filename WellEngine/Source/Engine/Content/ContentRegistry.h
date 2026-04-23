@@ -15,22 +15,50 @@ namespace WellEngine
 	{
 		static const char *ASSET_TAG	= "a";
 		static const char *FOLDER_TAG	= "f";
-		static const char *NAME_TAG		= "n";
+		static const char *PATH_TAG		= "p";
 		static const char *TYPE_TAG		= "t";
 	}
+
+	enum class NameConflictAction : uint8_t
+	{
+		Fail = 0,
+		Override = 1,
+		Rename
+	};
+
+	enum class RegistryFailState : uint8_t
+	{
+		None = 0,
+
+		RegistryNotOpen,
+		DirNotFound,
+		AssetNotFound,
+		NameConflict,
+		InvalidPath,
+		InvalidName,
+		JsonParseError,
+		IOError,
+	};
 
 	class ContentRegistry
 	{
 	private:
 		std::unique_ptr<json::Document> _registryDoc;
-
+		RegistryFailState _failState = RegistryFailState::None;
 		bool _dirty = false;
+
+		// TODO: Add working directory memory, for more efficient internal navigation
 
 
 		ContentRegistry() = default;
 
 		[[nodiscard]] bool InitDir(const std::vector<std::string> &folderChain, json::Value **outFolder = nullptr);
 		[[nodiscard]] bool InitDir(const std::string &dir, json::Value **outFolder = nullptr);
+
+		[[nodiscard]] json::Value *NavToFolder(const std::vector<std::string> &folderChain);
+		[[nodiscard]] json::Value *NavToFolder(const std::string &path);
+
+		[[nodiscard]] const std::string &IterateName(const json::Value &folderAssets, const std::string &name);
 
 	public:
 		~ContentRegistry();
@@ -57,6 +85,7 @@ namespace WellEngine
 		[[nodiscard]] bool SaveRegistry();
 		void CloseRegistry();
 
+		[[nodiscard]] RegistryFailState GetFailure() const { return _failState; }
 		[[nodiscard]] bool IsOpen() const { return _registryDoc != nullptr; }
 		[[nodiscard]] bool IsDirty() const { return _dirty; }
 
@@ -64,11 +93,10 @@ namespace WellEngine
 		[[nodiscard]] json::Document *GetDoc();
 		[[nodiscard]] json::Document::AllocatorType *GetDocAlloc();
 
-
 		// Read
-
+		[[nodiscard]] json::Value *GetAsset(const std::string &path);
 
 		// Write
-		[[nodiscard]] bool AddAssetToRegistry(const std::string &path, json::Value &obj, bool override = false);
+		[[nodiscard]] bool AddAsset(const std::string &path, json::Value &obj, NameConflictAction conflictAction = NameConflictAction::Fail);
 	};
 }
