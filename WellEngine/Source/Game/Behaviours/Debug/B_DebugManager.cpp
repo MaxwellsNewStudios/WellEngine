@@ -114,7 +114,6 @@ bool B_DebugManager::Update(TimeUtils &time, const Input &input)
 {
 	Scene *scene = GetScene();
 	SceneHolder *sceneHolder = scene->GetSceneHolder();
-	std::vector<std::unique_ptr<Entity>> *globalEntities = scene->GetGlobalEntities();
 	LightSpotCollection *spotlights = scene->GetSpotlights();
 	LightPointCollection *pointlights = scene->GetPointlights();
 	ID3D11Device *device = scene->GetDevice();
@@ -378,36 +377,6 @@ bool B_DebugManager::Update(TimeUtils &time, const Input &input)
 			Select(newEnts.data(), newEnts.size());
 		}
 
-		for (int i = 0; i < _duplicateBinds.size(); i++)
-		{
-			Entity *ent = sceneHolder->GetEntityByID(_duplicateBinds[i].second);
-
-			if (ent)
-				continue;
-
-			RemoveDuplicateBind(_duplicateBinds[i].second);
-			i--;
-		}
-
-		for (auto &duplicateBind : _duplicateBinds)
-		{
-			if (input.GetKey(duplicateBind.first, true) == KeyState::Pressed && acceptInput)
-			{
-				Entity *dupeEnt = sceneHolder->GetEntityByID(duplicateBind.second);
-
-				if (dupeEnt)
-				{
-					Entity *ent = DuplicateEntity(dupeEnt);
-					if (ent)
-						PositionWithCursor(ent);
-				}
-				else
-				{
-					RemoveDuplicateBind(duplicateBind.second);
-				}
-			}
-		}
-
 		if (_currSelection.size() == 1 && acceptInput)
 		{
 			// Cycle selected entity up/down with numkeys +/-
@@ -534,28 +503,6 @@ bool B_DebugManager::Update(TimeUtils &time, const Input &input)
 		ClearSelection();
 	}
 
-	if (_addDuplicateBindForEntity >= 0)
-	{
-		Entity *ent = sceneHolder->GetEntityByID(_addDuplicateBindForEntity);
-
-		if (ent)
-		{
-			KeyCode key = input.GetPressedKey();
-			if (key != KeyCode::None)
-			{
-				if (IsValidDuplicateBind(key))
-				{
-					AddDuplicateBind(key, (UINT)_addDuplicateBindForEntity);
-					_addDuplicateBindForEntity = -1;
-				}
-			}
-		}
-		else
-		{
-			_addDuplicateBindForEntity = -1;
-		}
-	}
-
 	if (!_currSelection.empty())
 	{
 		if (input.GetKey(KeyCode::M) == KeyState::Pressed)
@@ -589,126 +536,11 @@ bool B_DebugManager::Update(TimeUtils &time, const Input &input)
 		}
 	}
 
-	if (!UpdateGlobalEntities(time, input))
-	{
-		ErrMsg("Failed to update global entities!");
-		return false;
-	}
-
 	return true;
 }
 
-bool B_DebugManager::UpdateGlobalEntities(TimeUtils &time, const Input &input)
+bool B_DebugManager::Render(RenderQueuer &queuer, const RendererInfo &rendererInfo)
 {
-	ZoneScopedXC(RandomUniqueColor());
-
-	std::vector<std::unique_ptr<Entity>> *globalEntities = GetScene()->GetGlobalEntities();
-
-	Entity *pointer = nullptr;
-
-	for (auto &entPtr : *globalEntities)
-	{
-		if (entPtr->GetName() == "Pointer Gizmo")
-		{
-			pointer = entPtr.get();
-		}
-	}
-
-	if (_drawPointer)
-	{
-		if (pointer)
-		{
-			RaycastOut out;
-			XMFLOAT3A hitPos = { };
-			XMFLOAT3A castDir = { };
-
-			if (_rayCastFromMouse)
-			{
-				if (RayCastFromMouse(out, hitPos, castDir, input))
-					pointer->GetTransform()->SetPosition(hitPos, World);
-				else
-					_drawPointer = false;
-			}
-			else
-			{
-				if (RayCastFromCamera(out, hitPos, castDir))
-					pointer->GetTransform()->SetPosition(hitPos, World);
-				else
-					_drawPointer = false;
-			}
-
-			if (_drawPointer)
-			{
-				if (!pointer->InitialUpdate(time, input))
-				{
-					ErrMsg("Failed to update gizmo gizmo!");
-					return false;
-				}
-			}
-		}
-		else
-		{
-			_drawPointer = false;
-		}
-	}
-
-	return true;
-}
-
-bool B_DebugManager::Render(const RenderQueuer &queuer, const RendererInfo &rendererInfo)
-{
-	Scene *scene = GetScene();
-	std::vector<std::unique_ptr<Entity>> *globalEntities = scene->GetGlobalEntities();
-
-	if (_cursorPositioningTarget)
-	{
-		if (!_cursorPositioningTarget.Get()->InitialRender(queuer, rendererInfo))
-		{
-			ErrMsg("Failed to render cursor positioning target!");
-			return false;
-		}
-	}
-
-	Entity *playerEnt = scene->GetSceneHolder()->GetEntityByName("Player Entity");
-	if (playerEnt)
-	{
-		if (!playerEnt->InitialRender(queuer, rendererInfo))
-		{
-			ErrMsg("Failed to render player entity!");
-			return false;
-		}
-	}
-
-	for (auto &entPtr : *globalEntities)
-	{
-		Entity *ent = entPtr.get();
-
-		if (_drawPointer) // Render pointer
-		{
-			if (ent->GetName() == "Pointer Gizmo")
-			{
-				if (!ent->InitialRender(queuer, rendererInfo))
-				{
-					ErrMsg("Failed to render entity!");
-					return false;
-				}
-
-				_drawPointer = false;
-			}
-		}
-
-		if (ent->GetName() == "Culling Tree Wireframe" ||
-			ent->GetName() == "Entity Bounds Wireframe" ||
-			ent->GetName() == "Camera Culling Wireframe")
-		{
-			if (!ent->InitialRender(queuer, rendererInfo))
-			{
-				ErrMsg("Failed to render entity!");
-				return false;
-			}
-		}
-	}
-
 	if (!_currSelection.empty())
 	{
 		Scene *scene = GetScene();
@@ -737,14 +569,16 @@ bool B_DebugManager::Deserialize(const json::Value &obj, Scene *scene)
 
 	return true;
 }
-void B_DebugManager::PostDeserialize()
+bool B_DebugManager::PostDeserialize()
 {
 	// Set this behaviour as the scene's debug player
 	Scene *scene = GetScene();
 	if (!scene)
-		return;
+		return true;
 
 	scene->SetDebugManager(this);
+
+	return true;
 }
 
 void B_DebugManager::SetCamera(B_Camera *cam)
@@ -1548,92 +1382,6 @@ void B_DebugManager::SetEditOriginMode(TransformOriginMode mode)
 TransformOriginMode B_DebugManager::GetEditOriginMode() const
 {
 	return (TransformOriginMode)DebugData::Get().transformOriginMode;
-}
-
-void B_DebugManager::AssignDuplicateToKey(UINT id)
-{
-	_addDuplicateBindForEntity = id;
-}
-bool B_DebugManager::IsAssigningDuplicateToKey(UINT id) const
-{
-	return id == _addDuplicateBindForEntity;
-}
-void B_DebugManager::AddDuplicateBind(KeyCode key, UINT id)
-{
-	if (id == CONTENT_NULL)
-		return;
-
-	_duplicateBinds.emplace_back(std::pair<KeyCode, UINT>(key, id));
-}
-void B_DebugManager::RemoveDuplicateBind(UINT id)
-{
-	if (id == CONTENT_NULL)
-		return;
-
-	for (auto it = _duplicateBinds.begin(); it != _duplicateBinds.end();)
-	{
-		if (it->second == id)
-			it = _duplicateBinds.erase(it);
-		else
-			++it;
-	}
-}
-bool B_DebugManager::HasDuplicateBind(UINT id) const
-{
-	if (id == CONTENT_NULL)
-		return false;
-
-	for (auto it = _duplicateBinds.begin(); it != _duplicateBinds.end();)
-	{
-		if (it->second == id)
-			return true;
-		else
-			++it;
-	}
-
-	return false;
-}
-KeyCode B_DebugManager::GetDuplicateBind(UINT id)
-{
-	if (id == CONTENT_NULL)
-		return KeyCode::None;
-
-	for (auto it = _duplicateBinds.begin(); it != _duplicateBinds.end();)
-	{
-		if (it->second == id)
-			return it->first;
-		else
-			++it;
-	}
-
-	return KeyCode::None;
-}
-void B_DebugManager::ClearDuplicateBinds()
-{
-	_duplicateBinds.clear();
-}
-bool B_DebugManager::IsValidDuplicateBind(KeyCode key) const
-{
-	return (key != KeyCode::W)
-		&& (key != KeyCode::A)
-		&& (key != KeyCode::S)
-		&& (key != KeyCode::D)
-		&& (key != KeyCode::X)
-		&& (key != KeyCode::Space)
-		&& (key != KeyCode::E)
-		&& (key != KeyCode::R)
-		&& (key != KeyCode::T)
-		&& (key != KeyCode::M1)
-		&& (key != KeyCode::M2)
-		&& (key != KeyCode::Enter)
-		&& (key != KeyCode::Delete)
-		&& (key != KeyCode::Tab)
-		&& (key != KeyCode::LeftControl)
-		&& (key != KeyCode::LeftShift)
-		&& (key != KeyCode::LeftAlt)
-		&& (key != KeyCode::Q)
-		&& (key != KeyCode::C)
-		&& (key != KeyCode::F5);
 }
 
 Entity *B_DebugManager::DuplicateEntity(Entity *entity)

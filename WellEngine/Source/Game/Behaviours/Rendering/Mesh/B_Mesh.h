@@ -76,7 +76,7 @@ namespace WellEngine
 		[[nodiscard]] bool Update(TimeUtils &time, const Input &input) override;
 
 		// Render runs every frame when objects are being queued for rendering.
-		[[nodiscard]] bool Render(const RenderQueuer &queuer, const RendererInfo &rendererInfo) override;
+		[[nodiscard]] bool Render(RenderQueuer &queuer, const RendererInfo &rendererInfo) override;
 
 	#ifdef USE_IMGUI
 		// RenderUI runs every frame during ImGui rendering if the entity is selected.
@@ -129,7 +129,7 @@ namespace WellEngine
 		// Deserializes the behaviour from a string.
 		[[nodiscard]] bool Deserialize(const json::Value &obj, Scene *scene) override;
 
-		void PostDeserialize() override;
+		[[nodiscard]] bool PostDeserialize() override;
 
 
 		void CopyPSSettings(const Shaders::SettingsContainer &newSettings)

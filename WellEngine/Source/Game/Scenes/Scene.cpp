@@ -653,8 +653,7 @@ bool Scene::Render(TimeUtils &time, const Input &input)
 	{
 		Entity *ent = entitiesToRender[i];
 
-		CamRenderQueuer queuer = { _mainCamera.Get() };
-		if (!ent->InitialRender(queuer, _mainCamera.Get()->GetRendererInfo()))
+		if (!ent->InitialRender(*(_mainCamera.Get()), _mainCamera.Get()->GetRendererInfo()))
 		{
 			ErrMsg("Failed to render entity!");
 			return false;
@@ -743,8 +742,7 @@ bool Scene::Render(TimeUtils &time, const Input &input)
 
 			for (Entity *ent : entitiesToCastShadows)
 			{
-				CamRenderQueuer queuer = { spotlightCamera };
-				if (!ent->InitialRender(queuer, spotlightCamera->GetRendererInfo()))
+				if (!ent->InitialRender(*spotlightCamera, spotlightCamera->GetRendererInfo()))
 				{
 					ErrMsgF("Failed to render entity for spotlight #{}!", i);
 					break;
@@ -803,8 +801,7 @@ bool Scene::Render(TimeUtils &time, const Input &input)
 				if (!pointlightBox.Intersects(entBounds))
 					continue;
 
-				CubeRenderQueuer queuer = { pointlightCamera };
-				if (!ent->InitialRender(queuer, pointlightCamera->GetRendererInfo()))
+				if (!ent->InitialRender(*pointlightCamera, pointlightCamera->GetRendererInfo()))
 				{
 					ErrMsgF("Failed to render entity for pointlight #{}!", i);
 					break;
@@ -1056,8 +1053,7 @@ bool Scene::Render(TimeUtils &time, const Input &input)
 #ifdef DEBUG_BUILD
 	if (_debugManager)
 	{
-		CamRenderQueuer queuer = { _mainCamera.Get() };
-		if (!_debugManager.Get()->InitialRender(queuer, _mainCamera.Get()->GetRendererInfo()))
+		if (!_debugManager.Get()->InitialRender(*(_mainCamera.Get()), _mainCamera.Get()->GetRendererInfo()))
 		{
 			ErrMsg("Failed to render debug player!");
 			return false;

@@ -7,6 +7,9 @@
 #pragma region General
 	#define GAME_TITLE "Game"
 	#define ENGINE_VERSION "0.1.1.7"
+
+	/// STARTUP_SCENE defines the starting scene outside of edit mode.
+	#define STARTUP_SCENE "Main Menu"
 #pragma endregion
 
 
@@ -142,7 +145,6 @@
 #define ASSET_PATH_SOUNDS				ASSET_PATH "\\Sounds"
 #define ASSET_PATH_FONTS				ASSET_PATH "\\Fonts"
 #define ASSET_FILE_BINDINGS				ASSET_PATH "\\Bindings.json"
-#define ASSET_FILE_SEQUENCES			ASSET_PATH "\\Sequences.txt"
 #define ASSET_EXT_SCENE					"scene"
 #define ASSET_EXT_SAVE					"save"
 #define ASSET_EXT_PREFAB				"prefab"

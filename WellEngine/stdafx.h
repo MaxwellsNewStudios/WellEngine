@@ -168,7 +168,7 @@ using namespace WellEngine;
 
 
 
-#define COUT_USAGE_WARNING abort(); static_assert(false, "Use Warn() or DbgMsg() instead of std::cout. They exist for a reason.")
-#define CERR_USAGE_WARNING abort(); static_assert(false, "Use Warn() or ErrMsg() instead of std::cerr. They exist for a reason.")
+#define COUT_USAGE_WARNING abort(); static_assert(false, "Use Warn() or DbgMsg() instead of std::cout.")
+#define CERR_USAGE_WARNING abort(); static_assert(false, "Use Warn() or ErrMsg() instead of std::cerr.")
 #define cout COUT_USAGE_WARNING
 #define cerr CERR_USAGE_WARNING

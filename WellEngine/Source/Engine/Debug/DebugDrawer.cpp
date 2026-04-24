@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "DebugDrawer.h"
+#include "Game/Behaviours/Rendering/Camera/B_Camera.h"
 #include <Windows.h>
 
 #ifdef LEAK_DETECTION

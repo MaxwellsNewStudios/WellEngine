@@ -1,6 +1,7 @@
 #pragma once
 
 #include <vector>
+#include <functional>
 
 #include "Tests/TestUtils.h"
 #include "Engine/Debug/ErrMsg.h"

@@ -45,7 +45,6 @@ bool Game::LoadContent(
 	const std::vector<TextureData> &textureNames,
 	const std::vector<TextureData> &cubemapNames,
 	const std::vector<ShaderData> &shaderNames,
-	const std::vector<HeightMapData> &heightMapNames,
 	const std::vector<std::string> &fontAtlasNames)
 {
 	ZoneScopedC(RandomUniqueColor());
@@ -98,24 +97,6 @@ bool Game::LoadContent(
 				cubemap.downsample) == CONTENT_NULL)
 			{
 				ErrMsgF("Failed to add cubemap {}!", cubemap.name);
-			}
-		}
-
-		if (threadID == 0)
-			DbgMsg("Loading Heightmaps...");
-
-#pragma omp for schedule(dynamic) nowait
-		for (int i = 0; i < heightMapNames.size(); i++)
-		{
-			const HeightMapData &heightMap = heightMapNames[i];
-
-			if (_content.AddHeightMap(
-				heightMap.name, 
-				PATH_FILE_EXT(
-					ASSET_PATH_TEXTURES, 
-					heightMap.name, "png")) == CONTENT_NULL)
-			{
-				ErrMsgF("Failed to add heightmap {}!", heightMap.name);
 			}
 		}
 	}
@@ -363,13 +344,9 @@ bool Game::Setup(TimeUtils &time, Window window)
 	const UINT width = _window.GetWidth();
 	const UINT height = _window.GetHeight();
 
-	ID3D11DeviceContext **intermediateDevicePtr = nullptr;
-	ID3D11DeviceContext ***deferredContexts = &intermediateDevicePtr;
-
 	if (!_graphics.Setup(fullscreen, width, height, window,
 		*_device.ReleaseAndGetAddressOf(), 
-		*_immediateContext.ReleaseAndGetAddressOf(), 
-		*deferredContexts,
+		*_immediateContext.ReleaseAndGetAddressOf(),
 		&_content))
 	{
 		ErrMsg("Failed to setup d3d11!");
@@ -848,17 +825,6 @@ bool Game::Setup(TimeUtils &time, Window window)
 		}
 	}
 
-	// Height Maps should be placed in the Texture folder
-	std::vector<HeightMapData> heightMapNames = {
-		{ "CaveHeightmap",					"CaveHeightmap.png"},
-		{ "CaveRoofHeightmap",				"CaveRoofHeightmap.png"},
-		{ "CaveWallsHeightmap",				"CaveWallsHeightmap.png"},
-#ifdef DEBUG_BUILD
-		{ "ExampleHeightMap",				"ExampleHeightMap.png"},
-		{ "ExampleHeightMap2",				"ExampleHeightMap2.png"},
-#endif
-	};
-
 	std::vector<ShaderData> shaderNames = {
 		{ ShaderType::VERTEX_SHADER,		"VS_Geometry",					"Vertex/VS_Geometry"				},
 		{ ShaderType::VERTEX_SHADER,		"VS_GeometryDistortion",		"Vertex/VS_GeometryDistortion"		},
@@ -1001,7 +967,7 @@ bool Game::Setup(TimeUtils &time, Window window)
 
 
 	time.TakeSnapshot("LoadContent");
-	if (!LoadContent(textureNames, cubemapNames, shaderNames, heightMapNames, fontAtlasNames))
+	if (!LoadContent(textureNames, cubemapNames, shaderNames, fontAtlasNames))
 	{
 		ErrMsg("Failed to load game content!");
 		return false;
@@ -1013,7 +979,7 @@ bool Game::Setup(TimeUtils &time, Window window)
 	{
 		Scene *tempScene = nullptr;
 
-		// Search for all .scene files in ASSET_PATH_SAVES
+		// Search for all .scene files in ASSET_PATH_SCENES
 		for (const auto &entry : std::filesystem::directory_iterator(ASSET_PATH_SCENES))
 		{
 			const auto &path = entry.path();
@@ -1036,17 +1002,6 @@ bool Game::Setup(TimeUtils &time, Window window)
 			LogIndentDecr();
 		}
 
-#ifndef EDIT_MODE
-		DbgMsg("Adding Scene 'Credits'..."); LogIndentIncr();
-		tempScene = new Scene("Credits", true);
-		if (!AddScene(&tempScene))
-		{
-			ErrMsg("Failed to add scene!");
-			return false;
-		}
-		LogIndentDecr();
-#endif
-
 #ifdef EDIT_MODE
 		const std::string &activeSceneName = DebugData::Get().activeScene;
 		DbgMsgF("Loading Active Scene '{}'...", activeSceneName); LogIndentIncr();
@@ -1054,19 +1009,21 @@ bool Game::Setup(TimeUtils &time, Window window)
 		// Set active scene to the game scene
 		if (!SetScene(activeSceneName))
 		{
+			const std::string &firstScene = (*GetScenes())[0]->GetName();
+
 			LogIndentDecr();
-			DbgMsg("Loading Active Scene Failed! \nDefaulting to 'MainMenu'..."); 
+			DbgMsgF("Loading Active Scene Failed! \nFallback to '{}'...", firstScene);
 			LogIndentIncr();
 
-			if (!SetScene("MainMenu"))
+			if (!SetScene(firstScene))
 			{
 				ErrMsg("Failed to set scene!");
 				return false;
 			}
 		}
 #else
-		DbgMsg("Loading Active Scene 'MainMenu'..."); LogIndentIncr();
-		if (!SetScene("MainMenu"))
+		DbgMsg("Loading Start-up Scene '" STARTUP_SCENE "'..."); LogIndentIncr();
+		if (!SetScene(STARTUP_SCENE))
 		{
 			ErrMsg("Failed to set scene!");
 			return false;
@@ -1076,14 +1033,7 @@ bool Game::Setup(TimeUtils &time, Window window)
 	}
 	time.TakeSnapshot("AddScenes");
 
-	// Ensure the main menu scene is loaded
-	if (_pendingSceneChange != "MainMenu")
-	{
-		if (!SetSceneInternal("MainMenu"))
-			DbgMsg("Failed to load MainMenu scene!");
-	}
-
-	// Then open the pending scene (if there is one)
+	// Open the pending scene (if there is one)
 	if (!_pendingSceneChange.empty())
 	{
 		if (!SetSceneInternal(_pendingSceneChange))
@@ -1184,45 +1134,10 @@ bool Game::SetSceneInternal(const std::string &sceneName)
 
 	if (!scene->IsInitialized())
 	{
-		if (sceneName == "MainMenu")
+		if (!scene->InitializeBase(sceneName, _device.Get(), _immediateContext.Get(), this, &_content, &_graphics, _gameVolume))
 		{
-			if (!scene->InitializeMenu(sceneName, _device.Get(), _immediateContext.Get(), this, &_content, &_graphics, _gameVolume))
-			{
-				ErrMsg("Failed to initialize menu scene!");
-				return false;
-			}
-		}
-		else if (sceneName == "Cave")
-		{
-			if (!scene->InitializeCave(sceneName, _device.Get(), _immediateContext.Get(), this, &_content, &_graphics, _gameVolume))
-			{
-				ErrMsg("Failed to initialize scene!");
-				return false;
-			}
-		}
-		else if (sceneName == "Credits")
-		{
-			if (!scene->InitializeCred(sceneName, _device.Get(), _immediateContext.Get(), this, &_content, &_graphics, _gameVolume))
-			{
-				ErrMsg("Failed to initialize scene!");
-				return false;
-			}
-		}
-		else if (sceneName == "StartCutscene")
-		{
-			if (!scene->InitializeEntr(sceneName, _device.Get(), _immediateContext.Get(), this, &_content, &_graphics, _gameVolume))
-			{
-				ErrMsg("Failed to initialize scene!");
-				return false;
-			}
-		}
-		else
-		{
-			if (!scene->InitializeBase(sceneName, _device.Get(), _immediateContext.Get(), this, &_content, &_graphics, _gameVolume))
-			{
-				ErrMsg("Failed to initialize scene!");
-				return false;
-			}
+			ErrMsg("Failed to initialize scene!");
+			return false;
 		}
 	}
 

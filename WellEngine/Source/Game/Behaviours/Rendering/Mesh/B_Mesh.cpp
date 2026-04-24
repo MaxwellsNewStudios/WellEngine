@@ -145,7 +145,7 @@ bool B_Mesh::Update(TimeUtils &time, const Input &input)
 	return true;
 }
 
-bool B_Mesh::Render(const RenderQueuer &queuer, const RendererInfo &rendererInfo)
+bool B_Mesh::Render(RenderQueuer &queuer, const RendererInfo &rendererInfo)
 {
 	if (rendererInfo.shadowCamera && !_castShadows)
 		return true;
@@ -2106,12 +2106,12 @@ bool B_Mesh::Deserialize(const json::Value &obj, Scene *scene)
 
 	return true;
 }
-void B_Mesh::PostDeserialize()
+bool B_Mesh::PostDeserialize()
 {
 	if (!_deserializedMesh)
 	{
 		//ErrMsg("Deserialized mesh is nullptr!");
-		return;
+		return true;
 	}
 
 	Content *content = GetScene()->GetContent();
@@ -2157,9 +2157,14 @@ void B_Mesh::PostDeserialize()
 
 	SetMeshID(_meshID, true);
 	if (!SetMaterial(&mat, false))
+	{
 		ErrMsg("Failed to set material!");
+		return false;
+	}
 
 	_deserializedMesh = nullptr;
+
+	return true;
 }
 
 

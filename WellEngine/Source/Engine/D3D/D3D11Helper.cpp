@@ -14,7 +14,6 @@ static bool CreateInterfaces(
 	const UINT width, const UINT height, const HWND window,
 	ID3D11Device *&device, 
 	ID3D11DeviceContext *&immediateContext,
-	ID3D11DeviceContext **deferredContexts,
 	IDXGISwapChain *&swapChain
 	)
 {
@@ -65,18 +64,6 @@ static bool CreateInterfaces(
 	{
 		ErrMsg("Failed to create device and swap chain!");
 		return false;
-	}
-
-	if (deferredContexts)
-	{
-		for (UINT i = 0; i < PARALLEL_THREADS; i++)
-		{
-			if (FAILED(device->CreateDeferredContext(0, &(deferredContexts[i]))))
-			{
-				ErrMsg("Failed to create deferred context!");
-				return false;
-			}
-		}
 	}
 
 	return true;
@@ -233,7 +220,6 @@ bool WellEngine::SetupD3D11(
 	const UINT width, const UINT height, const HWND window,
 	ID3D11Device *&device,
 	ID3D11DeviceContext *&immediateContext,
-	ID3D11DeviceContext **deferredContexts,
 	IDXGISwapChain *&swapChain,
 	ID3D11RenderTargetView *&rtv,
 	ID3D11Texture2D *&dsTexture, 
@@ -245,7 +231,7 @@ bool WellEngine::SetupD3D11(
 	ID3D11DepthStencilState *&nullDepthStencilState,
 	D3D11_VIEWPORT &viewport)
 {
-	if (!CreateInterfaces(fullscreen, width, height, window, device, immediateContext, deferredContexts, swapChain))
+	if (!CreateInterfaces(fullscreen, width, height, window, device, immediateContext, swapChain))
 	{
 		ErrMsg("Error creating interfaces!");
 		return false;
@@ -280,7 +266,6 @@ bool WellEngine::ResizeD3D11(
 	const UINT width, const UINT height,
 	ID3D11Device *&device,
 	ID3D11DeviceContext *&immediateContext,
-	ID3D11DeviceContext **deferredContexts,
 	IDXGISwapChain *&swapChain,
 	ID3D11RenderTargetView *&rtv,
 	ID3D11Texture2D *&dsTexture,

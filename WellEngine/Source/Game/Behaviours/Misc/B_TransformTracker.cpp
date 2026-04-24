@@ -171,12 +171,14 @@ bool B_TransformTracker::Deserialize(const json::Value &obj, Scene *scene)
 
 	return true;
 }
-void B_TransformTracker::PostDeserialize()
+bool B_TransformTracker::PostDeserialize()
 {
 	if (_tempTrackedEntityID == CONTENT_NULL)
-		return;
+		return true;
 
 	SceneHolder *sceneHolder = GetScene()->GetSceneHolder();
 	_trackedEntity = sceneHolder->GetEntityByDeserializedID(_tempTrackedEntityID);
 	_tempTrackedEntityID = CONTENT_NULL;
+
+	return true;
 }

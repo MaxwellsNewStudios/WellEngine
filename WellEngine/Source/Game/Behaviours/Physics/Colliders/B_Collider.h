@@ -51,7 +51,7 @@ namespace WellEngine
 
 		[[nodiscard]] virtual bool Serialize(json::Document::AllocatorType &docAlloc, json::Value &obj) override;
 		[[nodiscard]] virtual bool Deserialize(const json::Value &obj, Scene *scene) override;
-		virtual void PostDeserialize() override;
+		[[nodiscard]] virtual bool PostDeserialize() override;
 
 		[[nodiscard]] const JPH::BodyInterface &GetBodyInterface() const;
 		[[nodiscard]] JPH::BodyInterface &GetBodyInterface();
@@ -75,7 +75,7 @@ namespace WellEngine
 
 		void CalcLerp(dx::XMFLOAT3A &pos, dx::XMFLOAT4A &rot) const;
 
-		virtual void OnEditTransformRec() override;
+		[[nodiscard]] virtual bool OnEditTransformRec() override;
 
 	public:
 		B_Collider();

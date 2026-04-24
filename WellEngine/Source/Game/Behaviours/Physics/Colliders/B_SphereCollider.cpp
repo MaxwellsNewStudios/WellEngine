@@ -18,9 +18,6 @@ B_SphereCollider::B_SphereCollider(float radius,
 
 bool B_SphereCollider::Start()
 {
-	if (_name.empty())
-		_name = "B_SphereCollider"; // For categorization in ImGui.
-
 	Transform *transform = GetEntity()->GetTransform();
 	dx::XMFLOAT3A wPos = transform->GetPosition(World);
 	dx::XMFLOAT4A wRot = transform->GetRotation(World);

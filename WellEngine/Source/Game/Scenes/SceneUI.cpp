@@ -2,11 +2,8 @@
 #include "stdafx.h"
 #include "Scene.h"
 #include "../Game.h"
-#include "../GraphManager.h"
-#include "../Behaviours/Interaction/BreadcrumbPileBehaviour.h"
-#include "../Behaviours/Monster/MonsterHintBehaviour.h"
 #include "../Behaviours/Debug/B_DebugManager.h"
-#include "../Behaviours/Navigation/GraphNodeBehaviour.h"
+#include "../Behaviours/Rendering/Mesh/B_Mesh.h"
 #include "Engine/Debug/DebugData.h"
 
 #ifdef LEAK_DETECTION
@@ -125,8 +122,8 @@ bool Scene::RenderEntityHierarchyUI(Entity *root, UINT depth, bool skipCulling, 
 		// Entity selection button
 		{
 			bool isSelected = false;
-			if (_debugPlayer.IsValid())
-				isSelected = _debugPlayer.Get()->IsSelected(root, nullptr);
+			if (_debugManager.IsValid())
+				isSelected = _debugManager.Get()->IsSelected(root, nullptr);
 
 			if (isSelected)
 			{
@@ -141,15 +138,15 @@ bool Scene::RenderEntityHierarchyUI(Entity *root, UINT depth, bool skipCulling, 
 			{
 				// Additive select if holding shift
 				// Deselect if already selected or holding ctrl
-				if (_debugPlayer.IsValid())
+				if (_debugManager.IsValid())
 				{
 					bool shiftHeld = GetIO().KeyShift;
 					bool ctrlHeld = GetIO().KeyCtrl;
 
 					if (!isSelected && !ctrlHeld)
-						_debugPlayer.Get()->Select(root, shiftHeld);
+						_debugManager.Get()->Select(root, shiftHeld);
 					else if (isSelected && !shiftHeld)
-						_debugPlayer.Get()->Deselect(root);
+						_debugManager.Get()->Deselect(root);
 				}
 			}
 
@@ -762,7 +759,7 @@ bool Scene::RenderSelectionHierarchyUI(bool skipCulling)
 		if (!_isHoveringHierarchy)
 			_isHoveringHierarchy = IsWindowHovered();
 
-		auto &selection = _debugPlayer.Get()->GetSelection();
+		auto &selection = _debugManager.Get()->GetSelection();
 
 		Dummy({ 0, 0 });
 
@@ -831,8 +828,8 @@ bool Scene::RenderHierarchyContextMenuUI()
 		// If created successfully, select the new entity
 		if (ent)
 		{
-			if (_debugPlayer.IsValid())
-				_debugPlayer.Get()->Select(ent, false);
+			if (_debugManager.IsValid())
+				_debugManager.Get()->Select(ent, false);
 		}
 	}
 
@@ -925,7 +922,7 @@ bool Scene::RenderHierarchyUI(bool skipCulling)
 
 	EndTabBar();
 
-	if (_debugPlayer.IsValid())
+	if (_debugManager.IsValid())
 	{
 		// Clear selection if user pressed and released left mouse button while hovering empty area of hierarchy.
 		// Holding shift will prevent this, to prevent accidental deselection when trying to multi-select.
@@ -938,7 +935,7 @@ bool Scene::RenderHierarchyUI(bool skipCulling)
 				if (IsMouseReleased(ImGuiMouseButton_Left))
 				{
 					wasPressed = false;
-					_debugPlayer.Get()->ClearSelection();
+					_debugManager.Get()->ClearSelection();
 				}
 			}
 			else
@@ -981,8 +978,8 @@ bool Scene::RenderSelectionUI()
 	PushID((_sceneName + "Selection").c_str());
 
 	int selectionSize = 0;
-	if (_debugPlayer.IsValid())
-		selectionSize = (int)_debugPlayer.Get()->GetSelectionSize();
+	if (_debugManager.IsValid())
+		selectionSize = (int)_debugManager.Get()->GetSelectionSize();
 
 	if (selectionSize > 0)
 	{
@@ -1012,7 +1009,7 @@ bool Scene::RenderSelectionUI()
 		}
 
 		selectionIndex = Wrap(selectionIndex, 1, selectionSize);
-		Entity *ent = _debugPlayer.Get()->GetSelection()[(size_t)selectionIndex - 1].Get();
+		Entity *ent = _debugManager.Get()->GetSelection()[(size_t)selectionIndex - 1].Get();
 
 		if (ent)
 		{
@@ -1503,8 +1500,8 @@ bool Scene::RenderEntityCreatorUI()
 	{
 		if (positionWithCursor)
 		{
-			_debugPlayer.Get()->ClearSelection();
-			_debugPlayer.Get()->PositionWithCursor(ent);
+			_debugManager.Get()->ClearSelection();
+			_debugManager.Get()->PositionWithCursor(ent);
 		}
 		else
 		{
@@ -1607,199 +1604,6 @@ bool Scene::RenderSceneUI()
 
 			Separator();
 			TreePop();
-		}
-
-		if (TreeNode("Graph Manager"))
-		{
-			Text(std::format("Nodes in Scene: {}", _graphManager.GetNodeCount()).c_str());
-
-			if (_monster)
-			{
-				Separator();
-				static bool showMonsterPath = true;
-				Checkbox("Show Monster Path", &showMonsterPath);
-				if (showMonsterPath)
-				{
-					static bool overlayMonsterPath = false;
-					Checkbox("Overlay##OverlayMonsterPath", &overlayMonsterPath);
-
-					std::vector<dx::XMFLOAT3> *points;
-					if (_monster.GetAs<MonsterBehaviour>()->GetPath(points))
-					{
-						DebugDrawer &drawer = DebugDrawer::Instance();
-						drawer.DrawLineStrip(
-							points->data(),
-							static_cast<UINT>(points->size()),
-							0.275f, { 0,1,0.5f,1 },
-							!overlayMonsterPath
-						);
-					}
-				}
-				Separator();
-			}
-
-			Entity *ent = _debugPlayer.Get()->GetPrimarySelection();
-			dx::XMFLOAT3 posA = ent ? To3(ent->GetTransform()->GetPosition(World)) : dx::XMFLOAT3(0, 0, 0);
-
-			dx::XMFLOAT3 fromPos = posA;
-			static dx::XMFLOAT3 toPos;
-			InputFloat3("Path To", &toPos.x);
-
-			if (!_graphManager.RenderUI(fromPos, toPos))
-			{
-				TreePop();
-				return false;
-			}
-
-			static Ref<Entity> firstNode = nullptr;
-			static enum class GraphEditType {
-				None, Connect, Disconnect, Split,
-			} graphEditType = GraphEditType::None;
-
-			if (firstNode)
-			{
-				Text("Select Target Node...");
-
-				if (Button("[Num1] Cancel Connection") || _input->GetKey(KeyCode::NumPad1) == KeyState::Pressed)
-				{
-					_debugPlayer.Get()->Select(firstNode.Get());
-					firstNode = nullptr;
-				}
-			}
-
-			if (ent)
-			{
-				GraphNodeBehaviour *node;
-				if (ent->GetBehaviourByType<GraphNodeBehaviour>(node))
-				{
-					if (TreeNode("Node Properties"))
-					{
-						PushID("NodeProperties");
-						if (!node->InitialRenderUI())
-						{
-							PopID();
-							TreePop();
-							ErrMsg("Failed to render selected node properties!");
-							return false;
-						}
-						PopID();
-
-						TreePop();
-					}
-
-					if (!firstNode)
-					{
-						if (Button("[Num0] Connect Selected") || _input->GetKey(KeyCode::NumPad0) == KeyState::Pressed)
-						{
-							graphEditType = GraphEditType::Connect;
-							firstNode = ent;
-							_debugPlayer.Get()->ClearSelection();
-						}
-
-						if (Button("[Num2] Disconnect Selected") || _input->GetKey(KeyCode::NumPad2) == KeyState::Pressed)
-						{
-							graphEditType = GraphEditType::Disconnect;
-							firstNode = ent;
-							_debugPlayer.Get()->ClearSelection();
-						}
-
-						Text("[Num3] New Connected Node");
-
-						if (Button("[Num4] Split Selected") || _input->GetKey(KeyCode::NumPad4) == KeyState::Pressed)
-						{
-							graphEditType = GraphEditType::Split;
-							firstNode = ent;
-							_debugPlayer.Get()->ClearSelection();
-						}
-
-						if (Button("[Num5] New Connected Node At Camera") || _input->GetKey(KeyCode::NumPad5) == KeyState::Pressed)
-						{
-							Transform *cameraTransform = _mainCamera.Get()->GetTransform();
-
-							Entity *copyEnt = nullptr;
-							GraphNodeBehaviour *copyNode = nullptr;
-
-							if (!CreateGraphNodeEntity(&copyEnt, &copyNode, cameraTransform->GetPosition()))
-							{
-								ErrMsg("Failed to copy node entity!");
-								return false;
-							}
-
-							copyNode->AddConnection(node);
-							_debugPlayer.Get()->Select(copyEnt);
-						}
-
-						if (Button("[Num6] Mark As Mine") || _input->GetKey(KeyCode::NumPad6) == KeyState::Pressed)
-						{
-							node->SetCost(0.0f);
-						}
-					}
-					else
-					{
-						Entity *otherEnt = firstNode.Get();
-						GraphNodeBehaviour *otherNode;
-						if (otherEnt->GetBehaviourByType<GraphNodeBehaviour>(otherNode))
-						{
-							DebugDrawer::Instance().DrawLine(
-								posA, otherEnt->GetTransform()->GetPosition(World),
-								0.4f, { 1,0,1,0.3f }, false
-							);
-
-							if (Button("[Enter] Apply") || _input->GetKey(KeyCode::Enter) == KeyState::Pressed)
-							{
-								switch (graphEditType)
-								{
-								case GraphEditType::Connect:
-									otherNode->AddConnection(node);
-									_debugPlayer.Get()->Select(firstNode.Get());
-									break;
-
-								case GraphEditType::Disconnect:
-									otherNode->RemoveConnection(node);
-									_debugPlayer.Get()->Select(firstNode.Get());
-									break;
-
-								case GraphEditType::Split:
-									// Remove existing connection
-									otherNode->RemoveConnection(node);
-
-									// Create new node between selected nodes
-									dx::XMFLOAT3 newPos;
-									Store(newPos, (Load(posA) + Load(otherEnt->GetTransform()->GetPosition(World))) * 0.5f);
-
-									Entity *newEnt;
-									GraphNodeBehaviour *newNode;
-									if (!CreateGraphNodeEntity(&newEnt, &newNode, newPos))
-									{
-										ErrMsg("Failed to create new node!");
-										return false;
-									}
-
-									// Connect new node to both selected nodes
-									newNode->AddConnection(node);
-									newNode->AddConnection(otherNode);
-
-									// Select new node
-									_debugPlayer.Get()->Select(newEnt);
-									break;
-								}
-
-								firstNode = nullptr;
-							}
-						}
-					}
-				}
-			}
-
-			Separator();
-			TreePop();
-		}
-
-		Dummy(ImVec2(0.0f, 2.0f));
-
-		if (Button("Clear All Duplicate Binds"))
-		{
-			_debugManager.Get()->ClearDuplicateBinds();
 		}
 	}
 
@@ -1931,7 +1735,7 @@ bool Scene::RenderSceneUI()
 			SeparatorText("Ray");
 			{
 				if (Button(std::format("Track Entity: {}", originEntity.IsValid() ? originEntity.Get()->GetName() : "None").c_str()))
-					_debugPlayer.Get()->Select(originEntity.Get(), false);
+					_debugManager.Get()->Select(originEntity.Get(), false);
 				if (BeginDragDropTarget())
 				{
 					if (const ImGuiPayload *payload = AcceptDragDropPayload(PayloadTags.at(PayloadType::ENTITY)))
@@ -2043,7 +1847,7 @@ bool Scene::RenderSceneUI()
 						Text("Hit Entity:	");
 						SameLine();
 						if (Button(std::format("{}##RayHitEntID{}", entName, entID).c_str()))
-							_debugPlayer.Get()->Select(hitEntity);
+							_debugManager.Get()->Select(hitEntity);
 					}
 					else
 						Text("Hit Entity:	None");
@@ -2063,7 +1867,7 @@ bool Scene::RenderSceneUI()
 			static Ref<Behaviour> meshRef = nullptr;
 			static std::vector<std::pair<std::string, Ref<Entity>>> entityRefs;
 
-			if (Entity *ent = _debugPlayer.Get()->GetPrimarySelection())
+			if (Entity *ent = _debugManager.Get()->GetPrimarySelection())
 			{
 				const std::string &name = ent->GetName();
 				Text("Selected Entity: %s", name.c_str());
@@ -2096,7 +1900,7 @@ bool Scene::RenderSceneUI()
 				{
 					Text("Name: %s", ent->GetName().c_str());
 					if (Button("Reselect"))
-						_debugPlayer.Get()->Select(ent);
+						_debugManager.Get()->Select(ent);
 				}
 
 				if (Button("Remove Reference"))
@@ -2121,7 +1925,7 @@ bool Scene::RenderSceneUI()
 					Text("Entity Name: %s", mesh->GetEntity()->GetName().c_str());
 
 					if (Button("Reselect"))
-						_debugPlayer.Get()->Select(mesh->GetEntity());
+						_debugManager.Get()->Select(mesh->GetEntity());
 				}
 				else
 				{
@@ -2252,7 +2056,7 @@ bool Scene::RenderSceneUI()
 					static dx::XMFLOAT4 selectColor = { 0.0f, 1.0f, 0.0f, 0.25f };
 					DragFloat4("Selection Color##SelectColor", &selectColor.x, 0.01f, 0.0f, 0.0f, "%.2f");
 
-					Entity *selectedEnt = _debugPlayer.Get()->GetPrimarySelection();
+					Entity *selectedEnt = _debugManager.Get()->GetPrimarySelection();
 					if (selectedEnt)
 					{
 						dx::BoundingOrientedBox obb;

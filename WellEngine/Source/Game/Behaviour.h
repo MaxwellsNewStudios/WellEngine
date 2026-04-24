@@ -90,7 +90,7 @@ namespace WellEngine
 		[[nodiscard]] virtual bool BeforeRender();
 
 		// Render runs when objects are being queued for rendering.
-		[[nodiscard]] virtual bool Render(const RenderQueuer &queuer, const RendererInfo &rendererInfo);
+		[[nodiscard]] virtual bool Render(RenderQueuer &queuer, const RendererInfo &rendererInfo);
 
 	#ifdef USE_IMGUI
 		// RenderUI runs every frame during ImGui rendering if the entity is selected.
@@ -160,7 +160,7 @@ namespace WellEngine
 		[[nodiscard]] bool InitialPhysicsUpdate(float deltaTime);
 
 		[[nodiscard]] bool InitialBeforeRender();
-		[[nodiscard]] bool InitialRender(const RenderQueuer &queuer, const RendererInfo &rendererInfo);
+		[[nodiscard]] bool InitialRender(RenderQueuer &queuer, const RendererInfo &rendererInfo);
 		[[nodiscard]] bool InitialBindBuffers(ID3D11DeviceContext *context);
 
 		[[nodiscard]] bool InitialSerialize(json::Document::AllocatorType &docAlloc, json::Value &obj);

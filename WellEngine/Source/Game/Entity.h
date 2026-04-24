@@ -185,7 +185,7 @@ namespace WellEngine
 		[[nodiscard]] bool InitialLateUpdate(TimeUtils &time, const Input &input);
 		[[nodiscard]] bool InitialFixedUpdate(float deltaTime, const Input &input);
 		[[nodiscard]] bool InitialBeforeRender();
-		[[nodiscard]] bool InitialRender(const RenderQueuer &queuer, const RendererInfo &rendererInfo);
+		[[nodiscard]] bool InitialRender(RenderQueuer &queuer, const RendererInfo &rendererInfo);
 		[[nodiscard]] bool InitialBindBuffers(ID3D11DeviceContext *context);
 		[[nodiscard]] bool InitialOnDebugSelect();
 

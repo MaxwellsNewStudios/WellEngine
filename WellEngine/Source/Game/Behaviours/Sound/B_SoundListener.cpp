@@ -1,4 +1,11 @@
 #include "stdafx.h"
 #include "B_SoundListener.h"
 
-// TODO
+#ifdef LEAK_DETECTION
+#define new			DEBUG_NEW
+#endif
+
+bool B_SoundListener::Start()
+{
+    return true;
+}

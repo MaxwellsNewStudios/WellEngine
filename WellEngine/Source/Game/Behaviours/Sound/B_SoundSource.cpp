@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include " B_SoundSource.h"
+#include "B_SoundSource.h"
 #include "Game/Scenes/Scene.h"
 
 #ifdef LEAK_DETECTION

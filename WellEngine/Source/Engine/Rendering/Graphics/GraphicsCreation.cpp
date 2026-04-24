@@ -21,8 +21,7 @@ Graphics::~Graphics()
 
 bool Graphics::Setup(
 	bool fullscreen, const UINT width, const UINT height, const Window &window,
-	ID3D11Device *&device, ID3D11DeviceContext *&immediateContext,
-	ID3D11DeviceContext **deferredContexts, Content *content)
+	ID3D11Device *&device, ID3D11DeviceContext *&immediateContext, Content *content)
 {
 	if (_isSetup)
 	{
@@ -31,7 +30,7 @@ bool Graphics::Setup(
 	}
 
 	if (!SetupD3D11(fullscreen, width, height, window.GetHWND(),
-		device, immediateContext, deferredContexts,
+		device, immediateContext,
 		*_swapChain.ReleaseAndGetAddressOf(),
 		*_rtv.ReleaseAndGetAddressOf(),
 		*_dsTexture.ReleaseAndGetAddressOf(),
@@ -445,7 +444,6 @@ bool Graphics::ResizeWindowBuffers(bool fullscreen, UINT newWidth, UINT newHeigh
 
 		if (!ResizeD3D11(fullscreen, newWidth, newHeight,
 			_device, _context,
-			nullptr,
 			*_swapChain.GetAddressOf(),
 			*_rtv.ReleaseAndGetAddressOf(),
 			*_dsTexture.ReleaseAndGetAddressOf(),

@@ -10,6 +10,8 @@ namespace WellEngine
 {
 	namespace dx = DirectX;
 
+	class Entity;
+
 	struct RaycastOut
 	{
 		Entity *entity = nullptr;

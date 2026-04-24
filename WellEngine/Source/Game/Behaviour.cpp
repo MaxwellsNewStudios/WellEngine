@@ -315,7 +315,7 @@ bool Behaviour::InitialBeforeRender()
 
 	return BeforeRender();
 }
-bool Behaviour::InitialRender(const RenderQueuer &queuer, const RendererInfo &rendererInfo)
+bool Behaviour::InitialRender(RenderQueuer &queuer, const RendererInfo &rendererInfo)
 {
 #ifdef DEBUG_BUILD
 	if (!_isInitialized)
@@ -446,25 +446,25 @@ bool Behaviour::InitialOnDebugSelect()
 {
 	return OnDebugSelect();
 }
-void Behaviour::InitialOnEditTransform()
+bool Behaviour::InitialOnEditTransform()
 {
-	OnEditTransform();
+	return OnEditTransform();
 }
-void Behaviour::InitialOnEditTransformRec()
+bool Behaviour::InitialOnEditTransformRec()
 {
-	OnEditTransformRec();
+	return OnEditTransformRec();
 }
 
 bool Behaviour::InitialSerialize(json::Document::AllocatorType &docAlloc, json::Value &obj)
 {
 	ZoneScopedXC(RandomUniqueColor());
-	ZoneTextX(_name.c_str(), _name.size());
+	ZoneTextX(GetName().c_str(), GetName().size());
 
 	if (!_doSerialize)
 		return true;
 
 	json::Value nameStr(json::kStringType);
-	nameStr.SetString(_name.c_str(), docAlloc);
+	nameStr.SetString(GetName().c_str(), docAlloc);
 	obj.AddMember("Name", nameStr, docAlloc);
 
 	json::Value attributes(json::kObjectType);
@@ -505,7 +505,7 @@ bool Behaviour::BeforeRender()
 {
 	return true;
 }
-bool Behaviour::Render(const RenderQueuer &queuer, const RendererInfo &rendererInfo) { return true; }
+bool Behaviour::Render(RenderQueuer &queuer, const RendererInfo &rendererInfo) { return true; }
 #ifdef USE_IMGUI
 bool Behaviour::RenderUI() { return true; }
 #endif

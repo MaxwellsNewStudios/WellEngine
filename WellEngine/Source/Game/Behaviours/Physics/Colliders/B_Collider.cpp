@@ -179,7 +179,7 @@ bool B_Collider::Deserialize(const json::Value &obj, Scene *scene)
 
 	return true;
 }
-void B_Collider::PostDeserialize()
+bool B_Collider::PostDeserialize()
 {
 	BodyInterface &bodyInterface = GetBodyInterface();
 
@@ -192,6 +192,8 @@ void B_Collider::PostDeserialize()
 
 	RecalculatePhysicsBody();
 	SyncPhysics();
+
+	return true;
 }
 
 void B_Collider::DestroyBody()
@@ -211,7 +213,7 @@ void B_Collider::CalcLerp(dx::XMFLOAT3A &pos, dx::XMFLOAT4A &rot) const
 	Store(rot, dx::XMQuaternionSlerp(Load(_rotLerpGoal), Load(_lastRotLerpGoal), t));
 }
 
-void B_Collider::OnEditTransformRec()
+bool B_Collider::OnEditTransformRec()
 {
 	Transform *transform = GetTransform();
 	dx::XMFLOAT3A currPos = transform->GetPosition(World);
@@ -231,6 +233,8 @@ void B_Collider::OnEditTransformRec()
 
 	_lastPosLerpGoal = _posLerpGoal = currPos;
 	_lastRotLerpGoal = _rotLerpGoal = currRot;
+
+	return true;
 }
 
 const BodyInterface &B_Collider::GetBodyInterface() const

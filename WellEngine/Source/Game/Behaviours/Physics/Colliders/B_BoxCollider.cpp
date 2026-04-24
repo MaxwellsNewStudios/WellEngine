@@ -18,9 +18,6 @@ B_BoxCollider::B_BoxCollider(const dx::XMFLOAT3A &halfExtents, const dx::XMFLOAT
 
 bool B_BoxCollider::Start()
 {
-	if (_name.empty())
-		_name = "B_BoxCollider"; // For categorization in ImGui.
-
 	Transform *transform = GetEntity()->GetTransform();
 	dx::XMFLOAT3A wPos = transform->GetPosition(World);
 	dx::XMFLOAT4A wRot = transform->GetRotation(World);

@@ -378,8 +378,19 @@ void Entity::CallTransformEdited(bool first)
 	for (auto &behaviour : _behaviours)
 	{
 		if (first)
-			behaviour->InitialOnEditTransform();
-		behaviour->InitialOnEditTransformRec();
+		{
+			if (!behaviour->InitialOnEditTransform())
+			{
+				ErrMsgF("InitialOnEditTransform failed for behaviour '{}' on entity '{}'", behaviour->GetName(), GetName());
+				continue;
+			}
+		}
+
+		if (!behaviour->InitialOnEditTransformRec())
+		{
+			ErrMsgF("InitialOnEditTransformRec failed for behaviour '{}' on entity '{}'", behaviour->GetName(), GetName());
+			continue;
+		}
 	}
 
 	for (auto &child : _children)
@@ -882,7 +893,7 @@ bool Entity::InitialBeforeRender()
 	}
 	return true;
 }
-bool Entity::InitialRender(const RenderQueuer &queuer, const RendererInfo &rendererInfo)
+bool Entity::InitialRender(RenderQueuer &queuer, const RendererInfo &rendererInfo)
 {
 	if (!_isEnabled)
 		return true;

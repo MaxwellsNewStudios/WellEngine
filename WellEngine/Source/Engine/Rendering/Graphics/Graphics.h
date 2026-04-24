@@ -259,8 +259,7 @@ namespace WellEngine
 		~Graphics();
 
 		[[nodiscard]] bool Setup(bool fullscreen, UINT width, UINT height, const Window &window,
-			ID3D11Device *&device, ID3D11DeviceContext *&immediateContext, 
-			ID3D11DeviceContext **deferredContexts, Content *content);
+			ID3D11Device *&device, ID3D11DeviceContext *&immediateContext, Content *content);
 
 		void Shutdown();
 

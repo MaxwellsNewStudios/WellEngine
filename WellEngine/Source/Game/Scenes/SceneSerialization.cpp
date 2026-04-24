@@ -2,10 +2,8 @@
 #include "stdafx.h"
 #include "Scene.h"
 #include "Game/Game.h"
-#include "Game/GraphManager.h"
 #include "Game/BehaviourFactory.h"
 #include "Game/Behaviours/Debug/B_DebugManager.h"
-#include "Game/Behaviours/Navigation/GraphNodeBehaviour.h"
 #include "Engine/Utils/SerializerUtils.h"
 
 #ifdef LEAK_DETECTION
@@ -42,42 +40,6 @@ bool Scene::Serialize(bool asSaveFile)
 			backupFile << prevFile.rdbuf();
 			prevFile.close();
 			backupFile.close();
-		}
-	}
-#endif
-
-#ifndef EDIT_MODE
-	// Temporarily reconvert baked graph nodes to entities
-	auto &bakedNodes = _graphManager.GetBakedNodes();
-
-	std::vector<GraphNodeBehaviour *> nodeBehaviours;
-	nodeBehaviours.resize(bakedNodes.size());
-
-	for (int i = 0; i < bakedNodes.size(); i++)
-	{
-		const Pathfinding::GraphNode &bakedNode = bakedNodes[i];
-
-		dx::XMFLOAT4 nodePos = bakedNode.point;
-
-		Entity *nodeEnt = nullptr;
-		if (!CreateGraphNodeEntity(&nodeEnt, &(nodeBehaviours[i]), To3(nodePos)))
-		{
-			ErrMsg("Failed to create temporary graph node entity!");
-			return false;
-		}
-	}
-
-	for (int i = 0; i < bakedNodes.size(); i++)
-	{
-		const Pathfinding::GraphNode &bakedNode = bakedNodes[i];
-
-		if (nodeBehaviours[i])
-		{
-			nodeBehaviours[i]->SetEnabled(true);
-			nodeBehaviours[i]->SetCost(bakedNode.point.w);
-
-			for (int j = 0; j < bakedNode.connections.size(); j++)
-				nodeBehaviours[i]->AddConnection(nodeBehaviours[bakedNode.connections[j]]);
 		}
 	}
 #endif
@@ -132,41 +94,6 @@ bool Scene::Serialize(bool asSaveFile)
 		file << buffer.GetString();
 		file.close();
 	}
-
-
-	// TODO: Move to a separate function
-	{
-		// Serialize the timeline manager
-		std::string code;
-
-		std::ofstream file = std::ofstream(ASSET_FILE_SEQUENCES, std::ios::out);
-		if (!file)
-		{
-			ErrMsg("Could not open sequences file.");
-			return false;
-		}
-
-		if (!_timelineManager.Serialize(&code))
-		{
-			ErrMsg("Failed to serialize timeline manager!");
-			return false;
-		}
-
-		file << code;
-		file.close();
-	}
-
-#ifndef EDIT_MODE
-	// Remove the temporary graph node entities
-	for (int i = 0; i < nodeBehaviours.size(); i++)
-	{
-		if (!_sceneHolder.RemoveEntity(nodeBehaviours[i]->GetEntity()))
-		{
-			ErrMsg("Failed to remove temporary graph node entity!");
-			return false;
-		}
-	}
-#endif
 
 #ifdef USE_IMGUI
 	auto &n = _graphics->notifications.emplace_back(
@@ -345,12 +272,6 @@ bool Scene::Deserialize(bool sceneReload)
 	}
 
 	PostDeserialize();
-
-	if (!_timelineManager.Deserialize())
-	{
-		ErrMsg("Failed to deserialize timeline manager!");
-		return false;
-	}
 
 	return true;
 }
@@ -665,8 +586,6 @@ void Scene::PostDeserialize()
 	ZoneScopedXC(RandomUniqueColor());
 
 	RunPostDeserializeCallbacks();
-
-	_graphManager.CompleteDeserialization();
 }
 
 void Scene::GetPrefabNames(std::vector<std::string> &prefabs) const

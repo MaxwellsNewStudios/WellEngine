@@ -39,14 +39,12 @@ namespace WellEngine
 		bool _useMainCamera = true;
 		bool _drawPointer = false;
 
-		Ref<Entity> _cursorPositioningTarget{};
+		Ref<Entity> _cursorPositioningTarget;
 		bool _includePositioningTargetInTree = false;
 
 		std::vector<B_MeshBillboard *> _gizmoBillboards = {};
 
 		[[nodiscard]] bool HandleCameraMovement(TimeUtils &time, const Input &input);
-
-		[[nodiscard]] bool UpdateGlobalEntities(TimeUtils &time, const Input &input);
 
 		// out contains entity and distance to entity from camera, pos is the coordinates for the ray hit
 		[[nodiscard]] bool RayCastFromCamera(RaycastOut &out);	// Casts a ray from _camera in the direction of _camera
@@ -62,7 +60,7 @@ namespace WellEngine
 		[[nodiscard]] bool Update(TimeUtils &time, const Input &input) override;
 
 		// Render runs every frame when objects are being queued for rendering.
-		[[nodiscard]] bool Render(const RenderQueuer &queuer, const RendererInfo &rendererInfo) override;
+		[[nodiscard]] bool Render(RenderQueuer &queuer, const RendererInfo &rendererInfo) override;
 
 		// Serializes the behaviour to a string.
 		[[nodiscard]] bool Serialize(json::Document::AllocatorType &docAlloc, json::Value &obj) override;
@@ -70,7 +68,7 @@ namespace WellEngine
 		// Deserializes the behaviour from a string.
 		[[nodiscard]] bool Deserialize(const json::Value &obj, Scene *scene) override;
 
-		void PostDeserialize() override;
+		[[nodiscard]] bool PostDeserialize() override;
 
 	public:
 		B_DebugManager() = default;
@@ -104,15 +102,6 @@ namespace WellEngine
 
 		void SetEditOriginMode(TransformOriginMode mode);
 		[[nodiscard]] TransformOriginMode GetEditOriginMode() const;
-
-		void AssignDuplicateToKey(UINT id);
-		bool IsAssigningDuplicateToKey(UINT id) const;
-		bool IsValidDuplicateBind(KeyCode key) const;
-		void AddDuplicateBind(KeyCode key, UINT id);
-		void RemoveDuplicateBind(UINT id);
-		bool HasDuplicateBind(UINT id) const;
-		KeyCode GetDuplicateBind(UINT id);
-		void ClearDuplicateBinds();
 
 		Entity *DuplicateEntity(Entity *entity);
 		void PositionWithCursor(Entity *ent);

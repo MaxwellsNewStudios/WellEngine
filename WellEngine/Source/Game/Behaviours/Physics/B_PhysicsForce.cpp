@@ -10,9 +10,6 @@
 
 bool B_PhysicsForce::Start()
 {
-	if (_name.empty())
-		_name = "B_PhysicsForce"; // For categorization in ImGui.
-
 #ifdef USE_IMGUI
 	QueueUpdate();
 #endif

@@ -5,6 +5,7 @@
 #include <DirectXCollision.h>
 #include <wrl/client.h>
 
+#include "Game/Entity.h"
 #include "Game/Behaviour.h"
 #include "Engine/Content/Content.h"
 
@@ -43,6 +44,6 @@ namespace WellEngine
 
 		[[nodiscard]] bool Serialize(json::Document::AllocatorType &docAlloc, json::Value &obj) override;
 		[[nodiscard]] bool Deserialize(const json::Value &obj, Scene *scene) override;
-		void PostDeserialize() override;
+		[[nodiscard]] bool PostDeserialize() override;
 	};
 }
