@@ -1,4 +1,4 @@
-# Well Engine
+# [Well Engine](https://github.com/MaxwellsNewStudios/WellEngine)
 
 A D3D11-based 3D game + engine originally developed as a group project by six students for Lurks Below. 
 
@@ -59,5 +59,4 @@ Shouldn't require any prerequisites. Only supported platform is Windows.
 - [SDL3](https://github.com/libsdl-org/sdlwiki/tree/main/SDL3) for window handling
 - [Tracy](https://github.com/wolfpld/tracy) for frame capture
 - [DirectXTex](https://github.com/microsoft/DirectXTex) for texture loading, manipulation & block compression
-- [Magick++](https://github.com/ImageMagick/ImageMagick/tree/main/Magick%2B%2B) for texture creation & manipulation
 - [stb](https://github.com/nothings/stb) for texture loading
