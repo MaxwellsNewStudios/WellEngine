@@ -141,8 +141,9 @@
       </Command>
     </CustomBuildStep>
     <PreBuildEvent>
-      <Command>$(SolutionDir)BuildTools\BehaviourRegistration\x64\$(Configuration)\BehaviourRegistration</Command>
-      <Message>Registering Behaviours</Message>
+      <Command>$(SolutionDir)BuildTools\BehaviourRegistration\x64\$(Configuration)\BehaviourRegistration
+$(SolutionDir)BuildTools\SystemRegistration\x64\$(Configuration)\SystemRegistration</Command>
+      <Message>Type Registration</Message>
     </PreBuildEvent>
     <PostBuildEvent>
       <Message>
@@ -201,8 +202,9 @@
       </Command>
     </CustomBuildStep>
     <PreBuildEvent>
-      <Command>$(SolutionDir)BuildTools\BehaviourRegistration\x64\$(Configuration)\BehaviourRegistration</Command>
-      <Message>Registering Behaviours</Message>
+      <Command>$(SolutionDir)BuildTools\BehaviourRegistration\x64\$(Configuration)\BehaviourRegistration
+$(SolutionDir)BuildTools\SystemRegistration\x64\$(Configuration)\SystemRegistration</Command>
+      <Message>Type Registration</Message>
     </PreBuildEvent>
     <PostBuildEvent>
       <Command>
@@ -261,8 +263,9 @@
       </Command>
     </CustomBuildStep>
     <PreBuildEvent>
-      <Command>$(SolutionDir)BuildTools\BehaviourRegistration\x64\$(Configuration)\BehaviourRegistration</Command>
-      <Message>Registering Behaviours</Message>
+      <Command>$(SolutionDir)BuildTools\BehaviourRegistration\x64\$(Configuration)\BehaviourRegistration
+$(SolutionDir)BuildTools\SystemRegistration\x64\$(Configuration)\SystemRegistration</Command>
+      <Message>Type Registration</Message>
     </PreBuildEvent>
     <PostBuildEvent>
       <Command>
@@ -709,9 +712,9 @@
     <ClInclude Include="Source\Engine\Utils\SerializerUtils.h" />
     <ClInclude Include="Source\Engine\Utils\StringUtils.h" />
     <ClInclude Include="Source\Engine\Window\Window.h" />
-    <ClInclude Include="Source\Game\Behaviour.h" />
-    <ClInclude Include="Source\Game\BehaviourFactory.h" />
-    <ClInclude Include="Source\Game\BehaviourRegistry.h" />
+    <ClInclude Include="Source\Game\Behaviours\Behaviour.h" />
+    <ClInclude Include="Source\Game\Behaviours\BehaviourFactory.h" />
+    <ClInclude Include="Source\Game\Behaviours\BehaviourRegistry.h" />
     <ClInclude Include="Source\Game\Behaviours\Rendering\Mesh\B_MeshText.h" />
     <ClInclude Include="Source\Game\Behaviours\Sound\B_SoundSourceAmbient.h" />
     <ClInclude Include="Source\Game\Behaviours\Rendering\Mesh\B_MeshBillboard.h" />
@@ -729,8 +732,11 @@
     <ClInclude Include="Source\Game\Behaviours\Misc\B_TransformTracker.h" />
     <ClInclude Include="Source\Game\Entity.h" />
     <ClInclude Include="Source\Game\Game.h" />
-    <ClInclude Include="Source\Game\Scenes\Scene.h" />
-    <ClInclude Include="Source\Game\Scenes\SceneHolder.h" />
+    <ClInclude Include="Source\Game\Scene\Scene.h" />
+    <ClInclude Include="Source\Game\Scene\SceneHolder.h" />
+    <ClInclude Include="Source\Game\Systems\Example\S_Example.h" />
+    <ClInclude Include="Source\Game\Systems\System.h" />
+    <ClInclude Include="Source\Game\Systems\SystemManager.h" />
     <ClInclude Include="Source\Game\Transform.h" />
     <ClInclude Include="Source\Engine\Math\Bezier.h" />
     <ClInclude Include="Source\Engine\Math\ConstRand.h" />
@@ -739,6 +745,7 @@
     <ClInclude Include="Source\Engine\Math\GameMath.h" />
     <ClInclude Include="Source\Engine\Math\Primitives.h" />
     <ClInclude Include="stdafx.h" />
+    <ClInclude Include="Source\Game\Systems\SystemRegistry.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AppMain.cpp" />
@@ -1543,9 +1550,9 @@
     <ClCompile Include="Source\Engine\Utils\SerializerUtils.cpp" />
     <ClCompile Include="Source\Engine\Utils\StringUtils.cpp" />
     <ClCompile Include="Source\Engine\Window\Window.cpp" />
-    <ClCompile Include="Source\Game\Behaviour.cpp" />
-    <ClCompile Include="Source\Game\BehaviourFactory.cpp" />
-    <ClCompile Include="Source\Game\BehaviourRegistry.cpp" />
+    <ClCompile Include="Source\Game\Behaviours\Behaviour.cpp" />
+    <ClCompile Include="Source\Game\Behaviours\BehaviourFactory.cpp" />
+    <ClCompile Include="Source\Game\Behaviours\BehaviourRegistry.cpp" />
     <ClCompile Include="Source\Game\Behaviours\Rendering\Mesh\B_MeshText.cpp" />
     <ClCompile Include="Source\Game\Behaviours\Sound\B_SoundSourceAmbient.cpp" />
     <ClCompile Include="Source\Game\Behaviours\Rendering\Mesh\B_MeshBillboard.cpp" />
@@ -1565,10 +1572,13 @@
       </ShowIncludes>
     </ClCompile>
     <ClCompile Include="Source\Game\Game.cpp" />
-    <ClCompile Include="Source\Game\Scenes\Scene.cpp" />
-    <ClCompile Include="Source\Game\Scenes\SceneHolder.cpp" />
-    <ClCompile Include="Source\Game\Scenes\SceneSerialization.cpp" />
-    <ClCompile Include="Source\Game\Scenes\SceneUI.cpp" />
+    <ClCompile Include="Source\Game\Scene\Scene.cpp" />
+    <ClCompile Include="Source\Game\Scene\SceneHolder.cpp" />
+    <ClCompile Include="Source\Game\Scene\SceneSerialization.cpp" />
+    <ClCompile Include="Source\Game\Scene\SceneUI.cpp" />
+    <ClCompile Include="Source\Game\Systems\Example\S_Example.cpp" />
+    <ClCompile Include="Source\Game\Systems\System.cpp" />
+    <ClCompile Include="Source\Game\Systems\SystemManager.cpp" />
     <ClCompile Include="Source\Game\Transform.cpp" />
     <ClCompile Include="Source\Engine\Math\Curves.cpp" />
     <ClCompile Include="Source\Engine\Math\EasingFunctions.cpp" />
@@ -1578,6 +1588,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="Source\Game\Systems\SystemRegistry.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="cpp.hint" />

@@ -1,10 +1,10 @@
 #include "stdafx.h"
 #include "Behaviour.h"
 #include "BehaviourRegistry.h"
-#include "Behaviours/Rendering/Camera/B_Camera.h"
+#include "Rendering/Camera/B_Camera.h"
 #include "Engine/Rendering/RenderQueuer.h"
-#include "Scenes/Scene.h"
-#include "Entity.h"
+#include "Game/Scene/Scene.h"
+#include "Game/Entity.h"
 
 #ifdef LEAK_DETECTION
 #define new			DEBUG_NEW

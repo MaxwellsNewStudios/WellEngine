@@ -1,6 +1,6 @@
  #pragma once
 
-#include "Game/Behaviour.h"
+#include "Game/Behaviours/Behaviour.h"
 #include "../Camera/B_Camera.h"
 
 namespace WellEngine

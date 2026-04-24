@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Game/Behaviour.h"
+#include "Game/Behaviours/Behaviour.h"
 #include "Engine/Rendering/Graphics/GraphicsTypes.h"
 #include "Engine/Content/Content.h"
 #include "Engine/Content/ShaderSettings.h"

@@ -6,7 +6,7 @@
 #include <wrl/client.h>
 
 #include "Game/Entity.h"
-#include "Game/Behaviour.h"
+#include "Game/Behaviours/Behaviour.h"
 #include "Engine/Content/Content.h"
 
 namespace WellEngine

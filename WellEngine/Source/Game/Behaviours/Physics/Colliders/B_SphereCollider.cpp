@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "B_SphereCollider.h"
-#include "Game/Scenes/Scene.h"
+#include "Game/Scene/Scene.h"
 
 #ifdef LEAK_DETECTION
 #define new			DEBUG_NEW

@@ -1148,20 +1148,25 @@ UINT Game::GetSceneIndex(const std::string &sceneName) noexcept
 	}
 	return CONTENT_NULL;
 }
+Scene *Game::GetActiveScene() const noexcept
+{
+	if (_activeSceneIndex == CONTENT_NULL)
+		return nullptr;
+	if (_activeSceneIndex >= _scenes.size())
+		return nullptr;
+	return _scenes[_activeSceneIndex].get();
+}
 UINT Game::GetActiveSceneIndex() const noexcept
 {
 	return _activeSceneIndex;
 }
 std::string_view Game::GetActiveSceneName() const noexcept
 {
-	if (_activeSceneIndex == CONTENT_NULL)
-		return "";
-	if (_activeSceneIndex >= _scenes.size())
-		return "";
-	if (!_scenes[_activeSceneIndex])
+	Scene *activeScene = GetActiveScene();
+	if (!activeScene)
 		return "";
 
-	return _scenes[_activeSceneIndex]->GetName();
+	return activeScene->GetName();
 }
 
 Graphics *Game::GetGraphics() noexcept

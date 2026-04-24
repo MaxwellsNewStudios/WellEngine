@@ -1,33 +1,32 @@
 // Automatically generated during build by BehaviourRegistration.
 // Scans for all behaviour definitions and includes them here for the behaviour factory to use.
+// NOTE: DO NOT MODIFY MANUALLY!
 
 #include "stdafx.h"
 #include "BehaviourRegistry.h"
 #include "Behaviour.h"
-#include "Behaviours/Debug/B_DebugManager.h"
-#include "Behaviours/Debug/B_Example.h"
-#include "Behaviours/Misc/B_TransformTracker.h"
-#include "Behaviours/Physics/B_PhysicsForce.h"
-#include "Behaviours/Physics/Colliders/B_BoxCollider.h"
-#include "Behaviours/Physics/Colliders/B_SphereCollider.h"
-#include "Behaviours/Rendering/Camera/B_Camera.h"
-#include "Behaviours/Rendering/Camera/B_CameraCube.h"
-#include "Behaviours/Rendering/Lighting/B_LightPoint.h"
-#include "Behaviours/Rendering/Lighting/B_LightPointSimple.h"
-#include "Behaviours/Rendering/Lighting/B_LightSpot.h"
-#include "Behaviours/Rendering/Lighting/B_LightSpotSimple.h"
-#include "Behaviours/Rendering/Mesh/B_Mesh.h"
-#include "Behaviours/Rendering/Mesh/B_MeshBillboard.h"
-#include "Behaviours/Rendering/Mesh/B_MeshText.h"
-#include "Behaviours/Sound/B_SoundListener.h"
-#include "Behaviours/Sound/B_SoundSource.h"
-#include "Behaviours/Sound/B_SoundSourceAmbient.h"
-
+#include "Game/Behaviours/Debug/B_DebugManager.h"
+#include "Game/Behaviours/Debug/B_Example.h"
+#include "Game/Behaviours/Misc/B_TransformTracker.h"
+#include "Game/Behaviours/Physics/B_PhysicsForce.h"
+#include "Game/Behaviours/Physics/Colliders/B_BoxCollider.h"
+#include "Game/Behaviours/Physics/Colliders/B_SphereCollider.h"
+#include "Game/Behaviours/Rendering/Camera/B_Camera.h"
+#include "Game/Behaviours/Rendering/Camera/B_CameraCube.h"
+#include "Game/Behaviours/Rendering/Lighting/B_LightPoint.h"
+#include "Game/Behaviours/Rendering/Lighting/B_LightPointSimple.h"
+#include "Game/Behaviours/Rendering/Lighting/B_LightSpot.h"
+#include "Game/Behaviours/Rendering/Lighting/B_LightSpotSimple.h"
+#include "Game/Behaviours/Rendering/Mesh/B_Mesh.h"
+#include "Game/Behaviours/Rendering/Mesh/B_MeshBillboard.h"
+#include "Game/Behaviours/Rendering/Mesh/B_MeshText.h"
+#include "Game/Behaviours/Sound/B_SoundListener.h"
+#include "Game/Behaviours/Sound/B_SoundSource.h"
+#include "Game/Behaviours/Sound/B_SoundSourceAmbient.h"
 
 #ifdef LEAK_DETECTION
 #define new			DEBUG_NEW
 #endif
-#pragma endregion
 
 const std::map<std::string, std::function<Behaviour *(void)>> &BehaviourRegistry::Get()
 {

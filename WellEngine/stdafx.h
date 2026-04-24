@@ -158,10 +158,15 @@ namespace json = rapidjson;
 // Game
 #include "Game/Transform.h"
 
+using namespace WellEngine;
+
 #undef min
 #undef max
 
-using namespace WellEngine;
+#ifdef LEAK_DETECTION
+#define new			DEBUG_NEW
+#endif
+
 
 
 

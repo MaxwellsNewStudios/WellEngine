@@ -2,7 +2,7 @@
 
 #include <string>
 
-#include "Game/Behaviour.h"
+#include "Game/Behaviours/Behaviour.h"
 #include "Engine/Content/Content.h"
 #include "Engine/Audio/SoundSource.h"
 

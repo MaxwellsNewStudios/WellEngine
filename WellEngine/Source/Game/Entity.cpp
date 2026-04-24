@@ -1,9 +1,9 @@
 #include "stdafx.h"
 #include "Entity.h"
-#include "Scenes/Scene.h"
+#include "Scene/Scene.h"
 #include "Behaviours/Debug/B_DebugManager.h"
 #include "Behaviours/Rendering/Mesh/B_Mesh.h"
-#include "BehaviourFactory.h"
+#include "Behaviours/BehaviourFactory.h"
 #include "Engine/Debug/DebugData.h"
 
 #ifdef LEAK_DETECTION

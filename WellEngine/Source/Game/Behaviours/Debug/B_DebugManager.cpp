@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "B_DebugManager.h"
 #include "Game/Entity.h"
-#include "Game/Scenes/Scene.h"
+#include "Game/Scene/Scene.h"
 #include "../Rendering/Mesh/B_MeshBillboard.h"
 #include "../Rendering/Mesh/B_MeshText.h"
 #include "Engine/Debug/DebugData.h"

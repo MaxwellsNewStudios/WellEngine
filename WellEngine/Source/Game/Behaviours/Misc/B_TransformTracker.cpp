@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "B_TransformTracker.h"
 #include "Game/Entity.h"
-#include "Game/Scenes/Scene.h"
+#include "Game/Scene/Scene.h"
 #include "../Debug/B_DebugManager.h"
 
 #ifdef LEAK_DETECTION

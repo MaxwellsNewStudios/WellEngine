@@ -3,7 +3,7 @@
 #include <type_traits>
 
 #include "Transform.h"
-#include "Behaviour.h"
+#include "Behaviours/Behaviour.h"
 #include "Engine/Timing/TimeUtils.h"
 #include "Engine/Input/Input.h"
 #include "Engine/Rendering/Graphics/Graphics.h"

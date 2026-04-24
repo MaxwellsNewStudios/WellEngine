@@ -2,7 +2,7 @@
 #include "stdafx.h"
 #include "Scene.h"
 #include "Game/Game.h"
-#include "Game/BehaviourFactory.h"
+#include "Game/Behaviours/BehaviourFactory.h"
 #include "Game/Behaviours/Debug/B_DebugManager.h"
 #include "Engine/Utils/SerializerUtils.h"
 

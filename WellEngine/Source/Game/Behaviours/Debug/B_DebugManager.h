@@ -1,8 +1,8 @@
 #pragma once
 
-#include "Game/Behaviour.h"
 #include "Game/Transform.h"
-#include "../Rendering/Camera/B_Camera.h"
+#include "Game/Behaviours/Behaviour.h"
+#include "Game/Behaviours/Rendering/Camera/B_Camera.h"
 #include "Engine/Rendering/RenderQueuer.h"
 #include "Engine/Collision/Raycast.h"
 #include "rapidjson/document.h"

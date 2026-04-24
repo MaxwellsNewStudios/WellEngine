@@ -137,7 +137,7 @@ json::Value *ContentRegistry::NavToFolder(const std::string &path)
 	return NavToFolder(SplitPath(path));
 }
 
-const std::string &ContentRegistry::IterateName(const json::Value &folderAssets, const std::string &name)
+std::string ContentRegistry::IterateName(const json::Value &folderAssets, const std::string &name)
 {
 	if (!folderAssets.HasMember(name.c_str()))
 		return name; // Name doesn't exist, original is first available iteration

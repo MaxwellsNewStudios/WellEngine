@@ -2,7 +2,7 @@
 
 #include <array>
 
-#include "Game/Behaviour.h"
+#include "Game/Behaviours/Behaviour.h"
 #include "../Camera/B_CameraCube.h"
 
 namespace WellEngine

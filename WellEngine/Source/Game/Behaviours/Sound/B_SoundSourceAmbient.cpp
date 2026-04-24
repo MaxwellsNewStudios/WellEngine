@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "B_SoundSourceAmbient.h"
-#include "Game/Scenes/Scene.h"
+#include "Game/Scene/Scene.h"
 #include "../Rendering/Mesh/B_MeshBillboard.h"
 
 #ifdef LEAK_DETECTION

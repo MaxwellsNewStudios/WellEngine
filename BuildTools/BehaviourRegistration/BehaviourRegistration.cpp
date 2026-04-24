@@ -13,8 +13,8 @@
 
 
 const std::string SolutionDir = SOLUTION_DIR;
-const std::string RegistryDir = SolutionDir + "WellEngine\\Source\\Game\\";
-const std::string BehavioursDir = RegistryDir + "Behaviours\\";
+const std::string RegistryDir = SolutionDir + "WellEngine\\Source\\Game\\Behaviours\\";
+const std::string BehavioursDir = RegistryDir + "";
 const std::string RegistryFile = RegistryDir + "BehaviourRegistry.cpp";
 const std::string RegisterAttribute = "[[register_behaviour]]";
 const std::string IncludeTag = "%INCLUDE%";
@@ -23,16 +23,15 @@ const std::string CategoryTag = "%CATEGORY%";
 const std::string RegistryTemplate = "\
 // Automatically generated during build by BehaviourRegistration.\n\
 // Scans for all behaviour definitions and includes them here for the behaviour factory to use.\n\
+// NOTE: DO NOT MODIFY MANUALLY!\n\
 \n\
 #include \"stdafx.h\"\n\
 #include \"BehaviourRegistry.h\"\n\
 #include \"Behaviour.h\"\n\
 " + IncludeTag + "\n\
-\n\
 #ifdef LEAK_DETECTION\n\
 #define new			DEBUG_NEW\n\
 #endif\n\
-#pragma endregion\n\
 \n\
 const std::map<std::string, std::function<Behaviour *(void)>> &BehaviourRegistry::Get()\n\
 {\n\
@@ -243,7 +242,7 @@ static std::string GenerateRegistryCode(const BehaviourInfo &behaviourInfo)
 
 	std::string includeCode = "";
 	for (const auto &behaviourInclude : behaviourInfo.includes)
-		includeCode += "#include \"Behaviours/" + behaviourInclude + ".h\"\n";
+		includeCode += "#include \"Game/Behaviours/" + behaviourInclude + ".h\"\n";
 
 	// Locate category tag
 	{

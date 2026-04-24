@@ -76,7 +76,7 @@ namespace WellEngine::Shaders
 	{
 		float levels = 4.0f;
 
-		float _padding[3];
+		float _padding[3] = {};
 
 
 		static const std::string_view GetName() { return "PS_Cel"; }

@@ -1,9 +1,9 @@
 #include "stdafx.h"
 #include "Quadtree.h"
 #include "Engine/Collision/Raycast.h"
-#include "Game/Scenes/Scene.h"
+#include "Game/Scene/Scene.h"
 #include "Game/Entity.h"
-#include "Game/Behaviour.h"
+#include "Game/Behaviours/Behaviour.h"
 #include "Game/Behaviours/Rendering/Mesh/B_Mesh.h"
 
 #ifdef LEAK_DETECTION

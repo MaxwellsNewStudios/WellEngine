@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "B_LightPointSimple.h"
 #include "Game/Entity.h"
-#include "Game/Scenes/Scene.h"
+#include "Game/Scene/Scene.h"
 #include "B_LightPoint.h"
 #include "../Mesh/B_MeshBillboard.h"
 

@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "B_CameraCube.h"
 #include "Game/Entity.h"
-#include "Game/Scenes/Scene.h"
+#include "Game/Scene/Scene.h"
 #include "Engine/Rendering/RenderQueuer.h"
 
 #ifdef LEAK_DETECTION

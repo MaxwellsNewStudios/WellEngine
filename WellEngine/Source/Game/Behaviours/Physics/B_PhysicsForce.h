@@ -3,7 +3,7 @@
 #include <d3d11.h>
 #include <DirectXMath.h>
 
-#include "Game/Behaviour.h"
+#include "Game/Behaviours/Behaviour.h"
 
 namespace WellEngine
 {

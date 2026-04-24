@@ -58,7 +58,7 @@ namespace WellEngine
 		[[nodiscard]] json::Value *NavToFolder(const std::vector<std::string> &folderChain);
 		[[nodiscard]] json::Value *NavToFolder(const std::string &path);
 
-		[[nodiscard]] const std::string &IterateName(const json::Value &folderAssets, const std::string &name);
+		[[nodiscard]] std::string IterateName(const json::Value &folderAssets, const std::string &name);
 
 	public:
 		~ContentRegistry();

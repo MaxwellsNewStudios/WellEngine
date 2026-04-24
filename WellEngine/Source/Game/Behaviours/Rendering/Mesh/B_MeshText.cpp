@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "B_MeshText.h"
-#include "Game/Scenes/Scene.h"
+#include "Game/Scene/Scene.h"
 #include "Game/Behaviours/Debug/B_DebugManager.h"
 
 #ifdef LEAK_DETECTION

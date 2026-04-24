@@ -109,12 +109,8 @@ bool Scene::InitializeBase(std::string sceneName, ID3D11Device *device, ID3D11De
 	dx::AUDIO_ENGINE_FLAGS audioFlags = dx::AudioEngine_Default;
 	audioFlags |= dx::AudioEngine_EnvironmentalReverb;
 	audioFlags |= dx::AudioEngine_ReverbUseFilters;
-	//audioFlags |= dx::AudioEngine_UseMasteringLimiter;
-	//audioFlags |= dx::AudioEngine_DisableLFERedirect;
-	//audioFlags |= dx::AudioEngine_DisableDopplerEffect;
-	//audioFlags |= dx::AudioEngine_ZeroCenter3D;
 
-	if (!_soundEngine.Initialize(audioFlags, dx::Reverb_Cave, gameVolume))
+	if (!_soundEngine.Initialize(audioFlags, dx::Reverb_Default, gameVolume))
 	{
 		ErrMsg("Failed to initialize sound engine!");
 		return false;
@@ -142,7 +138,7 @@ bool Scene::InitializeBase(std::string sceneName, ID3D11Device *device, ID3D11De
 
 	// Set visual effect parameters
 	{
-		_ambientColor = { 0.1f, 0.1f, 0.1f };
+		_ambientColor = { 0.0f, 0.0f, 0.0f };
 
 		_fogSettings.thickness = 0.15f;
 		_fogSettings.sampleBias = 1.5f;

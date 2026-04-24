@@ -2,8 +2,8 @@
 
 #include <vector>
 #include <memory>
-#include <DirectXMath.h>
 #include <functional>
+#include <DirectXMath.h>
 
 #include "Engine/D3D/ConstantBufferD3D11.h"
 #include "Engine/Utils/ReferenceHelper.h"

@@ -5,7 +5,7 @@
 #include <d3d11.h>
 #include <wrl/client.h>
 
-#include "Scenes/Scene.h"
+#include "Scene/Scene.h"
 #include "Engine/Physics/JoltManager.h"
 #include "Engine/Rendering/Graphics/Graphics.h"
 #include "Engine/Content/Content.h"
@@ -88,6 +88,7 @@ namespace WellEngine
 
 		[[nodiscard]] UINT GetSceneIndex(const std::string &sceneName) noexcept;
 
+		[[nodiscard]] Scene *GetActiveScene() const noexcept;
 		[[nodiscard]] UINT GetActiveSceneIndex() const noexcept;
 		[[nodiscard]] std::string_view GetActiveSceneName() const noexcept;
 

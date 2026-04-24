@@ -2,7 +2,7 @@
 
 #include <vector>
 
-#include "Game/Behaviour.h"
+#include "Game/Behaviours/Behaviour.h"
 #include "B_Camera.h"
 #include "Engine/Content/Content.h"
 #include "Engine/Rendering/RendererInfo.h"
