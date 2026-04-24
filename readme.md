@@ -1,4 +1,4 @@
-# [Well Engine](https://github.com/MaxwellsNewStudios/WellEngine)
+# Well Engine
 
 A D3D11-based 3D game + engine originally developed as a group project by six students for Lurks Below. 
 
