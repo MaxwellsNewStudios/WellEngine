@@ -26,7 +26,7 @@
             "Hidden": false,
             "Beh": [
                 {
-                    "Name": "MeshBehaviour",
+                    "Name": "Mesh",
                     "Attributes": {
                         "Mesh": "Cornell",
                         "Transparent": false,
@@ -76,7 +76,7 @@
                     "Hidden": false,
                     "Beh": [
                         {
-                            "Name": "MeshBehaviour",
+                            "Name": "Mesh",
                             "Attributes": {
                                 "Mesh": "Cube",
                                 "Transparent": false,

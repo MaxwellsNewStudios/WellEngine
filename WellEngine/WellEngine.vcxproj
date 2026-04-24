@@ -2065,17 +2065,6 @@
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
     </FxCompile>
-    <FxCompile Include="Source\Shaders\Pixel\PS_ScreenEffectFog.hlsl">
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">Pixel</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;$(ProjectDir)Source\Shaders\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;$(ProjectDir)Source\Shaders\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;$(ProjectDir)Source\Shaders\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
-      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
-      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
-    </FxCompile>
     <FxCompile Include="Source\Shaders\Pixel\PS_SelectionOutline.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">Pixel</ShaderType>
@@ -2236,40 +2225,7 @@
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
     </FxCompile>
-    <FxCompile Include="Source\Shaders\Vertex\VS_DepthDistortion.hlsl">
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">Vertex</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;$(ProjectDir)Source\Shaders\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;$(ProjectDir)Source\Shaders\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;$(ProjectDir)Source\Shaders\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
-      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
-      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
-    </FxCompile>
-    <FxCompile Include="Source\Shaders\Vertex\VS_DepthDistortionCubemap.hlsl">
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">Vertex</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;$(ProjectDir)Source\Shaders\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;$(ProjectDir)Source\Shaders\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;$(ProjectDir)Source\Shaders\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
-      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
-      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
-    </FxCompile>
     <FxCompile Include="Source\Shaders\Vertex\VS_Geometry.hlsl">
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">Vertex</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;$(ProjectDir)Source\Shaders\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;$(ProjectDir)Source\Shaders\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;$(ProjectDir)Source\Shaders\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
-      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
-      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
-    </FxCompile>
-    <FxCompile Include="Source\Shaders\Vertex\VS_GeometryDistortion.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>

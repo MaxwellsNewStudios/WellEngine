@@ -139,12 +139,6 @@ bool Graphics::Setup(
 			return false;
 		}
 
-		if (!_distortionSettingsBuffer.Initialize(device, sizeof(DistortionSettingsBuffer), &_distortionSettings))
-		{
-			ErrMsg("Failed to initialize distortion settings buffer!");
-			return false;
-		}
-
 		if (!_depthOfFieldSettingsBuffer.Initialize(device, sizeof(DepthOfFieldSettingsBuffer), &_currDepthOfFieldSettings))
 		{
 			ErrMsg("Failed to initialize depth of field settings buffer!");
@@ -386,7 +380,6 @@ void Graphics::Shutdown()
 	_generalDataBuffer.Reset();
 	_fogSettingsBuffer.Reset();
 	_emissionSettingsBuffer.Reset();
-	_distortionSettingsBuffer.Reset();
 	_depthOfFieldSettingsBuffer.Reset();
 	_fogGaussianWeightsBuffer.Reset();
 	_emissionGaussianWeightsBuffer.Reset();

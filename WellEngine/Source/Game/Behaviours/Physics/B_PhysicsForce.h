@@ -10,7 +10,7 @@ namespace WellEngine
 	class [[register_behaviour]] B_PhysicsForce final : public Behaviour
 	{
 	public:
-		const std::string &GetName() const override { return "PhysicsForce"; }
+		std::string_view GetName() const override { return "PhysicsForce"; }
 
 	private:
 		dx::XMFLOAT3 _force = { 0, 0, 0 };

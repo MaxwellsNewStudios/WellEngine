@@ -59,7 +59,7 @@ namespace WellEngine
 	class [[register_behaviour]] B_Camera final : public Behaviour, public IRefTarget<B_Camera>, public RenderQueuer
 	{
 	public:
-		const std::string &GetName() const override { return "Camera"; }
+		std::string_view GetName() const override { return "Camera"; }
 
 	private:
 		RendererInfo _rendererInfo;

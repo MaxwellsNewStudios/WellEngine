@@ -87,7 +87,7 @@
             "Hidden": false,
             "Beh": [
                 {
-                    "Name": "PointLightBehaviour",
+                    "Name": "LightPoint",
                     "Attributes": {
                         "Update Frequency": 3,
                         "Falloff": 0.25,
@@ -175,7 +175,7 @@
                     "Hidden": false,
                     "Beh": [
                         {
-                            "Name": "MeshBehaviour",
+                            "Name": "Mesh",
                             "Attributes": {
                                 "Mesh": "Plane",
                                 "Transparent": false,
@@ -252,7 +252,7 @@
                     "Hidden": false,
                     "Beh": [
                         {
-                            "Name": "MeshBehaviour",
+                            "Name": "Mesh",
                             "Attributes": {
                                 "Mesh": "Plane",
                                 "Transparent": false,
@@ -354,7 +354,7 @@
                             "Hidden": false,
                             "Beh": [
                                 {
-                                    "Name": "MeshBehaviour",
+                                    "Name": "Mesh",
                                     "Attributes": {
                                         "Mesh": "Plane",
                                         "Transparent": false,
@@ -431,7 +431,7 @@
                             "Hidden": false,
                             "Beh": [
                                 {
-                                    "Name": "MeshBehaviour",
+                                    "Name": "Mesh",
                                     "Attributes": {
                                         "Mesh": "Plane",
                                         "Transparent": false,
@@ -508,7 +508,7 @@
                             "Hidden": false,
                             "Beh": [
                                 {
-                                    "Name": "MeshBehaviour",
+                                    "Name": "Mesh",
                                     "Attributes": {
                                         "Mesh": "Plane",
                                         "Transparent": false,
@@ -585,7 +585,7 @@
                             "Hidden": false,
                             "Beh": [
                                 {
-                                    "Name": "MeshBehaviour",
+                                    "Name": "Mesh",
                                     "Attributes": {
                                         "Mesh": "Plane",
                                         "Transparent": false,

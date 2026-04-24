@@ -26,7 +26,7 @@
             "Hidden": false,
             "Beh": [
                 {
-                    "Name": "MeshBehaviour",
+                    "Name": "Mesh",
                     "Attributes": {
                         "Mesh": "Arcade",
                         "Transparent": false,
@@ -83,7 +83,7 @@
                     "Hidden": false,
                     "Beh": [
                         {
-                            "Name": "PointLightBehaviour",
+                            "Name": "LightPoint",
                             "Attributes": {
                                 "Update Frequency": 6,
                                 "Falloff": 0.3499999940395355,
@@ -125,7 +125,7 @@
                     "Hidden": false,
                     "Beh": [
                         {
-                            "Name": "PointLightBehaviour",
+                            "Name": "LightPoint",
                             "Attributes": {
                                 "Update Frequency": 6,
                                 "Falloff": 0.3499999940395355,
@@ -167,7 +167,7 @@
                     "Hidden": false,
                     "Beh": [
                         {
-                            "Name": "PointLightBehaviour",
+                            "Name": "LightPoint",
                             "Attributes": {
                                 "Update Frequency": 6,
                                 "Falloff": 0.3499999940395355,

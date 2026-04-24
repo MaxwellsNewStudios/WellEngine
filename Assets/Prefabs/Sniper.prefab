@@ -49,7 +49,7 @@
                     "InTree": true,
                     "Beh": [
                         {
-                            "Name": "MeshBehaviour",
+                            "Name": "Mesh",
                             "Attributes": {
                                 "Mesh": "SniperBody",
                                 "Transparent": false,
@@ -126,7 +126,7 @@
                     "InTree": true,
                     "Beh": [
                         {
-                            "Name": "MeshBehaviour",
+                            "Name": "Mesh",
                             "Attributes": {
                                 "Mesh": "SniperBolt",
                                 "Transparent": false,
@@ -203,7 +203,7 @@
                     "InTree": true,
                     "Beh": [
                         {
-                            "Name": "MeshBehaviour",
+                            "Name": "Mesh",
                             "Attributes": {
                                 "Mesh": "SniperTrigger",
                                 "Transparent": false,
@@ -280,7 +280,7 @@
                     "InTree": true,
                     "Beh": [
                         {
-                            "Name": "MeshBehaviour",
+                            "Name": "Mesh",
                             "Attributes": {
                                 "Mesh": "SniperMagazine",
                                 "Transparent": false,

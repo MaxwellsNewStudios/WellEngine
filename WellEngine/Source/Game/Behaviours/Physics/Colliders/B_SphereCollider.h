@@ -7,7 +7,7 @@ namespace WellEngine
 	class [[register_behaviour]] B_SphereCollider final : public B_Collider
 	{
 	public:
-		const std::string &GetName() const override { return "SphereCollider"; }
+		std::string_view GetName() const override { return "SphereCollider"; }
 
 	private:
 		float _radius = 1.0f;

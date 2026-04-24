@@ -110,7 +110,6 @@ namespace WellEngine
 		DepthOfFieldSettingsBuffer _currDepthOfFieldSettings = { };
 
 		GeneralDataBuffer _generalDataSettings = { };
-		DistortionSettingsBuffer _distortionSettings = { };
 		int _fogBlurIterations = 2;
 		int _emissionBlurIterations = 4;
 
@@ -123,7 +122,6 @@ namespace WellEngine
 		ConstantBufferD3D11 _generalDataBuffer;
 		ConstantBufferD3D11 _fogSettingsBuffer;
 		ConstantBufferD3D11 _emissionSettingsBuffer;
-		ConstantBufferD3D11 _distortionSettingsBuffer;
 		ConstantBufferD3D11 _depthOfFieldSettingsBuffer;
 		std::unique_ptr<ConstantBufferD3D11> _skyboxBuffer;
 
@@ -139,7 +137,7 @@ namespace WellEngine
 		Ref<LightPointCollection> _currLightPointCollection = nullptr;
 
 		UINT _skyboxPsID = CONTENT_NULL;
-		UINT _environmentCubemapID = CONTENT_NULL;
+		UINT _envCubemapID = CONTENT_NULL;
 		UINT _colorLutID = CONTENT_NULL;
 
 		UINT
@@ -295,9 +293,6 @@ namespace WellEngine
 		[[nodiscard]] bool GetRenderTransparent() const;
 		[[nodiscard]] bool GetRenderOverlay() const;
 		[[nodiscard]] bool GetRenderPostFX() const;
-
-		void SetDistortionOrigin(const dx::XMFLOAT3A &origin);
-		void SetDistortionStrength(float strength);
 
 		[[nodiscard]] UINT GetFogBlurIterations() const;
 		[[nodiscard]] UINT GetEmissionBlurIterations() const;

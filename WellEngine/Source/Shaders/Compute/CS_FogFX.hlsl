@@ -6,12 +6,6 @@
 #include "../Headers/LightData.hlsli"
 #endif
 
-cbuffer DistortionSettings : register(b2)
-{
-	float3 distortion_source;
-	float distortion_distance;
-};
-
 cbuffer InverseCameraMatrixBuffer : register(b4)
 {
     matrix inverseProjectionMatrix;
@@ -290,11 +284,7 @@ void RayStepping(
 	float stepDensity = 0.0;
 	
 	uint seed = abs(randInt + (Length * 642616.742947315) + (Dir.x * -4657647.1751857) + (Dir.y * 133451.6456564) + (Dir.z * 5685732.4565677));
-	
-	float distortionStaticRadius = pow(RandomValue(seed), 6.0);
-	float distortionDistInv = 1.0 / (distortion_distance * 0.2);
-	float distortionStaticRadiusInv = 1.0 / (distortion_distance * 0.5 * distortionStaticRadius);
-		
+			
 	int i = 0;
 	int resampleRate = 1;
 	for (float dist = step; dist < Length; dist += step)
@@ -317,14 +307,7 @@ void RayStepping(
 		prevStepColor = thisStepColor;
 		prevStepDensity = thisStepDensity;
 		prevLength = thisLength;
-		
-		// Sample Distortion
-		float distToSource = length(samplePos - distortion_source);
-		float distortion = step * pow(1.0 - saturate(distToSource * distortionDistInv), 1.25);
-		float dS = step * pow(1.0 - saturate(distToSource * distortionStaticRadiusInv), 0.75);
-		
-		Color -= 0.1 * mad(0.1, distortion, 0.1 * dS);
-		
+				
 		i++;
 		if (i > MaxSteps) // Prevent infinite loop
 			return;

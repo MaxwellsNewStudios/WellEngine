@@ -1,15 +1,85 @@
+# 
 # Push parameter values on a new line inside of <>
 # Parameters: 
 #	[f]ormat 		(default: UNKNOWN, see "DXGI_FORMAT")
 #	[m]ipmapped 	(default: true)
 #	[d]ownsample 	(default: 0)
 #	[e]ditoronly 	(default: false)
-# 
 # Ex:
-#  <push mipmapped=false downsample=1>
-#      ...
-#  <pop mipmapped downsample>
+#	<push mipmapped=false d=1>
+#		...
+#	<pop mipmapped downsample>
+#
+# To define an alias, add an equals sign after the filename.
+# Ex:
+#	fileName.png = aliasName
+# 
 
+
+<push m=false>
+	<push d=1>
+		Error.dds
+	<pop d>
+	
+	Fallback.dds
+	Noise.dds
+<pop m>
+	
+<push f=R8G8B8A8_UNORM>
+	<push m=false>
+		White.png
+		Black.png
+		Ambient.png
+		AmbientBright.png
+		Red.png
+		Green.png
+		Blue.png
+		Gray.png
+		DarkGray.png
+		
+		AmbientBright.png 	= Default_Specular
+		Black.png 			= Black_Specular
+		DarkGray.png 		= DarkGray_Specular
+		Gray.png 			= Gray_Specular
+		White.png 			= White_Specular
+		Red.png 			= Red_Specular
+		Green.png 			= Green_Specular
+		Blue.png 			= Blue_Specular
+		White.png 			= Default_Occlusion
+	<pop m>
+	
+	Gray.png 		= Default_Glossiness
+	White.png 		= White_Glossiness
+	Black.png 		= Black_Glossiness
+	DarkGray.png 	= DarkGray_Glossiness
+	
+	Default_Normal.png
+<pop f>
+
+<push m=false>
+	Maxwell.dds
+	Whiskers.dds
+<pop m>
+
+Character_Texture.dds
+Metal_Normal.dds
+Metal_Specular.dds
+
+<push e=true>
+	Fade.dds
+	
+	<push d=1>
+		SoundEmitter.dds
+		LightSource.dds
+	<pop d>
+	
+	<push d=2>
+		<push m=false>
+			Cornell.dds
+		<pop m>
+		Cornell_Light.dds
+	<pop d>
+<pop e>
 
 <push m=false>
 	HighlightColor.png

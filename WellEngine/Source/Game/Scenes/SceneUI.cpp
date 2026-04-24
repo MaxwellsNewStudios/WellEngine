@@ -1921,8 +1921,8 @@ bool Scene::RenderSceneUI()
 				Text("Mesh Reference State: %d", meshRef.TryGetAs<B_Mesh>(mesh));
 				if (mesh)
 				{
-					Text("Mesh Name: %s", mesh->GetName().c_str());
-					Text("Entity Name: %s", mesh->GetEntity()->GetName().c_str());
+					Text("Mesh Name: %s", mesh->GetName().data());
+					Text("Entity Name: %s", mesh->GetEntity()->GetName().data());
 
 					if (Button("Reselect"))
 						_debugManager.Get()->Select(mesh->GetEntity());

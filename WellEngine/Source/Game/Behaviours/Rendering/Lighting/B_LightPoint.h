@@ -26,7 +26,7 @@ namespace WellEngine
 	class [[register_behaviour]] B_LightPoint final : public Behaviour
 	{
 	public:
-		const std::string &GetName() const override { return "LightPoint"; }
+		std::string_view GetName() const override { return "LightPoint"; }
 
 	private:
 		CameraPlanes _initialCameraPlanes = { 0.1f, 1.0f };

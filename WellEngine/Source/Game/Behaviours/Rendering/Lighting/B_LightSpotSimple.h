@@ -23,7 +23,7 @@ namespace WellEngine
 	class [[register_behaviour]] B_LightSpotSimple final : public Behaviour
 	{
 	public:
-		const std::string & GetName() const override { return "LightSpotSimple"; }
+		std::string_view GetName() const override { return "LightSpotSimple"; }
 
 	private:
 		dx::XMFLOAT3 _color = { 1.0f, 1.0f, 1.0f };

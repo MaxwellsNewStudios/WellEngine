@@ -1936,7 +1936,7 @@ bool Entity::InitialRenderUI()
 		{
 			ImGui::PushID(("Behaviour " + std::to_string(i)).c_str());
 			auto behaviour = _behaviours[i]->AsRef();
-			std::string behName = behaviour.Get()->GetName();
+			std::string behName = behaviour.Get()->GetName().data();
 
 			// Header
 			int openState = behaviour.Get()->PopUIOpenState();

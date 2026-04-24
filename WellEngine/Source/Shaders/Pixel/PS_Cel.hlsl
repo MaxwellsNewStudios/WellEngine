@@ -98,7 +98,6 @@ PixelShaderOutput main(PixelShaderInput input)
 		totalDiffuseLight, totalSpecularLight // Output
 	);
 	
-	//float3 totalLight = diffuseCol * (occlusion * (ambientCol + totalDiffuseLight)) + totalSpecularLight;
 	float3 totalLight =
 		occlusion * diffuseCol * totalDiffuseLight +
 		ambientCol +

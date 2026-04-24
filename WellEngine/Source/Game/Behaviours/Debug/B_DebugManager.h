@@ -24,7 +24,7 @@ namespace WellEngine
 	class [[register_behaviour]] B_DebugManager final : public Behaviour, public IRefTarget<B_DebugManager>
 	{
 	public:
-		const std::string &GetName() const override { return "DebugManager"; }
+		std::string_view GetName() const override { return "DebugManager"; }
 
 	#ifdef DEBUG_BUILD
 	private:

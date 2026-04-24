@@ -11,7 +11,7 @@ namespace WellEngine
 	class [[register_behaviour]] B_SoundSource : public Behaviour
 	{
 	public:
-		const std::string &GetName() const override { return "SoundSource"; }
+		std::string_view GetName() const override { return "SoundSource"; }
 
 	private:
 		SoundSource _soundSource;

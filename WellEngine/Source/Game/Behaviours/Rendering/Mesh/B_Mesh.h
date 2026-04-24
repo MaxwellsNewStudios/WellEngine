@@ -10,7 +10,7 @@ namespace WellEngine
 	class [[register_behaviour]] B_Mesh final : public Behaviour, public IRefTarget<B_Mesh>
 	{
 	public:
-		const std::string & GetName() const override { return "Mesh"; }
+		std::string_view GetName() const override { return "Mesh"; }
 
 	private:
 		struct DeserializedMesh

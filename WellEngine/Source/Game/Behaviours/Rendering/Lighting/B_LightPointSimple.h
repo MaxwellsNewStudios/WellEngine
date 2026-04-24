@@ -21,7 +21,7 @@ namespace WellEngine
 	class [[register_behaviour]] B_LightPointSimple final : public Behaviour
 	{
 	public:
-		const std::string &GetName() const override { return "LightPointSimple"; }
+		std::string_view GetName() const override { return "LightPointSimple"; }
 
 	private:
 		dx::XMFLOAT3 _color = { 1.0f, 1.0f, 1.0f };

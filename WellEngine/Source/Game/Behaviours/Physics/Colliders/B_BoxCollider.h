@@ -7,7 +7,7 @@ namespace WellEngine
 	class [[register_behaviour]] B_BoxCollider final : public B_Collider 
 	{
 	public:
-		const std::string &GetName() const override { return "BoxCollider"; }
+		std::string_view GetName() const override { return "BoxCollider"; }
 
 	private:
 		dx::XMFLOAT3A 

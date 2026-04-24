@@ -566,7 +566,8 @@ void Scene::RunPostDeserializeCallbacks()
 		if (!beh)
 			continue;
 
-		beh->InitialPostDeserialize();
+		if (!beh->InitialPostDeserialize())
+			ErrMsgF("Post-deserialize callback for behaviour '{}' failed!", beh->GetName());
 
 		deserializedEntities.emplace_back(*beh->GetEntity());
 	}

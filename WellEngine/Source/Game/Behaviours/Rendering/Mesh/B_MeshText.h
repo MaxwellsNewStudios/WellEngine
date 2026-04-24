@@ -9,7 +9,7 @@ namespace WellEngine
 	class [[register_behaviour]] B_MeshText : public Behaviour
 	{
 	public:
-		const std::string &GetName() const override { return "MeshText"; }
+		std::string_view GetName() const override { return "MeshText"; }
 
 	private:
 		Ref<B_Mesh> _meshBehaviour = nullptr;

@@ -177,13 +177,13 @@ bool Graphics::RenderUI(TimeUtils &time)
 
 		ImGui::Text("Cubemap:");
 		ImGui::SameLine();
-		if (ImGui::BeginCombo("##EnvironmentCubemapCombo", _environmentCubemapID == CONTENT_NULL ? "None" : (cubemapNames[_environmentCubemapID].c_str()), ImGuiComboFlags_HeightLarge))
+		if (ImGui::BeginCombo("##EnvironmentCubemapCombo", _envCubemapID == CONTENT_NULL ? "None" : (cubemapNames[_envCubemapID].c_str()), ImGuiComboFlags_HeightLarge))
 		{
 			for (int i = 0; i < cubemapNames.size(); i++)
 			{
 				std::string &cubemapName = cubemapNames[i];
 
-				const bool isSelected = (_environmentCubemapID == i);
+				const bool isSelected = (_envCubemapID == i);
 				if (ImGui::Selectable(cubemapName.c_str(), isSelected))
 					SetEnvironmentCubemapID(i);
 
@@ -1095,15 +1095,6 @@ bool Graphics::RenderUI(TimeUtils &time)
 			_generalDataSettings.fadeoutExponent = MAX(_generalDataSettings.fadeoutExponent, 0.01f);
 		ImGuiUtils::LockMouseOnActive();
 
-		ImGui::TreePop();
-	}
-
-	if (ImGui::TreeNode("Distortion"))
-	{
-		static dx::XMFLOAT3 dO = { 0, 0, 0 };
-		ImGui::InputFloat("Distortion Strength", &_distortionSettings.distortionStrength);
-		ImGui::InputFloat3("Distortion Origin", &dO.x);
-		_distortionSettings.distortionOrigin = dO;
 		ImGui::TreePop();
 	}
 

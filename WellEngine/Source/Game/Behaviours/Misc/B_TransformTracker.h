@@ -14,7 +14,7 @@ namespace WellEngine
 	class [[register_behaviour]] B_TransformTracker final : public Behaviour
 	{
 	public:
-		const std::string &GetName() const override { return "TransformTracker"; }
+		std::string_view GetName() const override { return "TransformTracker"; }
 
 	private:
 		UINT _tempTrackedEntityID = CONTENT_NULL;

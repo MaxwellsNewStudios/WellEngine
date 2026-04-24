@@ -73,7 +73,7 @@
             "Hidden": false,
             "Beh": [
                 {
-                    "Name": "MeshBehaviour",
+                    "Name": "Mesh",
                     "Attributes": {
                         "Mesh": "Plane",
                         "Transparent": false,
@@ -121,7 +121,7 @@
                     }
                 },
                 {
-                    "Name": "BoxJoltColliderBehaviour",
+                    "Name": "BoxCollider",
                     "Attributes": {
                         "MotionType": 0,
                         "Layer": 0,
@@ -168,7 +168,7 @@
             "Hidden": false,
             "Beh": [
                 {
-                    "Name": "SimplePointLightBehaviour",
+                    "Name": "LightPointSimple",
                     "Attributes": {
                         "Falloff": 0.10000000149011612,
                         "Fog Strength": 0.25,
@@ -227,7 +227,7 @@
             "Hidden": false,
             "Beh": [
                 {
-                    "Name": "TextMeshBehaviour",
+                    "Name": "MeshText",
                     "Attributes": {
                         "Atlas": "SimpleFont",
                         "Text": "Hello World!",
@@ -267,7 +267,7 @@
             "Hidden": false,
             "Beh": [
                 {
-                    "Name": "MeshBehaviour",
+                    "Name": "Mesh",
                     "Attributes": {
                         "Mesh": "HighPolySphere",
                         "Transparent": false,

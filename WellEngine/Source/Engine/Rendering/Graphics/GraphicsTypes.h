@@ -105,12 +105,6 @@ namespace WellEngine
 		float whiteBias = 0.25f;
 	};
 
-	struct DistortionSettingsBuffer
-	{
-		dx::XMFLOAT3 distortionOrigin = { 0.0f, 0.0f, 0.0f };
-		float distortionStrength = 0.0f;
-	};
-
 	struct DepthOfFieldSettingsBuffer
 	{
 		float focalPlane = 0.25f;

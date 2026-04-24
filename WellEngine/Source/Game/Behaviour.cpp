@@ -464,7 +464,7 @@ bool Behaviour::InitialSerialize(json::Document::AllocatorType &docAlloc, json::
 		return true;
 
 	json::Value nameStr(json::kStringType);
-	nameStr.SetString(GetName().c_str(), docAlloc);
+	nameStr.SetString(GetName().data(), docAlloc);
 	obj.AddMember("Name", nameStr, docAlloc);
 
 	json::Value attributes(json::kObjectType);

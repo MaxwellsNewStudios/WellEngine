@@ -142,12 +142,6 @@ bool Graphics::EndSceneRender(TimeUtils &time)
 			return false;
 		}
 
-		if (!_distortionSettingsBuffer.UpdateBuffer(_context, &_distortionSettings))
-		{
-			ErrMsg("Failed to update distortion settings buffer!");
-			return false;
-		}
-
 		if (!_depthOfFieldSettingsBuffer.UpdateBuffer(_context, &_currDepthOfFieldSettings))
 		{
 			ErrMsg("Failed to update depth of field settings buffer")
@@ -169,10 +163,6 @@ bool Graphics::EndSceneRender(TimeUtils &time)
 
 		_context->OMSetDepthStencilState(GetCurrentDepthStencilState(), 0);
 
-		// Bind vertex distortion settings
-		ID3D11Buffer *const distortionSettings = _distortionSettingsBuffer.GetBuffer();
-		_context->VSSetConstantBuffers(2, 1, &distortionSettings);
-
 		// Bind general data for vertex shader
 		ID3D11Buffer *const generalDataBuf = _generalDataBuffer.GetBuffer();
 		_context->VSSetConstantBuffers(5, 1, &generalDataBuf);
@@ -187,7 +177,7 @@ bool Graphics::EndSceneRender(TimeUtils &time)
 		_context->VSSetShaderResources(10, 1, &srv);
 		_context->PSSetShaderResources(10, 1, &srv);
 
-		ID3D11ShaderResourceView *const cubemap = _content->GetCubemap(_environmentCubemapID)->GetSRV();
+		ID3D11ShaderResourceView *const cubemap = _content->GetCubemap(_envCubemapID)->GetSRV();
 		_context->PSSetShaderResources(20, 1, &cubemap);
 	}
 
@@ -684,19 +674,16 @@ bool Graphics::RenderSpotlights()
 	if (!collection->DoUpdate())
 		return true;
 
-	// Used to compare if the mesh uses the distortion shader
-	const UINT vsNoDistID = _content->GetShaderID("VS_Geometry");
-
 	const UINT vsDepthID = _content->GetShaderID("VS_Depth");
-	const UINT vsDepthDistID = _content->GetShaderID("VS_DepthDistortion");
-	if (_currVsID != vsDepthDistID)
+
+	if (_currVsID != vsDepthID)
 	{
-		if (!_content->GetShader(vsDepthDistID)->BindShader(_context))
+		if (!_content->GetShader(vsDepthID)->BindShader(_context))
 		{
 			ErrMsg("Failed to bind depth-stage vertex shader!");
 			return false;
 		}
-		_currVsID = vsDepthDistID;
+		_currVsID = vsDepthID;
 	}
 
 	_context->RSSetViewports(1, &collection->GetViewport());
@@ -777,7 +764,7 @@ bool Graphics::RenderSpotlights()
 				_currMeshID = resources.meshID;
 			}
 			
-			const UINT vsID = resources.material->vsID == vsNoDistID ? vsDepthID : vsDepthDistID;
+			const UINT vsID = vsDepthID;
 			if (_currVsID != vsID)
 			{
 				ShaderD3D11 *vs = _content->GetShader(vsID);
@@ -883,19 +870,16 @@ bool Graphics::RenderPointlights()
 	if (!collection->DoUpdate())
 		return true;
 
-	// Used to compare if the mesh uses the distortion shader
-	const UINT vsNoDistID = _content->GetShaderID("VS_Geometry");
-
 	const UINT vsDepthID = _content->GetShaderID("VS_DepthCubemap");
-	const UINT vsDepthDistID = _content->GetShaderID("VS_DepthDistortionCubemap");
-	if (_currVsID != vsDepthDistID)
+
+	if (_currVsID != vsDepthID)
 	{
-		if (!_content->GetShader(vsDepthDistID)->BindShader(_context))
+		if (!_content->GetShader(vsDepthID)->BindShader(_context))
 		{
 			ErrMsg("Failed to bind depth-stage vertex shader!");
 			return false;
 		}
-		_currVsID = vsDepthDistID;
+		_currVsID = vsDepthID;
 	}
 
 	if (!_content->GetShader("GS_DepthCubemap")->BindShader(_context))
@@ -993,7 +977,7 @@ bool Graphics::RenderPointlights()
 				_currMeshID = resources.meshID;
 			}
 
-			const UINT vsID = resources.material->vsID == vsNoDistID ? vsDepthID : vsDepthDistID;
+			const UINT vsID = vsDepthID;
 			if (_currVsID != vsID)
 			{
 				ShaderD3D11 *vs = _content->GetShader(vsID);
@@ -1196,7 +1180,7 @@ bool Graphics::RenderOutlinedGeometry()
 
 	// Bind resouces & perform drawcalls
 	{
-		static UINT defaultVsID = _content->GetShaderID("VS_GeometryDistortion");
+		static UINT defaultVsID = _content->GetShaderID("VS_Geometry");
 		static UINT defaultSamplerID = _content->GetSamplerID("Fallback");
 		static UINT defaultAmbientID = _content->GetTextureID("Ambient");
 
@@ -1496,7 +1480,7 @@ bool Graphics::RenderGeometry(bool overlayStage, bool skipPixelShader)
 	ZoneScopedC(RandomUniqueColor());
 	TracyD3D11ZoneC(_tracyD3D11Context, "Geometry", RandomUniqueColor());
 
-	static UINT defaultVsID = _content->GetShaderID("VS_GeometryDistortion");
+	static UINT defaultVsID = _content->GetShaderID("VS_Geometry");
 	static UINT defaultPsID = _content->GetShaderID("PS_Geometry");
 	static UINT defaultSamplerID = _content->GetSamplerID("Fallback");
 	static UINT defaultAmbientID = _content->GetTextureID("Ambient");
@@ -1904,7 +1888,7 @@ bool Graphics::RenderOpaque(
 	ID3D11Buffer *const generalData = _generalDataBuffer.GetBuffer();
 	_context->PSSetConstantBuffers(5, 1, &generalData);
 
-	ID3D11ShaderResourceView *const cubemap = _content->GetCubemap(_environmentCubemapID)->GetSRV();
+	ID3D11ShaderResourceView *const cubemap = _content->GetCubemap(_envCubemapID)->GetSRV();
 	_context->PSSetShaderResources(20, 1, &cubemap);
 
 	// Bind spotlight collection
@@ -2492,10 +2476,6 @@ bool Graphics::RenderPostFX()
 		{
 			ZoneNamedXNC(renderFogVolumeZone, "Render Fog", RandomUniqueColor(), true);
 			TracyD3D11NamedZoneC(_tracyD3D11Context, renderFogVolumeD3D11Zone, "Render Fog", RandomUniqueColor(), true);
-
-			// Bind distortion settings
-			ID3D11Buffer *const distortionSettings = _distortionSettingsBuffer.GetBuffer();
-			_context->CSSetConstantBuffers(2, 1, &distortionSettings);
 
 			// Bind fog settings
 			ID3D11Buffer *const fogSettings = _fogSettingsBuffer.GetBuffer();

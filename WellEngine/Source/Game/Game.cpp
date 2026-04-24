@@ -488,101 +488,7 @@ bool Game::Setup(TimeUtils &time, Window window)
 
 	std::string texPath = ASSET_PATH_TEXTURES;
 
-	std::vector<TextureData> textureNames = {
-		{ DXGI_FORMAT_UNKNOWN,			"Error",						PATH_FILE(texPath, "Error.dds"),						false,	1	},
-		{ DXGI_FORMAT_UNKNOWN,			"Fallback",						PATH_FILE(texPath, "Fallback.dds"),						false,	0	},
-		{ DXGI_FORMAT_R8G8B8A8_UNORM,	"White",						PATH_FILE(texPath, "White.png"),						false,	0	},
-		{ DXGI_FORMAT_R8G8B8A8_UNORM,	"Black",						PATH_FILE(texPath, "Black.png"),						false,	0	},
-		{ DXGI_FORMAT_R8G8B8A8_UNORM,	"Ambient",						PATH_FILE(texPath, "Ambient.png"),						false,	0	},
-		{ DXGI_FORMAT_R8G8B8A8_UNORM,	"AmbientBright",				PATH_FILE(texPath, "AmbientBright.png"),				false,	0	},
-		{ DXGI_FORMAT_R8G8B8A8_UNORM,	"Red",							PATH_FILE(texPath, "Red.png"),							false,	0	},
-		{ DXGI_FORMAT_R8G8B8A8_UNORM,	"Green",						PATH_FILE(texPath, "Green.png"),						false,	0	},
-		{ DXGI_FORMAT_R8G8B8A8_UNORM,	"Blue",							PATH_FILE(texPath, "Blue.png"),							false,	0	},
-		{ DXGI_FORMAT_UNKNOWN,			"Noise",						PATH_FILE(texPath, "Noise.dds"),						false,	0	},
-		{ DXGI_FORMAT_UNKNOWN,			"Maxwell",						PATH_FILE(texPath, "Maxwell.dds"),						false,	0	},
-		{ DXGI_FORMAT_UNKNOWN,			"Whiskers",						PATH_FILE(texPath, "Whiskers.dds"),						false,	0	},
-	    { DXGI_FORMAT_R8G8B8A8_UNORM,	"Gray",							PATH_FILE(texPath, "Gray.png"),							false,	0	},
-		{ DXGI_FORMAT_R8G8B8A8_UNORM,	"DarkGray",						PATH_FILE(texPath, "DarkGray.png"),						false,	0	},
-		{ DXGI_FORMAT_R8G8B8A8_UNORM,	"Default_Normal",				PATH_FILE(texPath, "Default_Normal.png"),				true,	0	},
-		{ DXGI_FORMAT_UNKNOWN,			"Metal_Normal",					PATH_FILE(texPath, "Metal_Normal.dds"),					true,	1	},
-		{ DXGI_FORMAT_UNKNOWN,			"Support_Beam_Normal",			PATH_FILE(texPath, "Support_Beam_Normal.dds"),			true,	1	},
-		{ DXGI_FORMAT_UNKNOWN,			"Camera_Normal",				PATH_FILE(texPath, "Camera_Normal.dds"),				true,	1	},
-		{ DXGI_FORMAT_UNKNOWN,			"FlashlightBody_Normal",		PATH_FILE(texPath, "FlashlightBody_Normal.dds"),		true,	1	},
-		{ DXGI_FORMAT_UNKNOWN,			"FlashlightLever_Normal",		PATH_FILE(texPath, "FlashlightLever_Normal.dds"),		true,	1	},
-		{ DXGI_FORMAT_UNKNOWN,			"Cave_Wall_Normal",				PATH_FILE(texPath, "Cave_Wall_Normal.dds"),				true,	0	},
-		{ DXGI_FORMAT_R8G8B8A8_UNORM,	"Default_Specular",				PATH_FILE(texPath, "AmbientBright.png"),				true,	0	},
-		{ DXGI_FORMAT_R8G8B8A8_UNORM,	"Black_Specular",				PATH_FILE(texPath, "Black.png"),						true,	0	},
-		{ DXGI_FORMAT_R8G8B8A8_UNORM,	"DarkGray_Specular",			PATH_FILE(texPath, "DarkGray.png"),						true,	0	},
-		{ DXGI_FORMAT_R8G8B8A8_UNORM,	"Gray_Specular",				PATH_FILE(texPath, "Gray.png"),							true,	0	},
-		{ DXGI_FORMAT_R8G8B8A8_UNORM,	"White_Specular",				PATH_FILE(texPath, "White.png"),						true,	0	},
-		{ DXGI_FORMAT_R8G8B8A8_UNORM,	"Red_Specular",					PATH_FILE(texPath, "Red.png"),							true,	0	},
-		{ DXGI_FORMAT_R8G8B8A8_UNORM,	"Green_Specular",				PATH_FILE(texPath, "Green.png"),						true,	0	},
-		{ DXGI_FORMAT_R8G8B8A8_UNORM,	"Blue_Specular",				PATH_FILE(texPath, "Blue.png"),							true,	0	},
-		{ DXGI_FORMAT_UNKNOWN,			"Metal_Specular",				PATH_FILE(texPath, "Metal_Specular.dds"),				true,	2	},
-		{ DXGI_FORMAT_UNKNOWN,			"Support_Beam_Specular",		PATH_FILE(texPath, "Support_Beam_Specular.dds"),		true,	2	},
-		{ DXGI_FORMAT_UNKNOWN,			"Camera_Specular",				PATH_FILE(texPath, "Camera_Specular.dds"),				true,	2	},
-		{ DXGI_FORMAT_UNKNOWN,			"FlashlightBody_Specular",		PATH_FILE(texPath, "FlashlightBody_Specular.dds"),		true,	2	},
-		{ DXGI_FORMAT_UNKNOWN,			"FlashlightLever_Specular",		PATH_FILE(texPath, "FlashlightLever_Specular.dds"),		true,	2	},
-		{ DXGI_FORMAT_R8G8B8A8_UNORM,	"Default_Glossiness",			PATH_FILE(texPath, "Gray.png"),							false,	0	},
-		{ DXGI_FORMAT_R8G8B8A8_UNORM,	"White_Glossiness",				PATH_FILE(texPath, "White.png"),						false,	0	},
-		{ DXGI_FORMAT_R8G8B8A8_UNORM,	"Black_Glossiness",				PATH_FILE(texPath, "Black.png"),						false,	0	},
-		{ DXGI_FORMAT_R8G8B8A8_UNORM,	"DarkGray_Glossiness",			PATH_FILE(texPath, "DarkGray.png"),						false,	0	},
-		{ DXGI_FORMAT_UNKNOWN,			"FlashlightBody_Glossiness",	PATH_FILE(texPath, "FlashlightBody_Glossiness.dds"),	false,	1	},
-		{ DXGI_FORMAT_UNKNOWN,			"FlashlightLever_Glossiness",	PATH_FILE(texPath, "FlashlightLever_Glossiness.dds"),	false,	1	},
-		{ DXGI_FORMAT_R8G8B8A8_UNORM,	"Default_Occlusion",			PATH_FILE(texPath, "White.png"),						true,	0	},
-		{ DXGI_FORMAT_UNKNOWN,			"Support_Beam_Occlusion",		PATH_FILE(texPath, "Support_Beam_Occlusion.dds"),		true,	1	},
-		{ DXGI_FORMAT_UNKNOWN,			"Camera_Occlusion",				PATH_FILE(texPath, "Camera_Occlusion.dds"),				true,	2	},
-
-#ifdef DEBUG_BUILD
-		{ DXGI_FORMAT_UNKNOWN,			"texture1",						PATH_FILE(texPath, "texture1.dds"),						true,	2	},
-		{ DXGI_FORMAT_UNKNOWN,			"Character_Texture",			PATH_FILE(texPath, "Character_Texture.dds"),			true,	0	},
-		{ DXGI_FORMAT_UNKNOWN,			"Sphere",						PATH_FILE(texPath, "Sphere.dds"),						false,	2	},
-		{ DXGI_FORMAT_UNKNOWN,			"Fade",							PATH_FILE(texPath, "Fade.dds"),							true,	0	},
-		{ DXGI_FORMAT_R8G8B8A8_UNORM,	"TransformGizmo",				PATH_FILE(texPath, "TransformGizmo.png"),				false,	0	},
-		{ DXGI_FORMAT_UNKNOWN,			"Cornell",						PATH_FILE(texPath, "Cornell.dds"),						false,	2	},
-		{ DXGI_FORMAT_UNKNOWN,			"SoundEmitter",					PATH_FILE(texPath, "SoundEmitter.dds"),					true,	1	},
-		{ DXGI_FORMAT_UNKNOWN,			"LightSource",					PATH_FILE(texPath, "LightSource.dds"),					true,	1	},
-		{ DXGI_FORMAT_UNKNOWN,			"Cornell_Light",				PATH_FILE(texPath, "Cornell_Light.dds"),				true,	2	},
-		{ DXGI_FORMAT_UNKNOWN,			"Transparent",					PATH_FILE(texPath, "Transparent.dds"),					false,	2	},
-		{ DXGI_FORMAT_UNKNOWN,			"Transparent2",					PATH_FILE(texPath, "Transparent2.dds"),					false,	2	},
-#endif
-	};
-
-	{
-		bool isDebug = false;
-		for (auto &tex : textureNames)
-		{
-			std::string fileNameExt = tex.path;
-			size_t lastSlash = fileNameExt.find_last_of("/\\");
-			if (lastSlash != std::string::npos)
-				fileNameExt = fileNameExt.substr(lastSlash + 1);
-
-			json::Value tex2dObj(json::kObjectType);
-			tex2dObj.AddMember(SerializeString(PATH_TAG, cDocAlloc), SerializeString(tex.path, cDocAlloc), cDocAlloc);
-			tex2dObj.AddMember(SerializeString(TYPE_TAG, cDocAlloc), SerializeString("tex2d", cDocAlloc), cDocAlloc);
-
-			if (tex.type != DXGI_FORMAT_UNKNOWN)
-				tex2dObj.AddMember("Format", SerializeString(D3D11FormatData::GetName(tex.type), cDocAlloc), cDocAlloc);
-
-			if (tex.mipmapped)
-				tex2dObj.AddMember("Mipmapped", true, cDocAlloc);
-
-			if (tex.downsample > 0)
-				tex2dObj.AddMember("Downsample", tex.downsample, cDocAlloc);
-
-			if (tex.name == "texture1")
-				isDebug = true;
-
-			if (isDebug)
-				tex2dObj.AddMember("Debug", true, cDocAlloc);
-
-			if (!cReg.AddAsset("Textures\\" + tex.name, tex2dObj, NameConflictAction::Override))
-			{
-				ErrMsgF("Failed to add tex2d '{}' to registry!", tex.name);
-				return false;
-			}
-		}
-	}
+	std::vector<TextureData> textureNames;
 
 	std::ifstream texStream(ASSET_REGISTRY_FILE_TEXTURES);
 	if (texStream)
@@ -700,27 +606,46 @@ bool Game::Setup(TimeUtils &time, Window window)
 				continue;
 			}
 
-			size_t dotPos = line.find_last_of('.');
-			if (dotPos == std::string::npos || dotPos == 0 || dotPos == line.size() - 1)
+			// Extract alias, if present. Format: "fileName.png" or "fileName.png = alias"
+			// If no alias is present, the alias will be derived from the filename
+			std::string filePath = "";
+			std::string aliasName = "";
+
+			size_t equalsPos = line.find_first_of('=');
+			if (equalsPos != std::string::npos)
 			{
-				WarnF("Invalid texture name: '{}'", line);
-				continue;
+				filePath = StringUtils::Trim(line.substr(0, equalsPos));
+				aliasName = StringUtils::Trim(line.substr(equalsPos + 1));
+			}
+			else
+			{
+				filePath = line;
 			}
 
-			size_t fileNameStart = line.find_last_of("/\\");
-			if (fileNameStart == std::string::npos)
-				fileNameStart = 0;
-			else
-				fileNameStart += 1;
+			size_t dotPos = filePath.find_last_of('.');
+			if (dotPos == std::string::npos || dotPos == 0 || dotPos == filePath.size() - 1)
+			{
+				WarnF("Invalid texture filepath: '{}'", filePath);
+				continue;
+			}
+			
+			if (aliasName.empty())
+			{
+				size_t fileNameStart = filePath.find_last_of("/\\");
+				if (fileNameStart == std::string::npos)
+					fileNameStart = 0;
+				else
+					fileNameStart += 1;
 
-			std::string name = line.substr(fileNameStart, dotPos - fileNameStart);
+				aliasName = filePath.substr(fileNameStart, dotPos - fileNameStart);
+			}
 
 			// Check if the texture is already in the list
 			bool found = false;
 			UINT textureCount = static_cast<UINT>(textureNames.size());
 			for (UINT i = 0; i < textureCount; i++)
 			{
-				if (textureNames[i].name == name)
+				if (textureNames[i].name == aliasName)
 				{
 					found = true;
 					break;
@@ -731,23 +656,31 @@ bool Game::Setup(TimeUtils &time, Window window)
 				continue;
 
 			bool editorOnly = editorOnlyStack.empty() ? false : editorOnlyStack.back();
-			bool mipmapped = mipmappedStack.empty() ? true : mipmappedStack.back();
-			int downsample = downsampleStack.empty() ? 0 : downsampleStack.back();
-			DXGI_FORMAT format = formatStack.empty() ? DXGI_FORMAT_UNKNOWN : formatStack.back();
 
 #ifndef DEBUG_BUILD
 			if (editorOnly)
 				continue;
 #endif
 
-			std::string texRelPath = line.substr(0, dotPos);
-			line = PATH_FILE(ASSET_PATH_TEXTURES, line);
+			bool mipmapped = mipmappedStack.empty() ? true : mipmappedStack.back();
+			int downsample = downsampleStack.empty() ? 0 : downsampleStack.back();
+			DXGI_FORMAT format = formatStack.empty() ? DXGI_FORMAT_UNKNOWN : formatStack.back();
 
-			textureNames.emplace(textureNames.begin(), format, name, line, mipmapped, downsample);
+			std::string texPathInternal;
+
+			size_t lastSlash = filePath.find_last_of("/\\");
+			if (lastSlash != std::string::npos)
+				texPathInternal = PATH_FILE(filePath.substr(0, lastSlash), aliasName);
+			else
+				texPathInternal = aliasName;
+
+			filePath = PATH_FILE(ASSET_PATH_TEXTURES, filePath);
+
+			textureNames.emplace(textureNames.begin(), format, aliasName, filePath, mipmapped, downsample);
 
 			{
 				json::Value tex2dObj(json::kObjectType);
-				tex2dObj.AddMember(SerializeString(PATH_TAG, cDocAlloc), SerializeString(line, cDocAlloc), cDocAlloc);
+				tex2dObj.AddMember(SerializeString(PATH_TAG, cDocAlloc), SerializeString(filePath, cDocAlloc), cDocAlloc);
 				tex2dObj.AddMember(SerializeString(TYPE_TAG, cDocAlloc), SerializeString("tex2d", cDocAlloc), cDocAlloc);
 
 				if (format != DXGI_FORMAT_UNKNOWN)
@@ -762,9 +695,9 @@ bool Game::Setup(TimeUtils &time, Window window)
 				if (editorOnly)
 					tex2dObj.AddMember("Debug", true, cDocAlloc);
 
-				if (!cReg.AddAsset("Textures\\" + texRelPath, tex2dObj, NameConflictAction::Override))
+				if (!cReg.AddAsset("Textures\\" + texPathInternal, tex2dObj, NameConflictAction::Override))
 				{
-					ErrMsgF("Failed to add tex2d '{}' to registry!", name);
+					ErrMsgF("Failed to add tex2d '{}' to registry!", texPathInternal);
 					return false;
 				}
 			}
@@ -774,7 +707,7 @@ bool Game::Setup(TimeUtils &time, Window window)
 
 	// TODO: cubemaps should also be baked. Until then, always load from source
 	std::vector<TextureData> cubemapNames = {
-		{ DXGI_FORMAT_R8G8B8A8_UNORM,		"Fallback",				PATH_FILE(texPath, "FallbackCubemap.png"),				true,	0 },
+		{ DXGI_FORMAT_R8G8B8A8_UNORM,		"Null",					PATH_FILE(texPath, "NullCubemap.png"),					true,	0 },
 		{ DXGI_FORMAT_R8G8B8A8_UNORM,		"RundownIndustrial",	PATH_FILE(texPath, "RundownIndustrialCubemap.png"),		true,	0 },
 		{ DXGI_FORMAT_R8G8B8A8_UNORM,		"SandstoneCity",		PATH_FILE(texPath, "SandstoneCityCubemap.png"),			true,	0 },
 		{ DXGI_FORMAT_R8G8B8A8_UNORM,		"MonkstownCastle",		PATH_FILE(texPath, "MonkstownCastleCubemap.png"),		true,	0 },
@@ -827,12 +760,9 @@ bool Game::Setup(TimeUtils &time, Window window)
 
 	std::vector<ShaderData> shaderNames = {
 		{ ShaderType::VERTEX_SHADER,		"VS_Geometry",					"Vertex/VS_Geometry"				},
-		{ ShaderType::VERTEX_SHADER,		"VS_GeometryDistortion",		"Vertex/VS_GeometryDistortion"		},
 		{ ShaderType::VERTEX_SHADER,		"VS_TextDefault",				"Vertex/VS_TextDefault"				},
 		{ ShaderType::VERTEX_SHADER,		"VS_Depth",						"Vertex/VS_Depth"					},
-		{ ShaderType::VERTEX_SHADER,		"VS_DepthDistortion",			"Vertex/VS_DepthDistortion"			},
 		{ ShaderType::VERTEX_SHADER,		"VS_DepthCubemap",				"Vertex/VS_DepthCubemap"			},
-		{ ShaderType::VERTEX_SHADER,		"VS_DepthDistortionCubemap",	"Vertex/VS_DepthDistortionCubemap"	},
 		{ ShaderType::VERTEX_SHADER,		"VS_ScreenEffect",				"Vertex/VS_ScreenEffect"			},
 
 		{ ShaderType::GEOMETRY_SHADER,		"GS_Billboard",					"Geometry/GS_Billboard"				},
@@ -851,7 +781,6 @@ bool Game::Setup(TimeUtils &time, Window window)
 		{ ShaderType::PIXEL_SHADER,			"PS_SkyboxSolidColor",			"Pixel/PS_SkyboxSolidColor"			},
 		{ ShaderType::PIXEL_SHADER,			"PS_SkyboxNormal",				"Pixel/PS_SkyboxNormal"				},
 		{ ShaderType::PIXEL_SHADER,			"PS_SkyboxEnvironment",			"Pixel/PS_SkyboxEnvironment"		},
-		{ ShaderType::PIXEL_SHADER,			"PS_ScreenEffectFog",			"Pixel/PS_ScreenEffectFog"			},
 
 		{ ShaderType::COMPUTE_SHADER,		"CS_BlurHorizontalFX",			"Compute/CS_BlurHorizontalFX"		},
 		{ ShaderType::COMPUTE_SHADER,		"CS_BlurVerticalFX",			"Compute/CS_BlurVerticalFX"			},

@@ -19,10 +19,7 @@ struct PS_CUBEMAP_IN
 
 [maxvertexcount(18)]
 void main(triangle GS_CUBEMAP_IN input[3], inout TriangleStream<PS_CUBEMAP_IN> CubeMapStream)
-{
-	// TODO: Implement this for shadowcasting pointlights.
-	// See https://github.com/microsoft/DirectX-SDK-Samples/tree/main/C%2B%2B/Direct3D10/CubeMapGS
-	
+{	
 	for (int f = 0; f < 6; ++f)
 	{
 		PS_CUBEMAP_IN output;

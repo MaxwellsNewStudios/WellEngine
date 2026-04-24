@@ -27,7 +27,7 @@ namespace WellEngine
 	class [[register_behaviour]] B_LightSpot final : public Behaviour
 	{
 	public:
-		const std::string & GetName() const override { return "LightSpot"; }
+		std::string_view GetName() const override { return "LightSpot"; }
 
 	private:
 		ProjectionInfo _initialProjInfo = { };

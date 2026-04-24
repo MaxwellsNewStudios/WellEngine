@@ -8,7 +8,7 @@ namespace WellEngine
 	class [[register_behaviour]] B_Example final : public Behaviour
 	{
 	public:
-		const std::string &GetName() const override { return "Example"; }
+		std::string_view GetName() const override { return "Example"; }
 
 	private:
 		bool _hasCreatedChild = false;

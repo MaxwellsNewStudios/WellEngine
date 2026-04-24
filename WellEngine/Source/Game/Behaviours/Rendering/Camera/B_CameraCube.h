@@ -21,7 +21,7 @@ namespace WellEngine
 	class [[register_behaviour]] B_CameraCube final : public Behaviour, public RenderQueuer
 	{
 	public:
-		const std::string &GetName() const override { return "CameraCube"; }
+		std::string_view GetName() const override { return "CameraCube"; }
 
 	private:
 		std::vector<RenderQueueEntry> _geometryRenderQueue;

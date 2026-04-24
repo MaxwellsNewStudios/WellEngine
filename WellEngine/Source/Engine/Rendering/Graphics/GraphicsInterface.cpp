@@ -91,7 +91,7 @@ UINT Graphics::GetSkyboxShaderID() const
 }
 UINT Graphics::GetEnvironmentCubemapID() const
 {
-	return _environmentCubemapID;
+	return _envCubemapID;
 }
 #pragma endregion
 
@@ -129,15 +129,6 @@ bool Graphics::SetLightPointCollection(LightPointCollection *pointlights)
 
 	_currLightPointCollection = pointlights;
 	return true;
-}
-
-void Graphics::SetDistortionOrigin(const dx::XMFLOAT3A &origin)
-{
-	_distortionSettings.distortionOrigin = origin;
-}
-void Graphics::SetDistortionStrength(float strength)
-{
-	_distortionSettings.distortionStrength = strength;
 }
 
 void Graphics::SetFogBlurIterations(UINT iterations)
@@ -321,14 +312,14 @@ void Graphics::SetEnvironmentCubemapID(UINT cubemapID)
 {
 	if (cubemapID == CONTENT_NULL)
 	{
-		_environmentCubemapID = CONTENT_NULL;
+		_envCubemapID = CONTENT_NULL;
 		return;
 	}
 
 	std::string cubemapName = _content->GetCubemapName(cubemapID);
 	if (cubemapName == "Uninitialized")
 	{
-		_environmentCubemapID = CONTENT_NULL;
+		_envCubemapID = CONTENT_NULL;
 		return;
 	}
 
@@ -336,7 +327,7 @@ void Graphics::SetEnvironmentCubemapID(UINT cubemapID)
 	if (!cubemapSRT->IsCubemap())
 		return;
 
-	_environmentCubemapID = cubemapID;
+	_envCubemapID = cubemapID;
 }
 
 #ifdef USE_IMGUI
