@@ -1,6 +1,6 @@
 # Well Engine
 
-A D3D11-based 3D game + engine originally developed as a group project by six students for Lurks Below. 
+A D3D11-based 3D game engine originally developed as a group project by six students for Lurks Below. 
 
 ![Editor](Docs/Images/EditorPreview2.png)
 
@@ -18,9 +18,10 @@ Shouldn't require any prerequisites. Only supported platform is Windows.
 
 ## Functionality
 
-### Entities & Behaviours
+### Entities, Behaviours & Systems
 
-- Similar to Unity's GameObjects & Components 
+- Entities & behaviours similar to Unity's GameObjects & Components
+- Systems for scene independent singleton-like scripts
 
 ### Scenes
 
@@ -31,10 +32,10 @@ Shouldn't require any prerequisites. Only supported platform is Windows.
 ### Dev Tools
 
 - Transformation controls
-- Entity creation
-- Simple debug shape drawing
-- Full [Tracy](https://github.com/wolfpld/tracy) support
+- Entity/Behaviour creation & manipulation
+- Debug shape drawing
 - Runtime resource loading & shader compilation
+- Full [Tracy](https://github.com/wolfpld/tracy) support
 
 ### Multi-pass Rendering
 
