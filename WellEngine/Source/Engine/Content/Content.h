@@ -4,14 +4,15 @@
 #include <string>
 #include <set>
 
-#include "Engine/D3D/InputLayoutD3D11.h"
-#include "Engine/D3D/ShaderD3D11.h"
-#include "Engine/D3D/MeshD3D11.h"
-#include "Engine/D3D/SamplerD3D11.h"
-#include "Engine/D3D/ShaderResourceTextureD3D11.h"
-#include "Engine/Audio/SoundSource.h"
 #include "Material.h"
 #include "FontAtlas.h"
+#include "ContentRegistry.h"
+#include "Engine/D3D/MeshD3D11.h"
+#include "Engine/D3D/ShaderD3D11.h"
+#include "Engine/D3D/SamplerD3D11.h"
+#include "Engine/D3D/InputLayoutD3D11.h"
+#include "Engine/D3D/ShaderResourceTextureD3D11.h"
+#include "Engine/Audio/SoundSource.h"
 #include "Tests/TestUtils.h"
 
 namespace WellEngine
@@ -237,7 +238,7 @@ namespace WellEngine
 		[[nodiscard]] const Material *GetErrorMaterial();
 
 
-		[[nodiscard]] bool CompileContent(const std::vector<std::string> &meshNames) const;
+		[[nodiscard]] bool CompileContent(const std::vector<AssetRegistryEntry> &meshNames) const;
 		[[nodiscard]] bool DecompileContent(ID3D11Device *device);
 
 

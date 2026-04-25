@@ -279,7 +279,10 @@ json::Value *ContentRegistry::GetAsset(const std::string &path)
 	_failState = RegistryFailState::None;
 
 	if (!IsOpen())
+	{
+		_failState = RegistryFailState::RegistryNotOpen;
 		return nullptr;
+	}
 
 	std::vector<std::string> folderChain = SplitPath(path);
 	std::string assetName = folderChain.back();
@@ -288,13 +291,68 @@ json::Value *ContentRegistry::GetAsset(const std::string &path)
 	json::Value *containingFolder = NavToFolder(folderChain);
 
 	if (containingFolder == nullptr)
+	{
+		_failState = RegistryFailState::DirNotFound;
 		return nullptr;
+	}
 
 	json::Value &assets = (*containingFolder)[ASSET_TAG];
 	if (!assets.HasMember(assetName.c_str()))
+	{
+		_failState = RegistryFailState::AssetNotFound;
 		return nullptr;
+	}
 
 	return &assets[assetName.c_str()];
+}
+
+// Recursively find all assets and add them to a map keyed by asset type (stored in each asset's "type" field)
+std::unordered_map<std::string, std::vector<AssetRegistryEntry>> ContentRegistry::GetAssetTypeMap()
+{
+	_failState = RegistryFailState::None;
+
+	if (!IsOpen())
+	{
+		_failState = RegistryFailState::RegistryNotOpen;
+		return {};
+	}
+
+	std::unordered_map<std::string, std::vector<AssetRegistryEntry>> result;
+
+	std::function<void(json::Value &, std::string)> recurseFolders = [&](json::Value &folder, std::string path)
+	{
+		if (!path.empty())
+			path += "\\";
+
+		json::Value &assets = folder[ASSET_TAG];
+		for (json::Value::MemberIterator it = assets.MemberBegin(); it != assets.MemberEnd(); ++it)
+		{
+			AssetRegistryEntry entry = {
+				path + it->name.GetString(),
+				&it->value
+			};
+
+			if (!entry.asset->HasMember(TYPE_TAG))
+			{
+				_failState = RegistryFailState::InvalidAssetData;
+				WarnF("Asset {} is missing type field!", entry.path);
+				continue;
+			}
+
+			std::string type = (*entry.asset)[TYPE_TAG].GetString();
+			result[type].push_back(entry);
+		}
+
+		json::Value &subFolders = folder[FOLDER_TAG];
+		for (json::Value::MemberIterator it = subFolders.MemberBegin(); it != subFolders.MemberEnd(); ++it)
+		{
+			recurseFolders(it->value, path + it->name.GetString());
+		}
+	};
+
+	recurseFolders(*_registryDoc, "");
+
+	return result;
 }
 #pragma endregion // Read
 

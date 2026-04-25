@@ -36,8 +36,20 @@ namespace WellEngine
 		NameConflict,
 		InvalidPath,
 		InvalidName,
+		InvalidAssetData,
 		JsonParseError,
 		IOError,
+	};
+
+	struct AssetRegistryEntry
+	{
+		std::string path = "";
+		json::Value *asset = nullptr;
+
+		AssetRegistryEntry() = default;
+		AssetRegistryEntry(const std::string &path, json::Value *data)
+			: path(path), asset(data) {
+		}
 	};
 
 	class ContentRegistry
@@ -79,13 +91,14 @@ namespace WellEngine
 			return path;
 		}
 
-
 		// General
-		[[nodiscard]] bool OpenRegistry();
-		[[nodiscard]] bool SaveRegistry();
+		bool OpenRegistry();
+		bool SaveRegistry();
 		void CloseRegistry();
 
+		[[nodiscard]] bool Failed() const { return _failState != RegistryFailState::None; }
 		[[nodiscard]] RegistryFailState GetFailure() const { return _failState; }
+
 		[[nodiscard]] bool IsOpen() const { return _registryDoc != nullptr; }
 		[[nodiscard]] bool IsDirty() const { return _dirty; }
 
@@ -96,7 +109,9 @@ namespace WellEngine
 		// Read
 		[[nodiscard]] json::Value *GetAsset(const std::string &path);
 
+		[[nodiscard]] std::unordered_map<std::string, std::vector<AssetRegistryEntry>> GetAssetTypeMap();
+
 		// Write
-		[[nodiscard]] bool AddAsset(const std::string &path, json::Value &obj, NameConflictAction conflictAction = NameConflictAction::Fail);
+		bool AddAsset(const std::string &path, json::Value &obj, NameConflictAction conflictAction = NameConflictAction::Fail);
 	};
 }

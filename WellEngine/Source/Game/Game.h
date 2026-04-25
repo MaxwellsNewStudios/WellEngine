@@ -53,12 +53,7 @@ namespace WellEngine
 		std::string _pendingLayoutChange = "";
 	#endif
 
-		[[nodiscard]] bool LoadContent(
-			const std::vector<TextureData> &textureNames,
-			const std::vector<TextureData> &cubemapNames,
-			const std::vector<ShaderData> &shaderNames,
-			const std::vector<std::string> &fontAtlasNames
-		);
+		[[nodiscard]] bool LoadContent();
 
 		void UpdateWorker();
 

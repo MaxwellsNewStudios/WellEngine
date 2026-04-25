@@ -42,13 +42,93 @@ Game::~Game()
 #endif
 }
 
-bool Game::LoadContent(
-	const std::vector<TextureData> &textureNames,
-	const std::vector<TextureData> &cubemapNames,
-	const std::vector<ShaderData> &shaderNames,
-	const std::vector<std::string> &fontAtlasNames)
+bool Game::LoadContent()
 {
 	ZoneScopedC(RandomUniqueColor());
+
+	using namespace SerializerUtils;
+	using namespace WellEngine::ContentRegistryTags;
+
+	ContentRegistry &cReg = ContentRegistry::Instance();
+	if (!cReg.OpenRegistry())
+	{
+		ErrMsg("Failed to open content registry!");
+		return false;
+	}
+
+	auto assetTypeMap = cReg.GetAssetTypeMap();
+	auto &meshList = assetTypeMap["mesh"]; // Unused for now
+	auto &tex2dList = assetTypeMap["tex2d"];
+	auto &texCubeList = assetTypeMap["texcube"];
+	auto &shaderList = assetTypeMap["shader"];
+	auto &atlasList = assetTypeMap["atlas"];
+
+	// Determine if a compiled content file exists or if it needs to be created
+	{
+		bool compileContent = false;
+
+#ifdef FORCE_COMPILE_CONTENT
+		compileContent = true;
+		DbgMsg("Forcing recompilation of content files...");
+#else // FORCE_COMPILE_CONTENT
+		FILE *compileFile = nullptr;
+		errno_t compileErr = fopen_s(&compileFile, ASSET_COMPILED_FILE_MESHES, "r");
+
+		if (compileErr != 0 || compileFile == nullptr)
+		{
+			compileContent = true;
+			DbgMsg("No compiled content file found. Recompiling...");
+		}
+
+		if (compileFile != nullptr)
+		{
+			fclose(compileFile);
+
+#ifdef AUTO_RECOMPILE_CONTENT_ON_CHANGE
+			// Compare the age of the compiled file to the registry file & newest mesh file.
+			// If the compiled file is older then recompile anyways.
+			if (!compileContent)
+			{
+				std::filesystem::path compiledPath(ASSET_COMPILED_FILE_MESHES);
+
+				std::filesystem::file_time_type compiledTime = std::filesystem::last_write_time(compiledPath);
+				std::filesystem::file_time_type registryFile = std::filesystem::last_write_time(ContentRegistry::GetRegistryPath());
+
+				if (registryFile > compiledTime)
+				{
+					compileContent = true;
+					DbgMsg("Compiled content file is older than registry file. Recompiling...");
+				}
+				else
+				{
+					std::filesystem::file_time_type newestMeshTime = DirectoryManager::GetMostRecentFileDate(ASSET_PATH_MESHES);
+
+					if (newestMeshTime > compiledTime)
+					{
+						compileContent = true;
+						DbgMsg("Compiled content file is older than source mesh files. Recompiling...");
+					}
+				}
+			}
+#endif // AUTO_RECOMPILE_CONTENT_ON_CHANGE
+		}
+#endif // FORCE_COMPILE_CONTENT
+
+		std::string line;
+		if (compileContent)
+		{
+			TimeUtils::GetInstance().TakeSnapshot("CompileContent");
+			if (!_content.CompileContent(meshList))
+			{
+				ErrMsg("Failed to compile content!");
+				return false;
+			}
+			TimeUtils::GetInstance().TakeSnapshot("CompileContent");
+
+			// Print content compile times.
+			DbgMsgF("Content Compile: {} s", TimeUtils::GetInstance().CompareSnapshots("CompileContent"));
+		}
+	}
 
 	DbgMsg("Decompiling Content (Meshes)...");
 	if (!_content.DecompileContent(_device.Get()))
@@ -85,9 +165,28 @@ bool Game::LoadContent(
 			DbgMsg("Loading Cubemaps...");
 
 #pragma omp for schedule(dynamic) nowait
-		for (int i = 0; i < cubemapNames.size(); i++)
+		for (int i = 0; i < texCubeList.size(); i++)
 		{
-			const TextureData &cubemap = cubemapNames[i];
+			auto &entry = texCubeList[i];
+
+			TextureData cubemap = {};
+			cubemap.name = entry.path;
+			cubemap.path = (*entry.asset)[PATH_TAG].GetString();
+
+			if (entry.asset->HasMember("Format"))
+				cubemap.type = D3D11FormatData::TypeFromName((*entry.asset)["Format"].GetString());
+			else
+				cubemap.type = DXGI_FORMAT_UNKNOWN;
+
+			if (entry.asset->HasMember("Mipmapped"))
+				cubemap.mipmapped = (*entry.asset)["Mipmapped"].GetBool();
+			else
+				cubemap.mipmapped = false;
+
+			if (entry.asset->HasMember("Downsample"))
+				cubemap.downsample = (*entry.asset)["Downsample"].GetInt();
+			else
+				cubemap.downsample = 0;
 
 			if (_content.AddCubemap(
 				_device.Get(), _immediateContext.Get(),
@@ -105,9 +204,28 @@ bool Game::LoadContent(
 
 	DbgMsg("Loading Textures...");
 
-	for (int i = 0; i < textureNames.size(); i++)
+	for (int i = 0; i < tex2dList.size(); i++)
 	{
-		const TextureData &texture = textureNames[i];
+		auto &entry = tex2dList[i];
+
+		TextureData texture = {};
+		texture.name = entry.path;
+		texture.path = (*entry.asset)[PATH_TAG].GetString();
+
+		if (entry.asset->HasMember("Format"))
+			texture.type = D3D11FormatData::TypeFromName((*entry.asset)["Format"].GetString());
+		else
+			texture.type = DXGI_FORMAT_UNKNOWN;
+
+		if (entry.asset->HasMember("Mipmapped"))
+			texture.mipmapped = (*entry.asset)["Mipmapped"].GetBool();
+		else
+			texture.mipmapped = false;
+
+		if (entry.asset->HasMember("Downsample"))
+			texture.downsample = (*entry.asset)["Downsample"].GetInt();
+		else
+			texture.downsample = 0;
 
 		if (_content.AddTexture(
 			_device.Get(), _immediateContext.Get(),
@@ -123,8 +241,15 @@ bool Game::LoadContent(
 
 	DbgMsg("Loading Shaders...");
 
-	for (const ShaderData &shader : shaderNames)
+	for (int i = 0; i < shaderList.size(); i++)
 	{
+		auto &entry = shaderList[i];
+
+		ShaderData shader = {};
+		shader.name = entry.path;
+		shader.path = (*entry.asset)[PATH_TAG].GetString();
+		shader.type = ShaderTypeUtils::ShaderTypeFromString((*entry.asset)["Format"].GetString());
+
 		std::string fileName = shader.path;
 		
 		size_t lastSlash = fileName.find_last_of("/\\");
@@ -141,12 +266,19 @@ bool Game::LoadContent(
 	DbgMsg("Loading Fonts...");
 
 	// Font Atlases
-	for (int i = 0; i < fontAtlasNames.size(); i++)
+	for (int i = 0; i < atlasList.size(); i++)
 	{
-		const std::string &fontName = fontAtlasNames[i];
-		if (_content.AddFontAtlas(fontName) == CONTENT_NULL)
+		auto &entry = atlasList[i];
+
+		std::string atlas = entry.path;
+
+		size_t lastSlash = atlas.find_last_of("/\\");
+		if (lastSlash != std::string::npos)
+			atlas = atlas.substr(lastSlash + 1);
+
+		if (_content.AddFontAtlas(atlas) == CONTENT_NULL)
 		{
-			ErrMsgF("Failed to add font atlas {}!", fontName);
+			ErrMsgF("Failed to add font atlas {}!", atlas);
 			return false;
 		}
 	}
@@ -335,6 +467,9 @@ bool Game::LoadContent(
 #endif
 	}
 
+
+	cReg.CloseRegistry();
+
 	return true;
 }
 
@@ -356,548 +491,8 @@ bool Game::Setup(TimeUtils &time, Window window)
 
 	ZoneScopedC(RandomUniqueColor());
 
-	using namespace SerializerUtils;
-	using namespace WellEngine::ContentRegistryTags;
-
-	ContentRegistry &cReg = ContentRegistry::Instance();
-	if (!cReg.OpenRegistry())
-	{
-		ErrMsg("Failed to open content registry!");
-		return false;
-	}
-
-	auto &cDocAlloc = *cReg.GetDocAlloc();
-
-	// Determine if a compiled content file exists or if it needs to be created
-	bool compileContent = false;
-
-#ifdef FORCE_COMPILE_CONTENT
-	compileContent = true;
-	DbgMsg("Forcing recompilation of content files...");
-#else
-	FILE *compileFile = nullptr;
-	errno_t compileErr =  fopen_s(&compileFile, ASSET_COMPILED_FILE_MESHES, "r");
-
-	if (compileErr != 0 || compileFile == nullptr)
-	{
-		compileContent = true;
-		DbgMsg("No compiled content file found. Recompiling...");
-	}
-
-	if (compileFile != nullptr)
-	{
-		fclose(compileFile);
-
-#ifdef AUTO_RECOMPILE_CONTENT_ON_CHANGE
-		// Compare the age of the compiled file to the registry file & newest mesh file.
-		// If the compiled file is older then recompile anyways.
-		if (!compileContent)
-		{
-			std::filesystem::path compiledPath(ASSET_COMPILED_FILE_MESHES);
-
-			std::filesystem::file_time_type compiledTime = std::filesystem::last_write_time(compiledPath);
-			std::filesystem::file_time_type registryFile = std::filesystem::last_write_time(ASSET_REGISTRY_FILE_MESHES);
-
-			if (registryFile > compiledTime)
-			{
-				compileContent = true;
-				DbgMsg("Compiled content file is older than registry file. Recompiling...");
-			}
-			else
-			{
-				std::filesystem::file_time_type newestMeshTime = DirectoryManager::GetMostRecentFileDate(ASSET_PATH_MESHES);
-
-				if (newestMeshTime > compiledTime)
-				{
-					compileContent = true;
-					DbgMsg("Compiled content file is older than source mesh files. Recompiling...");
-				}
-			}
-
-		}
-#endif
-	}
-#endif
-
-	std::string line;
-	if (compileContent)
-	{
-		std::ifstream fileStream(ASSET_REGISTRY_FILE_MESHES);
-		if (!fileStream)
-		{
-			ErrMsg("Could not load file for meshes");
-			return false;
-		}
-
-		std::vector<std::string> meshNames;
-		bool isDebug = false;
-
-		while (std::getline(fileStream, line))
-		{
-			auto comment = line.find('#');
-			if (comment != std::string::npos)
-				line = line.substr(0, comment);
-
-			if (line.empty())
-				continue;
-
-			if (line.starts_with("<DEBUG>"))
-#ifdef DEBUG_BUILD
-			{
-				isDebug = true;
-				continue;
-			}
-#else
-				break;
-#endif
-
-			// See if the mesh is already in the list
-			auto it = std::find(meshNames.begin(), meshNames.end(), line);
-			if (it != meshNames.end())
-				continue;
-
-			{
-				json::Value meshObj(json::kObjectType);
-				meshObj.AddMember(SerializeString(PATH_TAG, cDocAlloc), SerializeString(PATH_FILE_EXT(ASSET_PATH_MESHES, line, "obj"), cDocAlloc), cDocAlloc);
-				meshObj.AddMember(SerializeString(TYPE_TAG, cDocAlloc), SerializeString("mesh", cDocAlloc), cDocAlloc);
-
-				if (isDebug) 
-					meshObj.AddMember("Debug", true, cDocAlloc);
-
-				if (!cReg.AddAsset("Meshes\\" + line, meshObj, NameConflictAction::Override))
-				{
-					ErrMsgF("Failed to add mesh '{}' to registry!", line);
-					return false;
-				}
-			}
-			
-			meshNames.emplace_back(line);
-		}
-		fileStream.close();
-
-		time.TakeSnapshot("CompileContent");
-		if (!_content.CompileContent(meshNames))
-		{
-			ErrMsg("Failed to compile content!");
-			return false;
-		}
-		time.TakeSnapshot("CompileContent");
-
-		// Print content compile times.
-		DbgMsgF("Content Compile: {} s", time.CompareSnapshots("CompileContent"));
-	}
-
-	std::string texPath = ASSET_PATH_TEXTURES;
-
-	std::vector<TextureData> textureNames;
-
-	std::ifstream texStream(ASSET_REGISTRY_FILE_TEXTURES);
-	if (texStream)
-	{
-		std::vector<DXGI_FORMAT> formatStack;
-		std::vector<bool> mipmappedStack;
-		std::vector<int> downsampleStack;
-		std::vector<bool> editorOnlyStack;
-
-		while (std::getline(texStream, line))
-		{
-			auto comment = line.find('#');
-			if (comment != std::string::npos)
-				line = line.substr(0, comment);
-
-			line = StringUtils::Trim(line);
-
-			if (line.empty())
-				continue;
-
-			// Check if the line is a command to push or pop texture parameters
-			// Example: 
-			//	 <push transparent=true mipmapped=false downsample=1>
-			//	 <pop transparent downsample>
-			if (line[0] == '<')
-			{
-				// Remove the '<' and '>' characters
-				line.erase(0, 1);
-				if (line.back() == '>')
-					line.pop_back();
-
-				// Check if it's a push or pop command
-				bool isPush;
-				if (line.starts_with("push"))
-				{
-					line.erase(0, 5); // Remove "push "
-					isPush = true;
-				}
-				else if (line.starts_with("pop"))
-				{
-					line.erase(0, 4); // Remove "pop "
-					isPush = false;
-				}
-				else
-				{
-					WarnF("Invalid command: '{}'", line);
-					continue;
-				}
-
-				// Get each parameter name and value
-				std::istringstream paramStream(line);
-				std::string param;
-
-				while (std::getline(paramStream, param, ' '))
-				{
-					if (param.empty())
-						continue;
-
-					std::string key, value;
-
-					if (isPush)
-					{
-						auto equalPos = param.find('=');
-						if (equalPos == std::string::npos)
-						{
-							WarnF("Invalid parameter format: '{}'", param.c_str());
-							continue;
-						}
-
-						key = param.substr(0, equalPos);
-						value = param.substr(equalPos + 1);
-					}
-					else
-					{
-						key = param;
-					}
-
-					if (key == "editoronly" || key == "e")
-					{
-						if (isPush)
-							editorOnlyStack.push_back(value == "true");
-						else if (!editorOnlyStack.empty())
-							editorOnlyStack.pop_back();
-					}
-					else if (key == "mipmapped" || key == "m")
-					{
-						if (isPush)
-							mipmappedStack.push_back(value == "true");
-						else if (!mipmappedStack.empty())
-							mipmappedStack.pop_back();
-					}
-					else if (key == "downsample" || key == "d")
-					{
-						if (isPush)
-							downsampleStack.push_back(std::stoi(value));
-						else if (!downsampleStack.empty())
-							downsampleStack.pop_back();
-					}
-					else if (key == "format" || key == "f")
-					{
-						std::transform(value.begin(), value.end(), value.begin(), ::toupper);
-						DXGI_FORMAT format = D3D11FormatData::TypeFromName(value);
-
-						if (isPush)
-							formatStack.push_back(format);
-						else if (!formatStack.empty())
-							formatStack.pop_back();
-					}
-					else
-					{
-						WarnF("Unknown texture parameter: '{}'", key.c_str());
-					}
-				}
-
-				continue;
-			}
-
-			// Extract alias, if present. Format: "fileName.png" or "fileName.png = alias"
-			// If no alias is present, the alias will be derived from the filename
-			std::string filePath = "";
-			std::string aliasName = "";
-
-			size_t equalsPos = line.find_first_of('=');
-			if (equalsPos != std::string::npos)
-			{
-				filePath = StringUtils::Trim(line.substr(0, equalsPos));
-				aliasName = StringUtils::Trim(line.substr(equalsPos + 1));
-			}
-			else
-			{
-				filePath = line;
-			}
-
-			size_t dotPos = filePath.find_last_of('.');
-			if (dotPos == std::string::npos || dotPos == 0 || dotPos == filePath.size() - 1)
-			{
-				WarnF("Invalid texture filepath: '{}'", filePath);
-				continue;
-			}
-			
-			if (aliasName.empty())
-			{
-				size_t fileNameStart = filePath.find_last_of("/\\");
-				if (fileNameStart == std::string::npos)
-					fileNameStart = 0;
-				else
-					fileNameStart += 1;
-
-				aliasName = filePath.substr(fileNameStart, dotPos - fileNameStart);
-			}
-
-			// Check if the texture is already in the list
-			bool found = false;
-			UINT textureCount = static_cast<UINT>(textureNames.size());
-			for (UINT i = 0; i < textureCount; i++)
-			{
-				if (textureNames[i].name == aliasName)
-				{
-					found = true;
-					break;
-				}
-			}
-
-			if (found)
-				continue;
-
-			bool editorOnly = editorOnlyStack.empty() ? false : editorOnlyStack.back();
-
-#ifndef DEBUG_BUILD
-			if (editorOnly)
-				continue;
-#endif
-
-			bool mipmapped = mipmappedStack.empty() ? true : mipmappedStack.back();
-			int downsample = downsampleStack.empty() ? 0 : downsampleStack.back();
-			DXGI_FORMAT format = formatStack.empty() ? DXGI_FORMAT_UNKNOWN : formatStack.back();
-
-			std::string texPathInternal;
-
-			size_t lastSlash = filePath.find_last_of("/\\");
-			if (lastSlash != std::string::npos)
-				texPathInternal = PATH_FILE(filePath.substr(0, lastSlash), aliasName);
-			else
-				texPathInternal = aliasName;
-
-			filePath = PATH_FILE(ASSET_PATH_TEXTURES, filePath);
-
-			textureNames.emplace(textureNames.begin(), format, aliasName, filePath, mipmapped, downsample);
-
-			{
-				json::Value tex2dObj(json::kObjectType);
-				tex2dObj.AddMember(SerializeString(PATH_TAG, cDocAlloc), SerializeString(filePath, cDocAlloc), cDocAlloc);
-				tex2dObj.AddMember(SerializeString(TYPE_TAG, cDocAlloc), SerializeString("tex2d", cDocAlloc), cDocAlloc);
-
-				if (format != DXGI_FORMAT_UNKNOWN)
-					tex2dObj.AddMember("Format", SerializeString(D3D11FormatData::GetName(format), cDocAlloc), cDocAlloc);
-
-				if (mipmapped)
-					tex2dObj.AddMember("Mipmapped", true, cDocAlloc);
-
-				if (downsample > 0)
-					tex2dObj.AddMember("Downsample", downsample, cDocAlloc);
-
-				if (editorOnly)
-					tex2dObj.AddMember("Debug", true, cDocAlloc);
-
-				if (!cReg.AddAsset("Textures\\" + texPathInternal, tex2dObj, NameConflictAction::Override))
-				{
-					ErrMsgF("Failed to add tex2d '{}' to registry!", texPathInternal);
-					return false;
-				}
-			}
-		}
-		texStream.close();
-	}
-
-	// TODO: cubemaps should also be baked. Until then, always load from source
-	std::vector<TextureData> cubemapNames = {
-		{ DXGI_FORMAT_R8G8B8A8_UNORM,		"Null",					PATH_FILE(texPath, "NullCubemap.png"),					true,	0 },
-		{ DXGI_FORMAT_R8G8B8A8_UNORM,		"RundownIndustrial",	PATH_FILE(texPath, "RundownIndustrialCubemap.png"),		true,	0 },
-		{ DXGI_FORMAT_R8G8B8A8_UNORM,		"SandstoneCity",		PATH_FILE(texPath, "SandstoneCityCubemap.png"),			true,	0 },
-		{ DXGI_FORMAT_R8G8B8A8_UNORM,		"MonkstownCastle",		PATH_FILE(texPath, "MonkstownCastleCubemap.png"),		true,	0 },
-		{ DXGI_FORMAT_R8G8B8A8_UNORM,		"AutumnForest",			PATH_FILE(texPath, "AutumnForestCubemap.png"),			true,	0 },
-		{ DXGI_FORMAT_R8G8B8A8_UNORM,		"BlankSkybox",			PATH_FILE(texPath, "BlankSkyboxCubemap.png"),			true,	0 },
-		{ DXGI_FORMAT_R8G8B8A8_UNORM,		"ParkTrail",			PATH_FILE(texPath, "ParkTrailCubemap.png"),				true,	0 },
-		{ DXGI_FORMAT_R8G8B8A8_UNORM,		"SuburbanNight",		PATH_FILE(texPath, "SuburbanNightCubemap.png"),			true,	0 },
-		{ DXGI_FORMAT_R8G8B8A8_UNORM,		"RooftopNight",			PATH_FILE(texPath, "RooftopNightCubemap.png"),			true,	0 },
-		{ DXGI_FORMAT_R8G8B8A8_UNORM,		"BlueGrotto",			PATH_FILE(texPath, "BlueGrottoCubemap.png"),			true,	0 },
-		{ DXGI_FORMAT_R8G8B8A8_UNORM,		"BurntWarehouse",		PATH_FILE(texPath, "BurntWarehouseCubemap.png"),		true,	0 },
-		{ DXGI_FORMAT_R8G8B8A8_UNORM,		"CanaryWharf",			PATH_FILE(texPath, "CanaryWharfCubemap.png"),			true,	0 },
-		{ DXGI_FORMAT_R8G8B8A8_UNORM,		"SandstoneCove",		PATH_FILE(texPath, "SandstoneCoveCubemap.png"),			true,	0 },
-		{ DXGI_FORMAT_R8G8B8A8_UNORM,		"HospitalRoom",			PATH_FILE(texPath, "HospitalRoomCubemap.png"),			true,	0 },
-		{ DXGI_FORMAT_R8G8B8A8_UNORM,		"WoodsRiverbank",		PATH_FILE(texPath, "WoodsRiverbankCubemap.png"),		true,	0 },
-		{ DXGI_FORMAT_R8G8B8A8_UNORM,		"WinterCityNight",		PATH_FILE(texPath, "WinterCityNightCubemap.png"),		true,	0 },
-		{ DXGI_FORMAT_R8G8B8A8_UNORM,		"IndustrialAlley",		PATH_FILE(texPath, "IndustrialAlleyCubemap.png"),		true,	0 },
-		{ DXGI_FORMAT_R8G8B8A8_UNORM,		"CaveWall",				PATH_FILE(texPath, "CaveWallCubemap.png"),				true,	0 },
-		{ DXGI_FORMAT_R8G8B8A8_UNORM,		"NeonCityNight",		PATH_FILE(texPath, "NeonCityNightCubemap.png"),			true,	0 },
-		{ DXGI_FORMAT_R16G16B16A16_UNORM,	"BarrenFieldHDR",		PATH_FILE(texPath, "BarrenFieldHDRCubemap.png"),		true,	0 },
-	};
-
-	{
-		for (auto &texCube : cubemapNames)
-		{
-			std::string fileNameExt = texCube.path;
-			size_t lastSlash = fileNameExt.find_last_of("/\\");
-			if (lastSlash != std::string::npos)
-				fileNameExt = fileNameExt.substr(lastSlash + 1);
-
-			json::Value texCubeObj(json::kObjectType);
-			texCubeObj.AddMember(SerializeString(PATH_TAG, cDocAlloc), SerializeString(texCube.path, cDocAlloc), cDocAlloc);
-			texCubeObj.AddMember(SerializeString(TYPE_TAG, cDocAlloc), SerializeString("texcube", cDocAlloc), cDocAlloc);
-
-			if (texCube.type != DXGI_FORMAT_UNKNOWN)
-				texCubeObj.AddMember("Format", SerializeString(D3D11FormatData::GetName(texCube.type), cDocAlloc), cDocAlloc);
-
-			if (texCube.mipmapped)
-				texCubeObj.AddMember("Mipmapped", true, cDocAlloc);
-
-			if (texCube.downsample > 0)
-				texCubeObj.AddMember("Downsample", texCube.downsample, cDocAlloc);
-
-			if (!cReg.AddAsset("Textures\\" + texCube.name, texCubeObj, NameConflictAction::Override))
-			{
-				ErrMsgF("Failed to add texcube '{}' to registry!", texCube.name);
-				return false;
-			}
-		}
-	}
-
-	std::vector<ShaderData> shaderNames = {
-		{ ShaderType::VERTEX_SHADER,		"VS_Geometry",					"Vertex/VS_Geometry"				},
-		{ ShaderType::VERTEX_SHADER,		"VS_TextDefault",				"Vertex/VS_TextDefault"				},
-		{ ShaderType::VERTEX_SHADER,		"VS_Depth",						"Vertex/VS_Depth"					},
-		{ ShaderType::VERTEX_SHADER,		"VS_DepthCubemap",				"Vertex/VS_DepthCubemap"			},
-		{ ShaderType::VERTEX_SHADER,		"VS_ScreenEffect",				"Vertex/VS_ScreenEffect"			},
-
-		{ ShaderType::GEOMETRY_SHADER,		"GS_Billboard",					"Geometry/GS_Billboard"				},
-		{ ShaderType::GEOMETRY_SHADER,		"GS_DepthCubemap",				"Geometry/GS_DepthCubemap"			},
-
-		{ ShaderType::PIXEL_SHADER,			"PS_Geometry",					"Pixel/PS_Geometry"					},
-		{ ShaderType::PIXEL_SHADER,			"PS_GeometryMetallic",			"Pixel/PS_GeometryMetallic"			},
-		{ ShaderType::PIXEL_SHADER,			"PS_TriPlanar",					"Pixel/PS_TriPlanar"				},
-		{ ShaderType::PIXEL_SHADER,			"PS_Cel",						"Pixel/PS_Cel"						},
-		{ ShaderType::PIXEL_SHADER,			"PS_ReflectionProbe",			"Pixel/PS_ReflectionProbe"			},
-		{ ShaderType::PIXEL_SHADER,			"PS_Static",					"Pixel/PS_Static"					},
-		{ ShaderType::PIXEL_SHADER,			"PS_Transparent",				"Pixel/PS_Transparent"				},
-		{ ShaderType::PIXEL_SHADER,			"PS_TextDefault",				"Pixel/PS_TextDefault"				},
-		{ ShaderType::PIXEL_SHADER,			"PS_DepthCubemap",				"Pixel/PS_DepthCubemap"				},
-		{ ShaderType::PIXEL_SHADER,			"PS_SkyboxDefault",				"Pixel/PS_SkyboxDefault"			},
-		{ ShaderType::PIXEL_SHADER,			"PS_SkyboxSolidColor",			"Pixel/PS_SkyboxSolidColor"			},
-		{ ShaderType::PIXEL_SHADER,			"PS_SkyboxNormal",				"Pixel/PS_SkyboxNormal"				},
-		{ ShaderType::PIXEL_SHADER,			"PS_SkyboxEnvironment",			"Pixel/PS_SkyboxEnvironment"		},
-
-		{ ShaderType::COMPUTE_SHADER,		"CS_BlurHorizontalFX",			"Compute/CS_BlurHorizontalFX"		},
-		{ ShaderType::COMPUTE_SHADER,		"CS_BlurVerticalFX",			"Compute/CS_BlurVerticalFX"			},
-		{ ShaderType::COMPUTE_SHADER,		"CS_BlurHorizontalEmission",	"Compute/CS_BlurHorizontalEmission"	},
-		{ ShaderType::COMPUTE_SHADER,		"CS_BlurVerticalEmission",		"Compute/CS_BlurVerticalEmission"	},
-		{ ShaderType::COMPUTE_SHADER,		"CS_Downsample",				"Compute/CS_Downsample"				},
-		{ ShaderType::COMPUTE_SHADER,		"CS_DownsampleCheap",			"Compute/CS_DownsampleCheap"		},
-		{ ShaderType::COMPUTE_SHADER,		"CS_DownsampleHalf",			"Compute/CS_DownsampleHalf"			},
-		{ ShaderType::COMPUTE_SHADER,		"CS_MergeEmissionMips",			"Compute/CS_MergeEmissionMips"		},
-		{ ShaderType::COMPUTE_SHADER,		"CS_ColorLUT",					"Compute/CS_ColorLUT"				},
-		{ ShaderType::COMPUTE_SHADER,		"CS_FogFX",						"Compute/CS_FogFX"					},
-		{ ShaderType::COMPUTE_SHADER,		"CS_CombineFX",					"Compute/CS_CombineFX"				},
-		{ ShaderType::COMPUTE_SHADER,		"CS_Upsample",					"Compute/CS_Upsample"				},
-		{ ShaderType::COMPUTE_SHADER,		"CS_UpsampleDouble",			"Compute/CS_UpsampleDouble"			},
-		{ ShaderType::COMPUTE_SHADER,		"CS_BlurHorizontalDof",			"Compute/CS_BlurHorizontalDof"		},
-		{ ShaderType::COMPUTE_SHADER,		"CS_BlurVerticalDof",			"Compute/CS_BlurVerticalDof"		},
-		{ ShaderType::COMPUTE_SHADER,		"CS_CircleOfConfusionFX",		"Compute/CS_CircleOfConfusionFX"	},
-		{ ShaderType::COMPUTE_SHADER,		"CS_CombineDepthOfFieldFX",		"Compute/CS_CombineDepthOfFieldFX"	},
-
-#ifdef DEBUG_BUILD
-		{ ShaderType::VERTEX_SHADER,		"VS_DebugDraw",					"Vertex/VS_DebugDraw"				},
-		{ ShaderType::VERTEX_SHADER,		"VS_DebugDrawStrip",			"Vertex/VS_DebugDrawStrip"			},
-		{ ShaderType::VERTEX_SHADER,		"VS_DebugDrawBezier",			"Vertex/VS_DebugDrawBezier"			},
-		{ ShaderType::VERTEX_SHADER,		"VS_DebugDrawTri",				"Vertex/VS_DebugDrawTri"			},
-		{ ShaderType::VERTEX_SHADER,		"VS_DebugDrawSprite",			"Vertex/VS_DebugDrawSprite"			},
-		{ ShaderType::VERTEX_SHADER,		"VS_DebugDrawMesh",				"Vertex/VS_DebugDrawMesh"			},
-
-		{ ShaderType::HULL_SHADER,			"HS_DebugBezier",				"Hull/HS_DebugBezier"				},
-		{ ShaderType::DOMAIN_SHADER,		"DS_DebugBezier",				"Domain/DS_DebugBezier"				},
-
-		{ ShaderType::GEOMETRY_SHADER,		"GS_DebugLine",					"Geometry/GS_DebugLine"				},
-		{ ShaderType::GEOMETRY_SHADER,		"GS_DebugDrawSprite",			"Geometry/GS_DebugDrawSprite"		},
-
-		{ ShaderType::PIXEL_SHADER,			"PS_SelectionOutline",			"Pixel/PS_SelectionOutline"			},
-		{ ShaderType::PIXEL_SHADER,			"PS_DebugDraw",					"Pixel/PS_DebugDraw"				},
-		{ ShaderType::PIXEL_SHADER,			"PS_DebugDrawSprite",			"Pixel/PS_DebugDrawSprite"			},
-		{ ShaderType::PIXEL_SHADER,			"PS_DebugViewPosition",			"Pixel/PS_DebugViewPosition"		},
-		{ ShaderType::PIXEL_SHADER,			"PS_DebugViewNormal",			"Pixel/PS_DebugViewNormal"			},
-		{ ShaderType::PIXEL_SHADER,			"PS_DebugViewAmbient",			"Pixel/PS_DebugViewAmbient"			},
-		{ ShaderType::PIXEL_SHADER,			"PS_DebugViewDiffuse",			"Pixel/PS_DebugViewDiffuse"			},
-		{ ShaderType::PIXEL_SHADER,			"PS_DebugViewDepth",			"Pixel/PS_DebugViewDepth"			},
-		{ ShaderType::PIXEL_SHADER,			"PS_DebugViewShadow",			"Pixel/PS_DebugViewShadow"			},
-		{ ShaderType::PIXEL_SHADER,			"PS_DebugViewReflection",		"Pixel/PS_DebugViewReflection"		},
-		{ ShaderType::PIXEL_SHADER,			"PS_DebugViewReflectivity",		"Pixel/PS_DebugViewReflectivity"	},
-		{ ShaderType::PIXEL_SHADER,			"PS_DebugViewSpecular",			"Pixel/PS_DebugViewSpecular"		},
-		{ ShaderType::PIXEL_SHADER,			"PS_DebugViewSpecStr",			"Pixel/PS_DebugViewSpecStr"			},
-		{ ShaderType::PIXEL_SHADER,			"PS_DebugViewUVCoords",			"Pixel/PS_DebugViewUVCoords"		},
-		{ ShaderType::PIXEL_SHADER,			"PS_DebugViewOcclusion",		"Pixel/PS_DebugViewOcclusion"		},
-		{ ShaderType::PIXEL_SHADER,			"PS_DebugViewLightTiles",		"Pixel/PS_DebugViewLightTiles"		},
-		{ ShaderType::PIXEL_SHADER,			"PS_DebugViewOverdraw",			"Pixel/PS_DebugViewOverdraw"		},
-
-		{ ShaderType::COMPUTE_SHADER,		"CS_BlurHorizontalOutline",		"Compute/CS_BlurHorizontalOutline"	},
-		{ ShaderType::COMPUTE_SHADER,		"CS_BlurVerticalOutline",		"Compute/CS_BlurVerticalOutline"	},
-		{ ShaderType::COMPUTE_SHADER,		"CS_CombineOutlineFX",			"Compute/CS_CombineOutlineFX"		},
-#endif
-	};
-
-	{
-		bool isDebug = false;
-		for (auto &shader : shaderNames)
-		{
-			json::Value shaderObj(json::kObjectType);
-			shaderObj.AddMember(SerializeString(PATH_TAG, cDocAlloc), SerializeString(shader.path + ".hlsl", cDocAlloc), cDocAlloc);
-			shaderObj.AddMember(SerializeString(TYPE_TAG, cDocAlloc), SerializeString("shader", cDocAlloc), cDocAlloc);
-
-			shaderObj.AddMember("Format", SerializeString(ShaderTypeUtils::ShaderTypeToString(shader.type), cDocAlloc), cDocAlloc);
-
-			if (isDebug)
-				shaderObj.AddMember("Debug", true, cDocAlloc);
-
-			if (!cReg.AddAsset("Shaders\\" + shader.path, shaderObj, NameConflictAction::Override))
-			{
-				ErrMsgF("Failed to add shader '{}' to registry!", shader.name);
-				return false;
-			}
-		}
-	}
-
-	// Search for all .atlas files in ASSET_PATH_FONTS
-	std::vector<std::string> fontAtlasNames;
-	for (const auto &entry : std::filesystem::directory_iterator(ASSET_PATH_FONTS))
-	{
-		const auto &path = entry.path();
-		std::string filename = path.filename().string();
-		std::string ext = filename.c_str() + filename.find_last_of('.') + 1;
-
-		if (ext != ASSET_EXT_FONT_ATLAS)
-			continue; // Skip non-font atlas files
-
-		filename = filename.substr(0, filename.find_last_of('.'));
-		fontAtlasNames.emplace_back(filename);
-
-		{
-			json::Value atlasObj(json::kObjectType);
-			atlasObj.AddMember(SerializeString(PATH_TAG, cDocAlloc), SerializeString(path.string(), cDocAlloc), cDocAlloc);
-			atlasObj.AddMember(SerializeString(TYPE_TAG, cDocAlloc), SerializeString("atlas", cDocAlloc), cDocAlloc);
-
-			if (!cReg.AddAsset("Fonts\\" + filename, atlasObj, NameConflictAction::Override))
-			{
-				ErrMsgF("Failed to add atlas '{}' to registry!", filename);
-				return false;
-			}
-		}
-	}
-
-
-	if (!cReg.SaveRegistry())
-	{
-		ErrMsg("Failed to save content registry!");
-		return false;
-	}
-	cReg.CloseRegistry();
-
-
 	time.TakeSnapshot("LoadContent");
-	if (!LoadContent(textureNames, cubemapNames, shaderNames, fontAtlasNames))
+	if (!LoadContent())
 	{
 		ErrMsg("Failed to load game content!");
 		return false;

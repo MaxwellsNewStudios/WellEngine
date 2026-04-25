@@ -152,9 +152,6 @@
 #define ASSET_EXT_FONT_ATLAS			"atlas"
 
 #define ASSET_REGISTRY_PATH				ASSET_PATH "\\_Registry"
-#define ASSET_REGISTRY_FILE_TEXTURES	ASSET_REGISTRY_PATH "\\_textures.txt" // TODO: Deprecate, replace with registry system
-#define ASSET_REGISTRY_FILE_CUBEMAPS	ASSET_REGISTRY_PATH "\\_cubemaps.txt" // TODO: Deprecate, replace with registry system
-#define ASSET_REGISTRY_FILE_MESHES		ASSET_REGISTRY_PATH "\\_meshNames.txt" // TODO: Deprecate, replace with registry system
 
 #define ASSET_COMPILED_PATH				ASSET_PATH "\\_Compiled"
 #define ASSET_COMPILED_PATH_CSO			ASSET_COMPILED_PATH "\\Shaders"

@@ -76,7 +76,7 @@ const Material *Content::GetErrorMaterial()
 }
 
 
-bool Content::CompileContent(const std::vector<std::string> &meshNames) const
+bool Content::CompileContent(const std::vector<AssetRegistryEntry> &meshEntries) const
 {
 	ZoneScopedC(RandomUniqueColor());
 
@@ -88,10 +88,12 @@ bool Content::CompileContent(const std::vector<std::string> &meshNames) const
 		return false;
 	}
 
-	for (int i = 0; i < meshNames.size(); i++)
+	for (int i = 0; i < meshEntries.size(); i++)
 	{
-		const std::string &meshName = meshNames[i];
-		std::string meshPath = std::format("{}\\{}.obj", ASSET_PATH_MESHES, meshName);
+		auto &entry = meshEntries[i];
+
+		const std::string &meshName = entry.path;
+		const std::string meshPath = (*entry.asset)[ContentRegistryTags::PATH_TAG].GetString();
 
 		// Ensure the file exists
 		struct stat buffer;
