@@ -2,13 +2,11 @@
 
 A D3D11-based 3D game + engine originally developed as a group project by six students for Lurks Below. 
 
-![Editor](Docs/Images/PrefabEditing.png)
+![Editor](Docs/Images/EditorPreview2.png)
 
 ![Physics](Docs/Images/PhysicsTest.gif)
 
 ![Sponza](Docs/Images/Sponza.png)
-
-![Performance Tools](Docs/Images/Overdraw.png)
 
 ## Usage
 
