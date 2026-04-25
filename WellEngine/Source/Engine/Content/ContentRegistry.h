@@ -3,6 +3,7 @@
 #include <vector>
 #include <memory>
 #include <string>
+#include <unordered_map>
 
 #include "rapidjson/document.h"
 #include "Engine/EngineSettings.h"

@@ -142,7 +142,8 @@
     </CustomBuildStep>
     <PreBuildEvent>
       <Command>$(SolutionDir)BuildTools\BehaviourRegistration\x64\$(Configuration)\BehaviourRegistration
-$(SolutionDir)BuildTools\SystemRegistration\x64\$(Configuration)\SystemRegistration</Command>
+$(SolutionDir)BuildTools\SystemRegistration\x64\$(Configuration)\SystemRegistration
+$(SolutionDir)BuildTools\ContentRegistration\x64\$(Configuration)\ContentRegistration</Command>
       <Message>Type Registration</Message>
     </PreBuildEvent>
     <PostBuildEvent>
@@ -203,7 +204,8 @@ $(SolutionDir)BuildTools\SystemRegistration\x64\$(Configuration)\SystemRegistrat
     </CustomBuildStep>
     <PreBuildEvent>
       <Command>$(SolutionDir)BuildTools\BehaviourRegistration\x64\$(Configuration)\BehaviourRegistration
-$(SolutionDir)BuildTools\SystemRegistration\x64\$(Configuration)\SystemRegistration</Command>
+$(SolutionDir)BuildTools\SystemRegistration\x64\$(Configuration)\SystemRegistration
+$(SolutionDir)BuildTools\ContentRegistration\x64\$(Configuration)\ContentRegistration</Command>
       <Message>Type Registration</Message>
     </PreBuildEvent>
     <PostBuildEvent>
@@ -264,7 +266,8 @@ $(SolutionDir)BuildTools\SystemRegistration\x64\$(Configuration)\SystemRegistrat
     </CustomBuildStep>
     <PreBuildEvent>
       <Command>$(SolutionDir)BuildTools\BehaviourRegistration\x64\$(Configuration)\BehaviourRegistration
-$(SolutionDir)BuildTools\SystemRegistration\x64\$(Configuration)\SystemRegistration</Command>
+$(SolutionDir)BuildTools\SystemRegistration\x64\$(Configuration)\SystemRegistration
+$(SolutionDir)BuildTools\ContentRegistration\x64\$(Configuration)\ContentRegistration</Command>
       <Message>Type Registration</Message>
     </PreBuildEvent>
     <PostBuildEvent>
