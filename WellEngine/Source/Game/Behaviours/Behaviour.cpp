@@ -27,7 +27,7 @@ Behaviour::~Behaviour()
 bool Behaviour::Initialize(Entity *entity)
 {
 	ZoneScopedC(RandomUniqueColor());
-	ZoneTextX(_name.c_str(), _name.size());
+	ZoneTextX(GetName().data(), GetName().size());
 
 	if (_isInitialized)
 	{
@@ -219,7 +219,7 @@ bool Behaviour::InitialUpdate(TimeUtils &time, const Input &input)
 	}
 
 	ZoneScopedXC(RandomUniqueColor());
-	ZoneTextX(_name.c_str(), _name.size());
+	ZoneTextX(GetName().data(), GetName().size());
 
 	return Update(time, input);
 }
@@ -241,7 +241,7 @@ bool Behaviour::InitialParallelUpdate(const TimeUtils &time, const Input &input)
 	}
 
 	ZoneScopedXC(RandomUniqueColor());
-	ZoneTextX(_name.c_str(), _name.size());
+	ZoneTextX(GetName().data(), GetName().size());
 
 	return ParallelUpdate(time, input);
 }
@@ -262,7 +262,7 @@ bool Behaviour::InitialLateUpdate(TimeUtils &time, const Input &input)
 #endif
 
 	ZoneScopedXC(RandomUniqueColor());
-	ZoneTextX(_name.c_str(), _name.size());
+	ZoneTextX(GetName().data(), GetName().size());
 
 	return LateUpdate(time, input);
 }
@@ -283,7 +283,7 @@ bool Behaviour::InitialFixedUpdate(float deltaTime, const Input &input)
 #endif
 
 	ZoneScopedXC(RandomUniqueColor());
-	ZoneTextX(_name.c_str(), _name.size());
+	ZoneTextX(GetName().data(), GetName().size());
 
 	return FixedUpdate(deltaTime, input);
 }
@@ -304,14 +304,14 @@ bool Behaviour::InitialPhysicsUpdate(float deltaTime)
 #endif
 
 	ZoneScopedXC(RandomUniqueColor());
-	ZoneTextX(_name.c_str(), _name.size());
+	ZoneTextX(GetName().data(), GetName().size());
 
 	return PhysicsUpdate(deltaTime);
 }
 bool Behaviour::InitialBeforeRender()
 {
 	ZoneScopedXC(RandomUniqueColor());
-	ZoneTextX(_name.c_str(), _name.size());
+	ZoneTextX(GetName().data(), GetName().size());
 
 	return BeforeRender();
 }
@@ -335,7 +335,7 @@ bool Behaviour::InitialRender(RenderQueuer &queuer, const RendererInfo &renderer
 		return true;
 
 	ZoneScopedXC(RandomUniqueColor());
-	ZoneTextX(_name.c_str(), _name.size());
+	ZoneTextX(GetName().data(), GetName().size());
 
 	return Render(queuer, rendererInfo);
 }
@@ -458,7 +458,7 @@ bool Behaviour::InitialOnEditTransformRec()
 bool Behaviour::InitialSerialize(json::Document::AllocatorType &docAlloc, json::Value &obj)
 {
 	ZoneScopedXC(RandomUniqueColor());
-	ZoneTextX(GetName().c_str(), GetName().size());
+	ZoneTextX(GetName().data(), GetName().size());
 
 	if (!_doSerialize)
 		return true;

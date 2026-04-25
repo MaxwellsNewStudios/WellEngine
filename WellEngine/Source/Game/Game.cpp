@@ -16,6 +16,7 @@ Game::Game()
 }
 Game::~Game()
 {
+	_systemManager.Shutdown();
 	_graphics.Shutdown();
 	_content.Shutdown();
 	DebugDrawer::Instance().Shutdowm();
@@ -903,6 +904,17 @@ bool Game::Setup(TimeUtils &time, Window window)
 	}
 	time.TakeSnapshot("LoadContent");
 
+	// Setup systems
+	time.TakeSnapshot("SetupSystems");
+	{
+		if (!_systemManager.Initialize(this))
+		{
+			ErrMsg("Failed to setup systems!");
+			return false;
+		}
+	}
+	time.TakeSnapshot("SetupSystems");
+
 	// Add all scenes & load the active scene
 	time.TakeSnapshot("AddScenes");
 	{
@@ -1070,6 +1082,12 @@ bool Game::SetSceneInternal(const std::string &sceneName)
 		}
 	}
 
+	if (!_systemManager.OnSceneChange(prevScene, scene))
+	{
+		ErrMsg("Failed to register scene change in systems!");
+		return false;
+	}
+
 	scene->EnterScene();
 	scene->SetSceneVolume(_gameVolume);
 
@@ -1229,6 +1247,15 @@ bool Game::Update(TimeUtils &time, const Input& input)
 			DbgMsgF("Failed to change scene to '{}'!", _pendingSceneChange);
 
 		_pendingSceneChange.clear();
+	}
+
+	// Update systems
+	{
+		if (!_systemManager.Update(time, input))
+		{
+			ErrMsg("Failed to update systems!");
+			return false;
+		}
 	}
 
 	// Update
@@ -2001,6 +2028,21 @@ bool Game::RenderUI(TimeUtils &time)
 #if defined(_DEBUG) && defined(DEBUG_D3D11_DEVICE)
 		ImGui::Checkbox("[D3D11] Report Live Device Objects on Shutdown", &DebugData::Get().reportComObjectsOnShutdown);
 #endif
+
+		// System UI
+		if (ImGui::TreeNode("Systems"))
+		{
+			if (!_systemManager.RenderUI())
+			{
+				ErrMsg("Failed to render system manager UI!");
+				ImGui::TreePop();
+				return false;
+			}
+
+			ImGui::Separator();
+			ImGui::TreePop();
+			ImGui::Dummy({ 0, 2 });
+		}
 
 		static bool showStyleEditor = false;
 		if (ImGui::Button(showStyleEditor ? "Hide Style Editor" : "Show Style Editor"))

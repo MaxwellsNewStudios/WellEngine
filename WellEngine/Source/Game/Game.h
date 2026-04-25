@@ -6,6 +6,7 @@
 #include <wrl/client.h>
 
 #include "Scene/Scene.h"
+#include "Systems/SystemManager.h"
 #include "Engine/Physics/JoltManager.h"
 #include "Engine/Rendering/Graphics/Graphics.h"
 #include "Engine/Content/Content.h"
@@ -31,6 +32,7 @@ namespace WellEngine
 		Content _content;
 		Window _window;
 		JoltManager _joltManager;
+		SystemManager _systemManager;
 		std::vector<std::unique_ptr<Scene>> _scenes;
 
 		UINT _activeSceneIndex = -1;

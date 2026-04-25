@@ -115,6 +115,7 @@ int EngineCore::Init()
 	}
 	LogIndentDecr();
 	DbgMsgF("Loading content took {} s", time.CompareSnapshots("LoadContent"));
+	DbgMsgF("Loading Systems took {} s", time.CompareSnapshots("SetupSystems"));
 	DbgMsgF("Loading Scenes took {} s", time.CompareSnapshots("AddScenes"));
 
 	_game.GetWindow().UpdateWindowSize();
