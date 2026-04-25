@@ -2029,21 +2029,6 @@ bool Game::RenderUI(TimeUtils &time)
 		ImGui::Checkbox("[D3D11] Report Live Device Objects on Shutdown", &DebugData::Get().reportComObjectsOnShutdown);
 #endif
 
-		// System UI
-		if (ImGui::TreeNode("Systems"))
-		{
-			if (!_systemManager.RenderUI())
-			{
-				ErrMsg("Failed to render system manager UI!");
-				ImGui::TreePop();
-				return false;
-			}
-
-			ImGui::Separator();
-			ImGui::TreePop();
-			ImGui::Dummy({ 0, 2 });
-		}
-
 		static bool showStyleEditor = false;
 		if (ImGui::Button(showStyleEditor ? "Hide Style Editor" : "Show Style Editor"))
 			showStyleEditor = !showStyleEditor;
@@ -2183,6 +2168,20 @@ bool Game::RenderUI(TimeUtils &time)
 		ImGui::Dummy({ 0, 4 });
 
 
+		if (ImGui::TreeNode("Systems"))
+		{
+			if (!_systemManager.RenderUI())
+			{
+				ErrMsg("Failed to render system manager UI!");
+				ImGui::TreePop();
+				return false;
+			}
+
+			ImGui::Separator();
+			ImGui::TreePop();
+		}
+		ImGui::Dummy({ 0, 4 });
+
 		if (ImGui::TreeNode("Utility"))
 		{
 #ifdef _WIN32
@@ -2209,7 +2208,6 @@ bool Game::RenderUI(TimeUtils &time)
 			ImGui::TreePop();
 		}
 		ImGui::Dummy({ 0, 4 });
-
 
 		if (ImGui::TreeNode("Version Info"))
 		{
