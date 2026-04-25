@@ -51,9 +51,9 @@ Shouldn't require any prerequisites. Only supported platform is Windows.
 ## Libraries
 
 - [Dear Imgui](https://github.com/ocornut/imgui) for UI
-- [Jolt Physics](https://github.com/jrouwe/JoltPhysics) for collision & physics
 - [ImPlot](https://github.com/epezent/implot) for prettier plotting UI
 - [ImGuizmo](https://github.com/CedricGuillemet/ImGuizmo) for transformation tools
+- [Jolt Physics](https://github.com/jrouwe/JoltPhysics) for collision & physics
 - [SDL3](https://github.com/libsdl-org/sdlwiki/tree/main/SDL3) for window handling
 - [Tracy](https://github.com/wolfpld/tracy) for frame capture
 - [DirectXTex](https://github.com/microsoft/DirectXTex) for texture loading, manipulation & block compression
