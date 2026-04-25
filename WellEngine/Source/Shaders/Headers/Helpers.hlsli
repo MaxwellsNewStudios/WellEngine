@@ -183,4 +183,3 @@ float4 Remap(float4 value, float4 inMin, float4 inMax, float4 outMin, float4 out
 	
 	return result;
 }
-

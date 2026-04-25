@@ -32,18 +32,18 @@ void MeshCollider::Node::CalculateCompactBounds()
 	{
 		for (UINT index : triIndices)
 		{
-			const we::Shape::Tri &tri = (*triBufferPtr)[index];
+			const Shape::Tri &tri = (*triBufferPtr)[index];
 			dx::XMFLOAT3 verts[3] = { tri.v0, tri.v1, tri.v2 };
 
 			for (const dx::XMFLOAT3 &vert : verts)
 			{
-				minPos.x = min(minPos.x, vert.x);
-				minPos.y = min(minPos.y, vert.y);
-				minPos.z = min(minPos.z, vert.z);
+				minPos.x = MIN(minPos.x, vert.x);
+				minPos.y = MIN(minPos.y, vert.y);
+				minPos.z = MIN(minPos.z, vert.z);
 
-				maxPos.x = max(maxPos.x, vert.x);
-				maxPos.y = max(maxPos.y, vert.y);
-				maxPos.z = max(maxPos.z, vert.z);
+				maxPos.x = MAX(maxPos.x, vert.x);
+				maxPos.y = MAX(maxPos.y, vert.y);
+				maxPos.z = MAX(maxPos.z, vert.z);
 			}
 		}
 	}
@@ -71,13 +71,13 @@ void MeshCollider::Node::CalculateCompactBounds()
 				childCompactBounds.Center.z + childCompactBounds.Extents.z
 			};
 
-			minPos.x = min(minPos.x, childMin.x);
-			minPos.y = min(minPos.y, childMin.y);
-			minPos.z = min(minPos.z, childMin.z);
+			minPos.x = MIN(minPos.x, childMin.x);
+			minPos.y = MIN(minPos.y, childMin.y);
+			minPos.z = MIN(minPos.z, childMin.z);
 
-			maxPos.x = max(maxPos.x, childMax.x);
-			maxPos.y = max(maxPos.y, childMax.y);
-			maxPos.z = max(maxPos.z, childMax.z);
+			maxPos.x = MAX(maxPos.x, childMax.x);
+			maxPos.y = MAX(maxPos.y, childMax.y);
+			maxPos.z = MAX(maxPos.z, childMax.z);
 		}
 	}
 
@@ -93,13 +93,13 @@ void MeshCollider::Node::CalculateCompactBounds()
 		bounds.Center.z + bounds.Extents.z
 	};
 
-	minPos.x = max(minPos.x, boundsMin.x);
-	minPos.y = max(minPos.y, boundsMin.y);
-	minPos.z = max(minPos.z, boundsMin.z);
+	minPos.x = MAX(minPos.x, boundsMin.x);
+	minPos.y = MAX(minPos.y, boundsMin.y);
+	minPos.z = MAX(minPos.z, boundsMin.z);
 
-	maxPos.x = min(maxPos.x, boundsMax.x);
-	maxPos.y = min(maxPos.y, boundsMax.y);
-	maxPos.z = min(maxPos.z, boundsMax.z);
+	maxPos.x = MIN(maxPos.x, boundsMax.x);
+	maxPos.y = MIN(maxPos.y, boundsMax.y);
+	maxPos.z = MIN(maxPos.z, boundsMax.z);
 
 	dx::BoundingBox::CreateFromPoints(
 		compactBounds,
@@ -128,7 +128,7 @@ void MeshCollider::Node::Bake(const std::vector<UINT> *allTriIndices, const UINT
 	for (int i = 0; i < length; i++)
 	{
 		UINT triIndex = (*allTriIndices)[i];
-		const we::Shape::Tri &tri = (*triBufferPtr)[triIndex];
+		const Shape::Tri &tri = (*triBufferPtr)[triIndex];
 
 		if (GameCollision::BoxTriIntersect(errorMarginBounds, tri))
 			triIndices.push_back(triIndex);
@@ -202,7 +202,7 @@ void MeshCollider::Node::Bake(const std::vector<UINT> *allTriIndices, const UINT
 	return;
 }
 
-bool MeshCollider::Node::RaycastNode(const we::Shape::Ray &ray, we::Shape::RayHit &hit) const
+bool MeshCollider::Node::RaycastNode(const Shape::Ray &ray, Shape::RayHit &hit) const
 {
 	if (isEmpty)
 		return false;
@@ -217,14 +217,14 @@ bool MeshCollider::Node::RaycastNode(const we::Shape::Ray &ray, we::Shape::RayHi
 	if (isLeaf)
 	{
 		bool hasHit = false;
-		const we::Shape::Tri *currClosest = nullptr;
+		const Shape::Tri *currClosest = nullptr;
 
 		// Check all items in leaf for intersection & return result.
 		for (UINT index : triIndices)
 		{
-			const we::Shape::Tri &tri = (*triBufferPtr)[index];
+			const Shape::Tri &tri = (*triBufferPtr)[index];
 
-			we::Shape::RayHit newHit;
+			Shape::RayHit newHit;
 			if (Raycast(ray, tri, newHit))
 			{
 				if (newHit.length >= hit.length)
@@ -291,7 +291,7 @@ bool MeshCollider::Node::RaycastNode(const we::Shape::Ray &ray, we::Shape::RayHi
 	// Check children in order of closest to furthest.
 	bool hasHit = false;
 
-	we::Shape::RayHit newHit;
+	Shape::RayHit newHit;
 	newHit.length = hit.length;
 
 	for (int i = 0; i < childHitCount; i++)
@@ -373,7 +373,7 @@ bool MeshCollider::Node::RaycastNode(const we::Shape::Ray &ray, we::Shape::RayHi
 	return true;
 }
 
-bool MeshCollider::RaycastMesh(const we::Shape::Ray &ray, we::Shape::RayHit &hit) const
+bool MeshCollider::RaycastMesh(const Shape::Ray &ray, Shape::RayHit &hit) const
 {
 	ZoneScopedC(RandomUniqueColor());
 
@@ -439,7 +439,7 @@ void MeshCollider::Node::VisualizeTreeDepth(const dx::XMFLOAT4X4 &worldMatrix, U
 			{
 				for (UINT index : triIndices)
 				{
-					we::Shape::Tri tri = (*triBufferPtr)[index].Transformed(worldMatrix);
+					Shape::Tri tri = (*triBufferPtr)[index].Transformed(worldMatrix);
 					dx::XMFLOAT3 triNormal = tri.Normal();
 
 					float normalOffset = 0.00025f; // To avoid z-fighting

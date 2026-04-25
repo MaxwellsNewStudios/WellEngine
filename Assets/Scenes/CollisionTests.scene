@@ -91,7 +91,7 @@
                     "Hidden": false,
                     "Beh": [
                         {
-                            "Name": "SpotLightBehaviour",
+                            "Name": "LightSpot",
                             "Attributes": {
                                 "Update Frequency": 1,
                                 "Falloff": 0.6000000238418579,
@@ -162,7 +162,7 @@
                             "Hidden": false,
                             "Beh": [
                                 {
-                                    "Name": "MeshBehaviour",
+                                    "Name": "Mesh",
                                     "Attributes": {
                                         "Mesh": "Fallback",
                                         "Transparent": false,
@@ -206,7 +206,7 @@
                                     }
                                 },
                                 {
-                                    "Name": "BoxJoltColliderBehaviour",
+                                    "Name": "BoxCollider",
                                     "Attributes": {
                                         "MotionType": 2,
                                         "Layer": 1,
@@ -253,7 +253,7 @@
                             "Hidden": false,
                             "Beh": [
                                 {
-                                    "Name": "MeshBehaviour",
+                                    "Name": "Mesh",
                                     "Attributes": {
                                         "Mesh": "Fallback",
                                         "Transparent": false,
@@ -297,7 +297,7 @@
                                     }
                                 },
                                 {
-                                    "Name": "BoxJoltColliderBehaviour",
+                                    "Name": "BoxCollider",
                                     "Attributes": {
                                         "MotionType": 2,
                                         "Layer": 1,
@@ -344,7 +344,7 @@
                             "Hidden": false,
                             "Beh": [
                                 {
-                                    "Name": "MeshBehaviour",
+                                    "Name": "Mesh",
                                     "Attributes": {
                                         "Mesh": "Fallback",
                                         "Transparent": false,
@@ -388,7 +388,7 @@
                                     }
                                 },
                                 {
-                                    "Name": "BoxJoltColliderBehaviour",
+                                    "Name": "BoxCollider",
                                     "Attributes": {
                                         "MotionType": 2,
                                         "Layer": 1,
@@ -435,7 +435,7 @@
                             "Hidden": false,
                             "Beh": [
                                 {
-                                    "Name": "MeshBehaviour",
+                                    "Name": "Mesh",
                                     "Attributes": {
                                         "Mesh": "Fallback",
                                         "Transparent": false,
@@ -479,7 +479,7 @@
                                     }
                                 },
                                 {
-                                    "Name": "BoxJoltColliderBehaviour",
+                                    "Name": "BoxCollider",
                                     "Attributes": {
                                         "MotionType": 2,
                                         "Layer": 1,
@@ -526,7 +526,7 @@
                             "Hidden": false,
                             "Beh": [
                                 {
-                                    "Name": "MeshBehaviour",
+                                    "Name": "Mesh",
                                     "Attributes": {
                                         "Mesh": "Fallback",
                                         "Transparent": false,
@@ -570,7 +570,7 @@
                                     }
                                 },
                                 {
-                                    "Name": "BoxJoltColliderBehaviour",
+                                    "Name": "BoxCollider",
                                     "Attributes": {
                                         "MotionType": 2,
                                         "Layer": 1,
@@ -617,7 +617,7 @@
                             "Hidden": false,
                             "Beh": [
                                 {
-                                    "Name": "MeshBehaviour",
+                                    "Name": "Mesh",
                                     "Attributes": {
                                         "Mesh": "Fallback",
                                         "Transparent": false,
@@ -661,7 +661,7 @@
                                     }
                                 },
                                 {
-                                    "Name": "BoxJoltColliderBehaviour",
+                                    "Name": "BoxCollider",
                                     "Attributes": {
                                         "MotionType": 2,
                                         "Layer": 1,
@@ -708,7 +708,7 @@
                             "Hidden": false,
                             "Beh": [
                                 {
-                                    "Name": "MeshBehaviour",
+                                    "Name": "Mesh",
                                     "Attributes": {
                                         "Mesh": "Fallback",
                                         "Transparent": false,
@@ -752,7 +752,7 @@
                                     }
                                 },
                                 {
-                                    "Name": "BoxJoltColliderBehaviour",
+                                    "Name": "BoxCollider",
                                     "Attributes": {
                                         "MotionType": 2,
                                         "Layer": 1,
@@ -799,7 +799,7 @@
                             "Hidden": false,
                             "Beh": [
                                 {
-                                    "Name": "MeshBehaviour",
+                                    "Name": "Mesh",
                                     "Attributes": {
                                         "Mesh": "Fallback",
                                         "Transparent": false,
@@ -843,7 +843,7 @@
                                     }
                                 },
                                 {
-                                    "Name": "BoxJoltColliderBehaviour",
+                                    "Name": "BoxCollider",
                                     "Attributes": {
                                         "MotionType": 2,
                                         "Layer": 1,
@@ -890,7 +890,7 @@
                             "Hidden": false,
                             "Beh": [
                                 {
-                                    "Name": "MeshBehaviour",
+                                    "Name": "Mesh",
                                     "Attributes": {
                                         "Mesh": "Fallback",
                                         "Transparent": false,
@@ -934,7 +934,7 @@
                                     }
                                 },
                                 {
-                                    "Name": "BoxJoltColliderBehaviour",
+                                    "Name": "BoxCollider",
                                     "Attributes": {
                                         "MotionType": 2,
                                         "Layer": 1,
@@ -981,7 +981,7 @@
                             "Hidden": false,
                             "Beh": [
                                 {
-                                    "Name": "MeshBehaviour",
+                                    "Name": "Mesh",
                                     "Attributes": {
                                         "Mesh": "Fallback",
                                         "Transparent": false,
@@ -1025,7 +1025,7 @@
                                     }
                                 },
                                 {
-                                    "Name": "BoxJoltColliderBehaviour",
+                                    "Name": "BoxCollider",
                                     "Attributes": {
                                         "MotionType": 2,
                                         "Layer": 1,
@@ -1072,7 +1072,7 @@
                             "Hidden": false,
                             "Beh": [
                                 {
-                                    "Name": "MeshBehaviour",
+                                    "Name": "Mesh",
                                     "Attributes": {
                                         "Mesh": "Fallback",
                                         "Transparent": false,
@@ -1116,7 +1116,7 @@
                                     }
                                 },
                                 {
-                                    "Name": "BoxJoltColliderBehaviour",
+                                    "Name": "BoxCollider",
                                     "Attributes": {
                                         "MotionType": 2,
                                         "Layer": 1,
@@ -1163,7 +1163,7 @@
                             "Hidden": false,
                             "Beh": [
                                 {
-                                    "Name": "MeshBehaviour",
+                                    "Name": "Mesh",
                                     "Attributes": {
                                         "Mesh": "Fallback",
                                         "Transparent": false,
@@ -1207,7 +1207,7 @@
                                     }
                                 },
                                 {
-                                    "Name": "BoxJoltColliderBehaviour",
+                                    "Name": "BoxCollider",
                                     "Attributes": {
                                         "MotionType": 2,
                                         "Layer": 1,
@@ -1254,7 +1254,7 @@
                             "Hidden": false,
                             "Beh": [
                                 {
-                                    "Name": "MeshBehaviour",
+                                    "Name": "Mesh",
                                     "Attributes": {
                                         "Mesh": "Fallback",
                                         "Transparent": false,
@@ -1298,7 +1298,7 @@
                                     }
                                 },
                                 {
-                                    "Name": "BoxJoltColliderBehaviour",
+                                    "Name": "BoxCollider",
                                     "Attributes": {
                                         "MotionType": 2,
                                         "Layer": 1,
@@ -1345,7 +1345,7 @@
                             "Hidden": false,
                             "Beh": [
                                 {
-                                    "Name": "MeshBehaviour",
+                                    "Name": "Mesh",
                                     "Attributes": {
                                         "Mesh": "Fallback",
                                         "Transparent": false,
@@ -1389,7 +1389,7 @@
                                     }
                                 },
                                 {
-                                    "Name": "BoxJoltColliderBehaviour",
+                                    "Name": "BoxCollider",
                                     "Attributes": {
                                         "MotionType": 2,
                                         "Layer": 1,
@@ -1436,7 +1436,7 @@
                             "Hidden": false,
                             "Beh": [
                                 {
-                                    "Name": "MeshBehaviour",
+                                    "Name": "Mesh",
                                     "Attributes": {
                                         "Mesh": "Fallback",
                                         "Transparent": false,
@@ -1480,7 +1480,7 @@
                                     }
                                 },
                                 {
-                                    "Name": "BoxJoltColliderBehaviour",
+                                    "Name": "BoxCollider",
                                     "Attributes": {
                                         "MotionType": 2,
                                         "Layer": 1,
@@ -1527,7 +1527,7 @@
                             "Hidden": false,
                             "Beh": [
                                 {
-                                    "Name": "MeshBehaviour",
+                                    "Name": "Mesh",
                                     "Attributes": {
                                         "Mesh": "Fallback",
                                         "Transparent": false,
@@ -1571,7 +1571,7 @@
                                     }
                                 },
                                 {
-                                    "Name": "BoxJoltColliderBehaviour",
+                                    "Name": "BoxCollider",
                                     "Attributes": {
                                         "MotionType": 2,
                                         "Layer": 1,
@@ -1618,7 +1618,7 @@
                             "Hidden": false,
                             "Beh": [
                                 {
-                                    "Name": "MeshBehaviour",
+                                    "Name": "Mesh",
                                     "Attributes": {
                                         "Mesh": "Fallback",
                                         "Transparent": false,
@@ -1662,7 +1662,7 @@
                                     }
                                 },
                                 {
-                                    "Name": "BoxJoltColliderBehaviour",
+                                    "Name": "BoxCollider",
                                     "Attributes": {
                                         "MotionType": 2,
                                         "Layer": 1,
@@ -1709,7 +1709,7 @@
                             "Hidden": false,
                             "Beh": [
                                 {
-                                    "Name": "MeshBehaviour",
+                                    "Name": "Mesh",
                                     "Attributes": {
                                         "Mesh": "Fallback",
                                         "Transparent": false,
@@ -1753,7 +1753,7 @@
                                     }
                                 },
                                 {
-                                    "Name": "BoxJoltColliderBehaviour",
+                                    "Name": "BoxCollider",
                                     "Attributes": {
                                         "MotionType": 2,
                                         "Layer": 1,
@@ -1800,7 +1800,7 @@
                             "Hidden": false,
                             "Beh": [
                                 {
-                                    "Name": "MeshBehaviour",
+                                    "Name": "Mesh",
                                     "Attributes": {
                                         "Mesh": "Fallback",
                                         "Transparent": false,
@@ -1844,7 +1844,7 @@
                                     }
                                 },
                                 {
-                                    "Name": "BoxJoltColliderBehaviour",
+                                    "Name": "BoxCollider",
                                     "Attributes": {
                                         "MotionType": 2,
                                         "Layer": 1,
@@ -1891,7 +1891,7 @@
                             "Hidden": false,
                             "Beh": [
                                 {
-                                    "Name": "MeshBehaviour",
+                                    "Name": "Mesh",
                                     "Attributes": {
                                         "Mesh": "Fallback",
                                         "Transparent": false,
@@ -1935,7 +1935,7 @@
                                     }
                                 },
                                 {
-                                    "Name": "BoxJoltColliderBehaviour",
+                                    "Name": "BoxCollider",
                                     "Attributes": {
                                         "MotionType": 2,
                                         "Layer": 1,
@@ -2009,7 +2009,7 @@
                             "Hidden": false,
                             "Beh": [
                                 {
-                                    "Name": "MeshBehaviour",
+                                    "Name": "Mesh",
                                     "Attributes": {
                                         "Mesh": "Fallback",
                                         "Transparent": false,
@@ -2059,7 +2059,7 @@
                                     }
                                 },
                                 {
-                                    "Name": "BoxJoltColliderBehaviour",
+                                    "Name": "BoxCollider",
                                     "Attributes": {
                                         "MotionType": 1,
                                         "Layer": 0,
@@ -2106,7 +2106,7 @@
                             "Hidden": false,
                             "Beh": [
                                 {
-                                    "Name": "BoxJoltColliderBehaviour",
+                                    "Name": "BoxCollider",
                                     "Attributes": {
                                         "MotionType": 1,
                                         "Layer": 0,
@@ -2153,7 +2153,7 @@
                             "Hidden": false,
                             "Beh": [
                                 {
-                                    "Name": "MeshBehaviour",
+                                    "Name": "Mesh",
                                     "Attributes": {
                                         "Mesh": "Fallback",
                                         "Transparent": false,
@@ -2203,7 +2203,7 @@
                                     }
                                 },
                                 {
-                                    "Name": "BoxJoltColliderBehaviour",
+                                    "Name": "BoxCollider",
                                     "Attributes": {
                                         "MotionType": 1,
                                         "Layer": 0,
@@ -2250,7 +2250,7 @@
                             "Hidden": false,
                             "Beh": [
                                 {
-                                    "Name": "MeshBehaviour",
+                                    "Name": "Mesh",
                                     "Attributes": {
                                         "Mesh": "Fallback",
                                         "Transparent": false,
@@ -2300,7 +2300,7 @@
                                     }
                                 },
                                 {
-                                    "Name": "BoxJoltColliderBehaviour",
+                                    "Name": "BoxCollider",
                                     "Attributes": {
                                         "MotionType": 1,
                                         "Layer": 0,
@@ -2347,7 +2347,7 @@
                             "Hidden": false,
                             "Beh": [
                                 {
-                                    "Name": "MeshBehaviour",
+                                    "Name": "Mesh",
                                     "Attributes": {
                                         "Mesh": "Fallback",
                                         "Transparent": false,
@@ -2397,7 +2397,7 @@
                                     }
                                 },
                                 {
-                                    "Name": "BoxJoltColliderBehaviour",
+                                    "Name": "BoxCollider",
                                     "Attributes": {
                                         "MotionType": 1,
                                         "Layer": 0,
@@ -2444,7 +2444,7 @@
                             "Hidden": false,
                             "Beh": [
                                 {
-                                    "Name": "MeshBehaviour",
+                                    "Name": "Mesh",
                                     "Attributes": {
                                         "Mesh": "Fallback",
                                         "Transparent": false,
@@ -2494,7 +2494,7 @@
                                     }
                                 },
                                 {
-                                    "Name": "BoxJoltColliderBehaviour",
+                                    "Name": "BoxCollider",
                                     "Attributes": {
                                         "MotionType": 1,
                                         "Layer": 0,

@@ -1,12 +1,16 @@
 #pragma once
+
 #include <vector>
 #include <string>
+#include <DirectXMath.h>
+
 #include "rapidjson/document.h"
 
-namespace json = rapidjson;
-
-namespace SerializerUtils
+namespace WellEngine::SerializerUtils
 {
+	namespace dx = DirectX;
+	namespace json = rapidjson;
+
 	json::Value SerializeString(const std::string &str, json::Document::AllocatorType &alloc);
 
 	json::Value SerializeVec(const dx::XMFLOAT2 &vec, json::Document::AllocatorType &alloc);

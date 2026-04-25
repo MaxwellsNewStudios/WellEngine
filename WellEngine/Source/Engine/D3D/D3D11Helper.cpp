@@ -14,7 +14,6 @@ static bool CreateInterfaces(
 	const UINT width, const UINT height, const HWND window,
 	ID3D11Device *&device, 
 	ID3D11DeviceContext *&immediateContext,
-	ID3D11DeviceContext **deferredContexts,
 	IDXGISwapChain *&swapChain
 	)
 {
@@ -65,18 +64,6 @@ static bool CreateInterfaces(
 	{
 		ErrMsg("Failed to create device and swap chain!");
 		return false;
-	}
-
-	if (deferredContexts)
-	{
-		for (UINT i = 0; i < PARALLEL_THREADS; i++)
-		{
-			if (FAILED(device->CreateDeferredContext(0, &(deferredContexts[i]))))
-			{
-				ErrMsg("Failed to create deferred context!");
-				return false;
-			}
-		}
 	}
 
 	return true;
@@ -228,12 +215,11 @@ static void SetViewport(D3D11_VIEWPORT &viewport, const UINT width, const UINT h
 }
 
 
-bool SetupD3D11(
+bool WellEngine::SetupD3D11(
 	bool fullscreen,
 	const UINT width, const UINT height, const HWND window,
 	ID3D11Device *&device,
 	ID3D11DeviceContext *&immediateContext,
-	ID3D11DeviceContext **deferredContexts,
 	IDXGISwapChain *&swapChain,
 	ID3D11RenderTargetView *&rtv,
 	ID3D11Texture2D *&dsTexture, 
@@ -245,7 +231,7 @@ bool SetupD3D11(
 	ID3D11DepthStencilState *&nullDepthStencilState,
 	D3D11_VIEWPORT &viewport)
 {
-	if (!CreateInterfaces(fullscreen, width, height, window, device, immediateContext, deferredContexts, swapChain))
+	if (!CreateInterfaces(fullscreen, width, height, window, device, immediateContext, swapChain))
 	{
 		ErrMsg("Error creating interfaces!");
 		return false;
@@ -275,12 +261,11 @@ bool SetupD3D11(
 }
 
 
-bool ResizeD3D11(
+bool WellEngine::ResizeD3D11(
 	bool fullscreen,
 	const UINT width, const UINT height,
 	ID3D11Device *&device,
 	ID3D11DeviceContext *&immediateContext,
-	ID3D11DeviceContext **deferredContexts,
 	IDXGISwapChain *&swapChain,
 	ID3D11RenderTargetView *&rtv,
 	ID3D11Texture2D *&dsTexture,
@@ -329,7 +314,7 @@ bool ResizeD3D11(
 
 
 #ifdef _DEBUG
-void ReportLiveDeviceObjects(ID3D11Device *&device)
+void WellEngine::ReportLiveDeviceObjects(ID3D11Device *&device)
 {
 	OutputDebugString(L"-------------------------------------------------------------------------------------------------------------\n");
 	OutputDebugString(L"--------------------| Live Device Object Report |------------------------------------------------------------\n");

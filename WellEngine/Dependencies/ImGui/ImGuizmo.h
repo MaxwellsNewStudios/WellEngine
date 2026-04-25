@@ -143,6 +143,9 @@ namespace IMGUIZMO_NAMESPACE
    // only check if your mouse is over the view manipulator - no matter whether it's active or not
    IMGUI_API bool IsViewManipulateHovered();
 
+   IMGUI_API void SetViewManipulatorDelta(ImVec2 delta);
+   IMGUI_API void SetViewManipulatorUp(float up[3]);
+
    // return true if any gizmo is in moving state
    IMGUI_API bool IsUsingAny();
 

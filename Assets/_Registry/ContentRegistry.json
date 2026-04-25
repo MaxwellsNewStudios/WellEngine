@@ -1,0 +1,1315 @@
+{
+    "f": {
+        "Meshes": {
+            "f": {
+                "sponza": {
+                    "f": {},
+                    "a": {
+                        "sponza_CurtainPoles": {
+                            "p": "..\\Assets\\Meshes\\sponza\\sponza_CurtainPoles.obj",
+                            "t": "mesh"
+                        },
+                        "sponza_CurtainsBlue": {
+                            "p": "..\\Assets\\Meshes\\sponza\\sponza_CurtainsBlue.obj",
+                            "t": "mesh"
+                        },
+                        "sponza_CurtainsGreen": {
+                            "p": "..\\Assets\\Meshes\\sponza\\sponza_CurtainsGreen.obj",
+                            "t": "mesh"
+                        },
+                        "sponza_CurtainsRed": {
+                            "p": "..\\Assets\\Meshes\\sponza\\sponza_CurtainsRed.obj",
+                            "t": "mesh"
+                        },
+                        "sponza_EmptyFrame": {
+                            "p": "..\\Assets\\Meshes\\sponza\\sponza_EmptyFrame.obj",
+                            "t": "mesh"
+                        },
+                        "sponza_Floor": {
+                            "p": "..\\Assets\\Meshes\\sponza\\sponza_Floor.obj",
+                            "t": "mesh"
+                        },
+                        "sponza_FountainChains": {
+                            "p": "..\\Assets\\Meshes\\sponza\\sponza_FountainChains.obj",
+                            "t": "mesh"
+                        },
+                        "sponza_FountainsLarge": {
+                            "p": "..\\Assets\\Meshes\\sponza\\sponza_FountainsLarge.obj",
+                            "t": "mesh"
+                        },
+                        "sponza_HangingClothBlue": {
+                            "p": "..\\Assets\\Meshes\\sponza\\sponza_HangingClothBlue.obj",
+                            "t": "mesh"
+                        },
+                        "sponza_HangingClothGreen": {
+                            "p": "..\\Assets\\Meshes\\sponza\\sponza_HangingClothGreen.obj",
+                            "t": "mesh"
+                        },
+                        "sponza_HangingClothRed": {
+                            "p": "..\\Assets\\Meshes\\sponza\\sponza_HangingClothRed.obj",
+                            "t": "mesh"
+                        },
+                        "sponza_HangingFountains": {
+                            "p": "..\\Assets\\Meshes\\sponza\\sponza_HangingFountains.obj",
+                            "t": "mesh"
+                        },
+                        "sponza_InnerArches": {
+                            "p": "..\\Assets\\Meshes\\sponza\\sponza_InnerArches.obj",
+                            "t": "mesh"
+                        },
+                        "sponza_LionFrames": {
+                            "p": "..\\Assets\\Meshes\\sponza\\sponza_LionFrames.obj",
+                            "t": "mesh"
+                        },
+                        "sponza_LionHeads": {
+                            "p": "..\\Assets\\Meshes\\sponza\\sponza_LionHeads.obj",
+                            "t": "mesh"
+                        },
+                        "sponza_OuterArches": {
+                            "p": "..\\Assets\\Meshes\\sponza\\sponza_OuterArches.obj",
+                            "t": "mesh"
+                        },
+                        "sponza_OuterWall": {
+                            "p": "..\\Assets\\Meshes\\sponza\\sponza_OuterWall.obj",
+                            "t": "mesh"
+                        },
+                        "sponza_PillarFoliage": {
+                            "p": "..\\Assets\\Meshes\\sponza\\sponza_PillarFoliage.obj",
+                            "t": "mesh"
+                        },
+                        "sponza_PillarsLower": {
+                            "p": "..\\Assets\\Meshes\\sponza\\sponza_PillarsLower.obj",
+                            "t": "mesh"
+                        },
+                        "sponza_PillarsUpper": {
+                            "p": "..\\Assets\\Meshes\\sponza\\sponza_PillarsUpper.obj",
+                            "t": "mesh"
+                        },
+                        "sponza_PillarsUpperSquare": {
+                            "p": "..\\Assets\\Meshes\\sponza\\sponza_PillarsUpperSquare.obj",
+                            "t": "mesh"
+                        },
+                        "sponza_Roof": {
+                            "p": "..\\Assets\\Meshes\\sponza\\sponza_Roof.obj",
+                            "t": "mesh"
+                        },
+                        "sponza_SmallPots": {
+                            "p": "..\\Assets\\Meshes\\sponza\\sponza_SmallPots.obj",
+                            "t": "mesh"
+                        },
+                        "sponza_SmallPotsFoliage": {
+                            "p": "..\\Assets\\Meshes\\sponza\\sponza_SmallPotsFoliage.obj",
+                            "t": "mesh"
+                        },
+                        "sponza_WindowsDoors": {
+                            "p": "..\\Assets\\Meshes\\sponza\\sponza_WindowsDoors.obj",
+                            "t": "mesh"
+                        }
+                    }
+                }
+            },
+            "a": {
+                "Error": {
+                    "p": "..\\Assets\\Meshes\\Error.obj",
+                    "t": "mesh"
+                },
+                "Fallback": {
+                    "p": "..\\Assets\\Meshes\\Fallback.obj",
+                    "t": "mesh"
+                },
+                "Cube": {
+                    "p": "..\\Assets\\Meshes\\Cube.obj",
+                    "t": "mesh"
+                },
+                "Plane": {
+                    "p": "..\\Assets\\Meshes\\Plane.obj",
+                    "t": "mesh"
+                },
+                "Sphere": {
+                    "p": "..\\Assets\\Meshes\\Sphere.obj",
+                    "t": "mesh"
+                },
+                "Maxwell": {
+                    "p": "..\\Assets\\Meshes\\Maxwell.obj",
+                    "t": "mesh"
+                },
+                "Whiskers": {
+                    "p": "..\\Assets\\Meshes\\Whiskers.obj",
+                    "t": "mesh"
+                },
+                "SniperBody": {
+                    "p": "..\\Assets\\Meshes\\SniperBody.obj",
+                    "t": "mesh"
+                },
+                "SniperBolt": {
+                    "p": "..\\Assets\\Meshes\\SniperBolt.obj",
+                    "t": "mesh"
+                },
+                "SniperTrigger": {
+                    "p": "..\\Assets\\Meshes\\SniperTrigger.obj",
+                    "t": "mesh"
+                },
+                "SniperMagazine": {
+                    "p": "..\\Assets\\Meshes\\SniperMagazine.obj",
+                    "t": "mesh"
+                },
+                "Arcade": {
+                    "p": "..\\Assets\\Meshes\\Arcade.obj",
+                    "t": "mesh"
+                },
+                "Character1": {
+                    "p": "..\\Assets\\Meshes\\Character1.obj",
+                    "t": "mesh",
+                    "Debug": true
+                },
+                "HighPolySphere": {
+                    "p": "..\\Assets\\Meshes\\HighPolySphere.obj",
+                    "t": "mesh",
+                    "Debug": true
+                },
+                "IsoSphereSmooth": {
+                    "p": "..\\Assets\\Meshes\\IsoSphereSmooth.obj",
+                    "t": "mesh",
+                    "Debug": true
+                },
+                "Cornell": {
+                    "p": "..\\Assets\\Meshes\\Cornell.obj",
+                    "t": "mesh",
+                    "Debug": true
+                }
+            }
+        },
+        "Textures": {
+            "f": {
+                "sponza": {
+                    "f": {},
+                    "a": {
+                        "sponza_arch_ddn": {
+                            "p": "..\\Assets\\Textures\\sponza\\sponza_arch_ddn.dds",
+                            "t": "tex2d",
+                            "Mipmapped": true
+                        },
+                        "sponza_arch_diff": {
+                            "p": "..\\Assets\\Textures\\sponza\\sponza_arch_diff.dds",
+                            "t": "tex2d",
+                            "Mipmapped": true
+                        },
+                        "sponza_arch_spec": {
+                            "p": "..\\Assets\\Textures\\sponza\\sponza_arch_spec.dds",
+                            "t": "tex2d",
+                            "Mipmapped": true
+                        },
+                        "sponza_background": {
+                            "p": "..\\Assets\\Textures\\sponza\\sponza_background.dds",
+                            "t": "tex2d",
+                            "Mipmapped": true
+                        },
+                        "sponza_background_ddn": {
+                            "p": "..\\Assets\\Textures\\sponza\\sponza_background_ddn.dds",
+                            "t": "tex2d",
+                            "Mipmapped": true
+                        },
+                        "sponza_background_spec": {
+                            "p": "..\\Assets\\Textures\\sponza\\sponza_background_spec.dds",
+                            "t": "tex2d",
+                            "Mipmapped": true
+                        },
+                        "sponza_bricks_a_ddn": {
+                            "p": "..\\Assets\\Textures\\sponza\\sponza_bricks_a_ddn.dds",
+                            "t": "tex2d",
+                            "Mipmapped": true
+                        },
+                        "sponza_bricks_a_diff": {
+                            "p": "..\\Assets\\Textures\\sponza\\sponza_bricks_a_diff.dds",
+                            "t": "tex2d",
+                            "Mipmapped": true
+                        },
+                        "sponza_bricks_a_spec": {
+                            "p": "..\\Assets\\Textures\\sponza\\sponza_bricks_a_spec.dds",
+                            "t": "tex2d",
+                            "Mipmapped": true
+                        },
+                        "sponza_ceiling_a_ddn": {
+                            "p": "..\\Assets\\Textures\\sponza\\sponza_ceiling_a_ddn.dds",
+                            "t": "tex2d",
+                            "Mipmapped": true
+                        },
+                        "sponza_ceiling_a_diff": {
+                            "p": "..\\Assets\\Textures\\sponza\\sponza_ceiling_a_diff.dds",
+                            "t": "tex2d",
+                            "Mipmapped": true
+                        },
+                        "sponza_ceiling_a_spec": {
+                            "p": "..\\Assets\\Textures\\sponza\\sponza_ceiling_a_spec.dds",
+                            "t": "tex2d",
+                            "Mipmapped": true
+                        },
+                        "sponza_chain_texture": {
+                            "p": "..\\Assets\\Textures\\sponza\\sponza_chain_texture.dds",
+                            "t": "tex2d",
+                            "Mipmapped": true
+                        },
+                        "sponza_chain_texture_ddn": {
+                            "p": "..\\Assets\\Textures\\sponza\\sponza_chain_texture_ddn.dds",
+                            "t": "tex2d",
+                            "Mipmapped": true
+                        },
+                        "sponza_column_a_ddn": {
+                            "p": "..\\Assets\\Textures\\sponza\\sponza_column_a_ddn.dds",
+                            "t": "tex2d",
+                            "Mipmapped": true
+                        },
+                        "sponza_column_a_diff": {
+                            "p": "..\\Assets\\Textures\\sponza\\sponza_column_a_diff.dds",
+                            "t": "tex2d",
+                            "Mipmapped": true
+                        },
+                        "sponza_column_a_spec": {
+                            "p": "..\\Assets\\Textures\\sponza\\sponza_column_a_spec.dds",
+                            "t": "tex2d",
+                            "Mipmapped": true
+                        },
+                        "sponza_column_b_ddn": {
+                            "p": "..\\Assets\\Textures\\sponza\\sponza_column_b_ddn.dds",
+                            "t": "tex2d",
+                            "Mipmapped": true
+                        },
+                        "sponza_column_b_diff": {
+                            "p": "..\\Assets\\Textures\\sponza\\sponza_column_b_diff.dds",
+                            "t": "tex2d",
+                            "Mipmapped": true
+                        },
+                        "sponza_column_b_spec": {
+                            "p": "..\\Assets\\Textures\\sponza\\sponza_column_b_spec.dds",
+                            "t": "tex2d",
+                            "Mipmapped": true
+                        },
+                        "sponza_column_c_ddn": {
+                            "p": "..\\Assets\\Textures\\sponza\\sponza_column_c_ddn.dds",
+                            "t": "tex2d",
+                            "Mipmapped": true
+                        },
+                        "sponza_column_c_diff": {
+                            "p": "..\\Assets\\Textures\\sponza\\sponza_column_c_diff.dds",
+                            "t": "tex2d",
+                            "Mipmapped": true
+                        },
+                        "sponza_column_c_spec": {
+                            "p": "..\\Assets\\Textures\\sponza\\sponza_column_c_spec.dds",
+                            "t": "tex2d",
+                            "Mipmapped": true
+                        },
+                        "sponza_curtain_blue_diff": {
+                            "p": "..\\Assets\\Textures\\sponza\\sponza_curtain_blue_diff.dds",
+                            "t": "tex2d",
+                            "Mipmapped": true
+                        },
+                        "sponza_curtain_ddn": {
+                            "p": "..\\Assets\\Textures\\sponza\\sponza_curtain_ddn.dds",
+                            "t": "tex2d",
+                            "Mipmapped": true
+                        },
+                        "sponza_curtain_diff": {
+                            "p": "..\\Assets\\Textures\\sponza\\sponza_curtain_diff.dds",
+                            "t": "tex2d",
+                            "Mipmapped": true
+                        },
+                        "sponza_curtain_green_diff": {
+                            "p": "..\\Assets\\Textures\\sponza\\sponza_curtain_green_diff.dds",
+                            "t": "tex2d",
+                            "Mipmapped": true
+                        },
+                        "sponza_curtain_spec": {
+                            "p": "..\\Assets\\Textures\\sponza\\sponza_curtain_spec.dds",
+                            "t": "tex2d",
+                            "Mipmapped": true
+                        },
+                        "sponza_details_ddn": {
+                            "p": "..\\Assets\\Textures\\sponza\\sponza_details_ddn.dds",
+                            "t": "tex2d",
+                            "Mipmapped": true
+                        },
+                        "sponza_details_diff": {
+                            "p": "..\\Assets\\Textures\\sponza\\sponza_details_diff.dds",
+                            "t": "tex2d",
+                            "Mipmapped": true
+                        },
+                        "sponza_details_spec": {
+                            "p": "..\\Assets\\Textures\\sponza\\sponza_details_spec.dds",
+                            "t": "tex2d",
+                            "Mipmapped": true
+                        },
+                        "sponza_dummy": {
+                            "p": "..\\Assets\\Textures\\sponza\\sponza_dummy.dds",
+                            "t": "tex2d",
+                            "Mipmapped": true
+                        },
+                        "sponza_dummy_ddn": {
+                            "p": "..\\Assets\\Textures\\sponza\\sponza_dummy_ddn.dds",
+                            "t": "tex2d",
+                            "Mipmapped": true
+                        },
+                        "sponza_dummy_specular": {
+                            "p": "..\\Assets\\Textures\\sponza\\sponza_dummy_specular.dds",
+                            "t": "tex2d",
+                            "Mipmapped": true
+                        },
+                        "sponza_fabric_blue_diff": {
+                            "p": "..\\Assets\\Textures\\sponza\\sponza_fabric_blue_diff.dds",
+                            "t": "tex2d",
+                            "Mipmapped": true
+                        },
+                        "sponza_fabric_ddn": {
+                            "p": "..\\Assets\\Textures\\sponza\\sponza_fabric_ddn.dds",
+                            "t": "tex2d",
+                            "Mipmapped": true
+                        },
+                        "sponza_fabric_diff": {
+                            "p": "..\\Assets\\Textures\\sponza\\sponza_fabric_diff.dds",
+                            "t": "tex2d",
+                            "Mipmapped": true
+                        },
+                        "sponza_fabric_green_diff": {
+                            "p": "..\\Assets\\Textures\\sponza\\sponza_fabric_green_diff.dds",
+                            "t": "tex2d",
+                            "Mipmapped": true
+                        },
+                        "sponza_fabric_spec": {
+                            "p": "..\\Assets\\Textures\\sponza\\sponza_fabric_spec.dds",
+                            "t": "tex2d",
+                            "Mipmapped": true
+                        },
+                        "sponza_flagpole_ddn": {
+                            "p": "..\\Assets\\Textures\\sponza\\sponza_flagpole_ddn.dds",
+                            "t": "tex2d",
+                            "Mipmapped": true
+                        },
+                        "sponza_flagpole_diff": {
+                            "p": "..\\Assets\\Textures\\sponza\\sponza_flagpole_diff.dds",
+                            "t": "tex2d",
+                            "Mipmapped": true
+                        },
+                        "sponza_flagpole_spec": {
+                            "p": "..\\Assets\\Textures\\sponza\\sponza_flagpole_spec.dds",
+                            "t": "tex2d",
+                            "Mipmapped": true
+                        },
+                        "sponza_floor_a_ddn": {
+                            "p": "..\\Assets\\Textures\\sponza\\sponza_floor_a_ddn.dds",
+                            "t": "tex2d",
+                            "Mipmapped": true
+                        },
+                        "sponza_floor_a_diff": {
+                            "p": "..\\Assets\\Textures\\sponza\\sponza_floor_a_diff.dds",
+                            "t": "tex2d",
+                            "Mipmapped": true
+                        },
+                        "sponza_floor_a_spec": {
+                            "p": "..\\Assets\\Textures\\sponza\\sponza_floor_a_spec.dds",
+                            "t": "tex2d",
+                            "Mipmapped": true
+                        },
+                        "sponza_lion": {
+                            "p": "..\\Assets\\Textures\\sponza\\sponza_lion.dds",
+                            "t": "tex2d",
+                            "Mipmapped": true
+                        },
+                        "sponza_lion_ddn": {
+                            "p": "..\\Assets\\Textures\\sponza\\sponza_lion_ddn.dds",
+                            "t": "tex2d",
+                            "Mipmapped": true
+                        },
+                        "sponza_lion_spec": {
+                            "p": "..\\Assets\\Textures\\sponza\\sponza_lion_spec.dds",
+                            "t": "tex2d",
+                            "Mipmapped": true
+                        },
+                        "sponza_roof_ddn": {
+                            "p": "..\\Assets\\Textures\\sponza\\sponza_roof_ddn.dds",
+                            "t": "tex2d",
+                            "Mipmapped": true
+                        },
+                        "sponza_roof_diff": {
+                            "p": "..\\Assets\\Textures\\sponza\\sponza_roof_diff.dds",
+                            "t": "tex2d",
+                            "Mipmapped": true
+                        },
+                        "sponza_thorn_ddn": {
+                            "p": "..\\Assets\\Textures\\sponza\\sponza_thorn_ddn.dds",
+                            "t": "tex2d",
+                            "Mipmapped": true
+                        },
+                        "sponza_thorn_diff": {
+                            "p": "..\\Assets\\Textures\\sponza\\sponza_thorn_diff.dds",
+                            "t": "tex2d",
+                            "Mipmapped": true
+                        },
+                        "sponza_thorn_spec": {
+                            "p": "..\\Assets\\Textures\\sponza\\sponza_thorn_spec.dds",
+                            "t": "tex2d",
+                            "Mipmapped": true
+                        },
+                        "sponza_vase_diff": {
+                            "p": "..\\Assets\\Textures\\sponza\\sponza_vase_diff.dds",
+                            "t": "tex2d",
+                            "Mipmapped": true
+                        },
+                        "sponza_vase_ddn": {
+                            "p": "..\\Assets\\Textures\\sponza\\sponza_vase_ddn.dds",
+                            "t": "tex2d",
+                            "Mipmapped": true
+                        },
+                        "sponza_vase_hanging_diff": {
+                            "p": "..\\Assets\\Textures\\sponza\\sponza_vase_hanging_diff.dds",
+                            "t": "tex2d",
+                            "Mipmapped": true
+                        },
+                        "sponza_vase_plant": {
+                            "p": "..\\Assets\\Textures\\sponza\\sponza_vase_plant.dds",
+                            "t": "tex2d",
+                            "Mipmapped": true
+                        },
+                        "sponza_vase_plant_spec": {
+                            "p": "..\\Assets\\Textures\\sponza\\sponza_vase_plant_spec.dds",
+                            "t": "tex2d",
+                            "Mipmapped": true
+                        },
+                        "sponza_vase_round": {
+                            "p": "..\\Assets\\Textures\\sponza\\sponza_vase_round.dds",
+                            "t": "tex2d",
+                            "Mipmapped": true
+                        },
+                        "sponza_vase_round_ddn": {
+                            "p": "..\\Assets\\Textures\\sponza\\sponza_vase_round_ddn.dds",
+                            "t": "tex2d",
+                            "Mipmapped": true
+                        },
+                        "sponza_vase_round_spec": {
+                            "p": "..\\Assets\\Textures\\sponza\\sponza_vase_round_spec.dds",
+                            "t": "tex2d",
+                            "Mipmapped": true
+                        },
+                        "sponza_vase_spec": {
+                            "p": "..\\Assets\\Textures\\sponza\\sponza_vase_spec.dds",
+                            "t": "tex2d",
+                            "Mipmapped": true
+                        }
+                    }
+                }
+            },
+            "a": {
+                "Error": {
+                    "p": "..\\Assets\\Textures\\Error.dds",
+                    "t": "tex2d",
+                    "Downsample": 1
+                },
+                "Fallback": {
+                    "p": "..\\Assets\\Textures\\Fallback.dds",
+                    "t": "tex2d"
+                },
+                "Noise": {
+                    "p": "..\\Assets\\Textures\\Noise.dds",
+                    "t": "tex2d"
+                },
+                "White": {
+                    "p": "..\\Assets\\Textures\\White.png",
+                    "t": "tex2d",
+                    "Format": "R8G8B8A8_UNORM"
+                },
+                "Black": {
+                    "p": "..\\Assets\\Textures\\Black.png",
+                    "t": "tex2d",
+                    "Format": "R8G8B8A8_UNORM"
+                },
+                "Ambient": {
+                    "p": "..\\Assets\\Textures\\Ambient.png",
+                    "t": "tex2d",
+                    "Format": "R8G8B8A8_UNORM"
+                },
+                "AmbientBright": {
+                    "p": "..\\Assets\\Textures\\AmbientBright.png",
+                    "t": "tex2d",
+                    "Format": "R8G8B8A8_UNORM"
+                },
+                "Red": {
+                    "p": "..\\Assets\\Textures\\Red.png",
+                    "t": "tex2d",
+                    "Format": "R8G8B8A8_UNORM"
+                },
+                "Green": {
+                    "p": "..\\Assets\\Textures\\Green.png",
+                    "t": "tex2d",
+                    "Format": "R8G8B8A8_UNORM"
+                },
+                "Blue": {
+                    "p": "..\\Assets\\Textures\\Blue.png",
+                    "t": "tex2d",
+                    "Format": "R8G8B8A8_UNORM"
+                },
+                "Gray": {
+                    "p": "..\\Assets\\Textures\\Gray.png",
+                    "t": "tex2d",
+                    "Format": "R8G8B8A8_UNORM"
+                },
+                "DarkGray": {
+                    "p": "..\\Assets\\Textures\\DarkGray.png",
+                    "t": "tex2d",
+                    "Format": "R8G8B8A8_UNORM"
+                },
+                "Default_Specular": {
+                    "p": "..\\Assets\\Textures\\AmbientBright.png",
+                    "t": "tex2d",
+                    "Format": "R8G8B8A8_UNORM"
+                },
+                "Black_Specular": {
+                    "p": "..\\Assets\\Textures\\Black.png",
+                    "t": "tex2d",
+                    "Format": "R8G8B8A8_UNORM"
+                },
+                "DarkGray_Specular": {
+                    "p": "..\\Assets\\Textures\\DarkGray.png",
+                    "t": "tex2d",
+                    "Format": "R8G8B8A8_UNORM"
+                },
+                "Gray_Specular": {
+                    "p": "..\\Assets\\Textures\\Gray.png",
+                    "t": "tex2d",
+                    "Format": "R8G8B8A8_UNORM"
+                },
+                "White_Specular": {
+                    "p": "..\\Assets\\Textures\\White.png",
+                    "t": "tex2d",
+                    "Format": "R8G8B8A8_UNORM"
+                },
+                "Red_Specular": {
+                    "p": "..\\Assets\\Textures\\Red.png",
+                    "t": "tex2d",
+                    "Format": "R8G8B8A8_UNORM"
+                },
+                "Green_Specular": {
+                    "p": "..\\Assets\\Textures\\Green.png",
+                    "t": "tex2d",
+                    "Format": "R8G8B8A8_UNORM"
+                },
+                "Blue_Specular": {
+                    "p": "..\\Assets\\Textures\\Blue.png",
+                    "t": "tex2d",
+                    "Format": "R8G8B8A8_UNORM"
+                },
+                "Default_Occlusion": {
+                    "p": "..\\Assets\\Textures\\White.png",
+                    "t": "tex2d",
+                    "Format": "R8G8B8A8_UNORM"
+                },
+                "Default_Glossiness": {
+                    "p": "..\\Assets\\Textures\\Gray.png",
+                    "t": "tex2d",
+                    "Format": "R8G8B8A8_UNORM",
+                    "Mipmapped": true
+                },
+                "White_Glossiness": {
+                    "p": "..\\Assets\\Textures\\White.png",
+                    "t": "tex2d",
+                    "Format": "R8G8B8A8_UNORM",
+                    "Mipmapped": true
+                },
+                "Black_Glossiness": {
+                    "p": "..\\Assets\\Textures\\Black.png",
+                    "t": "tex2d",
+                    "Format": "R8G8B8A8_UNORM",
+                    "Mipmapped": true
+                },
+                "DarkGray_Glossiness": {
+                    "p": "..\\Assets\\Textures\\DarkGray.png",
+                    "t": "tex2d",
+                    "Format": "R8G8B8A8_UNORM",
+                    "Mipmapped": true
+                },
+                "Default_Normal": {
+                    "p": "..\\Assets\\Textures\\Default_Normal.png",
+                    "t": "tex2d",
+                    "Format": "R8G8B8A8_UNORM",
+                    "Mipmapped": true
+                },
+                "Maxwell": {
+                    "p": "..\\Assets\\Textures\\Maxwell.dds",
+                    "t": "tex2d"
+                },
+                "Whiskers": {
+                    "p": "..\\Assets\\Textures\\Whiskers.dds",
+                    "t": "tex2d"
+                },
+                "Character_Texture": {
+                    "p": "..\\Assets\\Textures\\Character_Texture.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "Metal_Normal": {
+                    "p": "..\\Assets\\Textures\\Metal_Normal.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "Metal_Specular": {
+                    "p": "..\\Assets\\Textures\\Metal_Specular.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "Fade": {
+                    "p": "..\\Assets\\Textures\\Fade.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true,
+                    "Debug": true
+                },
+                "SoundEmitter": {
+                    "p": "..\\Assets\\Textures\\SoundEmitter.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true,
+                    "Downsample": 1,
+                    "Debug": true
+                },
+                "LightSource": {
+                    "p": "..\\Assets\\Textures\\LightSource.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true,
+                    "Downsample": 1,
+                    "Debug": true
+                },
+                "Cornell": {
+                    "p": "..\\Assets\\Textures\\Cornell.dds",
+                    "t": "tex2d",
+                    "Downsample": 2,
+                    "Debug": true
+                },
+                "Cornell_Light": {
+                    "p": "..\\Assets\\Textures\\Cornell_Light.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true,
+                    "Downsample": 2,
+                    "Debug": true
+                },
+                "HighlightColor": {
+                    "p": "..\\Assets\\Textures\\HighlightColor.png",
+                    "t": "tex2d"
+                },
+                "Particle": {
+                    "p": "..\\Assets\\Textures\\Particle.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "Flare": {
+                    "p": "..\\Assets\\Textures\\Flare.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "Metal": {
+                    "p": "..\\Assets\\Textures\\Metal.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "Sniper_Diffuse": {
+                    "p": "..\\Assets\\Textures\\Sniper_Diffuse.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "Sniper_Normal": {
+                    "p": "..\\Assets\\Textures\\Sniper_Normal.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "Sniper_Specular": {
+                    "p": "..\\Assets\\Textures\\Sniper_Specular.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "Sniper_Glossiness": {
+                    "p": "..\\Assets\\Textures\\Sniper_Glossiness.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "Sniper_Occlusion": {
+                    "p": "..\\Assets\\Textures\\Sniper_Occlusion.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "SniperMagazine_Diffuse": {
+                    "p": "..\\Assets\\Textures\\SniperMagazine_Diffuse.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "SniperMagazine_Normal": {
+                    "p": "..\\Assets\\Textures\\SniperMagazine_Normal.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "SniperMagazine_Specular": {
+                    "p": "..\\Assets\\Textures\\SniperMagazine_Specular.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "SniperMagazine_Glossiness": {
+                    "p": "..\\Assets\\Textures\\SniperMagazine_Glossiness.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "SniperMagazine_Occlusion": {
+                    "p": "..\\Assets\\Textures\\SniperMagazine_Occlusion.dds",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "Arcade_Diffuse": {
+                    "p": "..\\Assets\\Textures\\Arcade_Diffuse.png",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "Arcade_Normal": {
+                    "p": "..\\Assets\\Textures\\Arcade_Normal.png",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "Arcade_Specular": {
+                    "p": "..\\Assets\\Textures\\Arcade_Specular.png",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "Arcade_Glossiness": {
+                    "p": "..\\Assets\\Textures\\Arcade_Glossiness.png",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "Arcade_Ambient": {
+                    "p": "..\\Assets\\Textures\\Arcade_Ambient.png",
+                    "t": "tex2d",
+                    "Mipmapped": true
+                },
+                "LUT_Default": {
+                    "p": "..\\Assets\\Textures\\LUT_Default.dds",
+                    "t": "tex2d"
+                },
+                "LUT_Experimental": {
+                    "p": "..\\Assets\\Textures\\LUT_Experimental.dds",
+                    "t": "tex2d"
+                },
+                "LUT_Test": {
+                    "p": "..\\Assets\\Textures\\LUT_Test.dds",
+                    "t": "tex2d"
+                },
+                "LUT_HueShift": {
+                    "p": "..\\Assets\\Textures\\LUT_HueShift.dds",
+                    "t": "tex2d"
+                },
+                "ExampleFont": {
+                    "p": "..\\Assets\\Textures\\ExampleFont.png",
+                    "t": "tex2d"
+                },
+                "SimpleFont": {
+                    "p": "..\\Assets\\Textures\\SimpleFont.png",
+                    "t": "tex2d"
+                },
+                "Null": {
+                    "p": "..\\Assets\\Textures\\NullCubemap.png",
+                    "t": "texcube",
+                    "Format": "R8G8B8A8_UNORM",
+                    "Mipmapped": true
+                },
+                "RundownIndustrial": {
+                    "p": "..\\Assets\\Textures\\RundownIndustrialCubemap.png",
+                    "t": "texcube",
+                    "Format": "R8G8B8A8_UNORM",
+                    "Mipmapped": true
+                },
+                "SandstoneCity": {
+                    "p": "..\\Assets\\Textures\\SandstoneCityCubemap.png",
+                    "t": "texcube",
+                    "Format": "R8G8B8A8_UNORM",
+                    "Mipmapped": true
+                },
+                "MonkstownCastle": {
+                    "p": "..\\Assets\\Textures\\MonkstownCastleCubemap.png",
+                    "t": "texcube",
+                    "Format": "R8G8B8A8_UNORM",
+                    "Mipmapped": true
+                },
+                "AutumnForest": {
+                    "p": "..\\Assets\\Textures\\AutumnForestCubemap.png",
+                    "t": "texcube",
+                    "Format": "R8G8B8A8_UNORM",
+                    "Mipmapped": true
+                },
+                "BlankSkybox": {
+                    "p": "..\\Assets\\Textures\\BlankSkyboxCubemap.png",
+                    "t": "texcube",
+                    "Format": "R8G8B8A8_UNORM",
+                    "Mipmapped": true
+                },
+                "ParkTrail": {
+                    "p": "..\\Assets\\Textures\\ParkTrailCubemap.png",
+                    "t": "texcube",
+                    "Format": "R8G8B8A8_UNORM",
+                    "Mipmapped": true
+                },
+                "SuburbanNight": {
+                    "p": "..\\Assets\\Textures\\SuburbanNightCubemap.png",
+                    "t": "texcube",
+                    "Format": "R8G8B8A8_UNORM",
+                    "Mipmapped": true
+                },
+                "RooftopNight": {
+                    "p": "..\\Assets\\Textures\\RooftopNightCubemap.png",
+                    "t": "texcube",
+                    "Format": "R8G8B8A8_UNORM",
+                    "Mipmapped": true
+                },
+                "BlueGrotto": {
+                    "p": "..\\Assets\\Textures\\BlueGrottoCubemap.png",
+                    "t": "texcube",
+                    "Format": "R8G8B8A8_UNORM",
+                    "Mipmapped": true
+                },
+                "BurntWarehouse": {
+                    "p": "..\\Assets\\Textures\\BurntWarehouseCubemap.png",
+                    "t": "texcube",
+                    "Format": "R8G8B8A8_UNORM",
+                    "Mipmapped": true
+                },
+                "CanaryWharf": {
+                    "p": "..\\Assets\\Textures\\CanaryWharfCubemap.png",
+                    "t": "texcube",
+                    "Format": "R8G8B8A8_UNORM",
+                    "Mipmapped": true
+                },
+                "SandstoneCove": {
+                    "p": "..\\Assets\\Textures\\SandstoneCoveCubemap.png",
+                    "t": "texcube",
+                    "Format": "R8G8B8A8_UNORM",
+                    "Mipmapped": true
+                },
+                "HospitalRoom": {
+                    "p": "..\\Assets\\Textures\\HospitalRoomCubemap.png",
+                    "t": "texcube",
+                    "Format": "R8G8B8A8_UNORM",
+                    "Mipmapped": true
+                },
+                "WoodsRiverbank": {
+                    "p": "..\\Assets\\Textures\\WoodsRiverbankCubemap.png",
+                    "t": "texcube",
+                    "Format": "R8G8B8A8_UNORM",
+                    "Mipmapped": true
+                },
+                "WinterCityNight": {
+                    "p": "..\\Assets\\Textures\\WinterCityNightCubemap.png",
+                    "t": "texcube",
+                    "Format": "R8G8B8A8_UNORM",
+                    "Mipmapped": true
+                },
+                "IndustrialAlley": {
+                    "p": "..\\Assets\\Textures\\IndustrialAlleyCubemap.png",
+                    "t": "texcube",
+                    "Format": "R8G8B8A8_UNORM",
+                    "Mipmapped": true
+                },
+                "CaveWall": {
+                    "p": "..\\Assets\\Textures\\CaveWallCubemap.png",
+                    "t": "texcube",
+                    "Format": "R8G8B8A8_UNORM",
+                    "Mipmapped": true
+                },
+                "NeonCityNight": {
+                    "p": "..\\Assets\\Textures\\NeonCityNightCubemap.png",
+                    "t": "texcube",
+                    "Format": "R8G8B8A8_UNORM",
+                    "Mipmapped": true
+                },
+                "BarrenFieldHDR": {
+                    "p": "..\\Assets\\Textures\\BarrenFieldHDRCubemap.png",
+                    "t": "texcube",
+                    "Format": "R16G16B16A16_UNORM",
+                    "Mipmapped": true
+                }
+            }
+        },
+        "Shaders": {
+            "f": {
+                "Vertex": {
+                    "f": {},
+                    "a": {
+                        "VS_Geometry": {
+                            "p": "Vertex/VS_Geometry.hlsl",
+                            "t": "shader",
+                            "Format": "Vertex"
+                        },
+                        "VS_TextDefault": {
+                            "p": "Vertex/VS_TextDefault.hlsl",
+                            "t": "shader",
+                            "Format": "Vertex"
+                        },
+                        "VS_Depth": {
+                            "p": "Vertex/VS_Depth.hlsl",
+                            "t": "shader",
+                            "Format": "Vertex"
+                        },
+                        "VS_DepthCubemap": {
+                            "p": "Vertex/VS_DepthCubemap.hlsl",
+                            "t": "shader",
+                            "Format": "Vertex"
+                        },
+                        "VS_ScreenEffect": {
+                            "p": "Vertex/VS_ScreenEffect.hlsl",
+                            "t": "shader",
+                            "Format": "Vertex"
+                        },
+                        "VS_DebugDraw": {
+                            "p": "Vertex/VS_DebugDraw.hlsl",
+                            "t": "shader",
+                            "Format": "Vertex"
+                        },
+                        "VS_DebugDrawStrip": {
+                            "p": "Vertex/VS_DebugDrawStrip.hlsl",
+                            "t": "shader",
+                            "Format": "Vertex"
+                        },
+                        "VS_DebugDrawBezier": {
+                            "p": "Vertex/VS_DebugDrawBezier.hlsl",
+                            "t": "shader",
+                            "Format": "Vertex"
+                        },
+                        "VS_DebugDrawTri": {
+                            "p": "Vertex/VS_DebugDrawTri.hlsl",
+                            "t": "shader",
+                            "Format": "Vertex"
+                        },
+                        "VS_DebugDrawSprite": {
+                            "p": "Vertex/VS_DebugDrawSprite.hlsl",
+                            "t": "shader",
+                            "Format": "Vertex"
+                        },
+                        "VS_DebugDrawMesh": {
+                            "p": "Vertex/VS_DebugDrawMesh.hlsl",
+                            "t": "shader",
+                            "Format": "Vertex"
+                        }
+                    }
+                },
+                "Geometry": {
+                    "f": {},
+                    "a": {
+                        "GS_Billboard": {
+                            "p": "Geometry/GS_Billboard.hlsl",
+                            "t": "shader",
+                            "Format": "Geometry"
+                        },
+                        "GS_DepthCubemap": {
+                            "p": "Geometry/GS_DepthCubemap.hlsl",
+                            "t": "shader",
+                            "Format": "Geometry"
+                        },
+                        "GS_DebugLine": {
+                            "p": "Geometry/GS_DebugLine.hlsl",
+                            "t": "shader",
+                            "Format": "Geometry"
+                        },
+                        "GS_DebugDrawSprite": {
+                            "p": "Geometry/GS_DebugDrawSprite.hlsl",
+                            "t": "shader",
+                            "Format": "Geometry"
+                        }
+                    }
+                },
+                "Pixel": {
+                    "f": {},
+                    "a": {
+                        "PS_Geometry": {
+                            "p": "Pixel/PS_Geometry.hlsl",
+                            "t": "shader",
+                            "Format": "Pixel"
+                        },
+                        "PS_GeometryMetallic": {
+                            "p": "Pixel/PS_GeometryMetallic.hlsl",
+                            "t": "shader",
+                            "Format": "Pixel"
+                        },
+                        "PS_TriPlanar": {
+                            "p": "Pixel/PS_TriPlanar.hlsl",
+                            "t": "shader",
+                            "Format": "Pixel"
+                        },
+                        "PS_Cel": {
+                            "p": "Pixel/PS_Cel.hlsl",
+                            "t": "shader",
+                            "Format": "Pixel"
+                        },
+                        "PS_ReflectionProbe": {
+                            "p": "Pixel/PS_ReflectionProbe.hlsl",
+                            "t": "shader",
+                            "Format": "Pixel"
+                        },
+                        "PS_Static": {
+                            "p": "Pixel/PS_Static.hlsl",
+                            "t": "shader",
+                            "Format": "Pixel"
+                        },
+                        "PS_Transparent": {
+                            "p": "Pixel/PS_Transparent.hlsl",
+                            "t": "shader",
+                            "Format": "Pixel"
+                        },
+                        "PS_TextDefault": {
+                            "p": "Pixel/PS_TextDefault.hlsl",
+                            "t": "shader",
+                            "Format": "Pixel"
+                        },
+                        "PS_DepthCubemap": {
+                            "p": "Pixel/PS_DepthCubemap.hlsl",
+                            "t": "shader",
+                            "Format": "Pixel"
+                        },
+                        "PS_SkyboxDefault": {
+                            "p": "Pixel/PS_SkyboxDefault.hlsl",
+                            "t": "shader",
+                            "Format": "Pixel"
+                        },
+                        "PS_SkyboxSolidColor": {
+                            "p": "Pixel/PS_SkyboxSolidColor.hlsl",
+                            "t": "shader",
+                            "Format": "Pixel"
+                        },
+                        "PS_SkyboxNormal": {
+                            "p": "Pixel/PS_SkyboxNormal.hlsl",
+                            "t": "shader",
+                            "Format": "Pixel"
+                        },
+                        "PS_SkyboxEnvironment": {
+                            "p": "Pixel/PS_SkyboxEnvironment.hlsl",
+                            "t": "shader",
+                            "Format": "Pixel"
+                        },
+                        "PS_SelectionOutline": {
+                            "p": "Pixel/PS_SelectionOutline.hlsl",
+                            "t": "shader",
+                            "Format": "Pixel"
+                        },
+                        "PS_DebugDraw": {
+                            "p": "Pixel/PS_DebugDraw.hlsl",
+                            "t": "shader",
+                            "Format": "Pixel"
+                        },
+                        "PS_DebugDrawSprite": {
+                            "p": "Pixel/PS_DebugDrawSprite.hlsl",
+                            "t": "shader",
+                            "Format": "Pixel"
+                        },
+                        "PS_DebugViewPosition": {
+                            "p": "Pixel/PS_DebugViewPosition.hlsl",
+                            "t": "shader",
+                            "Format": "Pixel"
+                        },
+                        "PS_DebugViewNormal": {
+                            "p": "Pixel/PS_DebugViewNormal.hlsl",
+                            "t": "shader",
+                            "Format": "Pixel"
+                        },
+                        "PS_DebugViewAmbient": {
+                            "p": "Pixel/PS_DebugViewAmbient.hlsl",
+                            "t": "shader",
+                            "Format": "Pixel"
+                        },
+                        "PS_DebugViewDiffuse": {
+                            "p": "Pixel/PS_DebugViewDiffuse.hlsl",
+                            "t": "shader",
+                            "Format": "Pixel"
+                        },
+                        "PS_DebugViewDepth": {
+                            "p": "Pixel/PS_DebugViewDepth.hlsl",
+                            "t": "shader",
+                            "Format": "Pixel"
+                        },
+                        "PS_DebugViewShadow": {
+                            "p": "Pixel/PS_DebugViewShadow.hlsl",
+                            "t": "shader",
+                            "Format": "Pixel"
+                        },
+                        "PS_DebugViewReflection": {
+                            "p": "Pixel/PS_DebugViewReflection.hlsl",
+                            "t": "shader",
+                            "Format": "Pixel"
+                        },
+                        "PS_DebugViewReflectivity": {
+                            "p": "Pixel/PS_DebugViewReflectivity.hlsl",
+                            "t": "shader",
+                            "Format": "Pixel"
+                        },
+                        "PS_DebugViewSpecular": {
+                            "p": "Pixel/PS_DebugViewSpecular.hlsl",
+                            "t": "shader",
+                            "Format": "Pixel"
+                        },
+                        "PS_DebugViewSpecStr": {
+                            "p": "Pixel/PS_DebugViewSpecStr.hlsl",
+                            "t": "shader",
+                            "Format": "Pixel"
+                        },
+                        "PS_DebugViewUVCoords": {
+                            "p": "Pixel/PS_DebugViewUVCoords.hlsl",
+                            "t": "shader",
+                            "Format": "Pixel"
+                        },
+                        "PS_DebugViewOcclusion": {
+                            "p": "Pixel/PS_DebugViewOcclusion.hlsl",
+                            "t": "shader",
+                            "Format": "Pixel"
+                        },
+                        "PS_DebugViewLightTiles": {
+                            "p": "Pixel/PS_DebugViewLightTiles.hlsl",
+                            "t": "shader",
+                            "Format": "Pixel"
+                        },
+                        "PS_DebugViewOverdraw": {
+                            "p": "Pixel/PS_DebugViewOverdraw.hlsl",
+                            "t": "shader",
+                            "Format": "Pixel"
+                        }
+                    }
+                },
+                "Compute": {
+                    "f": {},
+                    "a": {
+                        "CS_BlurHorizontalFX": {
+                            "p": "Compute/CS_BlurHorizontalFX.hlsl",
+                            "t": "shader",
+                            "Format": "Compute"
+                        },
+                        "CS_BlurVerticalFX": {
+                            "p": "Compute/CS_BlurVerticalFX.hlsl",
+                            "t": "shader",
+                            "Format": "Compute"
+                        },
+                        "CS_BlurHorizontalEmission": {
+                            "p": "Compute/CS_BlurHorizontalEmission.hlsl",
+                            "t": "shader",
+                            "Format": "Compute"
+                        },
+                        "CS_BlurVerticalEmission": {
+                            "p": "Compute/CS_BlurVerticalEmission.hlsl",
+                            "t": "shader",
+                            "Format": "Compute"
+                        },
+                        "CS_Downsample": {
+                            "p": "Compute/CS_Downsample.hlsl",
+                            "t": "shader",
+                            "Format": "Compute"
+                        },
+                        "CS_DownsampleCheap": {
+                            "p": "Compute/CS_DownsampleCheap.hlsl",
+                            "t": "shader",
+                            "Format": "Compute"
+                        },
+                        "CS_DownsampleHalf": {
+                            "p": "Compute/CS_DownsampleHalf.hlsl",
+                            "t": "shader",
+                            "Format": "Compute"
+                        },
+                        "CS_MergeEmissionMips": {
+                            "p": "Compute/CS_MergeEmissionMips.hlsl",
+                            "t": "shader",
+                            "Format": "Compute"
+                        },
+                        "CS_ColorLUT": {
+                            "p": "Compute/CS_ColorLUT.hlsl",
+                            "t": "shader",
+                            "Format": "Compute"
+                        },
+                        "CS_FogFX": {
+                            "p": "Compute/CS_FogFX.hlsl",
+                            "t": "shader",
+                            "Format": "Compute"
+                        },
+                        "CS_CombineFX": {
+                            "p": "Compute/CS_CombineFX.hlsl",
+                            "t": "shader",
+                            "Format": "Compute"
+                        },
+                        "CS_Upsample": {
+                            "p": "Compute/CS_Upsample.hlsl",
+                            "t": "shader",
+                            "Format": "Compute"
+                        },
+                        "CS_UpsampleDouble": {
+                            "p": "Compute/CS_UpsampleDouble.hlsl",
+                            "t": "shader",
+                            "Format": "Compute"
+                        },
+                        "CS_BlurHorizontalDof": {
+                            "p": "Compute/CS_BlurHorizontalDof.hlsl",
+                            "t": "shader",
+                            "Format": "Compute"
+                        },
+                        "CS_BlurVerticalDof": {
+                            "p": "Compute/CS_BlurVerticalDof.hlsl",
+                            "t": "shader",
+                            "Format": "Compute"
+                        },
+                        "CS_CircleOfConfusionFX": {
+                            "p": "Compute/CS_CircleOfConfusionFX.hlsl",
+                            "t": "shader",
+                            "Format": "Compute"
+                        },
+                        "CS_CombineDepthOfFieldFX": {
+                            "p": "Compute/CS_CombineDepthOfFieldFX.hlsl",
+                            "t": "shader",
+                            "Format": "Compute"
+                        },
+                        "CS_BlurHorizontalOutline": {
+                            "p": "Compute/CS_BlurHorizontalOutline.hlsl",
+                            "t": "shader",
+                            "Format": "Compute"
+                        },
+                        "CS_BlurVerticalOutline": {
+                            "p": "Compute/CS_BlurVerticalOutline.hlsl",
+                            "t": "shader",
+                            "Format": "Compute"
+                        },
+                        "CS_CombineOutlineFX": {
+                            "p": "Compute/CS_CombineOutlineFX.hlsl",
+                            "t": "shader",
+                            "Format": "Compute"
+                        }
+                    }
+                },
+                "Hull": {
+                    "f": {},
+                    "a": {
+                        "HS_DebugBezier": {
+                            "p": "Hull/HS_DebugBezier.hlsl",
+                            "t": "shader",
+                            "Format": "Hull"
+                        }
+                    }
+                },
+                "Domain": {
+                    "f": {},
+                    "a": {
+                        "DS_DebugBezier": {
+                            "p": "Domain/DS_DebugBezier.hlsl",
+                            "t": "shader",
+                            "Format": "Domain"
+                        }
+                    }
+                }
+            },
+            "a": {}
+        },
+        "Fonts": {
+            "f": {},
+            "a": {
+                "DefaultFont": {
+                    "p": "..\\Assets\\Fonts\\DefaultFont.atlas",
+                    "t": "atlas"
+                },
+                "SimpleFont": {
+                    "p": "..\\Assets\\Fonts\\SimpleFont.atlas",
+                    "t": "atlas"
+                }
+            }
+        }
+    },
+    "a": {}
+}

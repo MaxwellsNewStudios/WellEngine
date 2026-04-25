@@ -112,7 +112,7 @@
                     "Hidden": false,
                     "Beh": [
                         {
-                            "Name": "MeshBehaviour",
+                            "Name": "Mesh",
                             "Attributes": {
                                 "Mesh": "sponza_CurtainPoles",
                                 "Transparent": false,
@@ -166,7 +166,7 @@
                     "Hidden": false,
                     "Beh": [
                         {
-                            "Name": "MeshBehaviour",
+                            "Name": "Mesh",
                             "Attributes": {
                                 "Mesh": "sponza_CurtainsBlue",
                                 "Transparent": false,
@@ -220,7 +220,7 @@
                     "Hidden": false,
                     "Beh": [
                         {
-                            "Name": "MeshBehaviour",
+                            "Name": "Mesh",
                             "Attributes": {
                                 "Mesh": "sponza_CurtainsGreen",
                                 "Transparent": false,
@@ -274,7 +274,7 @@
                     "Hidden": false,
                     "Beh": [
                         {
-                            "Name": "MeshBehaviour",
+                            "Name": "Mesh",
                             "Attributes": {
                                 "Mesh": "sponza_CurtainsRed",
                                 "Transparent": false,
@@ -328,7 +328,7 @@
                     "Hidden": false,
                     "Beh": [
                         {
-                            "Name": "MeshBehaviour",
+                            "Name": "Mesh",
                             "Attributes": {
                                 "Mesh": "sponza_EmptyFrame",
                                 "Transparent": false,
@@ -382,7 +382,7 @@
                     "Hidden": false,
                     "Beh": [
                         {
-                            "Name": "MeshBehaviour",
+                            "Name": "Mesh",
                             "Attributes": {
                                 "Mesh": "sponza_Floor",
                                 "Transparent": false,
@@ -436,7 +436,7 @@
                     "Hidden": false,
                     "Beh": [
                         {
-                            "Name": "MeshBehaviour",
+                            "Name": "Mesh",
                             "Attributes": {
                                 "Mesh": "sponza_FountainChains",
                                 "Transparent": false,
@@ -489,7 +489,7 @@
                     "Hidden": false,
                     "Beh": [
                         {
-                            "Name": "MeshBehaviour",
+                            "Name": "Mesh",
                             "Attributes": {
                                 "Mesh": "sponza_FountainsLarge",
                                 "Transparent": false,
@@ -543,7 +543,7 @@
                     "Hidden": false,
                     "Beh": [
                         {
-                            "Name": "MeshBehaviour",
+                            "Name": "Mesh",
                             "Attributes": {
                                 "Mesh": "sponza_HangingClothBlue",
                                 "Transparent": false,
@@ -597,7 +597,7 @@
                     "Hidden": false,
                     "Beh": [
                         {
-                            "Name": "MeshBehaviour",
+                            "Name": "Mesh",
                             "Attributes": {
                                 "Mesh": "sponza_HangingClothGreen",
                                 "Transparent": false,
@@ -651,7 +651,7 @@
                     "Hidden": false,
                     "Beh": [
                         {
-                            "Name": "MeshBehaviour",
+                            "Name": "Mesh",
                             "Attributes": {
                                 "Mesh": "sponza_HangingClothRed",
                                 "Transparent": false,
@@ -705,7 +705,7 @@
                     "Hidden": false,
                     "Beh": [
                         {
-                            "Name": "MeshBehaviour",
+                            "Name": "Mesh",
                             "Attributes": {
                                 "Mesh": "sponza_HangingFountains",
                                 "Transparent": false,
@@ -757,7 +757,7 @@
                     "Hidden": false,
                     "Beh": [
                         {
-                            "Name": "MeshBehaviour",
+                            "Name": "Mesh",
                             "Attributes": {
                                 "Mesh": "sponza_InnerArches",
                                 "Transparent": false,
@@ -811,7 +811,7 @@
                     "Hidden": false,
                     "Beh": [
                         {
-                            "Name": "MeshBehaviour",
+                            "Name": "Mesh",
                             "Attributes": {
                                 "Mesh": "sponza_LionFrames",
                                 "Transparent": false,
@@ -865,7 +865,7 @@
                     "Hidden": false,
                     "Beh": [
                         {
-                            "Name": "MeshBehaviour",
+                            "Name": "Mesh",
                             "Attributes": {
                                 "Mesh": "sponza_LionHeads",
                                 "Transparent": false,
@@ -919,7 +919,7 @@
                     "Hidden": false,
                     "Beh": [
                         {
-                            "Name": "MeshBehaviour",
+                            "Name": "Mesh",
                             "Attributes": {
                                 "Mesh": "sponza_OuterArches",
                                 "Transparent": false,
@@ -973,7 +973,7 @@
                     "Hidden": false,
                     "Beh": [
                         {
-                            "Name": "MeshBehaviour",
+                            "Name": "Mesh",
                             "Attributes": {
                                 "Mesh": "sponza_OuterWall",
                                 "Transparent": false,
@@ -1027,7 +1027,7 @@
                     "Hidden": false,
                     "Beh": [
                         {
-                            "Name": "MeshBehaviour",
+                            "Name": "Mesh",
                             "Attributes": {
                                 "Mesh": "sponza_PillarFoliage",
                                 "Transparent": false,
@@ -1081,7 +1081,7 @@
                     "Hidden": false,
                     "Beh": [
                         {
-                            "Name": "MeshBehaviour",
+                            "Name": "Mesh",
                             "Attributes": {
                                 "Mesh": "sponza_PillarsLower",
                                 "Transparent": false,
@@ -1135,7 +1135,7 @@
                     "Hidden": false,
                     "Beh": [
                         {
-                            "Name": "MeshBehaviour",
+                            "Name": "Mesh",
                             "Attributes": {
                                 "Mesh": "sponza_PillarsUpper",
                                 "Transparent": false,
@@ -1189,7 +1189,7 @@
                     "Hidden": false,
                     "Beh": [
                         {
-                            "Name": "MeshBehaviour",
+                            "Name": "Mesh",
                             "Attributes": {
                                 "Mesh": "sponza_PillarsUpperSquare",
                                 "Transparent": false,
@@ -1243,7 +1243,7 @@
                     "Hidden": false,
                     "Beh": [
                         {
-                            "Name": "MeshBehaviour",
+                            "Name": "Mesh",
                             "Attributes": {
                                 "Mesh": "sponza_Roof",
                                 "Transparent": false,
@@ -1296,7 +1296,7 @@
                     "Hidden": false,
                     "Beh": [
                         {
-                            "Name": "MeshBehaviour",
+                            "Name": "Mesh",
                             "Attributes": {
                                 "Mesh": "sponza_SmallPots",
                                 "Transparent": false,
@@ -1350,7 +1350,7 @@
                     "Hidden": false,
                     "Beh": [
                         {
-                            "Name": "MeshBehaviour",
+                            "Name": "Mesh",
                             "Attributes": {
                                 "Mesh": "sponza_SmallPotsFoliage",
                                 "Transparent": false,
@@ -1403,7 +1403,7 @@
                     "Hidden": false,
                     "Beh": [
                         {
-                            "Name": "MeshBehaviour",
+                            "Name": "Mesh",
                             "Attributes": {
                                 "Mesh": "sponza_WindowsDoors",
                                 "Transparent": false,
@@ -1459,7 +1459,7 @@
             "Hidden": false,
             "Beh": [
                 {
-                    "Name": "PointLightBehaviour",
+                    "Name": "LightPoint",
                     "Attributes": {
                         "Update Frequency": 10,
                         "Falloff": 0.20000000298023224,
@@ -1501,7 +1501,7 @@
             "Hidden": false,
             "Beh": [
                 {
-                    "Name": "PointLightBehaviour",
+                    "Name": "LightPoint",
                     "Attributes": {
                         "Update Frequency": 10,
                         "Falloff": 0.17499999701976776,
@@ -1543,7 +1543,7 @@
             "Hidden": false,
             "Beh": [
                 {
-                    "Name": "SimplePointLightBehaviour",
+                    "Name": "LightPointSimple",
                     "Attributes": {
                         "Falloff": 1.0,
                         "Fog Strength": 1.0,
@@ -1581,7 +1581,7 @@
             "Hidden": false,
             "Beh": [
                 {
-                    "Name": "PointLightBehaviour",
+                    "Name": "LightPoint",
                     "Attributes": {
                         "Update Frequency": 3,
                         "Falloff": 22.889999389648438,
@@ -1623,7 +1623,7 @@
             "Hidden": false,
             "Beh": [
                 {
-                    "Name": "PointLightBehaviour",
+                    "Name": "LightPoint",
                     "Attributes": {
                         "Update Frequency": 15,
                         "Falloff": 19.06999969482422,
@@ -1665,7 +1665,7 @@
             "Hidden": false,
             "Beh": [
                 {
-                    "Name": "SimplePointLightBehaviour",
+                    "Name": "LightPointSimple",
                     "Attributes": {
                         "Falloff": 8.0,
                         "Fog Strength": 0.4650000035762787,
@@ -1703,7 +1703,7 @@
             "Hidden": false,
             "Beh": [
                 {
-                    "Name": "SpotLightBehaviour",
+                    "Name": "LightSpot",
                     "Attributes": {
                         "Update Frequency": 7,
                         "Falloff": 1.2999999523162842,
@@ -1749,7 +1749,7 @@
             "Hidden": false,
             "Beh": [
                 {
-                    "Name": "SimplePointLightBehaviour",
+                    "Name": "LightPointSimple",
                     "Attributes": {
                         "Falloff": 0.9100000262260437,
                         "Fog Strength": 1.0,
@@ -1787,7 +1787,7 @@
             "Hidden": false,
             "Beh": [
                 {
-                    "Name": "SimpleSpotLightBehaviour",
+                    "Name": "LightSpotSimple",
                     "Attributes": {
                         "Ortho": false,
                         "Falloff": 0.4000000059604645,
@@ -1827,7 +1827,7 @@
             "Hidden": false,
             "Beh": [
                 {
-                    "Name": "SimplePointLightBehaviour",
+                    "Name": "LightPointSimple",
                     "Attributes": {
                         "Falloff": 88.0999984741211,
                         "Fog Strength": 0.10000000149011612,

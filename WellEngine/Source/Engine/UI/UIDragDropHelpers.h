@@ -3,7 +3,10 @@
 #include <functional>
 #include "Dependencies/ImGui/imgui.h"
 
-class Entity;
+namespace WellEngine
+{
+	class Entity;
+}
 
 namespace ImGui
 {
@@ -62,7 +65,7 @@ namespace ImGui
 		ContentPayload(UINT id) : id(id) {}
 	};
 
-	void EntityDragDropSource(const Entity &ent, ImGuiDragDropFlags flags = ImGuiDragDropFlags_None);
+	void EntityDragDropSource(const WellEngine::Entity &ent, ImGuiDragDropFlags flags = ImGuiDragDropFlags_None);
 	bool EntityDragDropTarget(std::function<bool(EntityPayload &)> onDropCallback);
 
 	template<typename P>

@@ -1,11 +1,13 @@
 #include "stdafx.h"
 #include "UIDragDropHelpers.h"
 #include "Game/Entity.h"
-#include "Game/Scenes/Scene.h"
+#include "Game/Scene/Scene.h"
 
 #ifdef LEAK_DETECTION
 #define new			DEBUG_NEW
 #endif
+
+using namespace WellEngine;
 
 template<typename P>
 void ImGui::DragDropSource(const char *tag, P &payload, std::function<void(void)> preview, ImGuiDragDropFlags flags)

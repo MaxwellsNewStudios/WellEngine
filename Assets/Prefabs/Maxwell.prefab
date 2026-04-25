@@ -25,7 +25,7 @@
             "InTree": true,
             "Beh": [
                 {
-                    "Name": "MeshBehaviour",
+                    "Name": "Mesh",
                     "Attributes": {
                         "Mesh": "Maxwell",
                         "Transparent": false,
@@ -47,18 +47,14 @@
                     }
                 },
                 {
-                    "Name": "ExampleBehaviour",
+                    "Name": "Example",
                     "Attributes": {
                         "Created Child": false,
                         "Spin Speed": 1.0
                     }
                 },
                 {
-                    "Name": "PickupBehaviour",
-                    "Attributes": {}
-                },
-                {
-                    "Name": "SoundBehaviour",
+                    "Name": "SoundSource",
                     "Attributes": {
                         "File Name": "Maxwell Cat Loop",
                         "Sound Effect Flag": 3,
@@ -95,7 +91,7 @@
                     "InTree": true,
                     "Beh": [
                         {
-                            "Name": "MeshBehaviour",
+                            "Name": "Mesh",
                             "Attributes": {
                                 "Mesh": "Whiskers",
                                 "Transparent": true,

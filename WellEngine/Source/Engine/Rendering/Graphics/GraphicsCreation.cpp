@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "Graphics.h"
-#include "Game/Behaviours/Rendering/Camera/CameraBehaviour.h"
+#include "Game/Behaviours/Rendering/Camera/B_Camera.h"
 #include "Engine/Debug/DebugDrawer.h"
 #include "Engine/Debug/DebugData.h"
 #include "Engine/UI/UILayout.h"
@@ -21,8 +21,7 @@ Graphics::~Graphics()
 
 bool Graphics::Setup(
 	bool fullscreen, const UINT width, const UINT height, const Window &window,
-	ID3D11Device *&device, ID3D11DeviceContext *&immediateContext,
-	ID3D11DeviceContext **deferredContexts, Content *content)
+	ID3D11Device *&device, ID3D11DeviceContext *&immediateContext, Content *content)
 {
 	if (_isSetup)
 	{
@@ -31,7 +30,7 @@ bool Graphics::Setup(
 	}
 
 	if (!SetupD3D11(fullscreen, width, height, window.GetHWND(),
-		device, immediateContext, deferredContexts,
+		device, immediateContext,
 		*_swapChain.ReleaseAndGetAddressOf(),
 		*_rtv.ReleaseAndGetAddressOf(),
 		*_dsTexture.ReleaseAndGetAddressOf(),
@@ -140,12 +139,6 @@ bool Graphics::Setup(
 			return false;
 		}
 
-		if (!_distortionSettingsBuffer.Initialize(device, sizeof(DistortionSettingsBuffer), &_distortionSettings))
-		{
-			ErrMsg("Failed to initialize distortion settings buffer!");
-			return false;
-		}
-
 		if (!_depthOfFieldSettingsBuffer.Initialize(device, sizeof(DepthOfFieldSettingsBuffer), &_currDepthOfFieldSettings))
 		{
 			ErrMsg("Failed to initialize depth of field settings buffer!");
@@ -175,21 +168,54 @@ bool Graphics::Setup(
 		rasterizerDesc.MultisampleEnable = false;
 		rasterizerDesc.AntialiasedLineEnable = false;
 
-		if (FAILED(device->CreateRasterizerState(&rasterizerDesc, &_defaultRasterizer)))
+		if (FAILED(device->CreateRasterizerState(&rasterizerDesc, &_frontFaceRasterizer)))
 		{
-			ErrMsg("Failed to create default rasterizer state!");
+			ErrMsg("Failed to create front-face rasterizer state!");
 			return false;
 		}
+
+		rasterizerDesc.CullMode = D3D11_CULL_FRONT;
+
+		if (FAILED(device->CreateRasterizerState(&rasterizerDesc, &_backFaceRasterizer)))
+		{
+			ErrMsg("Failed to create back-face rasterizer state!");
+			return false;
+		}
+
+		rasterizerDesc.CullMode = D3D11_CULL_NONE;
+
+		if (FAILED(device->CreateRasterizerState(&rasterizerDesc, &_doubleSidedRasterizer)))
+		{
+			ErrMsg("Failed to create double-sided rasterizer state!");
+			return false;
+		}
+
 
 		rasterizerDesc.FillMode = D3D11_FILL_WIREFRAME;
 		rasterizerDesc.CullMode = D3D11_CULL_NONE;
-		//rasterizerDesc.AntialiasedLineEnable = true;
 
-		if (FAILED(device->CreateRasterizerState(&rasterizerDesc, &_wireframeRasterizer)))
+		if (FAILED(device->CreateRasterizerState(&rasterizerDesc, &_wireframeFrontFaceRasterizer)))
 		{
-			ErrMsg("Failed to create wireframe rasterizer state!");
+			ErrMsg("Failed to create wireframe front-face rasterizer state!");
 			return false;
 		}
+
+		rasterizerDesc.CullMode = D3D11_CULL_FRONT;
+
+		if (FAILED(device->CreateRasterizerState(&rasterizerDesc, &_wireframeBackFaceRasterizer)))
+		{
+			ErrMsg("Failed to create wireframe back-face rasterizer state!");
+			return false;
+		}
+
+		rasterizerDesc.CullMode = D3D11_CULL_NONE;
+
+		if (FAILED(device->CreateRasterizerState(&rasterizerDesc, &_wireframeDoubleSidedRasterizer)))
+		{
+			ErrMsg("Failed to create wireframe double-sided rasterizer state!");
+			return false;
+		}
+
 
 		rasterizerDesc.FillMode = D3D11_FILL_SOLID;
 		rasterizerDesc.CullMode = D3D11_CULL_BACK; // D3D11_CULL_NONE
@@ -330,8 +356,12 @@ void Graphics::Shutdown()
 	_rdss.Reset();
 	_tdss.Reset();
 	_nulldss.Reset();
-	_defaultRasterizer.Reset();
-	_wireframeRasterizer.Reset();
+	_frontFaceRasterizer.Reset();
+	_backFaceRasterizer.Reset();
+	_doubleSidedRasterizer.Reset();
+	_wireframeFrontFaceRasterizer.Reset();
+	_wireframeBackFaceRasterizer.Reset();
+	_wireframeDoubleSidedRasterizer.Reset();
 	_shadowRasterizer.Reset();
 	_sceneRT.Reset();
 	_depthRT.Reset();
@@ -350,7 +380,6 @@ void Graphics::Shutdown()
 	_generalDataBuffer.Reset();
 	_fogSettingsBuffer.Reset();
 	_emissionSettingsBuffer.Reset();
-	_distortionSettingsBuffer.Reset();
 	_depthOfFieldSettingsBuffer.Reset();
 	_fogGaussianWeightsBuffer.Reset();
 	_emissionGaussianWeightsBuffer.Reset();
@@ -392,8 +421,8 @@ bool Graphics::ResizeWindowBuffers(bool fullscreen, UINT newWidth, UINT newHeigh
 {
 	ZoneScopedC(RandomUniqueColor());
 
-	newWidth = max(newWidth, DIM_FORCED_MULTIPLE);
-	newHeight = max(newHeight, DIM_FORCED_MULTIPLE);
+	newWidth = MAX(newWidth, DIM_FORCED_MULTIPLE);
+	newHeight = MAX(newHeight, DIM_FORCED_MULTIPLE);
 
 	if (newWidth % DIM_FORCED_MULTIPLE != 0)
 		newWidth -= newWidth % DIM_FORCED_MULTIPLE;
@@ -408,7 +437,6 @@ bool Graphics::ResizeWindowBuffers(bool fullscreen, UINT newWidth, UINT newHeigh
 
 		if (!ResizeD3D11(fullscreen, newWidth, newHeight,
 			_device, _context,
-			nullptr,
 			*_swapChain.GetAddressOf(),
 			*_rtv.ReleaseAndGetAddressOf(),
 			*_dsTexture.ReleaseAndGetAddressOf(),
@@ -423,7 +451,7 @@ bool Graphics::ResizeWindowBuffers(bool fullscreen, UINT newWidth, UINT newHeigh
 
 #ifdef TRACY_SCREEN_CAPTURE
 	float screenAspect = static_cast<float>(newWidth) / static_cast<float>(newHeight);
-	_tracyCaptureWidth = min((UINT)std::ceil(TRACY_CAPTURE_WIDTH), newWidth);
+	_tracyCaptureWidth = MIN((UINT)std::ceil(TRACY_CAPTURE_WIDTH), newWidth);
 	_tracyCaptureHeight = (UINT)std::ceil(_tracyCaptureWidth / screenAspect);
 
 	// Ensure resolution is multiple of 4 for tracy capture
@@ -465,8 +493,8 @@ bool Graphics::ResizeSceneViewBuffers(UINT newWidth, UINT newHeight)
 {
 	ZoneScopedC(RandomUniqueColor());
 
-	newWidth = max(newWidth, DIM_FORCED_MULTIPLE);
-	newHeight = max(newHeight, DIM_FORCED_MULTIPLE);
+	newWidth = MAX(newWidth, DIM_FORCED_MULTIPLE);
+	newHeight = MAX(newHeight, DIM_FORCED_MULTIPLE);
 
 	if (newWidth % DIM_FORCED_MULTIPLE != 0)
 		newWidth -= newWidth % DIM_FORCED_MULTIPLE;

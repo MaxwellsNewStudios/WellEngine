@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "Graphics.h"
-#include "Game/Behaviours/Rendering/Camera/CameraBehaviour.h"
+#include "Game/Behaviours/Rendering/Camera/B_Camera.h"
 #include "Engine/Debug/DebugDrawer.h"
 #include "Engine/Debug/DebugData.h"
 
@@ -177,13 +177,13 @@ bool Graphics::RenderUI(TimeUtils &time)
 
 		ImGui::Text("Cubemap:");
 		ImGui::SameLine();
-		if (ImGui::BeginCombo("##EnvironmentCubemapCombo", _environmentCubemapID == CONTENT_NULL ? "None" : (cubemapNames[_environmentCubemapID].c_str()), ImGuiComboFlags_HeightLarge))
+		if (ImGui::BeginCombo("##EnvironmentCubemapCombo", _envCubemapID == CONTENT_NULL ? "None" : (cubemapNames[_envCubemapID].c_str()), ImGuiComboFlags_HeightLarge))
 		{
 			for (int i = 0; i < cubemapNames.size(); i++)
 			{
 				std::string &cubemapName = cubemapNames[i];
 
-				const bool isSelected = (_environmentCubemapID == i);
+				const bool isSelected = (_envCubemapID == i);
 				if (ImGui::Selectable(cubemapName.c_str(), isSelected))
 					SetEnvironmentCubemapID(i);
 
@@ -361,21 +361,21 @@ bool Graphics::RenderUI(TimeUtils &time)
 
 					int maxSteps = _currFogSettings.maxSteps;
 					if (ImGui::DragInt("Max Samples", &maxSteps, 1))
-						_currFogSettings.maxSteps = max(maxSteps, 0);
+						_currFogSettings.maxSteps = MAX(maxSteps, 0);
 					ImGuiUtils::LockMouseOnActive();
 
 					float farPlane = _currViewCamera->GetPlanes().farZ;
 
-					ImGui::DragFloat("Depth Fade Begin", &_currFogSettings.depthFadeBegin, 0.1f, 0.001f, farPlane);
+					ImGui::DragFloat("Depth Fade Begin", &_currFogSettings.depthFadeBegin, 0.001f, 0.001f, 1.0f);
 					ImGuiUtils::LockMouseOnActive();
 
-					ImGui::DragFloat("Depth Fade End", &_currFogSettings.depthFadeEnd, 0.1f, 0.001f, farPlane);
+					ImGui::DragFloat("Depth Fade End", &_currFogSettings.depthFadeEnd, 0.001f, 0.001f, 1.0f);
 					ImGuiUtils::LockMouseOnActive();
 
-					ImGui::DragFloat("Depth Fade Exponent", &_currFogSettings.depthFadeExp, 0.01f, 0.001f);
+					ImGui::DragFloat("Depth Fade Exponent", &_currFogSettings.depthFadeExp, 0.001f, 0.001f);
 					ImGuiUtils::LockMouseOnActive();
 
-					if (ImGui::DragInt("Blur Iterations", &_fogBlurIterations, 0.1f, 0, 16))
+					if (ImGui::DragInt("Blur Iterations", &_fogBlurIterations, 0.01f, 0, 16))
 					{
 						constexpr float clearFog[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
 						_context->ClearRenderTargetView(_fogRT.GetRTV(), clearFog);
@@ -403,7 +403,7 @@ bool Graphics::RenderUI(TimeUtils &time)
 
 						static float valueRange[2] = { 0.0f, 1.0f };
 						if (ImGui::DragFloat2("Range", valueRange, 0.01f))
-							valueRange[1] = max(valueRange[1], valueRange[0]);
+							valueRange[1] = MAX(valueRange[1], valueRange[0]);
 						ImGuiUtils::LockMouseOnActive();
 
 						static bool normalizeWeights = true;
@@ -429,7 +429,7 @@ bool Graphics::RenderUI(TimeUtils &time)
 						int weightCount = gaussWeights.size();
 						if (ImGui::InputInt("Weight Count", &weightCount))
 						{
-							weightCount = max(weightCount, 1);
+							weightCount = MAX(weightCount, 1);
 
 							if (weightCount != gaussWeights.size())
 							{
@@ -592,7 +592,7 @@ bool Graphics::RenderUI(TimeUtils &time)
 
 						static float valueRange[2] = { 0.0f, 1.0f };
 						if (ImGui::DragFloat2("Range", valueRange, 0.01f))
-							valueRange[1] = max(valueRange[1], valueRange[0]);
+							valueRange[1] = MAX(valueRange[1], valueRange[0]);
 						ImGuiUtils::LockMouseOnActive();
 
 						static bool normalizeWeights = true;
@@ -618,7 +618,7 @@ bool Graphics::RenderUI(TimeUtils &time)
 						int weightCount = gaussWeights.size();
 						if (ImGui::InputInt("Weight Count", &weightCount))
 						{
-							weightCount = max(weightCount, 1);
+							weightCount = MAX(weightCount, 1);
 
 							if (weightCount != gaussWeights.size())
 							{
@@ -775,7 +775,7 @@ bool Graphics::RenderUI(TimeUtils &time)
 
 						static float valueRange[2] = { 0.0f, 1.0f };
 						if (ImGui::DragFloat2("Range", valueRange, 0.01f))
-							valueRange[1] = max(valueRange[1], valueRange[0]);
+							valueRange[1] = MAX(valueRange[1], valueRange[0]);
 						ImGuiUtils::LockMouseOnActive();
 
 						static bool normalizeWeights = true;
@@ -801,7 +801,7 @@ bool Graphics::RenderUI(TimeUtils &time)
 						int weightCount = gaussWeights.size();
 						if (ImGui::InputInt("Weight Count", &weightCount))
 						{
-							weightCount = max(weightCount, 1);
+							weightCount = MAX(weightCount, 1);
 
 							if (weightCount != gaussWeights.size())
 							{
@@ -963,7 +963,7 @@ bool Graphics::RenderUI(TimeUtils &time)
 
 						static float valueRange[2] = { 0.0f, 1.0f };
 						if (ImGui::DragFloat2("Range", valueRange, 0.01f))
-							valueRange[1] = max(valueRange[1], valueRange[0]);
+							valueRange[1] = MAX(valueRange[1], valueRange[0]);
 						ImGuiUtils::LockMouseOnActive();
 
 						static bool normalizeWeights = true;
@@ -989,7 +989,7 @@ bool Graphics::RenderUI(TimeUtils &time)
 						int weightCount = gaussWeights.size();
 						if (ImGui::InputInt("Weight Count", &weightCount))
 						{
-							weightCount = max(weightCount, 1);
+							weightCount = MAX(weightCount, 1);
 
 							if (weightCount != gaussWeights.size())
 							{
@@ -1092,18 +1092,9 @@ bool Graphics::RenderUI(TimeUtils &time)
 		ImGui::SliderFloat("Begin Depth##RenderDistanceFogBeginDepth", &_generalDataSettings.fadeoutDepthBegin, 0.0f, 1.0f);
 
 		if (ImGui::DragFloat("Exponent##RenderDistanceFogExponent", &_generalDataSettings.fadeoutExponent, 0.01f))
-			_generalDataSettings.fadeoutExponent = max(_generalDataSettings.fadeoutExponent, 0.01f);
+			_generalDataSettings.fadeoutExponent = MAX(_generalDataSettings.fadeoutExponent, 0.01f);
 		ImGuiUtils::LockMouseOnActive();
 
-		ImGui::TreePop();
-	}
-
-	if (ImGui::TreeNode("Distortion"))
-	{
-		static dx::XMFLOAT3 dO = { 0, 0, 0 };
-		ImGui::InputFloat("Distortion Strength", &_distortionSettings.distortionStrength);
-		ImGui::InputFloat3("Distortion Origin", &dO.x);
-		_distortionSettings.distortionOrigin = dO;
 		ImGui::TreePop();
 	}
 
@@ -1421,13 +1412,13 @@ bool Graphics::RenderUI(TimeUtils &time)
 		ImGui::Text(std::format("Main Draws: {}", _currViewCamera->GetCullCount()).c_str());
 		for (UINT i = 0; i < _currSpotLightCollection.Get()->GetNrOfLights(); i++)
 		{
-			const CameraBehaviour *spotlightCamera = _currSpotLightCollection.Get()->GetLightBehaviour(i)->GetShadowCamera();
+			const B_Camera *spotlightCamera = _currSpotLightCollection.Get()->GetLightBehaviour(i)->GetShadowCamera();
 			ImGui::Text(std::format("Spotlight #{} Draws: {}", i, spotlightCamera->GetCullCount()).c_str());
 		}
 
-		for (UINT i = 0; i < _currPointLightCollection.Get()->GetNrOfLights(); i++)
+		for (UINT i = 0; i < _currLightPointCollection.Get()->GetNrOfLights(); i++)
 		{
-			const CameraCubeBehaviour *pointlightCamera = _currPointLightCollection.Get()->GetLightBehaviour(i)->GetShadowCameraCube();
+			const B_CameraCube *pointlightCamera = _currLightPointCollection.Get()->GetLightBehaviour(i)->GetShadowCameraCube();
 			ImGui::Text(std::format("Pointlight #{} Draws: {}", i, pointlightCamera->GetCullCount()).c_str());
 		}
 

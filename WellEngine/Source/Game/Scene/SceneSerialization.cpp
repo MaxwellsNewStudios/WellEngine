@@ -1,0 +1,738 @@
+#pragma region Includes, Usings & Defines
+#include "stdafx.h"
+#include "Scene.h"
+#include "Game/Game.h"
+#include "Game/Behaviours/BehaviourFactory.h"
+#include "Game/Behaviours/Debug/B_DebugManager.h"
+#include "Engine/Utils/SerializerUtils.h"
+
+#ifdef LEAK_DETECTION
+#define new			DEBUG_NEW
+#endif
+#pragma endregion
+
+
+bool Scene::Serialize(bool asSaveFile)
+{
+	ZoneScopedC(RandomUniqueColor());
+
+	const std::string ext = asSaveFile ? ASSET_EXT_SAVE : ASSET_EXT_SCENE;
+	const std::string path = asSaveFile ? ASSET_PATH_SAVES : ASSET_PATH_SCENES;
+	const std::string fullPath = PATH_FILE_EXT(path, _sceneName, ext);
+
+#ifdef EDIT_MODE
+	if (!asSaveFile)
+	{
+		// Copy the previous file to a backup folder to prevent accidentally overwriting important work
+		std::ifstream prevFile(fullPath);
+
+		if (prevFile)
+		{
+			time_t t = std::time(nullptr);
+			tm tm;
+			localtime_s(&tm, &t);
+
+			std::ostringstream oss;
+			oss << std::put_time(&tm, "%d-%m-%Y %H-%M-%S");
+			std::string timestamp = oss.str();
+			
+			std::ofstream backupFile(std::format("{}\\Backups\\{} ({}).{}", ASSET_PATH_SCENES, _sceneName, timestamp, ASSET_EXT_SCENE));
+			backupFile << prevFile.rdbuf();
+			prevFile.close();
+			backupFile.close();
+		}
+	}
+#endif
+
+	{
+		// Create JSON document
+		json::Document doc;
+		json::Document::AllocatorType &docAlloc = doc.GetAllocator();
+		json::Value &sceneObj = doc.SetObject();
+
+		json::Value sceneSettingsObj(json::kObjectType);
+		if (!SerializeSceneSettings(sceneSettingsObj, docAlloc))
+		{
+			ErrMsg("Failed to serialize scene settings!");
+			return false;
+		}
+		sceneObj.AddMember("Scene", sceneSettingsObj, docAlloc);
+
+		json::Value entArr(json::kArrayType);
+
+		SceneContents::SceneIterator entIter = _sceneHolder.GetEntities();
+		while (Entity *entity = entIter.Step())
+		{
+			if (entity->GetParent())
+				continue; // Skip non-root entities
+
+			json::Value entObj(json::kObjectType);
+			if (!entity->Serialize(docAlloc, entObj))
+			{
+				ErrMsgF("Failed to serialize entity '{}'!", entity->GetName());
+				return false;
+			}
+
+			// Add entity to the array if it isn't empty
+			if (entObj.MemberCount() > 0)
+				entArr.PushBack(entObj, docAlloc);
+		}
+		sceneObj.AddMember("Hierarchy", entArr, docAlloc);
+
+		// Write doc to file
+		std::ofstream file(fullPath, std::ios::out);
+		if (!file)
+		{
+			ErrMsg("Could not save game!");
+			return false;
+		}
+
+		json::StringBuffer buffer;
+		json::PrettyWriter<json::StringBuffer> writer(buffer);
+		doc.Accept(writer);
+
+		file << buffer.GetString();
+		file.close();
+	}
+
+#ifdef USE_IMGUI
+	auto &n = _graphics->notifications.emplace_back(
+		std::format("Scene '{}' saved!", _sceneName), 
+		NotificationMessage::SeverityColor::White,
+		5.0f, 24.0f, -1.0f, 0.8f
+	);
+#endif
+
+	return true;
+}
+bool Scene::SerializeSceneSettings(json::Value &sceneSettingsObj, json::Document::AllocatorType &docAlloc)
+{
+	sceneSettingsObj.AddMember("Transitional", _transitionScene, docAlloc);
+
+	json::Value sceneBoundsObj(json::kObjectType);
+	{
+		const dx::BoundingBox &sceneBounds = _sceneHolder.GetBounds();
+		sceneBoundsObj.AddMember("Center", SerializerUtils::SerializeVec(sceneBounds.Center, docAlloc), docAlloc);
+		sceneBoundsObj.AddMember("Extents", SerializerUtils::SerializeVec(sceneBounds.Extents, docAlloc), docAlloc);
+
+		sceneBoundsObj.AddMember("Max Depth", _sceneHolder.GetTreeDepth(), docAlloc);
+		sceneBoundsObj.AddMember("Max Items In Node", _sceneHolder.GetTreeNodeSize(), docAlloc);
+	}
+	sceneSettingsObj.AddMember("Bounds", sceneBoundsObj, docAlloc);
+
+	json::Value sceneGraphicsObj(json::kObjectType);
+	{
+		sceneGraphicsObj.AddMember("Spotlight Resolution", _spotlights->GetShadowResolution(), docAlloc);
+		sceneGraphicsObj.AddMember("Pointlight Resolution", _pointlights->GetShadowResolution(), docAlloc);
+
+		UINT envCubemapID = _graphics->GetEnvironmentCubemapID();
+		std::string envCubemapName = _content->GetCubemapName(envCubemapID);
+		sceneGraphicsObj.AddMember("Cubemap", SerializerUtils::SerializeString(envCubemapName, docAlloc), docAlloc);
+
+		UINT skyboxShaderID = _graphics->GetSkyboxShaderID();
+		std::string skyboxShaderName = _content->GetShaderName(skyboxShaderID);
+		sceneGraphicsObj.AddMember("Skybox", SerializerUtils::SerializeString(skyboxShaderName, docAlloc), docAlloc);
+
+		sceneGraphicsObj.AddMember("SkyCol", SerializerUtils::SerializeVec(_graphics->GetSkyboxColor(), docAlloc), docAlloc);
+
+		sceneGraphicsObj.AddMember("Ambient", SerializerUtils::SerializeVec(_graphics->GetAmbientColor(), docAlloc), docAlloc);
+
+		json::Value sceneFogObj(json::kObjectType);
+		{
+			FogSettingsBuffer fogSettings = _graphics->GetFogSettings();
+			sceneFogObj.AddMember("Thickness", fogSettings.thickness, docAlloc);
+			sceneFogObj.AddMember("Sample Bias", fogSettings.sampleBias, docAlloc);
+			sceneFogObj.AddMember("Max Steps", fogSettings.maxSteps, docAlloc);
+			sceneFogObj.AddMember("Depth Fade Begin", fogSettings.depthFadeBegin, docAlloc);
+			sceneFogObj.AddMember("Depth Fade End", fogSettings.depthFadeEnd, docAlloc);
+			sceneFogObj.AddMember("Depth Fade Exp", fogSettings.depthFadeExp, docAlloc);
+
+			sceneFogObj.AddMember("BlurIterations", _graphics->GetFogBlurIterations(), docAlloc);
+
+			json::Value weightsArr(json::kArrayType);
+			{
+				auto &weights = _graphics->GetFogWeights();
+				for (const auto &weight : weights)
+					weightsArr.PushBack(weight, docAlloc);
+			}
+			sceneFogObj.AddMember("Weights", weightsArr, docAlloc);
+		}
+		sceneGraphicsObj.AddMember("Fog", sceneFogObj, docAlloc);
+
+		json::Value sceneEmissionObj(json::kObjectType);
+		{
+			EmissionSettingsBuffer emissionSettings = _graphics->GetEmissionSettings();
+			sceneEmissionObj.AddMember("Strength", emissionSettings.strength, docAlloc);
+			sceneEmissionObj.AddMember("Exponent", emissionSettings.exponent, docAlloc);
+			sceneEmissionObj.AddMember("Threshold", emissionSettings.threshold, docAlloc);
+			sceneEmissionObj.AddMember("WhiteBias", emissionSettings.whiteBias, docAlloc);
+
+			sceneEmissionObj.AddMember("BlurIterations", _graphics->GetEmissionBlurIterations(), docAlloc);
+
+			json::Value weightsArr(json::kArrayType);
+			{
+				auto &weights = _graphics->GetEmissionWeights();
+				for (const auto &weight : weights)
+					weightsArr.PushBack(weight, docAlloc);
+			}
+			sceneEmissionObj.AddMember("Weights", weightsArr, docAlloc);
+		}
+		sceneGraphicsObj.AddMember("Emission", sceneEmissionObj, docAlloc);
+
+	}
+	sceneSettingsObj.AddMember("Graphics", sceneGraphicsObj, docAlloc);
+
+	// TODO: Audio parameters
+
+	return true;
+}
+
+bool Scene::Deserialize(bool sceneReload)
+{
+	ZoneScopedC(RandomUniqueColor());
+
+	json::Document doc;
+	std::string dir, ext;
+
+#ifdef EDIT_MODE
+	dir = ASSET_PATH_SCENES;
+	ext = ASSET_EXT_SCENE;
+#else
+	if (sceneReload)
+	{
+		dir = ASSET_PATH_SCENES;
+		ext = ASSET_EXT_SCENE;
+	}
+	else
+	{
+		// Check if a save file exists. If so, use it.
+		std::ifstream saveFile(PATH_FILE_EXT(ASSET_PATH_SAVES, _sceneName, ASSET_EXT_SAVE));
+
+		if (saveFile.is_open())
+		{
+			dir = ASSET_PATH_SAVES;
+			ext = ASSET_EXT_SAVE;
+		}
+		else
+		{
+			dir = ASSET_PATH_SCENES;
+			ext = ASSET_EXT_SCENE;
+		}
+
+		saveFile.close();
+	}
+#endif
+
+	const std::string fullPath = PATH_FILE_EXT(dir, _sceneName, ext);
+
+	// Parse the JSON file to doc
+	{
+		std::ifstream file(fullPath);
+		if (!file.is_open())
+			return true;
+
+		std::string fileContents;
+		file.seekg(0, std::ios::beg);
+		fileContents.assign((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
+		file.close();
+
+		doc.Parse(fileContents.c_str());
+
+		if (doc.HasParseError())
+		{
+			ErrMsgF("Failed to parse JSON file: {}", (UINT)doc.GetParseError());
+			return false;
+		}
+	}
+
+	if (doc.HasMember("Scene"))
+	{
+		if (!DeserializeSceneSettings(doc["Scene"]))
+		{
+			ErrMsg("Failed to deserialize scene settings!");
+			return false;
+		}
+	}
+
+	json::Value &hierarchy = doc["Hierarchy"];
+	if (!hierarchy.IsArray())
+	{
+		ErrMsg("Hierarchy is not an array!");
+		return false;
+	}
+
+	const auto &hierarchyArray = hierarchy.GetArray();
+	for (const auto &entObj : hierarchyArray)
+	{
+		if (!DeserializeEntity(entObj))
+		{
+			ErrMsg("Failed to deserialize entity!");
+			return false;
+		}
+	}
+
+	PostDeserialize();
+
+	return true;
+}
+bool Scene::DeserializeSceneSettings(const json::Value &sceneSettingsObj)
+{
+	if (sceneSettingsObj.HasMember("Transitional"))
+		_transitionScene = sceneSettingsObj["Transitional"].GetBool();
+
+	dx::BoundingBox sceneBounds{};
+	UINT maxDepth = -1;
+	UINT maxItemsInNode = -1;
+
+	if (sceneSettingsObj.HasMember("Bounds"))
+	{
+		const json::Value &sceneBoundsObj = sceneSettingsObj["Bounds"];
+		if (sceneBoundsObj.HasMember("Center"))
+			SerializerUtils::DeserializeVec(sceneBounds.Center, sceneBoundsObj["Center"]);
+
+		if (sceneBoundsObj.HasMember("Extents"))
+			SerializerUtils::DeserializeVec(sceneBounds.Extents, sceneBoundsObj["Extents"]);
+
+		if (sceneBoundsObj.HasMember("Max Depth"))
+			maxDepth = sceneBoundsObj["Max Depth"].GetUint();
+
+		if (sceneBoundsObj.HasMember("Max Items In Node"))
+			maxItemsInNode = sceneBoundsObj["Max Items In Node"].GetUint();
+	}
+
+	if (!_sceneHolder.Initialize(sceneBounds, maxDepth, maxItemsInNode))
+	{
+		ErrMsg("Failed to initialize scene holder!");
+		return false;
+	}
+
+	if (sceneSettingsObj.HasMember("Graphics"))
+	{
+		const json::Value &sceneGraphicsObj = sceneSettingsObj["Graphics"];
+
+		UINT pointlightRes = 512;
+		if (sceneGraphicsObj.HasMember("Pointlight Resolution"))
+			pointlightRes = sceneGraphicsObj["Pointlight Resolution"].GetUint();
+
+		if (!_pointlights->Initialize(_device, pointlightRes))
+		{
+			ErrMsg("Failed to initialize pointlight collection!");
+			return false;
+		}
+
+		UINT spotlightRes = 256;
+		if (sceneGraphicsObj.HasMember("Spotlight Resolution"))
+			spotlightRes = sceneGraphicsObj["Spotlight Resolution"].GetUint();
+
+		if (!_spotlights->Initialize(_device, spotlightRes))
+		{
+			ErrMsg("Failed to initialize spotlight collection!");
+			return false;
+		}
+
+		if (sceneGraphicsObj.HasMember("Cubemap"))
+			_envCubemapID = _content->GetCubemapID(sceneGraphicsObj["Cubemap"].GetString());
+
+		if (sceneGraphicsObj.HasMember("Skybox"))
+			_skyboxShaderID = _content->GetShaderID(sceneGraphicsObj["Skybox"].GetString());
+
+		if (sceneGraphicsObj.HasMember("SkyCol"))
+			SerializerUtils::DeserializeVec(_skyboxColor, sceneGraphicsObj["SkyCol"]);
+
+		if (sceneGraphicsObj.HasMember("Ambient"))
+			SerializerUtils::DeserializeVec(_ambientColor, sceneGraphicsObj["Ambient"]);
+
+		if (sceneGraphicsObj.HasMember("Fog"))
+		{
+			const json::Value &sceneFogObj = sceneGraphicsObj["Fog"];
+
+			if (sceneFogObj.HasMember("Thickness"))
+				_fogSettings.thickness = sceneFogObj["Thickness"].GetFloat();
+
+			if (sceneFogObj.HasMember("Sample Bias"))
+				_fogSettings.sampleBias = sceneFogObj["Sample Bias"].GetFloat();
+
+			if (sceneFogObj.HasMember("Max Steps"))
+				_fogSettings.maxSteps = sceneFogObj["Max Steps"].GetInt();
+
+			if (sceneFogObj.HasMember("Depth Fade Begin"))
+				_fogSettings.depthFadeBegin = sceneFogObj["Depth Fade Begin"].GetFloat();
+
+			if (sceneFogObj.HasMember("Depth Fade End"))
+				_fogSettings.depthFadeEnd = sceneFogObj["Depth Fade End"].GetFloat();
+
+			if (sceneFogObj.HasMember("Depth Fade Exp"))
+				_fogSettings.depthFadeExp = sceneFogObj["Depth Fade Exp"].GetFloat();
+
+			if (sceneFogObj.HasMember("BlurIterations"))
+				_fogBlurIterations = sceneFogObj["BlurIterations"].GetUint();
+
+			if (sceneFogObj.HasMember("Weights"))
+			{
+				const json::Value &weightsObj = sceneFogObj["Weights"];
+
+				_fogGaussWeights.clear();
+				_fogGaussWeights.reserve(weightsObj.Size());
+				for (const auto &weightVal : weightsObj.GetArray())
+					_fogGaussWeights.emplace_back(weightVal.GetFloat());
+			}
+		}
+
+		if (sceneGraphicsObj.HasMember("Emission"))
+		{
+			const json::Value &sceneEmissionObj = sceneGraphicsObj["Emission"];
+
+			if (sceneEmissionObj.HasMember("Strength"))
+				_emissionSettings.strength = sceneEmissionObj["Strength"].GetFloat();
+
+			if (sceneEmissionObj.HasMember("Exponent"))
+				_emissionSettings.exponent = sceneEmissionObj["Exponent"].GetFloat();
+
+			if (sceneEmissionObj.HasMember("Threshold"))
+				_emissionSettings.threshold = sceneEmissionObj["Threshold"].GetFloat();
+
+			if (sceneEmissionObj.HasMember("WhiteBias"))
+				_emissionSettings.whiteBias = sceneEmissionObj["WhiteBias"].GetFloat();
+
+			if (sceneEmissionObj.HasMember("BlurIterations"))
+				_emissionBlurIterations = sceneEmissionObj["BlurIterations"].GetUint();
+
+			if (sceneEmissionObj.HasMember("Weights"))
+			{
+				const json::Value &weightsObj = sceneEmissionObj["Weights"];
+
+				_emissionGaussWeights.clear();
+				_emissionGaussWeights.reserve(weightsObj.Size());
+				for (const auto &weightVal : weightsObj.GetArray())
+					_emissionGaussWeights.emplace_back(weightVal.GetFloat());
+			}
+		}
+	}
+
+	return true;
+}
+bool Scene::DeserializeEntity(const json::Value &obj, Entity **out)
+{
+	ZoneScopedXC(RandomUniqueColor());
+
+	if (obj.MemberCount() == 0)
+	{
+		ErrMsg("Empty code provided for deserialization!");
+		return false;
+	}
+
+	if (!obj.IsObject())
+	{
+		ErrMsg("Code provided for deserialization is not an object!");
+		return false;
+	}
+
+	std::string name = obj["Name"].GetString();
+	UINT deserializedID = obj["ID"].GetUint();
+
+	bool enabled = true;
+	if (obj.HasMember("Enabled"))
+		enabled = obj["Enabled"].GetBool();
+
+	dx::XMFLOAT3 pos, rot, scale;
+	SerializerUtils::DeserializeVec(pos, obj["Pos"]);
+	SerializerUtils::DeserializeVec(rot, obj["Rot"]);
+	SerializerUtils::DeserializeVec(scale, obj["Scale"]);
+
+	Entity *ent = nullptr;
+	if (obj.HasMember("Prefab"))
+	{
+		ZoneNamedXNC(prefabDeserializeZone, "Deserialize Prefab", RandomUniqueColor(), true);
+
+		const std::string prefabName = obj["Prefab"].GetString();
+
+		ent = SpawnPrefab(prefabName);
+		if (ent)
+		{
+			auto entTrans = ent->GetTransform();
+			entTrans->SetPosition(To3(pos));
+			entTrans->SetEuler(To3(rot));
+			entTrans->SetScale(To3(scale));
+
+			ent->SetName(name);
+			ent->SetSerialID(deserializedID); // HACK: Doesn't work if prefab children reference the prefab root
+			ent->SetEnabledSelf(enabled);
+		}
+		else
+			WarnF("Failed to deserialize prefab '{}'!", prefabName);
+	}
+	else
+	{
+		ZoneNamedXNC(entityDeserializeZone, "Deserialize Entity", RandomUniqueColor(), true);
+
+		bool isStatic = obj["Static"].GetBool();
+		bool isSelectable = obj["Select"].GetBool();
+		bool hasVolume = obj["InTree"].GetBool();
+
+		bool showInHierarchy = true;
+		if (obj.HasMember("Hidden"))
+			showInHierarchy = !obj["Hidden"].GetBool();
+
+		// Create the entity
+		constexpr dx::BoundingOrientedBox bounds = dx::BoundingOrientedBox({}, { .1f,.1f,.1f }, { 0,0,0,1 });
+		if (!CreateEntity(&ent, name, bounds, hasVolume))
+		{
+			ErrMsgF("Failed to create entity '{}'!", name);
+			return false;
+		}
+
+		ent->SetSerialID(deserializedID);
+		ent->SetEnabledSelf(enabled);
+		ent->SetStatic(isStatic);
+		ent->SetDebugSelectable(isSelectable);
+		ent->SetShowInHierarchy(showInHierarchy);
+
+		auto entTrans = ent->GetTransform();
+		entTrans->SetPosition(To3(pos));
+		entTrans->SetEuler(To3(rot));
+		entTrans->SetScale(To3(scale));
+
+		if (obj.HasMember("Beh"))
+		{
+			ZoneNamedXNC(entityBehDeserializeZone, "Deserialize Behaviours", RandomUniqueColor(), true);
+
+			const auto &behArr = obj["Beh"].GetArray();
+			for (const auto &behObj : behArr)
+			{
+				const std::string behName = behObj["Name"].GetString();
+				const json::Value &behAttributes = behObj["Attributes"];
+
+				Behaviour *beh = BehaviourFactory::CreateBehaviour(behName);
+				if (!beh)
+					continue;
+
+				if (!beh->InitialDeserialize(behAttributes, this))
+				{
+					ErrMsg("Failed to deserialize behaviour!");
+					return false;
+				}
+
+				if (!beh->Initialize(ent))
+				{
+					ErrMsg("Failed to bind behaviour to entity!");
+					return false;
+				}
+			}
+		}
+
+		if (obj.HasMember("Child"))
+		{
+			// Recursively deserialize child entities
+			const auto &behArr = obj["Child"].GetArray();
+			for (const auto &childObj : behArr)
+			{
+				Entity *childEntity = nullptr;
+				if (!DeserializeEntity(childObj, &childEntity))
+				{
+					ErrMsg("Failed to deserialize child entity!");
+					return false;
+				}
+
+				if (childEntity)
+				{
+					// Set the parent of the child entity
+					childEntity->SetParent(ent, false);
+				}
+			}
+		}
+	}
+
+	if (out)
+		*out = ent;
+
+	return true;
+}
+
+void Scene::AddPostDeserializeCallback(Behaviour *beh)
+{
+	// Check if the callback already exists
+	if (std::find(_postDeserializeCallbacks.begin(), _postDeserializeCallbacks.end(), beh) != _postDeserializeCallbacks.end())
+		return;
+
+	_postDeserializeCallbacks.emplace_back(beh);
+}
+void Scene::RunPostDeserializeCallbacks()
+{
+	std::vector<Ref<Entity>> deserializedEntities;
+	deserializedEntities.reserve(_postDeserializeCallbacks.size());
+
+	for (Behaviour *beh : _postDeserializeCallbacks)
+	{
+		if (!beh)
+			continue;
+
+		if (!beh->InitialPostDeserialize())
+			ErrMsgF("Post-deserialize callback for behaviour '{}' failed!", beh->GetName());
+
+		deserializedEntities.emplace_back(*beh->GetEntity());
+	}
+
+	_postDeserializeCallbacks.clear();
+
+	// Reset all deserialized IDs
+	for (Ref<Entity> &entRef : deserializedEntities)
+	{
+		Entity *ent;
+		if (entRef.TryGet(ent))
+			ent->SetSerialID(-1);
+	}
+}
+void Scene::PostDeserialize()
+{
+	ZoneScopedXC(RandomUniqueColor());
+
+	RunPostDeserializeCallbacks();
+}
+
+void Scene::GetPrefabNames(std::vector<std::string> &prefabs) const
+{
+	prefabs.clear();
+	
+	// Search for all .prefab files in ASSET_PATH_PREFABS
+	for (const auto &entry : std::filesystem::directory_iterator(ASSET_PATH_PREFABS))
+	{
+		const auto &path = entry.path();
+		std::string filename = path.filename().string();
+		std::string ext = filename.c_str() + filename.find_last_of('.') + 1;
+
+		if (ext != ASSET_EXT_PREFAB)
+			continue; // Skip non-prefab files
+
+		filename = filename.substr(0, filename.find_last_of('.'));
+		prefabs.emplace_back(filename);
+	}
+}
+bool Scene::SaveAsPrefab(const std::string &name, Entity *entity)
+{
+	if (!entity)
+	{
+		WarnF("Failed to save prefab '{}' as no entity was given!", name);
+		return false;
+	}
+
+	if (entity->GetPrefabName() == name)
+	{
+		// If overwriting a prefab with an instance of itself,
+		// we must first unlink it to prevent an infinite recursion
+		// when serializing the prefab.
+		entity->UnlinkFromPrefab();
+	}
+
+	// Create JSON document
+	json::Document doc;
+	json::Document::AllocatorType &docAlloc = doc.GetAllocator();
+
+	json::Value prefabObj(json::kObjectType);
+	{
+		prefabObj.AddMember("Name", SerializerUtils::SerializeString(name, docAlloc), docAlloc);
+
+		json::Value entObj(json::kObjectType);
+		if (!entity->Serialize(docAlloc, entObj, true))
+		{
+			Warn("Failed to serialize root entity!");
+			return false;
+		}
+		prefabObj.AddMember("Entity", entObj, docAlloc);
+	}
+	doc.SetObject().AddMember("Prefab", prefabObj, docAlloc);
+
+	// Write doc to file
+	std::ofstream file(PATH_FILE_EXT(ASSET_PATH_PREFABS, name, ASSET_EXT_PREFAB), std::ios::out);
+	if (!file)
+	{
+		WarnF("Failed to save prefab '{}'!", name);
+		return false;
+	}
+
+	json::StringBuffer buffer;
+	json::PrettyWriter<json::StringBuffer> writer(buffer);
+	doc.Accept(writer);
+
+	file << buffer.GetString();
+	file.close();
+
+	DbgMsgF("Saved entity '{}' as prefab '{}'.", entity->GetName(), name);
+	entity->SetPrefabName(name);
+	return true;
+}
+bool Scene::DeletePrefab(const std::string &name)
+{
+	const std::string fullPath = PATH_FILE_EXT(ASSET_PATH_PREFABS, name, ASSET_EXT_PREFAB);
+
+	if (std::filesystem::exists(fullPath))
+	{
+		try
+		{
+			std::filesystem::remove(fullPath);
+		}
+		catch (const std::exception &e)
+		{
+			WarnF("Failed to delete prefab file '{}': {}", fullPath, e.what());
+			return false;
+		}
+	}
+
+	// Unlink all instances of this prefab in the scene
+	/*SceneContents::SceneIterator entIter = _sceneHolder.GetEntities();
+	while (Entity *entity = entIter.Step())
+	{
+		if (entity->GetPrefabName() == name)
+			entity->UnlinkFromPrefab();
+	}*/
+
+	return true;
+}
+Entity *Scene::SpawnPrefab(const std::string &name)
+{
+	Entity *ent = nullptr;
+	json::Document doc;
+
+	// Parse the prefab file to doc if the file exists
+	{
+		const std::string fullPath = PATH_FILE_EXT(ASSET_PATH_PREFABS, name, ASSET_EXT_PREFAB);
+
+		std::ifstream file(fullPath);
+		if (!file.is_open())
+			return nullptr;
+
+		std::string fileContents;
+		file.seekg(0, std::ios::beg);
+		fileContents.assign((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
+		file.close();
+
+		doc.Parse(fileContents.c_str());
+
+		if (doc.HasParseError())
+		{
+			WarnF("Failed to parse JSON file: {}", (UINT)doc.GetParseError());
+			return nullptr;
+		}
+	}
+
+	// Deserialize the prefab file to ent
+	json::Value &prefab = doc["Prefab"];
+	if (!prefab.IsObject() || !prefab.HasMember("Entity"))
+	{
+		Warn("Prefab file does not contain a valid entity!");
+		return nullptr;
+	}
+
+	json::Value &entObj = prefab["Entity"];
+	if (!DeserializeEntity(entObj, &ent))
+	{
+		ErrMsg("Failed to deserialize prefab entity!");
+		return nullptr;
+	}
+
+	if (ent)
+		ent->SetPrefabName(name);
+
+	RunPostDeserializeCallbacks();
+
+	return ent;
+}

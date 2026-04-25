@@ -1,8 +1,8 @@
 ﻿#include "stdafx.h"
 #include "Graphics.h"
 #include "Game/Entity.h"
-#include "Game/Behaviours/Rendering/Camera/CameraBehaviour.h"
-#include "Game/Behaviours/Rendering/Mesh/MeshBehaviour.h"
+#include "Game/Behaviours/Rendering/Camera/B_Camera.h"
+#include "Game/Behaviours/Rendering/Mesh/B_Mesh.h"
 #include "Engine/Debug/DebugDrawer.h"
 
 #ifdef LEAK_DETECTION
@@ -142,12 +142,6 @@ bool Graphics::EndSceneRender(TimeUtils &time)
 			return false;
 		}
 
-		if (!_distortionSettingsBuffer.UpdateBuffer(_context, &_distortionSettings))
-		{
-			ErrMsg("Failed to update distortion settings buffer!");
-			return false;
-		}
-
 		if (!_depthOfFieldSettingsBuffer.UpdateBuffer(_context, &_currDepthOfFieldSettings))
 		{
 			ErrMsg("Failed to update depth of field settings buffer")
@@ -169,10 +163,6 @@ bool Graphics::EndSceneRender(TimeUtils &time)
 
 		_context->OMSetDepthStencilState(GetCurrentDepthStencilState(), 0);
 
-		// Bind vertex distortion settings
-		ID3D11Buffer *const distortionSettings = _distortionSettingsBuffer.GetBuffer();
-		_context->VSSetConstantBuffers(2, 1, &distortionSettings);
-
 		// Bind general data for vertex shader
 		ID3D11Buffer *const generalDataBuf = _generalDataBuffer.GetBuffer();
 		_context->VSSetConstantBuffers(5, 1, &generalDataBuf);
@@ -187,7 +177,7 @@ bool Graphics::EndSceneRender(TimeUtils &time)
 		_context->VSSetShaderResources(10, 1, &srv);
 		_context->PSSetShaderResources(10, 1, &srv);
 
-		ID3D11ShaderResourceView *const cubemap = _content->GetCubemap(_environmentCubemapID)->GetSRV();
+		ID3D11ShaderResourceView *const cubemap = _content->GetCubemap(_envCubemapID)->GetSRV();
 		_context->PSSetShaderResources(20, 1, &cubemap);
 	}
 
@@ -674,7 +664,7 @@ bool Graphics::RenderSpotlights()
 	ZoneScopedC(RandomUniqueColor());
 	TracyD3D11ZoneC(_tracyD3D11Context, "Spot Lights", RandomUniqueColor());
 
-	SpotLightCollection *collection = nullptr;
+	LightSpotCollection *collection = nullptr;
 	if (!_currSpotLightCollection.TryGet(collection))
 	{
 		ErrMsg("Failed to render spotlights, current spotlight collection is nullptr!");
@@ -684,19 +674,16 @@ bool Graphics::RenderSpotlights()
 	if (!collection->DoUpdate())
 		return true;
 
-	// Used to compare if the mesh uses the distortion shader
-	const UINT vsNoDistID = _content->GetShaderID("VS_Geometry");
-
 	const UINT vsDepthID = _content->GetShaderID("VS_Depth");
-	const UINT vsDepthDistID = _content->GetShaderID("VS_DepthDistortion");
-	if (_currVsID != vsDepthDistID)
+
+	if (_currVsID != vsDepthID)
 	{
-		if (!_content->GetShader(vsDepthDistID)->BindShader(_context))
+		if (!_content->GetShader(vsDepthID)->BindShader(_context))
 		{
 			ErrMsg("Failed to bind depth-stage vertex shader!");
 			return false;
 		}
-		_currVsID = vsDepthDistID;
+		_currVsID = vsDepthID;
 	}
 
 	_context->RSSetViewports(1, &collection->GetViewport());
@@ -730,7 +717,7 @@ bool Graphics::RenderSpotlights()
 		_context->OMSetRenderTargets(0, nullptr, dsView);
 
 		// Bind shadow-camera data
-		CameraBehaviour *spotlightCamera = lightBehaviour->GetShadowCamera();
+		B_Camera *spotlightCamera = lightBehaviour->GetShadowCamera();
 
 		if (!spotlightCamera->BindShadowCasterBuffers())
 		{
@@ -757,11 +744,11 @@ bool Graphics::RenderSpotlights()
 			if (!resources.shadowCaster)
 				continue;
 
-			MeshBehaviour *meshBehaviour = dynamic_cast<MeshBehaviour *>(instance.subject);
+			B_Mesh *meshBehaviour = dynamic_cast<B_Mesh *>(instance.subject);
 
 			if (!meshBehaviour)
 			{
-				ErrMsgF("Skipping depth-rendering for non-mesh #{}!", entity_i);
+				WarnF("Skipping depth-rendering for non-mesh #{}!", entity_i);
 				return false;
 			}
 
@@ -777,7 +764,7 @@ bool Graphics::RenderSpotlights()
 				_currMeshID = resources.meshID;
 			}
 			
-			const UINT vsID = resources.material->vsID == vsNoDistID ? vsDepthID : vsDepthDistID;
+			const UINT vsID = vsDepthID;
 			if (_currVsID != vsID)
 			{
 				ShaderD3D11 *vs = _content->GetShader(vsID);
@@ -844,7 +831,7 @@ bool Graphics::RenderSpotlights()
 				// Get the LOD index.
 				lodIndex = static_cast<UINT>(normalizedDist * (subMeshCount - 1));
 				if (dot < 0.0f)
-					lodIndex = min(lodIndex + 1, subMeshCount - 1);
+					lodIndex = MIN(lodIndex + 1, subMeshCount - 1);
 			}
 
 			{
@@ -873,8 +860,8 @@ bool Graphics::RenderPointlights()
 	ZoneScopedC(RandomUniqueColor());
 	TracyD3D11ZoneC(_tracyD3D11Context, "Point Lights", RandomUniqueColor());
 
-	PointLightCollection *collection = nullptr;
-	if (!_currPointLightCollection.TryGet(collection))
+	LightPointCollection *collection = nullptr;
+	if (!_currLightPointCollection.TryGet(collection))
 	{
 		ErrMsg("Failed to render pointlights, current pointlight collection is nullptr!");
 		return false;
@@ -883,19 +870,16 @@ bool Graphics::RenderPointlights()
 	if (!collection->DoUpdate())
 		return true;
 
-	// Used to compare if the mesh uses the distortion shader
-	const UINT vsNoDistID = _content->GetShaderID("VS_Geometry");
-
 	const UINT vsDepthID = _content->GetShaderID("VS_DepthCubemap");
-	const UINT vsDepthDistID = _content->GetShaderID("VS_DepthDistortionCubemap");
-	if (_currVsID != vsDepthDistID)
+
+	if (_currVsID != vsDepthID)
 	{
-		if (!_content->GetShader(vsDepthDistID)->BindShader(_context))
+		if (!_content->GetShader(vsDepthID)->BindShader(_context))
 		{
 			ErrMsg("Failed to bind depth-stage vertex shader!");
 			return false;
 		}
-		_currVsID = vsDepthDistID;
+		_currVsID = vsDepthID;
 	}
 
 	if (!_content->GetShader("GS_DepthCubemap")->BindShader(_context))
@@ -946,7 +930,7 @@ bool Graphics::RenderPointlights()
 		_context->OMSetRenderTargets(0, nullptr, dsView);
 
 		// Bind shadow-camera data
-		CameraCubeBehaviour *pointlightCamera = lightBehaviour->GetShadowCameraCube();
+		B_CameraCube *pointlightCamera = lightBehaviour->GetShadowCameraCube();
 
 		if (!pointlightCamera->BindShadowCasterBuffers())
 		{
@@ -973,11 +957,11 @@ bool Graphics::RenderPointlights()
 			if (!resources.shadowCaster)
 				continue;
 
-			MeshBehaviour *meshBehaviour = dynamic_cast<MeshBehaviour *>(instance.subject);
+			B_Mesh *meshBehaviour = dynamic_cast<B_Mesh *>(instance.subject);
 
 			if (!meshBehaviour)
 			{
-				ErrMsgF("Skipping depth-rendering for non-mesh #{}!", entity_i);
+				WarnF("Skipping depth-rendering for non-mesh #{}!", entity_i);
 				return false;
 			}
 
@@ -993,7 +977,7 @@ bool Graphics::RenderPointlights()
 				_currMeshID = resources.meshID;
 			}
 
-			const UINT vsID = resources.material->vsID == vsNoDistID ? vsDepthID : vsDepthDistID;
+			const UINT vsID = vsDepthID;
 			if (_currVsID != vsID)
 			{
 				ShaderD3D11 *vs = _content->GetShader(vsID);
@@ -1058,7 +1042,7 @@ bool Graphics::RenderPointlights()
 				// Get the LOD index.
 				lodIndex = static_cast<UINT>(normalizedDist * (subMeshCount - 1));
 				if (dot < 0.0f)
-					lodIndex = min(lodIndex + 1, subMeshCount - 1);
+					lodIndex = MIN(lodIndex + 1, subMeshCount - 1);
 			}
 
 			{
@@ -1100,7 +1084,7 @@ bool Graphics::RenderShadowCasters()
 
 	_context->PSSetShader(nullptr, nullptr, 0);
 	_context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	_context->RSSetState(_shadowRasterizer.Get());
+	SetRasterizerState(_shadowRasterizer.Get());
 
 	if (!RenderSpotlights())
 	{
@@ -1118,7 +1102,7 @@ bool Graphics::RenderShadowCasters()
 	static constexpr ID3D11RenderTargetView* nullViews [] = { nullptr };
 	_context->OMSetRenderTargets(1, nullViews, 0);
 
-	_context->RSSetState(_defaultRasterizer.Get());
+	SetRasterizerState(GetRasterizerDefault());
 
 	return true;
 }
@@ -1158,8 +1142,8 @@ bool Graphics::RenderOutlinedGeometry()
 	}
 
 	_context->RSSetViewports(1, &_viewportOutline);
-	_context->RSSetState(_defaultRasterizer.Get());
 	_context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	SetRasterizerState(GetRasterizerDefault());
 
 	// Bind general buffers
 	{
@@ -1196,7 +1180,7 @@ bool Graphics::RenderOutlinedGeometry()
 
 	// Bind resouces & perform drawcalls
 	{
-		static UINT defaultVsID = _content->GetShaderID("VS_GeometryDistortion");
+		static UINT defaultVsID = _content->GetShaderID("VS_Geometry");
 		static UINT defaultSamplerID = _content->GetSamplerID("Fallback");
 		static UINT defaultAmbientID = _content->GetTextureID("Ambient");
 
@@ -1261,7 +1245,13 @@ bool Graphics::RenderOutlinedGeometry()
 			const auto &instance = entry.instance;
 			const auto &resources = entry.resourceGroup;
 
-			MeshBehaviour *meshBehaviour = dynamic_cast<MeshBehaviour *>(instance.subject);
+			B_Mesh *meshBehaviour = dynamic_cast<B_Mesh *>(instance.subject);
+
+			if (!meshBehaviour)
+			{
+				WarnF("Skipping non-mesh #{} in outline rendering!", entity_i);
+				return false;
+			}
 
 			ZoneNamedNC(renderMeshZone, "Draw Entity", RandomUniqueColor(), true);
 			const std::string &name = meshBehaviour->GetEntity()->GetName();
@@ -1269,6 +1259,12 @@ bool Graphics::RenderOutlinedGeometry()
 			TracyD3D11NamedZoneC(_tracyD3D11Context, renderMeshD3D11Zone, "Draw Entity", RandomUniqueColor(), true);
 
 			// Bind shared geometry resources
+			FaceCullingType cullMode = meshBehaviour->GetCullMode();
+			SetRasterizerState(_wireframe ?
+				GetWireframeRasterizerByCullMode(cullMode) :
+				GetRasterizerByCullMode(cullMode)
+			);
+
 			if (_currMeshID != resources.meshID)
 			{
 				ZoneNamedXNC(bindResourceZone, "Bind Mesh", RandomUniqueColor(), true);
@@ -1484,7 +1480,7 @@ bool Graphics::RenderGeometry(bool overlayStage, bool skipPixelShader)
 	ZoneScopedC(RandomUniqueColor());
 	TracyD3D11ZoneC(_tracyD3D11Context, "Geometry", RandomUniqueColor());
 
-	static UINT defaultVsID = _content->GetShaderID("VS_GeometryDistortion");
+	static UINT defaultVsID = _content->GetShaderID("VS_Geometry");
 	static UINT defaultPsID = _content->GetShaderID("PS_Geometry");
 	static UINT defaultSamplerID = _content->GetSamplerID("Fallback");
 	static UINT defaultAmbientID = _content->GetTextureID("Ambient");
@@ -1540,7 +1536,7 @@ bool Graphics::RenderGeometry(bool overlayStage, bool skipPixelShader)
 		if (resources.shadowsOnly)
 			continue;
 
-		MeshBehaviour *meshBehaviour = dynamic_cast<MeshBehaviour *>(instance.subject);
+		B_Mesh *meshBehaviour = dynamic_cast<B_Mesh *>(instance.subject);
 
 		if (!meshBehaviour)
 		{
@@ -1554,6 +1550,12 @@ bool Graphics::RenderGeometry(bool overlayStage, bool skipPixelShader)
 		TracyD3D11NamedZoneC(_tracyD3D11Context, renderMeshD3D11Zone, "Draw Entity", RandomUniqueColor(), true);
 
 		// Bind shared geometry resources
+		FaceCullingType cullMode = meshBehaviour->GetCullMode();
+		SetRasterizerState(_wireframe ?
+			GetWireframeRasterizerByCullMode(cullMode) :
+			GetRasterizerByCullMode(cullMode)
+		);
+
 		if (_currMeshID != resources.meshID)
 		{
 			ZoneNamedXNC(bindResourceZone, "Bind Mesh", RandomUniqueColor(), true);
@@ -1844,7 +1846,7 @@ bool Graphics::RenderOpaque(
 		TracyD3D11NamedZoneXC(_tracyD3D11Context, clearRTVsD3D11Zone, "Clear Targets", RandomUniqueColor(), true);
 
 		ProjectionInfo proj = _currViewCamera->GetCurrProjectionInfo();
-		float farDist = max(proj.planes.nearZ, proj.planes.farZ);
+		float farDist = MAX(proj.planes.nearZ, proj.planes.farZ);
 
 		// Clear & bind render targets
 		if (!overlayStage) // Skip clearing scene render target if on the overlay-stage
@@ -1868,8 +1870,8 @@ bool Graphics::RenderOpaque(
 	_context->OMSetRenderTargets(3, rtvs, targetDSV);
 
 	_context->RSSetViewports(1, targetViewport);
-	_context->RSSetState(_wireframe ? _wireframeRasterizer.Get() : _defaultRasterizer.Get());
 	_context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	SetRasterizerState(_wireframe ? GetWireframeRasterizerDefault() : GetRasterizerDefault());
 
 	// Bind camera data
 	if (!_currViewCamera->BindViewBuffers())
@@ -1886,7 +1888,7 @@ bool Graphics::RenderOpaque(
 	ID3D11Buffer *const generalData = _generalDataBuffer.GetBuffer();
 	_context->PSSetConstantBuffers(5, 1, &generalData);
 
-	ID3D11ShaderResourceView *const cubemap = _content->GetCubemap(_environmentCubemapID)->GetSRV();
+	ID3D11ShaderResourceView *const cubemap = _content->GetCubemap(_envCubemapID)->GetSRV();
 	_context->PSSetShaderResources(20, 1, &cubemap);
 
 	// Bind spotlight collection
@@ -1897,7 +1899,7 @@ bool Graphics::RenderOpaque(
 	}
 
 	// Bind pointlight collection
-	if (!_currPointLightCollection.Get()->BindPSBuffers(_context))
+	if (!_currLightPointCollection.Get()->BindPSBuffers(_context))
 	{
 		ErrMsg("Failed to bind pointlight buffers!");
 		return false;
@@ -1947,7 +1949,7 @@ bool Graphics::RenderOpaque(
 		TracyD3D11NamedZoneXC(_tracyD3D11Context, unbindBuffersD3D11Zone, "Unbind Buffers", RandomUniqueColor(), true);
 
 		// Unbind pointlight collection
-		if (!_currPointLightCollection.Get()->UnbindPSBuffers(_context))
+		if (!_currLightPointCollection.Get()->UnbindPSBuffers(_context))
 		{
 			ErrMsg("Failed to unbind pointlight buffers!");
 			return false;
@@ -1983,7 +1985,7 @@ bool Graphics::RenderCustom(
 		TracyD3D11NamedZoneXC(_tracyD3D11Context, clearRTVsD3D11Zone, "Clear Targets", RandomUniqueColor(), true);
 
 		ProjectionInfo proj = _currViewCamera->GetCurrProjectionInfo();
-		float farDist = max(proj.planes.nearZ, proj.planes.farZ);
+		float farDist = MAX(proj.planes.nearZ, proj.planes.farZ);
 
 		// Clear & bind render targets
 		if (!overlayStage) // Skip clearing scene render target if on the overlay-stage
@@ -2001,7 +2003,7 @@ bool Graphics::RenderCustom(
 
 	_context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	_context->RSSetViewports(1, &_viewportSceneView);
-	_context->RSSetState(_wireframe ? _wireframeRasterizer.Get() : _defaultRasterizer.Get());
+	SetRasterizerState(_wireframe ? GetWireframeRasterizerDefault() : GetRasterizerDefault());
 
 	// Bind camera data
 	if (!_currViewCamera->BindViewBuffers())
@@ -2026,7 +2028,7 @@ bool Graphics::RenderCustom(
 	}
 
 	// Bind pointlight collection
-	if (!_currPointLightCollection.Get()->BindPSBuffers(_context))
+	if (!_currLightPointCollection.Get()->BindPSBuffers(_context))
 	{
 		ErrMsg("Failed to bind pointlight buffers!");
 		return false;
@@ -2072,7 +2074,7 @@ bool Graphics::RenderCustom(
 		TracyD3D11NamedZoneXC(_tracyD3D11Context, unbindBuffersD3D11Zone, "Unbind Buffers", RandomUniqueColor(), true);
 
 		// Unbind pointlight collection
-		if (!_currPointLightCollection.Get()->UnbindPSBuffers(_context))
+		if (!_currLightPointCollection.Get()->UnbindPSBuffers(_context))
 		{
 			ErrMsg("Failed to unbind pointlight buffers!");
 			return false;
@@ -2120,7 +2122,7 @@ bool Graphics::RenderTransparency(
 	_context->OMSetRenderTargets(1, &targetRTV, targetDSV);
 	_context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	_context->RSSetViewports(1, targetViewport);
-	_context->RSSetState(_wireframe ? _wireframeRasterizer.Get() : _defaultRasterizer.Get());
+	SetRasterizerState(_wireframe ? GetWireframeRasterizerDefault() : GetRasterizerDefault());
 
 	// Bind camera data
 	if (!_currViewCamera->BindTransparentBuffers())
@@ -2187,7 +2189,7 @@ bool Graphics::RenderTransparency(
 	}
 
 	// Bind pointlight collection
-	if (!_currPointLightCollection.Get()->BindPSBuffers(_context))
+	if (!_currLightPointCollection.Get()->BindPSBuffers(_context))
 	{
 		ErrMsg("Failed to bind pointlight buffers!");
 		return false;
@@ -2231,7 +2233,7 @@ bool Graphics::RenderTransparency(
 		if (resources.shadowsOnly)
 			continue;
 
-		MeshBehaviour *meshBehaviour = dynamic_cast<MeshBehaviour *>(instance.subject);
+		B_Mesh *meshBehaviour = dynamic_cast<B_Mesh *>(instance.subject);
 
 		if (!meshBehaviour)
 		{
@@ -2245,6 +2247,12 @@ bool Graphics::RenderTransparency(
 		TracyD3D11NamedZoneC(_tracyD3D11Context, renderMeshD3D11Zone, "Draw Entity", RandomUniqueColor(), true);
 
 		// Bind shared geometry resources
+		FaceCullingType cullMode = meshBehaviour->GetCullMode();
+		SetRasterizerState(_wireframe ?
+			GetWireframeRasterizerByCullMode(cullMode) :
+			GetRasterizerByCullMode(cullMode)
+		);
+
 		if (_currMeshID != resources.meshID)
 		{
 			ZoneNamedXNC(bindResourceZone, "Bind Mesh", RandomUniqueColor(), true);
@@ -2424,7 +2432,7 @@ bool Graphics::RenderTransparency(
 		TracyD3D11NamedZoneXC(_tracyD3D11Context, ubbindBuffersD3D11Zone, "Unbind Buffers", RandomUniqueColor(), true);
 
 		// Unbind pointlight collection
-		if (!_currPointLightCollection.Get()->UnbindPSBuffers(_context))
+		if (!_currLightPointCollection.Get()->UnbindPSBuffers(_context))
 		{
 			ErrMsg("Failed to unbind pointlight buffers!");
 			return false;
@@ -2469,10 +2477,6 @@ bool Graphics::RenderPostFX()
 			ZoneNamedXNC(renderFogVolumeZone, "Render Fog", RandomUniqueColor(), true);
 			TracyD3D11NamedZoneC(_tracyD3D11Context, renderFogVolumeD3D11Zone, "Render Fog", RandomUniqueColor(), true);
 
-			// Bind distortion settings
-			ID3D11Buffer *const distortionSettings = _distortionSettingsBuffer.GetBuffer();
-			_context->CSSetConstantBuffers(2, 1, &distortionSettings);
-
 			// Bind fog settings
 			ID3D11Buffer *const fogSettings = _fogSettingsBuffer.GetBuffer();
 			_context->CSSetConstantBuffers(6, 1, &fogSettings);
@@ -2508,7 +2512,7 @@ bool Graphics::RenderPostFX()
 			}
 
 			// Bind pointlight collection
-			if (!_currPointLightCollection.Get()->BindCSBuffers(_context))
+			if (!_currLightPointCollection.Get()->BindCSBuffers(_context))
 			{
 				ErrMsg("Failed to bind pointlight buffers!");
 				return false;
@@ -2546,7 +2550,7 @@ bool Graphics::RenderPostFX()
 
 
 			// Unbind pointlight collection
-			if (!_currPointLightCollection.Get()->UnbindCSBuffers(_context))
+			if (!_currLightPointCollection.Get()->UnbindCSBuffers(_context))
 			{
 				ErrMsg("Failed to unbind pointlight buffers!");
 				return false;
@@ -3576,14 +3580,15 @@ bool Graphics::ResetRenderState()
 			collection.GetLightBehaviour(i)->GetShadowCamera()->ResetRenderQueue();
 	}
 
-	if (_currPointLightCollection.IsValid())
+	if (_currLightPointCollection.IsValid())
 	{
-		auto &collection = *_currPointLightCollection.Get();
+		auto &collection = *_currLightPointCollection.Get();
 
 		for (UINT i = 0; i < collection.GetNrOfLights(); i++)
 			collection.GetLightBehaviour(i)->GetShadowCameraCube()->ResetRenderQueue();
 	}
 
+	_currRasterizer		= nullptr;
 	_currInputLayoutID	= CONTENT_NULL;
 	_currMeshID			= CONTENT_NULL;
 	_currVsID			= CONTENT_NULL;

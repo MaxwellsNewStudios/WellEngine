@@ -1,7 +1,8 @@
 #pragma once
+
 #include <vector>
 
-namespace Culling
+namespace WellEngine::Culling
 {
 	struct TreePath
 	{

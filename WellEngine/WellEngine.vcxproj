@@ -141,8 +141,9 @@
       </Command>
     </CustomBuildStep>
     <PreBuildEvent>
-      <Command>$(SolutionDir)BuildTools\BehaviourRegistration\x64\$(Configuration)\BehaviourRegistration</Command>
-      <Message>Registering Behaviours</Message>
+      <Command>$(SolutionDir)BuildTools\BehaviourRegistration\x64\$(Configuration)\BehaviourRegistration
+$(SolutionDir)BuildTools\SystemRegistration\x64\$(Configuration)\SystemRegistration</Command>
+      <Message>Type Registration</Message>
     </PreBuildEvent>
     <PostBuildEvent>
       <Message>
@@ -201,8 +202,9 @@
       </Command>
     </CustomBuildStep>
     <PreBuildEvent>
-      <Command>$(SolutionDir)BuildTools\BehaviourRegistration\x64\$(Configuration)\BehaviourRegistration</Command>
-      <Message>Registering Behaviours</Message>
+      <Command>$(SolutionDir)BuildTools\BehaviourRegistration\x64\$(Configuration)\BehaviourRegistration
+$(SolutionDir)BuildTools\SystemRegistration\x64\$(Configuration)\SystemRegistration</Command>
+      <Message>Type Registration</Message>
     </PreBuildEvent>
     <PostBuildEvent>
       <Command>
@@ -261,8 +263,9 @@
       </Command>
     </CustomBuildStep>
     <PreBuildEvent>
-      <Command>$(SolutionDir)BuildTools\BehaviourRegistration\x64\$(Configuration)\BehaviourRegistration</Command>
-      <Message>Registering Behaviours</Message>
+      <Command>$(SolutionDir)BuildTools\BehaviourRegistration\x64\$(Configuration)\BehaviourRegistration
+$(SolutionDir)BuildTools\SystemRegistration\x64\$(Configuration)\SystemRegistration</Command>
+      <Message>Type Registration</Message>
     </PreBuildEvent>
     <PostBuildEvent>
       <Command>
@@ -279,6 +282,12 @@
   <ItemGroup>
     <ClInclude Include="..\Tests\TestUtils.h" />
     <ClInclude Include="AppMain.h" />
+    <ClInclude Include="Source\Game\Behaviours\Physics\B_PhysicsForce.h" />
+    <ClInclude Include="Source\Game\Behaviours\Physics\Colliders\B_BoxCollider.h" />
+    <ClInclude Include="Source\Game\Behaviours\Physics\Colliders\B_Collider.h" />
+    <ClInclude Include="Source\Game\Behaviours\Physics\Colliders\B_SphereCollider.h" />
+    <ClInclude Include="Source\Game\Behaviours\Sound\B_SoundListener.h" />
+    <ClInclude Include="Source\Engine\Content\ContentRegistry.h" />
     <ClInclude Include="Dependencies\ImGui\GraphEditor.h" />
     <ClInclude Include="Dependencies\ImGui\imconfig.h" />
     <ClInclude Include="Dependencies\ImGui\ImCurveEdit.h" />
@@ -633,21 +642,17 @@
     <ClInclude Include="Dependencies\tinyfiledialogs\tinyfiledialogs.h" />
     <ClInclude Include="Dependencies\tracy-0.11.1\public\tracy\Tracy.hpp" />
     <ClInclude Include="Dependencies\tracy-0.11.1\public\tracy\TracyD3D11.hpp" />
+    <ClInclude Include="Source\Engine\Content\DirectoryManager.h" />
     <ClInclude Include="Source\Engine\Content\DefaultVertex.h" />
     <ClInclude Include="Source\Engine\Content\FontAtlas.h" />
     <ClInclude Include="Source\Engine\Audio\SoundEngine.h" />
     <ClInclude Include="Source\Engine\Audio\SoundSource.h" />
-    <ClInclude Include="Source\Engine\Collision\Colliders.h" />
     <ClInclude Include="Source\Engine\Collision\ColliderShapes.h" />
-    <ClInclude Include="Source\Engine\Collision\CollisionHandler.h" />
-    <ClInclude Include="Source\Engine\Collision\Intersections.h" />
     <ClInclude Include="Source\Engine\Collision\MeshCollider.h" />
     <ClInclude Include="Source\Engine\Collision\Raycast.h" />
     <ClInclude Include="Source\Engine\Content\Content.h" />
     <ClInclude Include="Source\Engine\Content\ContentLoader.h" />
-    <ClInclude Include="Source\Engine\Content\HeightMap.h" />
     <ClInclude Include="Source\Engine\Content\Material.h" />
-    <ClInclude Include="Source\Engine\Content\Shaders\ShaderDefinition.h" />
     <ClInclude Include="Source\Engine\D3D\ConstantBufferD3D11.h" />
     <ClInclude Include="Source\Engine\D3D\D3D11FormatData.h" />
     <ClInclude Include="Source\Engine\D3D\D3D11Helper.h" />
@@ -668,11 +673,13 @@
     <ClInclude Include="Source\Engine\Debug\DebugDrawer.h" />
     <ClInclude Include="Source\Engine\Debug\DebugNew.h" />
     <ClInclude Include="Source\Engine\Debug\ErrMsg.h" />
+    <ClInclude Include="Source\Engine\EngineDefinitions.h" />
     <ClInclude Include="Source\Engine\Input\KeyboardWinHook.h" />
     <ClInclude Include="Source\Engine\Physics\JoltListeners.h" />
     <ClInclude Include="Source\Engine\Physics\JoltManager.h" />
     <ClInclude Include="Source\Engine\Physics\JoltPhysicsInstance.h" />
     <ClInclude Include="Source\Engine\Rendering\Graphics\GraphicsTypes.h" />
+    <ClInclude Include="Source\Engine\Content\ShaderSettings.h" />
     <ClInclude Include="Source\Engine\UI\Fonts\IconsCodicons.h" />
     <ClInclude Include="Source\Engine\UI\Fonts\IconsFontaudio.h" />
     <ClInclude Include="Source\Engine\UI\Fonts\IconsFontAwesome6.h" />
@@ -692,14 +699,10 @@
     <ClInclude Include="Source\Engine\Rendering\Culling\CullingPlacement.h" />
     <ClInclude Include="Source\Engine\Rendering\Culling\Quadtree.h" />
     <ClInclude Include="Source\Engine\Rendering\Graphics\Graphics.h" />
-    <ClInclude Include="Source\Engine\Rendering\Lighting\PointLightCollection.h" />
-    <ClInclude Include="Source\Engine\Rendering\Lighting\SpotLightCollection.h" />
-    <ClInclude Include="Source\Engine\Rendering\RenderBatch.h" />
+    <ClInclude Include="Source\Engine\Rendering\Lighting\LightPointCollection.h" />
+    <ClInclude Include="Source\Engine\Rendering\Lighting\LightSpotCollection.h" />
     <ClInclude Include="Source\Engine\Rendering\RendererInfo.h" />
     <ClInclude Include="Source\Engine\Rendering\RenderQueuer.h" />
-    <ClInclude Include="Source\Engine\Timing\TimelineManager.h" />
-    <ClInclude Include="Source\Engine\Timing\TimelineSequence.h" />
-    <ClInclude Include="Source\Engine\Timing\TimelineWaypoint.h" />
     <ClInclude Include="Source\Engine\Timing\TimeUtils.h" />
     <ClInclude Include="Source\Engine\UI\UIDragDropHelpers.h" />
     <ClInclude Include="Source\Engine\UI\UILayout.h" />
@@ -709,66 +712,31 @@
     <ClInclude Include="Source\Engine\Utils\SerializerUtils.h" />
     <ClInclude Include="Source\Engine\Utils\StringUtils.h" />
     <ClInclude Include="Source\Engine\Window\Window.h" />
-    <ClInclude Include="Source\Game\Behaviour.h" />
-    <ClInclude Include="Source\Game\BehaviourFactory.h" />
-    <ClInclude Include="Source\Game\BehaviourRegistry.h" />
-    <ClInclude Include="Source\Game\Behaviours\Physics\Jolt\Colliders\BoxJoltColliderBehaviour.h" />
-    <ClInclude Include="Source\Game\Behaviours\Physics\Jolt\Colliders\JoltColliderBehaviour.h" />
-    <ClInclude Include="Source\Game\Behaviours\Physics\Jolt\PhysicsForceBehaviour.h" />
-    <ClInclude Include="Source\Game\Behaviours\Physics\Jolt\Colliders\SphereJoltColliderBehaviour.h" />
-    <ClInclude Include="Source\Game\Behaviours\Rendering\Mesh\TextMeshBehaviour.h" />
-    <ClInclude Include="Source\Game\Behaviours\Sound\AmbientSoundBehaviour.h" />
-    <ClInclude Include="Source\Game\Behaviours\Rendering\Mesh\BillboardMeshBehaviour.h" />
-    <ClInclude Include="Source\Game\Behaviours\Interaction\BreadcrumbBehaviour.h" />
-    <ClInclude Include="Source\Game\Behaviours\Interaction\BreadcrumbPileBehaviour.h" />
+    <ClInclude Include="Source\Game\Behaviours\Behaviour.h" />
+    <ClInclude Include="Source\Game\Behaviours\BehaviourFactory.h" />
+    <ClInclude Include="Source\Game\Behaviours\BehaviourRegistry.h" />
+    <ClInclude Include="Source\Game\Behaviours\Rendering\Mesh\B_MeshText.h" />
+    <ClInclude Include="Source\Game\Behaviours\Sound\B_SoundSourceAmbient.h" />
+    <ClInclude Include="Source\Game\Behaviours\Rendering\Mesh\B_MeshBillboard.h" />
     <ClInclude Include="Source\Game\Behaviours\Menu\ButtonBehaviours.h" />
-    <ClInclude Include="Source\Game\Behaviours\Rendering\Camera\CameraBehaviour.h" />
-    <ClInclude Include="Source\Game\Behaviours\Rendering\Camera\CameraCubeBehaviour.h" />
-    <ClInclude Include="Source\Game\Behaviours\Interaction\CameraItemBehaviour.h" />
-    <ClInclude Include="Source\Game\Behaviours\Physics\ColliderBehaviour.h" />
-    <ClInclude Include="Source\Game\Behaviours\Inventory\CompassBehaviour.h" />
-    <ClInclude Include="Source\Game\Behaviours\Menu\CreditsBehaviour.h" />
-    <ClInclude Include="Source\Game\Behaviours\Debug\DebugPlayerBehaviour.h" />
-    <ClInclude Include="Source\Game\Behaviours\Events\EndCutSceneBehaviour.h" />
-    <ClInclude Include="Source\Game\Behaviours\Debug\ExampleBehaviour.h" />
-    <ClInclude Include="Source\Game\Behaviours\Physics\ExampleCollisionBehaviour.h" />
-    <ClInclude Include="Source\Game\Behaviours\Inventory\FlashlightBehaviour.h" />
-    <ClInclude Include="Source\Game\Behaviours\Menu\FlashlightPropBehaviour.h" />
-    <ClInclude Include="Source\Game\Behaviours\Navigation\GraphNodeBehaviour.h" />
-    <ClInclude Include="Source\Game\Behaviours\Interaction\HideBehaviour.h" />
-    <ClInclude Include="Source\Game\Behaviours\Interaction\InteractableBehaviour.h" />
-    <ClInclude Include="Source\Game\Behaviours\Interaction\InteractorBehaviour.h" />
-    <ClInclude Include="Source\Game\Behaviours\Inventory\InventoryBehaviour.h" />
-    <ClInclude Include="Source\Game\Behaviours\Menu\MenuCameraBehaviour.h" />
-    <ClInclude Include="Source\Game\Behaviours\Rendering\Mesh\MeshBehaviour.h" />
-    <ClInclude Include="Source\Game\Behaviours\Monster\MonsterBehaviour.h" />
-    <ClInclude Include="Source\Game\Behaviours\Monster\MonsterHintBehaviour.h" />
-    <ClInclude Include="Source\Game\Behaviours\Monster\MonsterStates\MonsterCapture.h" />
-    <ClInclude Include="Source\Game\Behaviours\Monster\MonsterStates\MonsterExtendedHunt.h" />
-    <ClInclude Include="Source\Game\Behaviours\Monster\MonsterStates\MonsterHunt.h" />
-    <ClInclude Include="Source\Game\Behaviours\Monster\MonsterStates\MonsterHuntDone.h" />
-    <ClInclude Include="Source\Game\Behaviours\Monster\MonsterStates\MonsterIdle.h" />
-    <ClInclude Include="Source\Game\Behaviours\Monster\MonsterStates\MonsterState.h" />
-    <ClInclude Include="Source\Game\Behaviours\Interaction\PickupBehaviour.h" />
-    <ClInclude Include="Source\Game\Behaviours\Inventory\PictureBehaviour.h" />
-    <ClInclude Include="Source\Game\Behaviours\Events\PlayerCutsceneBehaviour.h" />
-    <ClInclude Include="Source\Game\Behaviours\Player\PlayerMovementBehaviour.h" />
-    <ClInclude Include="Source\Game\Behaviours\Player\PlayerViewBehaviour.h" />
-    <ClInclude Include="Source\Game\Behaviours\Rendering\Lighting\PointLightBehaviour.h" />
-    <ClInclude Include="Source\Game\Behaviours\Player\RestrictedViewBehaviour.h" />
-    <ClInclude Include="Source\Game\Behaviours\Rendering\Lighting\SimplePointLightBehaviour.h" />
-    <ClInclude Include="Source\Game\Behaviours\Rendering\Lighting\SimpleSpotLightBehaviour.h" />
-    <ClInclude Include="Source\Game\Behaviours\Physics\SolidObjectBehaviour.h" />
-    <ClInclude Include="Source\Game\Behaviours\Sound\SoundBehaviour.h" />
-    <ClInclude Include="Source\Game\Behaviours\Rendering\Lighting\SpotLightBehaviour.h" />
-    <ClInclude Include="Source\Game\Behaviours\Misc\TrackerBehaviour.h" />
-    <ClInclude Include="Source\Game\Behaviours\Menu\UIButtonBehaviour.h" />
-    <ClInclude Include="Source\Game\Behaviours\Menu\UIButtonExampleBehaviour.h" />
+    <ClInclude Include="Source\Game\Behaviours\Rendering\Camera\B_Camera.h" />
+    <ClInclude Include="Source\Game\Behaviours\Rendering\Camera\B_CameraCube.h" />
+    <ClInclude Include="Source\Game\Behaviours\Debug\B_DebugManager.h" />
+    <ClInclude Include="Source\Game\Behaviours\Debug\B_Example.h" />
+    <ClInclude Include="Source\Game\Behaviours\Rendering\Mesh\B_Mesh.h" />
+    <ClInclude Include="Source\Game\Behaviours\Rendering\Lighting\B_LightPoint.h" />
+    <ClInclude Include="Source\Game\Behaviours\Rendering\Lighting\B_LightPointSimple.h" />
+    <ClInclude Include="Source\Game\Behaviours\Rendering\Lighting\B_LightSpotSimple.h" />
+    <ClInclude Include="Source\Game\Behaviours\Sound\B_SoundSource.h" />
+    <ClInclude Include="Source\Game\Behaviours\Rendering\Lighting\B_LightSpot.h" />
+    <ClInclude Include="Source\Game\Behaviours\Misc\B_TransformTracker.h" />
     <ClInclude Include="Source\Game\Entity.h" />
     <ClInclude Include="Source\Game\Game.h" />
-    <ClInclude Include="Source\Game\GraphManager.h" />
-    <ClInclude Include="Source\Game\Scenes\Scene.h" />
-    <ClInclude Include="Source\Game\Scenes\SceneHolder.h" />
+    <ClInclude Include="Source\Game\Scene\Scene.h" />
+    <ClInclude Include="Source\Game\Scene\SceneHolder.h" />
+    <ClInclude Include="Source\Game\Systems\Example\S_Example.h" />
+    <ClInclude Include="Source\Game\Systems\System.h" />
+    <ClInclude Include="Source\Game\Systems\SystemManager.h" />
     <ClInclude Include="Source\Game\Transform.h" />
     <ClInclude Include="Source\Engine\Math\Bezier.h" />
     <ClInclude Include="Source\Engine\Math\ConstRand.h" />
@@ -777,9 +745,16 @@
     <ClInclude Include="Source\Engine\Math\GameMath.h" />
     <ClInclude Include="Source\Engine\Math\Primitives.h" />
     <ClInclude Include="stdafx.h" />
+    <ClInclude Include="Source\Game\Systems\SystemRegistry.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AppMain.cpp" />
+    <ClCompile Include="Source\Game\Behaviours\Physics\B_PhysicsForce.cpp" />
+    <ClCompile Include="Source\Game\Behaviours\Physics\Colliders\B_BoxCollider.cpp" />
+    <ClCompile Include="Source\Game\Behaviours\Physics\Colliders\B_Collider.cpp" />
+    <ClCompile Include="Source\Game\Behaviours\Physics\Colliders\B_SphereCollider.cpp" />
+    <ClCompile Include="Source\Game\Behaviours\Sound\B_SoundListener.cpp" />
+    <ClCompile Include="Source\Engine\Content\ContentRegistry.cpp" />
     <ClCompile Include="Dependencies\ImGui\GraphEditor.cpp" />
     <ClCompile Include="Dependencies\ImGui\ImCurveEdit.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">NotUsing</PrecompiledHeader>
@@ -1522,11 +1497,9 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="Source\Engine\Content\DirectoryManager.cpp" />
     <ClCompile Include="Source\Engine\Audio\SoundEngine.cpp" />
     <ClCompile Include="Source\Engine\Audio\SoundSource.cpp" />
-    <ClCompile Include="Source\Engine\Collision\Colliders.cpp" />
-    <ClCompile Include="Source\Engine\Collision\CollisionHandler.cpp" />
-    <ClCompile Include="Source\Engine\Collision\Intersections.cpp" />
     <ClCompile Include="Source\Engine\Collision\MeshCollider.cpp">
       <Optimization Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">MaxSpeed</Optimization>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
@@ -1534,7 +1507,6 @@
     <ClCompile Include="Source\Engine\Content\Content.cpp" />
     <ClCompile Include="Source\Engine\Content\ContentLoader.cpp" />
     <ClCompile Include="Source\Engine\Content\FontAtlas.cpp" />
-    <ClCompile Include="Source\Engine\Content\HeightMap.cpp" />
     <ClCompile Include="Source\Engine\D3D\ConstantBufferD3D11.cpp" />
     <ClCompile Include="Source\Engine\D3D\D3D11Helper.cpp" />
     <ClCompile Include="Source\Engine\D3D\DepthBufferD3D11.cpp" />
@@ -1570,82 +1542,43 @@
     <ClCompile Include="Source\Engine\Input\InputBindings.cpp" />
     <ClCompile Include="Source\Engine\Rendering\Culling\Quadtree.cpp" />
     <ClCompile Include="Source\Engine\Rendering\Graphics\Graphics.cpp" />
-    <ClCompile Include="Source\Engine\Rendering\Lighting\PointLightCollection.cpp" />
-    <ClCompile Include="Source\Engine\Rendering\Lighting\SpotLightCollection.cpp" />
-    <ClCompile Include="Source\Engine\Rendering\RenderBatch.cpp" />
-    <ClCompile Include="Source\Engine\Timing\TimelineManager.cpp" />
-    <ClCompile Include="Source\Engine\Timing\TimelineSequence.cpp" />
-    <ClCompile Include="Source\Engine\Timing\TimelineWaypoint.cpp" />
+    <ClCompile Include="Source\Engine\Rendering\Lighting\LightPointCollection.cpp" />
+    <ClCompile Include="Source\Engine\Rendering\Lighting\LightSpotCollection.cpp" />
     <ClCompile Include="Source\Engine\Timing\TimeUtils.cpp" />
     <ClCompile Include="Source\Engine\UI\UIDragDropHelpers.cpp" />
     <ClCompile Include="Source\Engine\UI\UILayout.cpp" />
     <ClCompile Include="Source\Engine\Utils\SerializerUtils.cpp" />
     <ClCompile Include="Source\Engine\Utils\StringUtils.cpp" />
     <ClCompile Include="Source\Engine\Window\Window.cpp" />
-    <ClCompile Include="Source\Game\Behaviour.cpp" />
-    <ClCompile Include="Source\Game\BehaviourFactory.cpp" />
-    <ClCompile Include="Source\Game\BehaviourRegistry.cpp" />
-    <ClCompile Include="Source\Game\Behaviours\Physics\Jolt\Colliders\BoxJoltColliderBehaviour.cpp" />
-    <ClCompile Include="Source\Game\Behaviours\Physics\Jolt\Colliders\JoltColliderBehaviour.cpp" />
-    <ClCompile Include="Source\Game\Behaviours\Physics\Jolt\Colliders\SphereJoltColliderBehaviour.cpp" />
-    <ClCompile Include="Source\Game\Behaviours\Physics\Jolt\PhysicsForceBehaviour.cpp" />
-    <ClCompile Include="Source\Game\Behaviours\Rendering\Mesh\TextMeshBehaviour.cpp" />
-    <ClCompile Include="Source\Game\Behaviours\Sound\AmbientSoundBehaviour.cpp" />
-    <ClCompile Include="Source\Game\Behaviours\Rendering\Mesh\BillboardMeshBehaviour.cpp" />
-    <ClCompile Include="Source\Game\Behaviours\Interaction\BreadcrumbBehaviour.cpp" />
-    <ClCompile Include="Source\Game\Behaviours\Interaction\BreadcrumbPileBehaviour.cpp" />
-    <ClCompile Include="Source\Game\Behaviours\Menu\ButtonBehaviours.cpp" />
-    <ClCompile Include="Source\Game\Behaviours\Rendering\Camera\CameraBehaviour.cpp" />
-    <ClCompile Include="Source\Game\Behaviours\Rendering\Camera\CameraCubeBehaviour.cpp" />
-    <ClCompile Include="Source\Game\Behaviours\Interaction\CameraItemBehaviour.cpp" />
-    <ClCompile Include="Source\Game\Behaviours\Physics\ColliderBehaviour.cpp" />
-    <ClCompile Include="Source\Game\Behaviours\Inventory\CompassBehaviour.cpp" />
-    <ClCompile Include="Source\Game\Behaviours\Menu\CreditsBehaviour.cpp" />
-    <ClCompile Include="Source\Game\Behaviours\Debug\DebugPlayerBehaviour.cpp" />
-    <ClCompile Include="Source\Game\Behaviours\Events\EndCutSceneBehaviour.cpp" />
-    <ClCompile Include="Source\Game\Behaviours\Debug\ExampleBehaviour.cpp" />
-    <ClCompile Include="Source\Game\Behaviours\Physics\ExampleCollisionBehaviour.cpp" />
-    <ClCompile Include="Source\Game\Behaviours\Inventory\FlashlightBehaviour.cpp" />
-    <ClCompile Include="Source\Game\Behaviours\Menu\FlashlightPropBehaviour.cpp" />
-    <ClCompile Include="Source\Game\Behaviours\Navigation\GraphNodeBehaviour.cpp" />
-    <ClCompile Include="Source\Game\Behaviours\Interaction\HideBehaviour.cpp" />
-    <ClCompile Include="Source\Game\Behaviours\Interaction\InteractableBehaviour.cpp" />
-    <ClCompile Include="Source\Game\Behaviours\Interaction\InteractorBehaviour.cpp" />
-    <ClCompile Include="Source\Game\Behaviours\Inventory\InventoryBehaviour.cpp" />
-    <ClCompile Include="Source\Game\Behaviours\Menu\MenuCameraBehaviour.cpp" />
-    <ClCompile Include="Source\Game\Behaviours\Rendering\Mesh\MeshBehaviour.cpp" />
-    <ClCompile Include="Source\Game\Behaviours\Monster\MonsterBehaviour.cpp" />
-    <ClCompile Include="Source\Game\Behaviours\Monster\MonsterHintBehaviour.cpp" />
-    <ClCompile Include="Source\Game\Behaviours\Monster\MonsterStates\MonsterCapture.cpp" />
-    <ClCompile Include="Source\Game\Behaviours\Monster\MonsterStates\MonsterExtendedHunt.cpp" />
-    <ClCompile Include="Source\Game\Behaviours\Monster\MonsterStates\MonsterHunt.cpp" />
-    <ClCompile Include="Source\Game\Behaviours\Monster\MonsterStates\MonsterHuntDone.cpp" />
-    <ClCompile Include="Source\Game\Behaviours\Monster\MonsterStates\MonsterIdle.cpp" />
-    <ClCompile Include="Source\Game\Behaviours\Monster\MonsterStates\MonsterState.cpp" />
-    <ClCompile Include="Source\Game\Behaviours\Interaction\PickupBehaviour.cpp" />
-    <ClCompile Include="Source\Game\Behaviours\Inventory\PictureBehaviour.cpp" />
-    <ClCompile Include="Source\Game\Behaviours\Events\PlayerCutsceneBehaviour.cpp" />
-    <ClCompile Include="Source\Game\Behaviours\Player\PlayerMovementBehaviour.cpp" />
-    <ClCompile Include="Source\Game\Behaviours\Player\PlayerViewBehaviour.cpp" />
-    <ClCompile Include="Source\Game\Behaviours\Rendering\Lighting\PointLightBehaviour.cpp" />
-    <ClCompile Include="Source\Game\Behaviours\Player\RestrictedViewBehaviour.cpp" />
-    <ClCompile Include="Source\Game\Behaviours\Rendering\Lighting\SimplePointLightBehaviour.cpp" />
-    <ClCompile Include="Source\Game\Behaviours\Rendering\Lighting\SimpleSpotLightBehaviour.cpp" />
-    <ClCompile Include="Source\Game\Behaviours\Physics\SolidObjectBehaviour.cpp" />
-    <ClCompile Include="Source\Game\Behaviours\Sound\SoundBehaviour.cpp" />
-    <ClCompile Include="Source\Game\Behaviours\Rendering\Lighting\SpotLightBehaviour.cpp" />
-    <ClCompile Include="Source\Game\Behaviours\Misc\TrackerBehaviour.cpp" />
-    <ClCompile Include="Source\Game\Behaviours\Menu\UIButtonExampleBehaviour.cpp" />
+    <ClCompile Include="Source\Game\Behaviours\Behaviour.cpp" />
+    <ClCompile Include="Source\Game\Behaviours\BehaviourFactory.cpp" />
+    <ClCompile Include="Source\Game\Behaviours\BehaviourRegistry.cpp" />
+    <ClCompile Include="Source\Game\Behaviours\Rendering\Mesh\B_MeshText.cpp" />
+    <ClCompile Include="Source\Game\Behaviours\Sound\B_SoundSourceAmbient.cpp" />
+    <ClCompile Include="Source\Game\Behaviours\Rendering\Mesh\B_MeshBillboard.cpp" />
+    <ClCompile Include="Source\Game\Behaviours\Rendering\Camera\B_Camera.cpp" />
+    <ClCompile Include="Source\Game\Behaviours\Rendering\Camera\B_CameraCube.cpp" />
+    <ClCompile Include="Source\Game\Behaviours\Debug\B_DebugManager.cpp" />
+    <ClCompile Include="Source\Game\Behaviours\Debug\B_Example.cpp" />
+    <ClCompile Include="Source\Game\Behaviours\Rendering\Mesh\B_Mesh.cpp" />
+    <ClCompile Include="Source\Game\Behaviours\Rendering\Lighting\B_LightPoint.cpp" />
+    <ClCompile Include="Source\Game\Behaviours\Rendering\Lighting\B_LightPointSimple.cpp" />
+    <ClCompile Include="Source\Game\Behaviours\Rendering\Lighting\B_LightSpotSimple.cpp" />
+    <ClCompile Include="Source\Game\Behaviours\Sound\B_SoundSource.cpp" />
+    <ClCompile Include="Source\Game\Behaviours\Rendering\Lighting\B_LightSpot.cpp" />
+    <ClCompile Include="Source\Game\Behaviours\Misc\B_TransformTracker.cpp" />
     <ClCompile Include="Source\Game\Entity.cpp">
       <ShowIncludes Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
       </ShowIncludes>
     </ClCompile>
     <ClCompile Include="Source\Game\Game.cpp" />
-    <ClCompile Include="Source\Game\GraphManager.cpp" />
-    <ClCompile Include="Source\Game\Scenes\Scene.cpp" />
-    <ClCompile Include="Source\Game\Scenes\SceneHolder.cpp" />
-    <ClCompile Include="Source\Game\Scenes\SceneSerialization.cpp" />
-    <ClCompile Include="Source\Game\Scenes\SceneUI.cpp" />
+    <ClCompile Include="Source\Game\Scene\Scene.cpp" />
+    <ClCompile Include="Source\Game\Scene\SceneHolder.cpp" />
+    <ClCompile Include="Source\Game\Scene\SceneSerialization.cpp" />
+    <ClCompile Include="Source\Game\Scene\SceneUI.cpp" />
+    <ClCompile Include="Source\Game\Systems\Example\S_Example.cpp" />
+    <ClCompile Include="Source\Game\Systems\System.cpp" />
+    <ClCompile Include="Source\Game\Systems\SystemManager.cpp" />
     <ClCompile Include="Source\Game\Transform.cpp" />
     <ClCompile Include="Source\Engine\Math\Curves.cpp" />
     <ClCompile Include="Source\Engine\Math\EasingFunctions.cpp" />
@@ -1655,6 +1588,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="Source\Game\Systems\SystemRegistry.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="cpp.hint" />
@@ -1863,6 +1797,14 @@
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">Compute</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Compute</ShaderType>
     </FxCompile>
+    <FxCompile Include="Source\Shaders\Domain\DS_DebugBezier.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Domain</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">Domain</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">5.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Domain</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
+    </FxCompile>
     <FxCompile Include="Source\Shaders\Geometry\GS_Billboard.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Geometry</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">Geometry</ShaderType>
@@ -1906,6 +1848,19 @@
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
+    </FxCompile>
+    <FxCompile Include="Source\Shaders\Hull\HS_DebugBezier.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Hull</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">Hull</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">5.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Hull</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
+    </FxCompile>
+    <FxCompile Include="Source\Shaders\Pixel\PS_Cel.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
     </FxCompile>
     <FxCompile Include="Source\Shaders\Pixel\PS_DebugDraw.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
@@ -2121,17 +2076,6 @@
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
     </FxCompile>
-    <FxCompile Include="Source\Shaders\Pixel\PS_ScreenEffectFog.hlsl">
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">Pixel</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;$(ProjectDir)Source\Shaders\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;$(ProjectDir)Source\Shaders\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;$(ProjectDir)Source\Shaders\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
-      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
-      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
-    </FxCompile>
     <FxCompile Include="Source\Shaders\Pixel\PS_SelectionOutline.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">Pixel</ShaderType>
@@ -2233,6 +2177,11 @@
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
     </FxCompile>
+    <FxCompile Include="Source\Shaders\Vertex\VS_DebugDrawBezier.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+    </FxCompile>
     <FxCompile Include="Source\Shaders\Vertex\VS_DebugDrawMesh.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">Vertex</ShaderType>
@@ -2248,6 +2197,11 @@
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
+    </FxCompile>
+    <FxCompile Include="Source\Shaders\Vertex\VS_DebugDrawStrip.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
     </FxCompile>
     <FxCompile Include="Source\Shaders\Vertex\VS_DebugDrawTri.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
@@ -2282,40 +2236,7 @@
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
     </FxCompile>
-    <FxCompile Include="Source\Shaders\Vertex\VS_DepthDistortion.hlsl">
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">Vertex</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;$(ProjectDir)Source\Shaders\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;$(ProjectDir)Source\Shaders\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;$(ProjectDir)Source\Shaders\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
-      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
-      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
-    </FxCompile>
-    <FxCompile Include="Source\Shaders\Vertex\VS_DepthDistortionCubemap.hlsl">
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">Vertex</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;$(ProjectDir)Source\Shaders\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;$(ProjectDir)Source\Shaders\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;$(ProjectDir)Source\Shaders\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
-      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
-      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
-    </FxCompile>
     <FxCompile Include="Source\Shaders\Vertex\VS_Geometry.hlsl">
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">Vertex</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;$(ProjectDir)Source\Shaders\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;$(ProjectDir)Source\Shaders\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir);$(SolutionDir)Assets\Shaders\Content\Shaders;$(ProjectDir)Source\Shaders;$(ProjectDir)Source\Shaders\Headers;$(ProjectDir)Source\Shaders\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
-      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
-      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)Assets/_Compiled/Shaders/%(Filename).cso</ObjectFileOutput>
-    </FxCompile>
-    <FxCompile Include="Source\Shaders\Vertex\VS_GeometryDistortion.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>

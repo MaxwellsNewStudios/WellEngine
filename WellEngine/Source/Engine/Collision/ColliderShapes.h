@@ -188,5 +188,3 @@ namespace WellEngine::Shape
 		}
 	};
 };
-
-namespace we = WellEngine;

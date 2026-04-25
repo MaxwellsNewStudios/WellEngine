@@ -1,6 +1,9 @@
 #pragma once
 
+#include <wtypes.h>
+
 #include "Engine/EngineSettings.h"
+
 #ifndef DEBUG_MESSAGES
 #include <iostream>
 #endif // DEBUG_MESSAGES
@@ -118,45 +121,49 @@
 #define AssertF(expr, msg, ...) { }
 #endif // DEBUG_MESSAGES
 
-int OpenWinMessageBox(HWND hWnd, LPCSTR lpText, LPCSTR lpCaption, UINT uType);
 
-class MsgLogger
+namespace WellEngine
 {
-private:
-	std::string _indentStr = "    ";
-	int _indentLevel = 0;
-	HWND _hWnd = nullptr;
+	int OpenWinMessageBox(HWND hWnd, LPCSTR lpText, LPCSTR lpCaption, UINT uType);
 
-	[[nodiscard]] inline std::string GetIndent() const
+	class MsgLogger
 	{
-		std::string indent;
-		for (int i = 0; i < _indentLevel; i++)
-			indent += _indentStr;
-		return indent;
-	}
+	private:
+		std::string _indentStr = "    ";
+		int _indentLevel = 0;
+		HWND _hWnd = nullptr;
 
-public:
-	MsgLogger() = default;
-	~MsgLogger() = default;
+		[[nodiscard]] inline std::string GetIndent() const
+		{
+			std::string indent;
+			for (int i = 0; i < _indentLevel; i++)
+				indent += _indentStr;
+			return indent;
+		}
 
-	static MsgLogger &GetInstance()
-	{
-		static MsgLogger instance;
-		return instance;
-	}
+	public:
+		MsgLogger() = default;
+		~MsgLogger() = default;
 
-	static inline void SetHWnd(HWND hWnd) { GetInstance()._hWnd = hWnd; }
-	static inline HWND GetHWnd() { return GetInstance()._hWnd; }
+		static MsgLogger &GetInstance()
+		{
+			static MsgLogger instance;
+			return instance;
+		}
 
-	static inline void IndentIncr() { GetInstance()._indentLevel++; }
-	static inline void IndentDecr() { if (GetInstance()._indentLevel > 0) GetInstance()._indentLevel--; }
+		static inline void SetHWnd(HWND hWnd) { GetInstance()._hWnd = hWnd; }
+		static inline HWND GetHWnd() { return GetInstance()._hWnd; }
 
-	static void ErrorMessage(const char *msg, const std::string &filePath, int line);
-	static void ErrorMessage(const std::string &msg, const std::string &filePath, int line);
+		static inline void IndentIncr() { GetInstance()._indentLevel++; }
+		static inline void IndentDecr() { if (GetInstance()._indentLevel > 0) GetInstance()._indentLevel--; }
 
-	static void WarningMessage(const char *msg, const std::string &filePath, int line);
-	static void WarningMessage(const std::string &msg, const std::string &filePath, int line);
+		static void ErrorMessage(const char *msg, const std::string &filePath, int line);
+		static void ErrorMessage(const std::string &msg, const std::string &filePath, int line);
 
-	static void DebugMessage(const char *msg, bool br = true);
-	static void DebugMessage(const std::string &msg, bool br = true);
-};
+		static void WarningMessage(const char *msg, const std::string &filePath, int line);
+		static void WarningMessage(const std::string &msg, const std::string &filePath, int line);
+
+		static void DebugMessage(const char *msg, bool br = true);
+		static void DebugMessage(const std::string &msg, bool br = true);
+	};
+}

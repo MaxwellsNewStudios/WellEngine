@@ -24,6 +24,7 @@
 #pragma warning(default: 6262)
 
 using namespace ContentData;
+using namespace WellEngine;
 
 
 #pragma region Mesh
@@ -545,7 +546,7 @@ static void SendFormattedMeshToMeshData(MeshData *meshData,
 }
 
 
-bool LoadMeshFromFile(const char *path, MeshData *meshData)
+bool WellEngine::LoadMeshFromFile(const char *path, MeshData *meshData)
 {
 	if (meshData->vertexInfo.vertexData != nullptr || 
 		meshData->indexInfo.indexData != nullptr)
@@ -598,7 +599,7 @@ bool LoadMeshFromFile(const char *path, MeshData *meshData)
 }
 
 // Debug Function
-bool WriteMeshToFile(const char *path, const MeshData *meshData)
+bool WellEngine::WriteMeshToFile(const char *path, const MeshData *meshData)
 {
 	if (meshData->vertexInfo.vertexData == nullptr || 
 		meshData->indexInfo.indexData == nullptr)
@@ -688,7 +689,7 @@ bool WriteMeshToFile(const char *path, const MeshData *meshData)
 
 
 #pragma region Texture
-std::string GetTextureBakePath(const std::string &file)
+std::string WellEngine::GetTextureBakePath(const std::string &file)
 {
 	std::string assetPath = file;
 
@@ -710,7 +711,7 @@ std::string GetTextureBakePath(const std::string &file)
 	return PATH_FILE_EXT(ASSET_COMPILED_PATH_TEXTURES, assetPath, "dds");
 }
 
-bool LoadDDSTextureFromFile(
+bool WellEngine::LoadDDSTextureFromFile(
 	ID3D11Device *device, ID3D11DeviceContext *context, 
 	const std::string &path, ID3D11Texture2D *&texture, ID3D11ShaderResourceView *&srv, 
 	dx::DDS_ALPHA_MODE *alphaMode, bool mipmapped)
@@ -737,7 +738,7 @@ bool LoadDDSTextureFromFile(
 	return true;
 }
 
-bool LoadTextureFromFile(
+bool WellEngine::LoadTextureFromFile(
 	ID3D11Device *device, ID3D11DeviceContext *context, 
 	const std::string &path, ID3D11Texture2D *&texture, ID3D11ShaderResourceView *&srv, 
 	DXGI_FORMAT format, bool mipmapped, UINT downsample, bool flip, bool bake)
@@ -1074,7 +1075,7 @@ bool LoadTextureFromFile(
 	return true;
 }
 
-bool LoadTextureFromFile(const std::string &path, UINT &width, UINT &height, std::vector<unsigned char> &data)
+bool WellEngine::LoadTextureFromFile(const std::string &path, UINT &width, UINT &height, std::vector<unsigned char> &data)
 {
 	stbi_set_flip_vertically_on_load(1);
 
@@ -1093,7 +1094,7 @@ bool LoadTextureFromFile(const std::string &path, UINT &width, UINT &height, std
 	stbi_image_free(imgData);
 	return true;
 }
-bool LoadTextureFromFile(const std::string &path, UINT &width, UINT &height, std::vector<unsigned short> &data)
+bool WellEngine::LoadTextureFromFile(const std::string &path, UINT &width, UINT &height, std::vector<unsigned short> &data)
 {
 	stbi_set_flip_vertically_on_load(1);
 
@@ -1112,7 +1113,7 @@ bool LoadTextureFromFile(const std::string &path, UINT &width, UINT &height, std
 	stbi_image_free(imgData);
 	return true;
 }
-bool LoadTextureFromFile(const std::string &path, UINT &width, UINT &height, std::vector<float> &data, int nChannels, bool highPrecision)
+bool WellEngine::LoadTextureFromFile(const std::string &path, UINT &width, UINT &height, std::vector<float> &data, int nChannels, bool highPrecision)
 {
 	if (nChannels < 1 || nChannels > 4)
 	{
@@ -1166,7 +1167,7 @@ bool LoadTextureFromFile(const std::string &path, UINT &width, UINT &height, std
 	}
 	return true;
 }
-bool LoadTextureFromFile(const std::string &path, std::vector<unsigned char> &data, UINT &width, UINT &height, UINT &channels, UINT &bitsPerChannel)
+bool WellEngine::LoadTextureFromFile(const std::string &path, std::vector<unsigned char> &data, UINT &width, UINT &height, UINT &channels, UINT &bitsPerChannel)
 {
 	stbi_set_flip_vertically_on_load(1);
 
@@ -1204,7 +1205,7 @@ bool LoadTextureFromFile(const std::string &path, std::vector<unsigned char> &da
 	return true;
 }
 
-bool DownsampleTexture(std::vector<uint8_t> &data, UINT inWidth, UINT inHeight, UINT outWidth, UINT outHeight)
+bool WellEngine::DownsampleTexture(std::vector<uint8_t> &data, UINT inWidth, UINT inHeight, UINT outWidth, UINT outHeight)
 {
 	ZoneScopedXC(RandomUniqueColor());
 

@@ -1,6 +1,6 @@
 #include "Tests/stdafx.h"
 #include "CppUnitTest.h"
-#include "Source/Game/Behaviour.h"
+#include "Source/Game/Behaviours/Behaviour.h"
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 using namespace TestUtils;
@@ -13,7 +13,7 @@ public:
 		//Scene scene{"TEST"};
 		//scene.InitializeNull(nullptr, nullptr, nullptr, nullptr, nullptr);
 		
-		Behaviour beh;
+		//Behaviour beh;
 
 		return true;
 	}

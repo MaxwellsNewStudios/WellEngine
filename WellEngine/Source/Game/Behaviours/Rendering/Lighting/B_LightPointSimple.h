@@ -1,0 +1,69 @@
+#pragma once
+
+#include <array>
+
+#include "Game/Behaviours/Behaviour.h"
+#include "../Camera/B_CameraCube.h"
+
+namespace WellEngine
+{
+	class LightPointCollection;
+
+	struct SimplePointLightBufferData
+	{
+		dx::XMFLOAT3 position = { };
+		float falloff = 0.0f;
+
+		dx::XMFLOAT3 color = { };
+		float fogStrength = 1.0f;
+	};
+
+	class [[register_behaviour]] B_LightPointSimple final : public Behaviour
+	{
+	public:
+		std::string_view GetName() const override { return "LightPointSimple"; }
+
+	private:
+		dx::XMFLOAT3 _color = { 1.0f, 1.0f, 1.0f };
+		float _falloff = 1.0f;
+		float _fogStrength = 1.0f;
+
+	#ifdef DEBUG_BUILD
+		Ref<Behaviour> _billboardMeshBehaviour;
+	#endif
+
+	protected:
+		// Start runs once when the behaviour is created.
+		[[nodiscard]] bool Start() override;
+
+	#ifdef USE_IMGUI
+		// RenderUI runs every frame during ImGui rendering if the entity is selected.
+		[[nodiscard]] bool RenderUI() override;
+	#endif
+
+		// OnEnable runs immediately after the behaviour is enabled.
+		void OnEnable() override;
+
+		// OnEnable runs immediately after the behaviour is disabled.
+		void OnDisable() override;
+
+	public:
+		B_LightPointSimple() = default;
+		B_LightPointSimple(dx::XMFLOAT3 color, float falloff, float fogStrength) : _color(color), _falloff(falloff), _fogStrength(fogStrength) {}
+		~B_LightPointSimple();
+
+		[[nodiscard]] SimplePointLightBufferData GetLightBufferData() const;
+		void SetLightBufferData(dx::XMFLOAT3 color, float falloff, float fogStrength);
+
+		[[nodiscard]] bool ContainsPoint(const dx::XMFLOAT3A &point) const;
+		[[nodiscard]] bool IntersectsLightTile(const dx::BoundingFrustum &tile) const;
+		[[nodiscard]] bool IntersectsLightTile(const dx::BoundingOrientedBox &tile) const;
+
+		// Serializes the behaviour to a string.
+		[[nodiscard]] bool Serialize(json::Document::AllocatorType &docAlloc, json::Value &obj) override;
+
+		// Deserializes the behaviour from a string.
+		[[nodiscard]] bool Deserialize(const json::Value &obj, Scene *scene) override;
+
+	};
+}

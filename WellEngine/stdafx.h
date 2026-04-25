@@ -112,6 +112,7 @@ namespace json = rapidjson;
 
 
 // Engine
+#include "Engine/EngineDefinitions.h"
 #include "Engine/Math/GameMath.h"
 #include "Engine/Math/ConstRand.h"
 #include "Engine/Math/Primitives.h"
@@ -122,6 +123,8 @@ namespace json = rapidjson;
 #include "Engine/Utils/SerializerUtils.h"
 #include "Engine/Utils/RepeatTracker.h"
 #include "Engine/Content/Material.h"
+#include "Engine/Content/DirectoryManager.h"
+#include "Engine/Content/ContentRegistry.h"
 #include "Engine/Rendering/RendererInfo.h"
 #include "Engine/Rendering/RenderQueuer.h"
 #include "Engine/Window/Window.h"
@@ -131,7 +134,6 @@ namespace json = rapidjson;
 #include "Engine/Collision/ColliderShapes.h"
 #include "Engine/Collision/Raycast.h"
 #include "Engine/Debug/ErrMsg.h"
-
 #include "Engine/D3D/D3D11Helper.h"
 #include "Engine/D3D/D3D11FormatData.h"
 #include "Engine/D3D/ConstantBufferD3D11.h"
@@ -156,13 +158,22 @@ namespace json = rapidjson;
 // Game
 #include "Game/Transform.h"
 
-namespace we = WellEngine;
+using namespace WellEngine;
+
+#undef min
+#undef max
+
+#ifdef LEAK_DETECTION
+#define new			DEBUG_NEW
+#endif
 
 
 
 
 
-#define COUT_USAGE_WARNING abort(); static_assert(false, "Use Warn() or DbgMsg() instead of std::cout. They exist for a reason.")
-#define CERR_USAGE_WARNING abort(); static_assert(false, "Use Warn() or ErrMsg() instead of std::cerr. They exist for a reason.")
+
+
+#define COUT_USAGE_WARNING abort(); static_assert(false, "Use Warn() or DbgMsg() instead of std::cout.")
+#define CERR_USAGE_WARNING abort(); static_assert(false, "Use Warn() or ErrMsg() instead of std::cerr.")
 #define cout COUT_USAGE_WARNING
 #define cerr CERR_USAGE_WARNING

@@ -1,0 +1,14 @@
+# Blender 5.1.1 MTL File: 'Untitled.blend'
+# www.blender.org
+
+newmtl Material.003
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ni 1.500000
+illum 2
+map_Kd C:/Users/edvin/Desktop/rusty-japanese-arcade/source/Arcade_Color.png
+map_Ns C:/Users/edvin/Desktop/rusty-japanese-arcade/source/Arcade_Roughness.png
+map_refl C:/Users/edvin/Desktop/rusty-japanese-arcade/source/Arcade_Metalness.png
+map_Ke C:/Users/edvin/Desktop/rusty-japanese-arcade/source/Arcade_Ambient.png
+map_d C:/Users/edvin/Desktop/rusty-japanese-arcade/source/Arcade_Color.png
+map_Bump -bm 1.000000 C:/Users/edvin/Desktop/rusty-japanese-arcade/source/Arcade_NormalF.png

@@ -14,8 +14,7 @@
 #include <algorithm>
 #include <DirectXMath.h>
 
-
-namespace Bezier
+namespace WellEngine::Bezier
 {
 	namespace dx = DirectX;
 

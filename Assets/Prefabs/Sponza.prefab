@@ -49,7 +49,7 @@
                     "InTree": true,
                     "Beh": [
                         {
-                            "Name": "MeshBehaviour",
+                            "Name": "Mesh",
                             "Attributes": {
                                 "Mesh": "sponza_CurtainPoles",
                                 "Transparent": false,
@@ -101,7 +101,7 @@
                     "InTree": true,
                     "Beh": [
                         {
-                            "Name": "MeshBehaviour",
+                            "Name": "Mesh",
                             "Attributes": {
                                 "Mesh": "sponza_CurtainsBlue",
                                 "Transparent": false,
@@ -153,7 +153,7 @@
                     "InTree": true,
                     "Beh": [
                         {
-                            "Name": "MeshBehaviour",
+                            "Name": "Mesh",
                             "Attributes": {
                                 "Mesh": "sponza_CurtainsGreen",
                                 "Transparent": false,
@@ -205,7 +205,7 @@
                     "InTree": true,
                     "Beh": [
                         {
-                            "Name": "MeshBehaviour",
+                            "Name": "Mesh",
                             "Attributes": {
                                 "Mesh": "sponza_CurtainsRed",
                                 "Transparent": false,
@@ -257,7 +257,7 @@
                     "InTree": true,
                     "Beh": [
                         {
-                            "Name": "MeshBehaviour",
+                            "Name": "Mesh",
                             "Attributes": {
                                 "Mesh": "sponza_EmptyFrame",
                                 "Transparent": false,
@@ -309,7 +309,7 @@
                     "InTree": true,
                     "Beh": [
                         {
-                            "Name": "MeshBehaviour",
+                            "Name": "Mesh",
                             "Attributes": {
                                 "Mesh": "sponza_Floor",
                                 "Transparent": false,
@@ -361,7 +361,7 @@
                     "InTree": true,
                     "Beh": [
                         {
-                            "Name": "MeshBehaviour",
+                            "Name": "Mesh",
                             "Attributes": {
                                 "Mesh": "sponza_FountainChains",
                                 "Transparent": false,
@@ -412,7 +412,7 @@
                     "InTree": true,
                     "Beh": [
                         {
-                            "Name": "MeshBehaviour",
+                            "Name": "Mesh",
                             "Attributes": {
                                 "Mesh": "sponza_FountainsLarge",
                                 "Transparent": false,
@@ -464,7 +464,7 @@
                     "InTree": true,
                     "Beh": [
                         {
-                            "Name": "MeshBehaviour",
+                            "Name": "Mesh",
                             "Attributes": {
                                 "Mesh": "sponza_HangingClothBlue",
                                 "Transparent": false,
@@ -516,7 +516,7 @@
                     "InTree": true,
                     "Beh": [
                         {
-                            "Name": "MeshBehaviour",
+                            "Name": "Mesh",
                             "Attributes": {
                                 "Mesh": "sponza_HangingClothGreen",
                                 "Transparent": false,
@@ -568,7 +568,7 @@
                     "InTree": true,
                     "Beh": [
                         {
-                            "Name": "MeshBehaviour",
+                            "Name": "Mesh",
                             "Attributes": {
                                 "Mesh": "sponza_HangingClothRed",
                                 "Transparent": false,
@@ -620,7 +620,7 @@
                     "InTree": true,
                     "Beh": [
                         {
-                            "Name": "MeshBehaviour",
+                            "Name": "Mesh",
                             "Attributes": {
                                 "Mesh": "sponza_HangingFountains",
                                 "Transparent": false,
@@ -670,7 +670,7 @@
                     "InTree": true,
                     "Beh": [
                         {
-                            "Name": "MeshBehaviour",
+                            "Name": "Mesh",
                             "Attributes": {
                                 "Mesh": "sponza_InnerArches",
                                 "Transparent": false,
@@ -722,7 +722,7 @@
                     "InTree": true,
                     "Beh": [
                         {
-                            "Name": "MeshBehaviour",
+                            "Name": "Mesh",
                             "Attributes": {
                                 "Mesh": "sponza_LionFrames",
                                 "Transparent": false,
@@ -774,7 +774,7 @@
                     "InTree": true,
                     "Beh": [
                         {
-                            "Name": "MeshBehaviour",
+                            "Name": "Mesh",
                             "Attributes": {
                                 "Mesh": "sponza_LionHeads",
                                 "Transparent": false,
@@ -826,7 +826,7 @@
                     "InTree": true,
                     "Beh": [
                         {
-                            "Name": "MeshBehaviour",
+                            "Name": "Mesh",
                             "Attributes": {
                                 "Mesh": "sponza_OuterArches",
                                 "Transparent": false,
@@ -878,7 +878,7 @@
                     "InTree": true,
                     "Beh": [
                         {
-                            "Name": "MeshBehaviour",
+                            "Name": "Mesh",
                             "Attributes": {
                                 "Mesh": "sponza_OuterWall",
                                 "Transparent": false,
@@ -930,7 +930,7 @@
                     "InTree": true,
                     "Beh": [
                         {
-                            "Name": "MeshBehaviour",
+                            "Name": "Mesh",
                             "Attributes": {
                                 "Mesh": "sponza_PillarFoliage",
                                 "Transparent": false,
@@ -982,7 +982,7 @@
                     "InTree": true,
                     "Beh": [
                         {
-                            "Name": "MeshBehaviour",
+                            "Name": "Mesh",
                             "Attributes": {
                                 "Mesh": "sponza_PillarsLower",
                                 "Transparent": false,
@@ -1034,7 +1034,7 @@
                     "InTree": true,
                     "Beh": [
                         {
-                            "Name": "MeshBehaviour",
+                            "Name": "Mesh",
                             "Attributes": {
                                 "Mesh": "sponza_PillarsUpper",
                                 "Transparent": false,
@@ -1086,7 +1086,7 @@
                     "InTree": true,
                     "Beh": [
                         {
-                            "Name": "MeshBehaviour",
+                            "Name": "Mesh",
                             "Attributes": {
                                 "Mesh": "sponza_PillarsUpperSquare",
                                 "Transparent": false,
@@ -1138,7 +1138,7 @@
                     "InTree": true,
                     "Beh": [
                         {
-                            "Name": "MeshBehaviour",
+                            "Name": "Mesh",
                             "Attributes": {
                                 "Mesh": "sponza_Roof",
                                 "Transparent": false,
@@ -1189,7 +1189,7 @@
                     "InTree": true,
                     "Beh": [
                         {
-                            "Name": "MeshBehaviour",
+                            "Name": "Mesh",
                             "Attributes": {
                                 "Mesh": "sponza_SmallPots",
                                 "Transparent": false,
@@ -1241,7 +1241,7 @@
                     "InTree": true,
                     "Beh": [
                         {
-                            "Name": "MeshBehaviour",
+                            "Name": "Mesh",
                             "Attributes": {
                                 "Mesh": "sponza_SmallPotsFoliage",
                                 "Transparent": false,
@@ -1292,7 +1292,7 @@
                     "InTree": true,
                     "Beh": [
                         {
-                            "Name": "MeshBehaviour",
+                            "Name": "Mesh",
                             "Attributes": {
                                 "Mesh": "sponza_WindowsDoors",
                                 "Transparent": false,

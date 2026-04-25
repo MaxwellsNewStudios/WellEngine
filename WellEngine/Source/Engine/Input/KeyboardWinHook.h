@@ -1,34 +1,39 @@
 #pragma once
 
-class KeyboardWinHook
+#include <windows.h>
+
+namespace WellEngine
 {
-	HHOOK _hHook = NULL;
-	bool _keys[256] = { };
-
-public:
-	KeyboardWinHook();
-	~KeyboardWinHook();
-
-	static KeyboardWinHook &Instance()
+	class KeyboardWinHook
 	{
-		static KeyboardWinHook instance;
-		return instance;
-	}
+		HHOOK _hHook = NULL;
+		bool _keys[256] = { };
 
-	void Update();
+	public:
+		KeyboardWinHook();
+		~KeyboardWinHook();
 
-	HHOOK &GetHook() noexcept
-	{
-		return _hHook;
-	}
+		static KeyboardWinHook &Instance()
+		{
+			static KeyboardWinHook instance;
+			return instance;
+		}
 
-	bool *GetKeys() noexcept
-	{
-		return _keys;
-	}
+		void Update();
 
-	bool GetKeyState(int key) const noexcept
-	{
-		return _keys[key];
-	}
-};
+		HHOOK &GetHook() noexcept
+		{
+			return _hHook;
+		}
+
+		bool *GetKeys() noexcept
+		{
+			return _keys;
+		}
+
+		bool GetKeyState(int key) const noexcept
+		{
+			return _keys[key];
+		}
+	};
+}

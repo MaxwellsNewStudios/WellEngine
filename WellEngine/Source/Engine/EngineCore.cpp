@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "EngineCore.h"
 #include "Engine/Debug/DebugData.h"
-#include "Game/Behaviours/Rendering/Mesh/MeshBehaviour.h"
+#include "Game/Behaviours/Rendering/Mesh/B_Mesh.h"
 
 #ifdef LEAK_DETECTION
 #define new			DEBUG_NEW
@@ -115,6 +115,7 @@ int EngineCore::Init()
 	}
 	LogIndentDecr();
 	DbgMsgF("Loading content took {} s", time.CompareSnapshots("LoadContent"));
+	DbgMsgF("Loading Systems took {} s", time.CompareSnapshots("SetupSystems"));
 	DbgMsgF("Loading Scenes took {} s", time.CompareSnapshots("AddScenes"));
 
 	_game.GetWindow().UpdateWindowSize();
@@ -208,7 +209,7 @@ int EngineCore::Run()
 			}
 		}
 
-		// Toggle fullscreen with [Left Control] + [Enter]
+		// Toggle fullscreen (default [Left Control] + [Enter])
 		if (BindingCollection::IsTriggered(InputBindings::InputAction::Fullscreen))
 		{
 			if (!window.ToggleFullscreen())
@@ -220,7 +221,7 @@ int EngineCore::Run()
 		if (BindingCollection::IsTriggered(InputBindings::InputAction::Exit))
 			_game.Exit();
 
-		// Lock cursor to window with [Left Control] + [Tab]
+		// Lock cursor to window (default [Left Control] + [Tab])
 		if (BindingCollection::IsTriggered(InputBindings::InputAction::LockCursor))
 			input.ToggleLockCursor(window);
 
@@ -237,112 +238,6 @@ int EngineCore::Run()
 			ZoneNamedXNC(updateBindingsZone, "Binding Collection Update", RandomUniqueColor(), true);
 			BindingCollection::Update();
 		}
-
-		static bool isPaused = true;
-		static std::string lastScene = "Cave";
-		static bool isTransitioning = false;
-		static float transitionTime = 0.0f;
-
-		if (isTransitioning)
-		{
-			transitionTime -= time.GetDeltaTime();
-
-			if (transitionTime <= 0.0f)
-			{
-				isTransitioning = false;
-				transitionTime = 0.0f;
-				_game.GetGraphics()->BeginScreenFade(-0.5f);
-
-				bool isMainMenu = (_game.GetActiveSceneName() == "MainMenu");
-
-				if (!isMainMenu) // Into pause menu
-				{
-					isPaused = false;
-					if (!isPaused)
-					{
-						lastScene = _game.GetActiveSceneName();
-
-						if (input.IsInFocus() && input.IsCursorLocked())
-						{
-							input.SetMousePosition(window, { window.GetWidth() / 2.0f, window.GetHeight() / 2.0f });
-							input.ToggleLockCursor(window);
-						}
-
-						if (!_game.SetScene("MainMenu"))
-						{
-							ErrMsg("Failed to set scene!");
-							returnCode = -1;
-							_game.Exit();
-							continue;
-						}
-						isPaused = true;
-
-						MeshBehaviour *mesh = nullptr;
-						_game.GetScene("MainMenu")->GetSceneHolder()->GetEntityByName("StartButton")->GetBehaviourByType<MeshBehaviour>(mesh);
-						Material mat = Material(*mesh->GetMaterial());
-						mat.textureID = _game.GetScene("MainMenu")->GetContent()->GetTextureID("Button_Continue_Texture");
-						if (!mesh->SetMaterial(&mat))
-						{
-							ErrMsg("Failed to set material to continue button!");
-							returnCode = -1;
-							_game.Exit();
-							continue;
-						}
-					}
-				}
-				else if (isPaused) // Out of pause menu
-				{
-					if (!_game.SetScene(lastScene))
-					{
-						ErrMsg("Failed to set scene!");
-						returnCode = -1;
-						_game.Exit();
-						continue;
-					}
-
-					if (input.IsInFocus() && !input.IsCursorLocked())
-					{
-						input.SetMousePosition(window, { 0.0f, 0.0f });
-						input.ToggleLockCursor(window);
-					}
-					isPaused = false;
-				}
-			}
-		}
-		else if (BindingCollection::IsTriggered(InputBindings::InputAction::Pause))
-		{
-#if !defined(DEBUG_BUILD)
-			if (_game.GetActiveSceneName() == "Credits")
-			{
-				lastScene = "MainMenu";
-			}
-#endif
-
-			if (_game.GetActiveSceneName() != "MainMenu")
-			{
-				isTransitioning = true;
-				transitionTime = 0.5f;
-				_game.GetGraphics()->BeginScreenFade(transitionTime);
-			}
-		}
-
-		if (_game.GetActiveSceneName() == "MainMenu")
-		{
-			if (input.IsInFocus() && input.IsCursorLocked())
-			{
-				input.SetMousePosition(window, { window.GetWidth() / 2.0f, window.GetHeight() / 2.0f });
-				input.ToggleLockCursor(window);
-			}
-		}
-#ifndef DEBUG_BUILD
-		else if (_game.GetActiveSceneName() == "Credits")
-		{
-			if (input.IsInFocus() && !input.IsCursorLocked())
-			{
-				input.ToggleLockCursor(window);
-			}
-		}
-#endif
 
 		if (!_game.Update(time, input))
 		{

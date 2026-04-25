@@ -1,9 +1,9 @@
 #include "stdafx.h"
 #include "Entity.h"
-#include "Scenes/Scene.h"
-#include "Behaviours/Debug/DebugPlayerBehaviour.h"
-#include "Behaviours/Rendering/Mesh/MeshBehaviour.h"
-#include "BehaviourFactory.h"
+#include "Scene/Scene.h"
+#include "Behaviours/Debug/B_DebugManager.h"
+#include "Behaviours/Rendering/Mesh/B_Mesh.h"
+#include "Behaviours/BehaviourFactory.h"
 #include "Engine/Debug/DebugData.h"
 
 #ifdef LEAK_DETECTION
@@ -52,7 +52,7 @@ Entity &Entity::operator=(Entity &&other) noexcept
 	_inheritedDisabled = other._inheritedDisabled;  
 	_cullingPlacement = std::move(other._cullingPlacement);
 	_showInHierarchy = other._showInHierarchy;  
-	_deserializedID = other._deserializedID;  
+	_serialID = other._serialID;  
 	_isInitialized = other._isInitialized;  
 	_doSerialize = other._doSerialize;  
 	_behaviours = std::move(other._behaviours);
@@ -378,8 +378,19 @@ void Entity::CallTransformEdited(bool first)
 	for (auto &behaviour : _behaviours)
 	{
 		if (first)
-			behaviour->InitialOnEditTransform();
-		behaviour->InitialOnEditTransformRec();
+		{
+			if (!behaviour->InitialOnEditTransform())
+			{
+				ErrMsgF("InitialOnEditTransform failed for behaviour '{}' on entity '{}'", behaviour->GetName(), GetName());
+				continue;
+			}
+		}
+
+		if (!behaviour->InitialOnEditTransformRec())
+		{
+			ErrMsgF("InitialOnEditTransformRec failed for behaviour '{}' on entity '{}'", behaviour->GetName(), GetName());
+			continue;
+		}
 	}
 
 	for (auto &child : _children)
@@ -662,13 +673,13 @@ Transform *Entity::GetTransform()
 	return &_transform;
 }
 
-UINT Entity::GetDeserializedID() const
+UINT Entity::GetSerialID() const
 {
-	return _deserializedID;
+	return _serialID;
 }
-void Entity::SetDeserializedID(UINT id)
+void Entity::SetSerialID(UINT id)
 {
-	_deserializedID = id;
+	_serialID = id;
 }
 
 bool Entity::GetShowInHierarchy(bool ignoreShowHidden) const
@@ -691,7 +702,7 @@ bool Entity::HasBounds(bool includeTriggers, BoundingOrientedBox &out)
 {
 	for (auto &behaviour : _behaviours)
 	{
-		MeshBehaviour *meshBehaviour = dynamic_cast<MeshBehaviour *>(behaviour.get());
+		B_Mesh *meshBehaviour = dynamic_cast<B_Mesh *>(behaviour.get());
 		if (meshBehaviour)
 		{
 			meshBehaviour->StoreBounds(out);
@@ -882,7 +893,7 @@ bool Entity::InitialBeforeRender()
 	}
 	return true;
 }
-bool Entity::InitialRender(const RenderQueuer &queuer, const RendererInfo &rendererInfo)
+bool Entity::InitialRender(RenderQueuer &queuer, const RendererInfo &rendererInfo)
 {
 	if (!_isEnabled)
 		return true;
@@ -930,7 +941,7 @@ void Entity::CopyToClipboard()
 
 bool Entity::UIContextMenu()
 {
-	DebugPlayerBehaviour *debugPlayer = _scene->GetDebugPlayer();
+	B_DebugManager *debugPlayer = _scene->GetDebugManager();
 
 	// Select
 
@@ -1032,7 +1043,7 @@ bool Entity::UIContextMenu()
 
 	ImGui::Dummy({1,0}); ImGui::Separator(); ImGui::Dummy({1,0}); // View Align / Move
 
-	if (CameraBehaviour *camera = _scene->GetViewCamera())
+	if (B_Camera *camera = _scene->GetMainCamera())
 	{
 		if (ImGui::MenuItem("Move View To Entity"))
 		{
@@ -1046,7 +1057,7 @@ bool Entity::UIContextMenu()
 			{
 				targetPos = bounds.Center;
 				// Increase distance based on bounds size
-				distance = max(distance, max(bounds.Extents.x, max(bounds.Extents.y, bounds.Extents.z)) * 2.0f);
+				distance = MAX(distance, MAX(bounds.Extents.x, MAX(bounds.Extents.y, bounds.Extents.z)) * 2.0f);
 			}
 			else
 			{
@@ -1074,7 +1085,7 @@ bool Entity::UIContextMenu()
 			{
 				originPos = bounds.Center;
 				// Increase distance based on bounds size
-				distance = max(distance, max(bounds.Extents.x, max(bounds.Extents.y, bounds.Extents.z)) * 2.0f);
+				distance = MAX(distance, MAX(bounds.Extents.x, MAX(bounds.Extents.y, bounds.Extents.z)) * 2.0f);
 			}
 			else
 			{
@@ -1537,7 +1548,7 @@ bool Entity::UIContextMenu()
 
 bool Entity::InitialRenderUI()
 {
-	DebugPlayerBehaviour *debugPlayer = _scene->GetDebugPlayer();
+	B_DebugManager *debugPlayer = _scene->GetDebugManager();
 	SceneHolder *sceneHolder = _scene->GetSceneHolder();
 	int entIndex = sceneHolder->GetEntityIndex(this);
 	int entID = _entityID;
@@ -1554,7 +1565,7 @@ bool Entity::InitialRenderUI()
 		ImGui::SetItemTooltip(entEnabled ? "Disable" : "Enable");
 
 		ImGui::SameLine();
-		ImGui::SetNextItemWidth(max(0, ImGui::GetContentRegionAvail().x - buttonsWidth));
+		ImGui::SetNextItemWidth(MAX(0, ImGui::GetContentRegionAvail().x - buttonsWidth));
 
 		std::string entName = GetName();
 		if (ImGui::InputText("##EntName", &entName, ImGuiInputTextFlags_AutoSelectAll))
@@ -1925,7 +1936,7 @@ bool Entity::InitialRenderUI()
 		{
 			ImGui::PushID(("Behaviour " + std::to_string(i)).c_str());
 			auto behaviour = _behaviours[i]->AsRef();
-			std::string behName = behaviour.Get()->GetName();
+			std::string behName = behaviour.Get()->GetName().data();
 
 			// Header
 			int openState = behaviour.Get()->PopUIOpenState();
@@ -2216,7 +2227,7 @@ bool Entity::InitialRenderUI()
 				ImVec2 currSize = ImGui::GetWindowSize();
 				const float popupMinWidth = 300.0f;
 				float padding = ImGui::GetStyle().WindowPadding.x;
-				float popupWidth = max(currSize.x - padding, popupMinWidth);
+				float popupWidth = MAX(currSize.x - padding, popupMinWidth);
 				float inputBoxPosX = ImGui::GetCursorPosX();
 
 				if (ImGui::IsWindowAppearing())
@@ -2334,72 +2345,6 @@ bool Entity::InitialBindBuffers(ID3D11DeviceContext *context)
 	return true;
 }
 
-bool Entity::InitialOnHover()
-{
-	if (!_isEnabled)
-		return true;
-
-	if (!_isInitialized)
-	{
-		ErrMsg("Entity is not initialized!");
-		return false;
-	}
-
-	for (auto &behaviour : _behaviours)
-	{
-		if (!behaviour.get()->InitialOnHover())
-		{
-			ErrMsgF("InitialOnHover() failed for behaviour '{}'!", behaviour->GetName());
-			return false;
-		}
-	}
-
-	return true;
-}
-bool Entity::InitialOffHover()
-{
-	if (!_isEnabled)
-		return true;
-
-	if (!_isInitialized)
-	{
-		ErrMsg("Entity is not initialized!");
-		return false;
-	}
-
-	for (auto &behaviour : _behaviours)
-	{
-		if (!behaviour.get()->InitialOffHover())
-		{
-			ErrMsgF("InitialOffHover() failed for behaviour '{}'!", behaviour->GetName());
-			return false;
-		}
-	}
-
-	return true;
-}
-bool Entity::InitialOnSelect()
-{
-	if (!_isEnabled)
-		return true;
-
-	if (!_isInitialized)
-	{
-		ErrMsg("Entity is not initialized!");
-		return false;
-	}
-
-	for (auto &behaviour : _behaviours)
-	{
-		if (!behaviour.get()->InitialOnSelect())
-		{
-			ErrMsgF("InitialOnSelect() failed for behaviour '{}'!", behaviour->GetName());
-			return false;
-		}
-	}
-
-	return true;
-}
 bool Entity::InitialOnDebugSelect()
 {
 	if (!_isInitialized)

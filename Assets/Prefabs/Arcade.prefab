@@ -1,0 +1,190 @@
+{
+    "Prefab": {
+        "Name": "Arcade",
+        "Entity": {
+            "Name": "Arcade",
+            "ID": 5,
+            "Enabled": true,
+            "Pos": [
+                0.0,
+                0.0,
+                0.0
+            ],
+            "Rot": [
+                -0.0,
+                2.3561947345733643,
+                0.0
+            ],
+            "Scale": [
+                1.0000028610229492,
+                1.0,
+                1.0000028610229492
+            ],
+            "Static": false,
+            "Select": true,
+            "InTree": true,
+            "Hidden": false,
+            "Beh": [
+                {
+                    "Name": "Mesh",
+                    "Attributes": {
+                        "Mesh": "Arcade",
+                        "Transparent": false,
+                        "Shadow Caster": true,
+                        "Shadows Only": false,
+                        "Culling Mode": 2,
+                        "Base Color": [
+                            1.0,
+                            1.0,
+                            1.0,
+                            1.0
+                        ],
+                        "Alpha Cutoff": 0.0,
+                        "Normal Factor": 1.0,
+                        "Specular Factor": 0.699999988079071,
+                        "Glossiness Factor": 1.0,
+                        "Ambient Factor": 5.0,
+                        "Occlusion Factor": 0.0,
+                        "Reflectivity": 1.0,
+                        "Metallic": 2.0,
+                        "Tex": "Arcade_Diffuse",
+                        "Normal": "Arcade_Normal",
+                        "Specular": "Arcade_Specular",
+                        "Gloss": "Arcade_Glossiness",
+                        "Ambient": "Arcade_Ambient",
+                        "Reflection": "Arcade_Specular",
+                        "PS": "PS_GeometryMetallic"
+                    }
+                }
+            ],
+            "Child": [
+                {
+                    "Name": "Light",
+                    "ID": 6,
+                    "Enabled": true,
+                    "Pos": [
+                        -1.0,
+                        5.603675842285156,
+                        0.27721744775772095
+                    ],
+                    "Rot": [
+                        0.0,
+                        -1.788139627478813e-7,
+                        0.0
+                    ],
+                    "Scale": [
+                        0.9999971389770508,
+                        1.000213384628296,
+                        0.9999971389770508
+                    ],
+                    "Static": false,
+                    "Select": true,
+                    "InTree": true,
+                    "Hidden": false,
+                    "Beh": [
+                        {
+                            "Name": "LightPoint",
+                            "Attributes": {
+                                "Update Frequency": 6,
+                                "Falloff": 0.3499999940395355,
+                                "Fog Strength": 1.0,
+                                "Shadow Strength": 0.800000011920929,
+                                "Near": -0.10000000149011612,
+                                "Far": -4.948709964752197,
+                                "Color": [
+                                    0.15294118225574493,
+                                    0.18588235974311829,
+                                    0.20000000298023224
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "Name": "Light",
+                    "ID": 8,
+                    "Enabled": true,
+                    "Pos": [
+                        -7.152557373046875e-7,
+                        5.59151029586792,
+                        0.3090386390686035
+                    ],
+                    "Rot": [
+                        0.0,
+                        -1.7881393432617188e-7,
+                        0.0
+                    ],
+                    "Scale": [
+                        0.9999971985816956,
+                        1.0002219676971436,
+                        0.9999971985816956
+                    ],
+                    "Static": false,
+                    "Select": true,
+                    "InTree": true,
+                    "Hidden": false,
+                    "Beh": [
+                        {
+                            "Name": "LightPoint",
+                            "Attributes": {
+                                "Update Frequency": 6,
+                                "Falloff": 0.3499999940395355,
+                                "Fog Strength": 1.0,
+                                "Shadow Strength": 0.800000011920929,
+                                "Near": -0.10000000149011612,
+                                "Far": -4.948709964752197,
+                                "Color": [
+                                    0.15294118225574493,
+                                    0.1861591786146164,
+                                    0.20000000298023224
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "Name": "Light",
+                    "ID": 10,
+                    "Enabled": true,
+                    "Pos": [
+                        1.0,
+                        5.603675842285156,
+                        0.27721285820007324
+                    ],
+                    "Rot": [
+                        0.0,
+                        -1.788139627478813e-7,
+                        0.0
+                    ],
+                    "Scale": [
+                        0.9999971389770508,
+                        1.0001776218414307,
+                        0.9999971389770508
+                    ],
+                    "Static": false,
+                    "Select": true,
+                    "InTree": true,
+                    "Hidden": false,
+                    "Beh": [
+                        {
+                            "Name": "LightPoint",
+                            "Attributes": {
+                                "Update Frequency": 6,
+                                "Falloff": 0.3499999940395355,
+                                "Fog Strength": 1.0,
+                                "Shadow Strength": 0.800000011920929,
+                                "Near": -0.10000000149011612,
+                                "Far": -4.948709964752197,
+                                "Color": [
+                                    0.15294118225574493,
+                                    0.18588235974311829,
+                                    0.20000000298023224
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    }
+}

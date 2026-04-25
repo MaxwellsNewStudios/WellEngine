@@ -42,9 +42,9 @@ PixelShaderOutput main(PixelShaderInput input)
 	
 	// Calculate Tri-Planar UVs
 	float2 invTexSize = 1.0 / triplanar_tex_size;
-	float2 uvx = pos.yz * invTexSize;
-	float2 uvy = pos.xz * invTexSize;
-	float2 uvz = pos.xy * invTexSize;
+	float2 uvx = pos.zy * invTexSize;
+	float2 uvy = pos.zx * invTexSize;
+	float2 uvz = pos.zy * invTexSize;
 	
 	if (triplanar_flip_with_normal)
 	{

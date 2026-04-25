@@ -6,7 +6,10 @@
 
 #pragma region General
 	#define GAME_TITLE "Game"
-	#define ENGINE_VERSION "0.1.1.6"
+	#define ENGINE_VERSION "0.1.1.7"
+
+	/// STARTUP_SCENE defines the starting scene outside of edit mode.
+	#define STARTUP_SCENE "Main Menu"
 #pragma endregion
 
 
@@ -14,6 +17,9 @@
 	/// FORCE_COMPILE_CONTENT enables recompilation of the content file upon startup. Required after modifying or adding new meshes.
 	/// Disabled by default as it slightly increases load time.
 	//#define FORCE_COMPILE_CONTENT
+	
+	/// AUTO_RECOMPILE_CONTENT_ON_CHANGE enables automatic detection of changes in source content files and recompilation of the content file if any changes are detected.
+	#define AUTO_RECOMPILE_CONTENT_ON_CHANGE
 
 	/// FORCE_BAKE_TEXTURES causes textures to be baked into their post-processed form after loading.
 	//#define FORCE_BAKE_TEXTURES
@@ -31,7 +37,7 @@
 
 #pragma region Performance
 	constexpr float FIXED_DELTA_TIME = 1.0f / 20.0f;
-	constexpr float PHYS_DELTA_TIME = 1.0f / 60.0f;
+	constexpr float PHYS_DELTA_TIME = 1.0f / 60.0f; // Default only
 
 	constexpr auto LOD_DIST_MIN_MULT = 10.0f; // The depth to start considering lower LODs, as multiple of near-plane.
 	constexpr auto LOD_DIST_MAX_MULT = 0.9f; // The depth that the lowest LOD is picked, as multiple of far-plane.
@@ -139,7 +145,6 @@
 #define ASSET_PATH_SOUNDS				ASSET_PATH "\\Sounds"
 #define ASSET_PATH_FONTS				ASSET_PATH "\\Fonts"
 #define ASSET_FILE_BINDINGS				ASSET_PATH "\\Bindings.json"
-#define ASSET_FILE_SEQUENCES			ASSET_PATH "\\Sequences.txt"
 #define ASSET_EXT_SCENE					"scene"
 #define ASSET_EXT_SAVE					"save"
 #define ASSET_EXT_PREFAB				"prefab"
@@ -169,8 +174,8 @@
 
 
 #pragma region Graphics Settings
-	constexpr auto WINDOW_WIDTH =			/*1280*/	1600	/*1920*/;
-	constexpr auto WINDOW_HEIGHT =			/*720 */	900 	/*1080*/;
+	constexpr auto WINDOW_WIDTH = 1600;
+	constexpr auto WINDOW_HEIGHT = 900;
 
 	/// DIM_FORCED_MULTIPLE forces the scene render target dimensions to be a multiple of this value.
 	/// This is to ensure that post-processing effects that rely on downsampling work correctly.

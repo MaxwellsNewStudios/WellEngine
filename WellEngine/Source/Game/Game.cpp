@@ -16,6 +16,7 @@ Game::Game()
 }
 Game::~Game()
 {
+	_systemManager.Shutdown();
 	_graphics.Shutdown();
 	_content.Shutdown();
 	DebugDrawer::Instance().Shutdowm();
@@ -41,112 +42,16 @@ Game::~Game()
 #endif
 }
 
-bool Game::CompileContent(const std::vector<std::string> &meshNames)
-{
-	ZoneScopedC(RandomUniqueColor());
-
-	std::ofstream writer;
-	writer.open(ASSET_COMPILED_FILE_MESHES, std::ios::binary | std::ios::ate);
-	if (!writer.is_open())
-	{
-		ErrMsg("Failed to open compiled content file!");
-		return false;
-	}
-
-	for (int i = 0; i < meshNames.size(); i++)
-	{
-		const std::string &meshName = meshNames[i];
-		std::string meshPath = std::format("{}\\{}.obj", ASSET_PATH_MESHES, meshName);
-
-		// Ensure the file exists
-		struct stat buffer;
-		if (stat(meshPath.c_str(), &buffer) != 0)
-			continue;
-
-		CompiledData data = _content.GetMeshData(meshPath.c_str());
-
-		size_t meshNameStart = meshName.find_last_of("/\\");
-		if (meshNameStart == std::string::npos)
-			meshNameStart = 0;
-		else
-			meshNameStart += 1;
-
-		std::string name = meshName.substr(meshNameStart);
-
-		// Write name of file, size of contents, then contents
-		writer.write((char *)(name + '\0').data(), name.size() + 1);
-		writer.write((char *)&data.size, sizeof(size_t));
-		writer.write(data.data, data.size);
-		writer.flush();
-	}
-
-	writer.close();
-	return true;
-}
-
-bool Game::DecompileContent()
-{
-	ZoneScopedC(RandomUniqueColor());
-
-	std::ifstream reader(ASSET_COMPILED_FILE_MESHES, std::ios::binary | std::ios::in | std::ios::ate);
-	if (!reader.is_open())
-	{
-		ErrMsg("Failed to open compiled content file! Try running once with FORCE_COMPILE_CONTENT enabled.");
-		return false;
-	}
-
-	size_t fileSize = reader.tellg();
-	reader.seekg(0, std::ios::beg);
-
-	while (reader.tellg() < fileSize)
-	{
-		std::string meshName = "";
-		while (true)
-		{
-			char c = 0;
-			reader.read(&c, 1);
-
-			if (c == '\0')
-				break;
-
-			meshName += c;
-		}
-
-		size_t size = 0;
-		reader.read((char *)&size, sizeof(size_t));
-
-		std::vector<char> data;
-		data.resize(size);
-		reader.read(data.data(), size);
-
-		MeshData *meshData = new MeshData();
-
-		size_t offset = 0;
-		meshData->Decompile(data, offset);
-
-		if (_content.AddMesh(_device.Get(), std::format("{}", meshName), &meshData, false) == CONTENT_NULL)
-		{
-			ErrMsgF("Failed to add Mesh {}!", meshName);
-			reader.close();
-			return false;
-		}
-	}
-
-	reader.close();
-	return true;
-}
-
 bool Game::LoadContent(
 	const std::vector<TextureData> &textureNames,
 	const std::vector<TextureData> &cubemapNames,
 	const std::vector<ShaderData> &shaderNames,
-	const std::vector<HeightMapData> &heightMapNames,
 	const std::vector<std::string> &fontAtlasNames)
 {
 	ZoneScopedC(RandomUniqueColor());
 
 	DbgMsg("Decompiling Content (Meshes)...");
-	if (!DecompileContent())
+	if (!_content.DecompileContent(_device.Get()))
 	{
 		ErrMsg("Failed to decompile content!");
 		return false;
@@ -193,24 +98,6 @@ bool Game::LoadContent(
 				cubemap.downsample) == CONTENT_NULL)
 			{
 				ErrMsgF("Failed to add cubemap {}!", cubemap.name);
-			}
-		}
-
-		if (threadID == 0)
-			DbgMsg("Loading Heightmaps...");
-
-#pragma omp for schedule(dynamic) nowait
-		for (int i = 0; i < heightMapNames.size(); i++)
-		{
-			const HeightMapData &heightMap = heightMapNames[i];
-
-			if (_content.AddHeightMap(
-				heightMap.name, 
-				PATH_FILE_EXT(
-					ASSET_PATH_TEXTURES, 
-					heightMap.name, "png")) == CONTENT_NULL)
-			{
-				ErrMsgF("Failed to add heightmap {}!", heightMap.name);
 			}
 		}
 	}
@@ -398,6 +285,18 @@ bool Game::LoadContent(
 			ErrMsg("Failed to add IL_DebugDraw!");
 			return false;
 		}
+		const std::vector<Semantic> debugDrawBezierInputLayout{
+			{ "POSITION",	DXGI_FORMAT_R32G32B32A32_FLOAT	},
+			{ "CONTROL",	DXGI_FORMAT_R32G32B32_FLOAT		},
+			{ "TESSFACTOR",	DXGI_FORMAT_R32_FLOAT			},
+			{ "COLOR",		DXGI_FORMAT_R32G32B32A32_FLOAT	}
+		};
+
+		if (_content.AddInputLayout(_device.Get(), "DebugDrawBezier", debugDrawBezierInputLayout, _content.GetShaderID("VS_DebugDrawBezier")) == CONTENT_NULL)
+		{
+			ErrMsg("Failed to add IL_DebugDrawBezier!");
+			return false;
+		}
 
 		const std::vector<Semantic> debugDrawTriInputLayout{
 			{ "POSITION",	DXGI_FORMAT_R32G32B32A32_FLOAT	},
@@ -446,13 +345,9 @@ bool Game::Setup(TimeUtils &time, Window window)
 	const UINT width = _window.GetWidth();
 	const UINT height = _window.GetHeight();
 
-	ID3D11DeviceContext **intermediateDevicePtr = nullptr;
-	ID3D11DeviceContext ***deferredContexts = &intermediateDevicePtr;
-
 	if (!_graphics.Setup(fullscreen, width, height, window,
 		*_device.ReleaseAndGetAddressOf(), 
-		*_immediateContext.ReleaseAndGetAddressOf(), 
-		*deferredContexts,
+		*_immediateContext.ReleaseAndGetAddressOf(),
 		&_content))
 	{
 		ErrMsg("Failed to setup d3d11!");
@@ -461,7 +356,17 @@ bool Game::Setup(TimeUtils &time, Window window)
 
 	ZoneScopedC(RandomUniqueColor());
 
-	std::string line;
+	using namespace SerializerUtils;
+	using namespace WellEngine::ContentRegistryTags;
+
+	ContentRegistry &cReg = ContentRegistry::Instance();
+	if (!cReg.OpenRegistry())
+	{
+		ErrMsg("Failed to open content registry!");
+		return false;
+	}
+
+	auto &cDocAlloc = *cReg.GetDocAlloc();
 
 	// Determine if a compiled content file exists or if it needs to be created
 	bool compileContent = false;
@@ -480,19 +385,52 @@ bool Game::Setup(TimeUtils &time, Window window)
 	}
 
 	if (compileFile != nullptr)
+	{
 		fclose(compileFile);
+
+#ifdef AUTO_RECOMPILE_CONTENT_ON_CHANGE
+		// Compare the age of the compiled file to the registry file & newest mesh file.
+		// If the compiled file is older then recompile anyways.
+		if (!compileContent)
+		{
+			std::filesystem::path compiledPath(ASSET_COMPILED_FILE_MESHES);
+
+			std::filesystem::file_time_type compiledTime = std::filesystem::last_write_time(compiledPath);
+			std::filesystem::file_time_type registryFile = std::filesystem::last_write_time(ASSET_REGISTRY_FILE_MESHES);
+
+			if (registryFile > compiledTime)
+			{
+				compileContent = true;
+				DbgMsg("Compiled content file is older than registry file. Recompiling...");
+			}
+			else
+			{
+				std::filesystem::file_time_type newestMeshTime = DirectoryManager::GetMostRecentFileDate(ASSET_PATH_MESHES);
+
+				if (newestMeshTime > compiledTime)
+				{
+					compileContent = true;
+					DbgMsg("Compiled content file is older than source mesh files. Recompiling...");
+				}
+			}
+
+		}
+#endif
+	}
 #endif
 
+	std::string line;
 	if (compileContent)
-	{ 
-		std::vector<std::string> meshNames = { "Error", "Fallback", "Cube", "Plane" };
-
+	{
 		std::ifstream fileStream(ASSET_REGISTRY_FILE_MESHES);
 		if (!fileStream)
 		{
 			ErrMsg("Could not load file for meshes");
 			return false;
 		}
+
+		std::vector<std::string> meshNames;
+		bool isDebug = false;
 
 		while (std::getline(fileStream, line))
 		{
@@ -505,7 +443,10 @@ bool Game::Setup(TimeUtils &time, Window window)
 
 			if (line.starts_with("<DEBUG>"))
 #ifdef DEBUG_BUILD
+			{
+				isDebug = true;
 				continue;
+			}
 #else
 				break;
 #endif
@@ -515,12 +456,27 @@ bool Game::Setup(TimeUtils &time, Window window)
 			if (it != meshNames.end())
 				continue;
 
+			{
+				json::Value meshObj(json::kObjectType);
+				meshObj.AddMember(SerializeString(PATH_TAG, cDocAlloc), SerializeString(PATH_FILE_EXT(ASSET_PATH_MESHES, line, "obj"), cDocAlloc), cDocAlloc);
+				meshObj.AddMember(SerializeString(TYPE_TAG, cDocAlloc), SerializeString("mesh", cDocAlloc), cDocAlloc);
+
+				if (isDebug) 
+					meshObj.AddMember("Debug", true, cDocAlloc);
+
+				if (!cReg.AddAsset("Meshes\\" + line, meshObj, NameConflictAction::Override))
+				{
+					ErrMsgF("Failed to add mesh '{}' to registry!", line);
+					return false;
+				}
+			}
+			
 			meshNames.emplace_back(line);
 		}
 		fileStream.close();
 
 		time.TakeSnapshot("CompileContent");
-		if (!CompileContent(meshNames))
+		if (!_content.CompileContent(meshNames))
 		{
 			ErrMsg("Failed to compile content!");
 			return false;
@@ -533,65 +489,7 @@ bool Game::Setup(TimeUtils &time, Window window)
 
 	std::string texPath = ASSET_PATH_TEXTURES;
 
-	std::vector<TextureData> textureNames = {
-		{ DXGI_FORMAT_UNKNOWN,			"Error",						PATH_FILE(texPath, "Error.dds"),						false,	1	},
-		{ DXGI_FORMAT_UNKNOWN,			"Fallback",						PATH_FILE(texPath, "Fallback.dds"),						false,	0	},
-		{ DXGI_FORMAT_R8G8B8A8_UNORM,	"White",						PATH_FILE(texPath, "White.png"),						false,	0	},
-		{ DXGI_FORMAT_R8G8B8A8_UNORM,	"Black",						PATH_FILE(texPath, "Black.png"),						false,	0	},
-		{ DXGI_FORMAT_R8G8B8A8_UNORM,	"Ambient",						PATH_FILE(texPath, "Ambient.png"),						false,	0	},
-		{ DXGI_FORMAT_R8G8B8A8_UNORM,	"AmbientBright",				PATH_FILE(texPath, "AmbientBright.png"),				false,	0	},
-		{ DXGI_FORMAT_R8G8B8A8_UNORM,	"Red",							PATH_FILE(texPath, "Red.png"),							false,	0	},
-		{ DXGI_FORMAT_R8G8B8A8_UNORM,	"Green",						PATH_FILE(texPath, "Green.png"),						false,	0	},
-		{ DXGI_FORMAT_R8G8B8A8_UNORM,	"Blue",							PATH_FILE(texPath, "Blue.png"),							false,	0	},
-		{ DXGI_FORMAT_UNKNOWN,			"Noise",						PATH_FILE(texPath, "Noise.dds"),						false,	0	},
-		{ DXGI_FORMAT_UNKNOWN,			"Maxwell",						PATH_FILE(texPath, "Maxwell.dds"),						false,	0	},
-		{ DXGI_FORMAT_UNKNOWN,			"Whiskers",						PATH_FILE(texPath, "Whiskers.dds"),						false,	0	},
-	    { DXGI_FORMAT_R8G8B8A8_UNORM,	"Gray",							PATH_FILE(texPath, "Gray.png"),							false,	0	},
-		{ DXGI_FORMAT_R8G8B8A8_UNORM,	"DarkGray",						PATH_FILE(texPath, "DarkGray.png"),						false,	0	},
-		{ DXGI_FORMAT_R8G8B8A8_UNORM,	"Default_Normal",				PATH_FILE(texPath, "Default_Normal.png"),				true,	0	},
-		{ DXGI_FORMAT_UNKNOWN,			"Metal_Normal",					PATH_FILE(texPath, "Metal_Normal.dds"),					true,	1	},
-		{ DXGI_FORMAT_UNKNOWN,			"Support_Beam_Normal",			PATH_FILE(texPath, "Support_Beam_Normal.dds"),			true,	1	},
-		{ DXGI_FORMAT_UNKNOWN,			"Camera_Normal",				PATH_FILE(texPath, "Camera_Normal.dds"),				true,	1	},
-		{ DXGI_FORMAT_UNKNOWN,			"FlashlightBody_Normal",		PATH_FILE(texPath, "FlashlightBody_Normal.dds"),		true,	1	},
-		{ DXGI_FORMAT_UNKNOWN,			"FlashlightLever_Normal",		PATH_FILE(texPath, "FlashlightLever_Normal.dds"),		true,	1	},
-		{ DXGI_FORMAT_UNKNOWN,			"Cave_Wall_Normal",				PATH_FILE(texPath, "Cave_Wall_Normal.dds"),				true,	0	},
-		{ DXGI_FORMAT_R8G8B8A8_UNORM,	"Default_Specular",				PATH_FILE(texPath, "AmbientBright.png"),				true,	0	},
-		{ DXGI_FORMAT_R8G8B8A8_UNORM,	"Black_Specular",				PATH_FILE(texPath, "Black.png"),						true,	0	},
-		{ DXGI_FORMAT_R8G8B8A8_UNORM,	"DarkGray_Specular",			PATH_FILE(texPath, "DarkGray.png"),						true,	0	},
-		{ DXGI_FORMAT_R8G8B8A8_UNORM,	"Gray_Specular",				PATH_FILE(texPath, "Gray.png"),							true,	0	},
-		{ DXGI_FORMAT_R8G8B8A8_UNORM,	"White_Specular",				PATH_FILE(texPath, "White.png"),						true,	0	},
-		{ DXGI_FORMAT_R8G8B8A8_UNORM,	"Red_Specular",					PATH_FILE(texPath, "Red.png"),							true,	0	},
-		{ DXGI_FORMAT_R8G8B8A8_UNORM,	"Green_Specular",				PATH_FILE(texPath, "Green.png"),						true,	0	},
-		{ DXGI_FORMAT_R8G8B8A8_UNORM,	"Blue_Specular",				PATH_FILE(texPath, "Blue.png"),							true,	0	},
-		{ DXGI_FORMAT_UNKNOWN,			"Metal_Specular",				PATH_FILE(texPath, "Metal_Specular.dds"),				true,	2	},
-		{ DXGI_FORMAT_UNKNOWN,			"Support_Beam_Specular",		PATH_FILE(texPath, "Support_Beam_Specular.dds"),		true,	2	},
-		{ DXGI_FORMAT_UNKNOWN,			"Camera_Specular",				PATH_FILE(texPath, "Camera_Specular.dds"),				true,	2	},
-		{ DXGI_FORMAT_UNKNOWN,			"FlashlightBody_Specular",		PATH_FILE(texPath, "FlashlightBody_Specular.dds"),		true,	2	},
-		{ DXGI_FORMAT_UNKNOWN,			"FlashlightLever_Specular",		PATH_FILE(texPath, "FlashlightLever_Specular.dds"),		true,	2	},
-		{ DXGI_FORMAT_R8G8B8A8_UNORM,	"Default_Glossiness",			PATH_FILE(texPath, "Gray.png"),							false,	0	},
-		{ DXGI_FORMAT_R8G8B8A8_UNORM,	"White_Glossiness",				PATH_FILE(texPath, "White.png"),						false,	0	},
-		{ DXGI_FORMAT_R8G8B8A8_UNORM,	"Black_Glossiness",				PATH_FILE(texPath, "Black.png"),						false,	0	},
-		{ DXGI_FORMAT_R8G8B8A8_UNORM,	"DarkGray_Glossiness",			PATH_FILE(texPath, "DarkGray.png"),						false,	0	},
-		{ DXGI_FORMAT_UNKNOWN,			"FlashlightBody_Glossiness",	PATH_FILE(texPath, "FlashlightBody_Glossiness.dds"),	false,	1	},
-		{ DXGI_FORMAT_UNKNOWN,			"FlashlightLever_Glossiness",	PATH_FILE(texPath, "FlashlightLever_Glossiness.dds"),	false,	1	},
-		{ DXGI_FORMAT_R8G8B8A8_UNORM,	"Default_Occlusion",			PATH_FILE(texPath, "White.png"),						true,	0	},
-		{ DXGI_FORMAT_UNKNOWN,			"Support_Beam_Occlusion",		PATH_FILE(texPath, "Support_Beam_Occlusion.dds"),		true,	1	},
-		{ DXGI_FORMAT_UNKNOWN,			"Camera_Occlusion",				PATH_FILE(texPath, "Camera_Occlusion.dds"),				true,	2	},
-
-#ifdef DEBUG_BUILD
-		{ DXGI_FORMAT_UNKNOWN,			"texture1",						PATH_FILE(texPath, "texture1.dds"),						true,	2	},
-		{ DXGI_FORMAT_UNKNOWN,			"Character_Texture",			PATH_FILE(texPath, "Character_Texture.dds"),			true,	0	},
-		{ DXGI_FORMAT_UNKNOWN,			"Sphere",						PATH_FILE(texPath, "Sphere.dds"),						false,	2	},
-		{ DXGI_FORMAT_UNKNOWN,			"Fade",							PATH_FILE(texPath, "Fade.dds"),							true,	0	},
-		{ DXGI_FORMAT_R8G8B8A8_UNORM,	"TransformGizmo",				PATH_FILE(texPath, "TransformGizmo.png"),				false,	0	},
-		{ DXGI_FORMAT_UNKNOWN,			"Cornell",						PATH_FILE(texPath, "Cornell.dds"),						false,	2	},
-		{ DXGI_FORMAT_UNKNOWN,			"SoundEmitter",					PATH_FILE(texPath, "SoundEmitter.dds"),					true,	1	},
-		{ DXGI_FORMAT_UNKNOWN,			"LightSource",					PATH_FILE(texPath, "LightSource.dds"),					true,	1	},
-		{ DXGI_FORMAT_UNKNOWN,			"Cornell_Light",				PATH_FILE(texPath, "Cornell_Light.dds"),				true,	2	},
-		{ DXGI_FORMAT_UNKNOWN,			"Transparent",					PATH_FILE(texPath, "Transparent.dds"),					false,	2	},
-		{ DXGI_FORMAT_UNKNOWN,			"Transparent2",					PATH_FILE(texPath, "Transparent2.dds"),					false,	2	},
-#endif
-	};
+	std::vector<TextureData> textureNames;
 
 	std::ifstream texStream(ASSET_REGISTRY_FILE_TEXTURES);
 	if (texStream)
@@ -709,27 +607,46 @@ bool Game::Setup(TimeUtils &time, Window window)
 				continue;
 			}
 
-			size_t dotPos = line.find_last_of('.');
-			if (dotPos == std::string::npos || dotPos == 0 || dotPos == line.size() - 1)
+			// Extract alias, if present. Format: "fileName.png" or "fileName.png = alias"
+			// If no alias is present, the alias will be derived from the filename
+			std::string filePath = "";
+			std::string aliasName = "";
+
+			size_t equalsPos = line.find_first_of('=');
+			if (equalsPos != std::string::npos)
 			{
-				WarnF("Invalid texture name: '{}'", line);
-				continue;
+				filePath = StringUtils::Trim(line.substr(0, equalsPos));
+				aliasName = StringUtils::Trim(line.substr(equalsPos + 1));
+			}
+			else
+			{
+				filePath = line;
 			}
 
-			size_t fileNameStart = line.find_last_of("/\\");
-			if (fileNameStart == std::string::npos)
-				fileNameStart = 0;
-			else
-				fileNameStart += 1;
+			size_t dotPos = filePath.find_last_of('.');
+			if (dotPos == std::string::npos || dotPos == 0 || dotPos == filePath.size() - 1)
+			{
+				WarnF("Invalid texture filepath: '{}'", filePath);
+				continue;
+			}
+			
+			if (aliasName.empty())
+			{
+				size_t fileNameStart = filePath.find_last_of("/\\");
+				if (fileNameStart == std::string::npos)
+					fileNameStart = 0;
+				else
+					fileNameStart += 1;
 
-			std::string name = line.substr(fileNameStart, dotPos - fileNameStart);
+				aliasName = filePath.substr(fileNameStart, dotPos - fileNameStart);
+			}
 
 			// Check if the texture is already in the list
 			bool found = false;
 			UINT textureCount = static_cast<UINT>(textureNames.size());
 			for (UINT i = 0; i < textureCount; i++)
 			{
-				if (textureNames[i].name == name)
+				if (textureNames[i].name == aliasName)
 				{
 					found = true;
 					break;
@@ -740,25 +657,58 @@ bool Game::Setup(TimeUtils &time, Window window)
 				continue;
 
 			bool editorOnly = editorOnlyStack.empty() ? false : editorOnlyStack.back();
-			bool mipmapped = mipmappedStack.empty() ? true : mipmappedStack.back();
-			int downsample = downsampleStack.empty() ? 0 : downsampleStack.back();
-			DXGI_FORMAT format = formatStack.empty() ? DXGI_FORMAT_UNKNOWN : formatStack.back();
 
 #ifndef DEBUG_BUILD
 			if (editorOnly)
 				continue;
 #endif
 
-			line = PATH_FILE(ASSET_PATH_TEXTURES, line);
+			bool mipmapped = mipmappedStack.empty() ? true : mipmappedStack.back();
+			int downsample = downsampleStack.empty() ? 0 : downsampleStack.back();
+			DXGI_FORMAT format = formatStack.empty() ? DXGI_FORMAT_UNKNOWN : formatStack.back();
 
-			textureNames.emplace(textureNames.begin(), format, name, line, mipmapped, downsample);
+			std::string texPathInternal;
+
+			size_t lastSlash = filePath.find_last_of("/\\");
+			if (lastSlash != std::string::npos)
+				texPathInternal = PATH_FILE(filePath.substr(0, lastSlash), aliasName);
+			else
+				texPathInternal = aliasName;
+
+			filePath = PATH_FILE(ASSET_PATH_TEXTURES, filePath);
+
+			textureNames.emplace(textureNames.begin(), format, aliasName, filePath, mipmapped, downsample);
+
+			{
+				json::Value tex2dObj(json::kObjectType);
+				tex2dObj.AddMember(SerializeString(PATH_TAG, cDocAlloc), SerializeString(filePath, cDocAlloc), cDocAlloc);
+				tex2dObj.AddMember(SerializeString(TYPE_TAG, cDocAlloc), SerializeString("tex2d", cDocAlloc), cDocAlloc);
+
+				if (format != DXGI_FORMAT_UNKNOWN)
+					tex2dObj.AddMember("Format", SerializeString(D3D11FormatData::GetName(format), cDocAlloc), cDocAlloc);
+
+				if (mipmapped)
+					tex2dObj.AddMember("Mipmapped", true, cDocAlloc);
+
+				if (downsample > 0)
+					tex2dObj.AddMember("Downsample", downsample, cDocAlloc);
+
+				if (editorOnly)
+					tex2dObj.AddMember("Debug", true, cDocAlloc);
+
+				if (!cReg.AddAsset("Textures\\" + texPathInternal, tex2dObj, NameConflictAction::Override))
+				{
+					ErrMsgF("Failed to add tex2d '{}' to registry!", texPathInternal);
+					return false;
+				}
+			}
 		}
 		texStream.close();
 	}
 
 	// TODO: cubemaps should also be baked. Until then, always load from source
 	std::vector<TextureData> cubemapNames = {
-		{ DXGI_FORMAT_R8G8B8A8_UNORM,		"Fallback",				PATH_FILE(texPath, "FallbackCubemap.png"),				true,	0 },
+		{ DXGI_FORMAT_R8G8B8A8_UNORM,		"Null",					PATH_FILE(texPath, "NullCubemap.png"),					true,	0 },
 		{ DXGI_FORMAT_R8G8B8A8_UNORM,		"RundownIndustrial",	PATH_FILE(texPath, "RundownIndustrialCubemap.png"),		true,	0 },
 		{ DXGI_FORMAT_R8G8B8A8_UNORM,		"SandstoneCity",		PATH_FILE(texPath, "SandstoneCityCubemap.png"),			true,	0 },
 		{ DXGI_FORMAT_R8G8B8A8_UNORM,		"MonkstownCastle",		PATH_FILE(texPath, "MonkstownCastleCubemap.png"),		true,	0 },
@@ -780,25 +730,40 @@ bool Game::Setup(TimeUtils &time, Window window)
 		{ DXGI_FORMAT_R16G16B16A16_UNORM,	"BarrenFieldHDR",		PATH_FILE(texPath, "BarrenFieldHDRCubemap.png"),		true,	0 },
 	};
 
-	// Height Maps should be placed in the Texture folder
-	std::vector<HeightMapData> heightMapNames = {
-		{ "CaveHeightmap",					"CaveHeightmap.png"},
-		{ "CaveRoofHeightmap",				"CaveRoofHeightmap.png"},
-		{ "CaveWallsHeightmap",				"CaveWallsHeightmap.png"},
-#ifdef DEBUG_BUILD
-		{ "ExampleHeightMap",				"ExampleHeightMap.png"},
-		{ "ExampleHeightMap2",				"ExampleHeightMap2.png"},
-#endif
-	};
+	{
+		for (auto &texCube : cubemapNames)
+		{
+			std::string fileNameExt = texCube.path;
+			size_t lastSlash = fileNameExt.find_last_of("/\\");
+			if (lastSlash != std::string::npos)
+				fileNameExt = fileNameExt.substr(lastSlash + 1);
+
+			json::Value texCubeObj(json::kObjectType);
+			texCubeObj.AddMember(SerializeString(PATH_TAG, cDocAlloc), SerializeString(texCube.path, cDocAlloc), cDocAlloc);
+			texCubeObj.AddMember(SerializeString(TYPE_TAG, cDocAlloc), SerializeString("texcube", cDocAlloc), cDocAlloc);
+
+			if (texCube.type != DXGI_FORMAT_UNKNOWN)
+				texCubeObj.AddMember("Format", SerializeString(D3D11FormatData::GetName(texCube.type), cDocAlloc), cDocAlloc);
+
+			if (texCube.mipmapped)
+				texCubeObj.AddMember("Mipmapped", true, cDocAlloc);
+
+			if (texCube.downsample > 0)
+				texCubeObj.AddMember("Downsample", texCube.downsample, cDocAlloc);
+
+			if (!cReg.AddAsset("Textures\\" + texCube.name, texCubeObj, NameConflictAction::Override))
+			{
+				ErrMsgF("Failed to add texcube '{}' to registry!", texCube.name);
+				return false;
+			}
+		}
+	}
 
 	std::vector<ShaderData> shaderNames = {
 		{ ShaderType::VERTEX_SHADER,		"VS_Geometry",					"Vertex/VS_Geometry"				},
-		{ ShaderType::VERTEX_SHADER,		"VS_GeometryDistortion",		"Vertex/VS_GeometryDistortion"		},
 		{ ShaderType::VERTEX_SHADER,		"VS_TextDefault",				"Vertex/VS_TextDefault"				},
 		{ ShaderType::VERTEX_SHADER,		"VS_Depth",						"Vertex/VS_Depth"					},
-		{ ShaderType::VERTEX_SHADER,		"VS_DepthDistortion",			"Vertex/VS_DepthDistortion"			},
 		{ ShaderType::VERTEX_SHADER,		"VS_DepthCubemap",				"Vertex/VS_DepthCubemap"			},
-		{ ShaderType::VERTEX_SHADER,		"VS_DepthDistortionCubemap",	"Vertex/VS_DepthDistortionCubemap"	},
 		{ ShaderType::VERTEX_SHADER,		"VS_ScreenEffect",				"Vertex/VS_ScreenEffect"			},
 
 		{ ShaderType::GEOMETRY_SHADER,		"GS_Billboard",					"Geometry/GS_Billboard"				},
@@ -807,6 +772,7 @@ bool Game::Setup(TimeUtils &time, Window window)
 		{ ShaderType::PIXEL_SHADER,			"PS_Geometry",					"Pixel/PS_Geometry"					},
 		{ ShaderType::PIXEL_SHADER,			"PS_GeometryMetallic",			"Pixel/PS_GeometryMetallic"			},
 		{ ShaderType::PIXEL_SHADER,			"PS_TriPlanar",					"Pixel/PS_TriPlanar"				},
+		{ ShaderType::PIXEL_SHADER,			"PS_Cel",						"Pixel/PS_Cel"						},
 		{ ShaderType::PIXEL_SHADER,			"PS_ReflectionProbe",			"Pixel/PS_ReflectionProbe"			},
 		{ ShaderType::PIXEL_SHADER,			"PS_Static",					"Pixel/PS_Static"					},
 		{ ShaderType::PIXEL_SHADER,			"PS_Transparent",				"Pixel/PS_Transparent"				},
@@ -816,7 +782,6 @@ bool Game::Setup(TimeUtils &time, Window window)
 		{ ShaderType::PIXEL_SHADER,			"PS_SkyboxSolidColor",			"Pixel/PS_SkyboxSolidColor"			},
 		{ ShaderType::PIXEL_SHADER,			"PS_SkyboxNormal",				"Pixel/PS_SkyboxNormal"				},
 		{ ShaderType::PIXEL_SHADER,			"PS_SkyboxEnvironment",			"Pixel/PS_SkyboxEnvironment"		},
-		{ ShaderType::PIXEL_SHADER,			"PS_ScreenEffectFog",			"Pixel/PS_ScreenEffectFog"			},
 
 		{ ShaderType::COMPUTE_SHADER,		"CS_BlurHorizontalFX",			"Compute/CS_BlurHorizontalFX"		},
 		{ ShaderType::COMPUTE_SHADER,		"CS_BlurVerticalFX",			"Compute/CS_BlurVerticalFX"			},
@@ -838,9 +803,14 @@ bool Game::Setup(TimeUtils &time, Window window)
 
 #ifdef DEBUG_BUILD
 		{ ShaderType::VERTEX_SHADER,		"VS_DebugDraw",					"Vertex/VS_DebugDraw"				},
+		{ ShaderType::VERTEX_SHADER,		"VS_DebugDrawStrip",			"Vertex/VS_DebugDrawStrip"			},
+		{ ShaderType::VERTEX_SHADER,		"VS_DebugDrawBezier",			"Vertex/VS_DebugDrawBezier"			},
 		{ ShaderType::VERTEX_SHADER,		"VS_DebugDrawTri",				"Vertex/VS_DebugDrawTri"			},
 		{ ShaderType::VERTEX_SHADER,		"VS_DebugDrawSprite",			"Vertex/VS_DebugDrawSprite"			},
 		{ ShaderType::VERTEX_SHADER,		"VS_DebugDrawMesh",				"Vertex/VS_DebugDrawMesh"			},
+
+		{ ShaderType::HULL_SHADER,			"HS_DebugBezier",				"Hull/HS_DebugBezier"				},
+		{ ShaderType::DOMAIN_SHADER,		"DS_DebugBezier",				"Domain/DS_DebugBezier"				},
 
 		{ ShaderType::GEOMETRY_SHADER,		"GS_DebugLine",					"Geometry/GS_DebugLine"				},
 		{ ShaderType::GEOMETRY_SHADER,		"GS_DebugDrawSprite",			"Geometry/GS_DebugDrawSprite"		},
@@ -869,6 +839,27 @@ bool Game::Setup(TimeUtils &time, Window window)
 #endif
 	};
 
+	{
+		bool isDebug = false;
+		for (auto &shader : shaderNames)
+		{
+			json::Value shaderObj(json::kObjectType);
+			shaderObj.AddMember(SerializeString(PATH_TAG, cDocAlloc), SerializeString(shader.path + ".hlsl", cDocAlloc), cDocAlloc);
+			shaderObj.AddMember(SerializeString(TYPE_TAG, cDocAlloc), SerializeString("shader", cDocAlloc), cDocAlloc);
+
+			shaderObj.AddMember("Format", SerializeString(ShaderTypeUtils::ShaderTypeToString(shader.type), cDocAlloc), cDocAlloc);
+
+			if (isDebug)
+				shaderObj.AddMember("Debug", true, cDocAlloc);
+
+			if (!cReg.AddAsset("Shaders\\" + shader.path, shaderObj, NameConflictAction::Override))
+			{
+				ErrMsgF("Failed to add shader '{}' to registry!", shader.name);
+				return false;
+			}
+		}
+	}
+
 	// Search for all .atlas files in ASSET_PATH_FONTS
 	std::vector<std::string> fontAtlasNames;
 	for (const auto &entry : std::filesystem::directory_iterator(ASSET_PATH_FONTS))
@@ -882,22 +873,54 @@ bool Game::Setup(TimeUtils &time, Window window)
 
 		filename = filename.substr(0, filename.find_last_of('.'));
 		fontAtlasNames.emplace_back(filename);
+
+		{
+			json::Value atlasObj(json::kObjectType);
+			atlasObj.AddMember(SerializeString(PATH_TAG, cDocAlloc), SerializeString(path.string(), cDocAlloc), cDocAlloc);
+			atlasObj.AddMember(SerializeString(TYPE_TAG, cDocAlloc), SerializeString("atlas", cDocAlloc), cDocAlloc);
+
+			if (!cReg.AddAsset("Fonts\\" + filename, atlasObj, NameConflictAction::Override))
+			{
+				ErrMsgF("Failed to add atlas '{}' to registry!", filename);
+				return false;
+			}
+		}
 	}
 
+
+	if (!cReg.SaveRegistry())
+	{
+		ErrMsg("Failed to save content registry!");
+		return false;
+	}
+	cReg.CloseRegistry();
+
+
 	time.TakeSnapshot("LoadContent");
-	if (!LoadContent(textureNames, cubemapNames, shaderNames, heightMapNames, fontAtlasNames))
+	if (!LoadContent(textureNames, cubemapNames, shaderNames, fontAtlasNames))
 	{
 		ErrMsg("Failed to load game content!");
 		return false;
 	}
 	time.TakeSnapshot("LoadContent");
 
+	// Setup systems
+	time.TakeSnapshot("SetupSystems");
+	{
+		if (!_systemManager.Initialize(this))
+		{
+			ErrMsg("Failed to setup systems!");
+			return false;
+		}
+	}
+	time.TakeSnapshot("SetupSystems");
+
 	// Add all scenes & load the active scene
 	time.TakeSnapshot("AddScenes");
 	{
 		Scene *tempScene = nullptr;
 
-		// Search for all .scene files in ASSET_PATH_SAVES
+		// Search for all .scene files in ASSET_PATH_SCENES
 		for (const auto &entry : std::filesystem::directory_iterator(ASSET_PATH_SCENES))
 		{
 			const auto &path = entry.path();
@@ -920,17 +943,6 @@ bool Game::Setup(TimeUtils &time, Window window)
 			LogIndentDecr();
 		}
 
-#ifndef EDIT_MODE
-		DbgMsg("Adding Scene 'Credits'..."); LogIndentIncr();
-		tempScene = new Scene("Credits", true);
-		if (!AddScene(&tempScene))
-		{
-			ErrMsg("Failed to add scene!");
-			return false;
-		}
-		LogIndentDecr();
-#endif
-
 #ifdef EDIT_MODE
 		const std::string &activeSceneName = DebugData::Get().activeScene;
 		DbgMsgF("Loading Active Scene '{}'...", activeSceneName); LogIndentIncr();
@@ -938,19 +950,21 @@ bool Game::Setup(TimeUtils &time, Window window)
 		// Set active scene to the game scene
 		if (!SetScene(activeSceneName))
 		{
+			const std::string &firstScene = (*GetScenes())[0]->GetName();
+
 			LogIndentDecr();
-			DbgMsg("Loading Active Scene Failed! \nDefaulting to 'MainMenu'..."); 
+			DbgMsgF("Loading Active Scene Failed! \nFallback to '{}'...", firstScene);
 			LogIndentIncr();
 
-			if (!SetScene("MainMenu"))
+			if (!SetScene(firstScene))
 			{
 				ErrMsg("Failed to set scene!");
 				return false;
 			}
 		}
 #else
-		DbgMsg("Loading Active Scene 'MainMenu'..."); LogIndentIncr();
-		if (!SetScene("MainMenu"))
+		DbgMsg("Loading Start-up Scene '" STARTUP_SCENE "'..."); LogIndentIncr();
+		if (!SetScene(STARTUP_SCENE))
 		{
 			ErrMsg("Failed to set scene!");
 			return false;
@@ -960,14 +974,7 @@ bool Game::Setup(TimeUtils &time, Window window)
 	}
 	time.TakeSnapshot("AddScenes");
 
-	// Ensure the main menu scene is loaded
-	if (_pendingSceneChange != "MainMenu")
-	{
-		if (!SetSceneInternal("MainMenu"))
-			DbgMsg("Failed to load MainMenu scene!");
-	}
-
-	// Then open the pending scene (if there is one)
+	// Open the pending scene (if there is one)
 	if (!_pendingSceneChange.empty())
 	{
 		if (!SetSceneInternal(_pendingSceneChange))
@@ -1068,46 +1075,17 @@ bool Game::SetSceneInternal(const std::string &sceneName)
 
 	if (!scene->IsInitialized())
 	{
-		if (sceneName == "MainMenu")
+		if (!scene->InitializeBase(sceneName, _device.Get(), _immediateContext.Get(), this, &_content, &_graphics, _gameVolume))
 		{
-			if (!scene->InitializeMenu(sceneName, _device.Get(), _immediateContext.Get(), this, &_content, &_graphics, _gameVolume))
-			{
-				ErrMsg("Failed to initialize menu scene!");
-				return false;
-			}
+			ErrMsg("Failed to initialize scene!");
+			return false;
 		}
-		else if (sceneName == "Cave")
-		{
-			if (!scene->InitializeCave(sceneName, _device.Get(), _immediateContext.Get(), this, &_content, &_graphics, _gameVolume))
-			{
-				ErrMsg("Failed to initialize scene!");
-				return false;
-			}
-		}
-		else if (sceneName == "Credits")
-		{
-			if (!scene->InitializeCred(sceneName, _device.Get(), _immediateContext.Get(), this, &_content, &_graphics, _gameVolume))
-			{
-				ErrMsg("Failed to initialize scene!");
-				return false;
-			}
-		}
-		else if (sceneName == "StartCutscene")
-		{
-			if (!scene->InitializeEntr(sceneName, _device.Get(), _immediateContext.Get(), this, &_content, &_graphics, _gameVolume))
-			{
-				ErrMsg("Failed to initialize scene!");
-				return false;
-			}
-		}
-		else
-		{
-			if (!scene->InitializeBase(sceneName, _device.Get(), _immediateContext.Get(), this, &_content, &_graphics, _gameVolume))
-			{
-				ErrMsg("Failed to initialize scene!");
-				return false;
-			}
-		}
+	}
+
+	if (!_systemManager.OnSceneChange(prevScene, scene))
+	{
+		ErrMsg("Failed to register scene change in systems!");
+		return false;
 	}
 
 	scene->EnterScene();
@@ -1188,20 +1166,25 @@ UINT Game::GetSceneIndex(const std::string &sceneName) noexcept
 	}
 	return CONTENT_NULL;
 }
+Scene *Game::GetActiveScene() const noexcept
+{
+	if (_activeSceneIndex == CONTENT_NULL)
+		return nullptr;
+	if (_activeSceneIndex >= _scenes.size())
+		return nullptr;
+	return _scenes[_activeSceneIndex].get();
+}
 UINT Game::GetActiveSceneIndex() const noexcept
 {
 	return _activeSceneIndex;
 }
 std::string_view Game::GetActiveSceneName() const noexcept
 {
-	if (_activeSceneIndex == CONTENT_NULL)
-		return "";
-	if (_activeSceneIndex >= _scenes.size())
-		return "";
-	if (!_scenes[_activeSceneIndex])
+	Scene *activeScene = GetActiveScene();
+	if (!activeScene)
 		return "";
 
-	return _scenes[_activeSceneIndex]->GetName();
+	return activeScene->GetName();
 }
 
 Graphics *Game::GetGraphics() noexcept
@@ -1264,6 +1247,15 @@ bool Game::Update(TimeUtils &time, const Input& input)
 			DbgMsgF("Failed to change scene to '{}'!", _pendingSceneChange);
 
 		_pendingSceneChange.clear();
+	}
+
+	// Update systems
+	{
+		if (!_systemManager.Update(time, input))
+		{
+			ErrMsg("Failed to update systems!");
+			return false;
+		}
 	}
 
 	// Update
@@ -1634,9 +1626,9 @@ bool Game::RenderUI(TimeUtils &time)
 					ImGui::Text("Extents:"); ImGui::SameLine();
 					if (ImGui::DragFloat3("##NewSceneExtents", &newSceneBounds.Extents.x))
 					{
-						newSceneBounds.Extents.x = max(0.1f, newSceneBounds.Extents.x);
-						newSceneBounds.Extents.y = max(0.1f, newSceneBounds.Extents.y);
-						newSceneBounds.Extents.z = max(0.1f, newSceneBounds.Extents.z);
+						newSceneBounds.Extents.x = MAX(0.1f, newSceneBounds.Extents.x);
+						newSceneBounds.Extents.y = MAX(0.1f, newSceneBounds.Extents.y);
+						newSceneBounds.Extents.z = MAX(0.1f, newSceneBounds.Extents.z);
 					}
 
 					ImGui::Text("Transitional:"); ImGui::SameLine();
@@ -1849,7 +1841,7 @@ bool Game::RenderUI(TimeUtils &time)
 				{
 					Scene *scene = _scenes[_activeSceneIndex].get();
 					SceneHolder *sceneHolder = scene->GetSceneHolder();
-					CameraBehaviour *viewCam = scene->GetViewCamera();
+					B_Camera *viewCam = scene->GetMainCamera();
 
 					if (ImGui::Button("Select View Camera"))
 						scene->SetSelection(viewCam->GetEntity());
@@ -1860,12 +1852,12 @@ bool Game::RenderUI(TimeUtils &time)
 
 						while (Entity *ent = entIter.Step())
 						{
-							CameraBehaviour *cam = nullptr;
-							if (!ent->GetBehaviourByType<CameraBehaviour>(cam))
+							B_Camera *cam = nullptr;
+							if (!ent->GetBehaviourByType<B_Camera>(cam))
 								continue;
 
 							if (ImGui::MenuItem(std::format("{}##SelectViewCamID{}", ent->GetName(), ent->GetID()).c_str(), NULL, cam == viewCam))
-								scene->SetViewCamera(cam);
+								scene->SetMainCamera(cam);
 						}
 
 						ImGui::EndMenu();
@@ -1905,8 +1897,8 @@ bool Game::RenderUI(TimeUtils &time)
 
 					if (ImGui::DragInt2("##WindowResolutionInput", &windowResolution.x, 0.33f))
 					{
-						windowResolution.x = max(1, windowResolution.x);
-						windowResolution.y = max(1, windowResolution.y);
+						windowResolution.x = MAX(1, windowResolution.x);
+						windowResolution.y = MAX(1, windowResolution.y);
 					}
 					ImGuiUtils::LockMouseOnActive();
 
@@ -1938,8 +1930,8 @@ bool Game::RenderUI(TimeUtils &time)
 
 				if (ImGui::DragInt2("##SceneResolutionInput", &sceneResolution.x, 0.33f))
 				{
-					sceneResolution.x = max(1, sceneResolution.x);
-					sceneResolution.y = max(1, sceneResolution.y);
+					sceneResolution.x = MAX(1, sceneResolution.x);
+					sceneResolution.y = MAX(1, sceneResolution.y);
 				}
 				ImGuiUtils::LockMouseOnActive();
 
@@ -2139,7 +2131,7 @@ bool Game::RenderUI(TimeUtils &time)
 		ImGui::Dummy({ 0, 2 });
 
 		if (ImGui::DragFloat("ImGui Font Scale", &imGuiFontScale, 0.01f))
-			imGuiFontScale = max(0.25f, imGuiFontScale);
+			imGuiFontScale = MAX(0.25f, imGuiFontScale);
 		ImGuiUtils::LockMouseOnActive();
 
 		if (ImGui::Button("Reset Font Scale"))
@@ -2149,7 +2141,7 @@ bool Game::RenderUI(TimeUtils &time)
 
 		if (ImGui::DragFloat("Volume", &_gameVolume, 0.01f))
 		{
-			_gameVolume = max(0, _gameVolume);
+			_gameVolume = MAX(0, _gameVolume);
 			_scenes[_activeSceneIndex]->SetSceneVolume(_gameVolume);
 		}
 		ImGuiUtils::LockMouseOnActive(); 
@@ -2158,7 +2150,7 @@ bool Game::RenderUI(TimeUtils &time)
 
 		float timeScale = time.GetTimeScale();
 		if (ImGui::DragFloat("Time Scale", &timeScale, 0.005f, 0, 0, "%.3f"))
-			time.SetTimeScale(max(timeScale, 0.0f));
+			time.SetTimeScale(MAX(timeScale, 0.0f));
 		ImGuiUtils::LockMouseOnActive();
 
 		float fixedDeltaTime = time.GetFixedDeltaTime();
@@ -2169,12 +2161,26 @@ bool Game::RenderUI(TimeUtils &time)
 		float physDeltaTime = time.GetPhysDeltaTime();
 		if (ImGui::DragFloat("Phys Time Step", &physDeltaTime, 0.001f, 0, 0, "%.3f"))
 		{
-			physDeltaTime = max(0.001f, physDeltaTime);
+			physDeltaTime = MAX(0.001f, physDeltaTime);
 			time.SetPhysDeltaTime(physDeltaTime);
 		}
 		ImGuiUtils::LockMouseOnActive();
 		ImGui::Dummy({ 0, 4 });
 
+
+		if (ImGui::TreeNode("Systems"))
+		{
+			if (!_systemManager.RenderUI())
+			{
+				ErrMsg("Failed to render system manager UI!");
+				ImGui::TreePop();
+				return false;
+			}
+
+			ImGui::Separator();
+			ImGui::TreePop();
+		}
+		ImGui::Dummy({ 0, 4 });
 
 		if (ImGui::TreeNode("Utility"))
 		{
@@ -2202,7 +2208,6 @@ bool Game::RenderUI(TimeUtils &time)
 			ImGui::TreePop();
 		}
 		ImGui::Dummy({ 0, 4 });
-
 
 		if (ImGui::TreeNode("Version Info"))
 		{
@@ -2367,8 +2372,8 @@ bool Game::RenderUI(TimeUtils &time)
 				float avgValue = 0.0f;
 				for (int i = 0; i < plotFpsData.size(); i++)
 				{
-					minValue = min(minValue, plotFpsData[i].y);
-					maxValue = max(maxValue, plotFpsData[i].y);
+					minValue = MIN(minValue, plotFpsData[i].y);
+					maxValue = MAX(maxValue, plotFpsData[i].y);
 					avgValue += plotFpsData[i].y;
 				}
 				avgValue /= plotFpsData.size();

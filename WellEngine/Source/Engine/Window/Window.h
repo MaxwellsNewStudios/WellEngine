@@ -1,68 +1,78 @@
 #pragma once
+
 #include <Windows.h>
 #include <iostream>
 #include <SDL3/SDL.h>
 #include <d3d11.h>
+#include <DirectXMath.h>
 #include <wrl/client.h>
 
-enum class WindowType
+#include "Tests/TestUtils.h"
+
+namespace WellEngine
 {
-	MAIN,
-	SECONDARY
-};
+	namespace dx = DirectX;
 
-class Window 
-{
-private:
-	std::string _name = "Window";
-	HWND _hwnd = NULL;
-	dx::XMINT2 _size{0, 0};
-	dx::XMUINT2 _physicalSize{0, 0};
-	dx::XMINT2 _preFullscreenSize{ -1, -1 };
-	bool _isFullscreen = false;
-	bool _isDirty = false;
+	enum class WindowType
+	{
+		MAIN,
+		SECONDARY
+	};
 
-	WindowType _windowType = WindowType::MAIN;
+	class Window 
+	{
+	private:
+		std::string _name = "Window";
+		HWND _hwnd = NULL;
+		dx::XMINT2 _size{0, 0};
+		dx::XMUINT2 _physicalSize{0, 0};
+		dx::XMINT2 _preFullscreenSize{ -1, -1 };
+		bool _isFullscreen = false;
+		bool _isDirty = false;
 
-	SDL_Surface *_surface = nullptr;
-	SDL_Window *_window = nullptr;
+		WindowType _windowType = WindowType::MAIN;
 
-	D3D11_VIEWPORT _viewport = { };
+		SDL_Surface *_surface = nullptr;
+		SDL_Window *_window = nullptr;
 
-	bool SetupWindow();
+		D3D11_VIEWPORT _viewport = { };
 
-public:
-	Window() = default;
-	Window(std::string name, dx::XMINT2 size, WindowType windowType = WindowType::MAIN);
-	~Window() = default;
+		bool SetupWindow();
 
-	bool Initialize(std::string name, dx::XMINT2 size, WindowType windowType = WindowType::MAIN);
-	bool ToggleFullscreen();
-	bool SetFullscreen(bool fullscreen);
-	bool SetWindowSize(dx::XMINT2 size);
-	bool UpdateWindowSize();
+	public:
+		Window() = default;
+		Window(std::string name, dx::XMINT2 size, WindowType windowType = WindowType::MAIN);
+		~Window() = default;
 
-	void ValidateWindowedSize();
+		bool Initialize(std::string name, dx::XMINT2 size, WindowType windowType = WindowType::MAIN);
+		bool ToggleFullscreen();
+		bool SetFullscreen(bool fullscreen);
+		bool SetWindowSize(dx::XMINT2 size);
+		bool UpdateWindowSize();
 
-	HWND GetHWND() const;
+		void ValidateWindowedSize();
 
-	dx::XMINT2 GetSize() const;
-	UINT GetWidth() const;
-	UINT GetHeight() const;
+		HWND GetHWND() const;
 
-	dx::XMUINT2 GetPhysicalSize() const;
-	UINT GetPhysicalWidth() const;
-	UINT GetPhysicalHeight() const;
+		dx::XMINT2 GetSize() const;
+		UINT GetWidth() const;
+		UINT GetHeight() const;
 
-	SDL_Surface *GetSurface() const;
-	SDL_Window *GetWindow() const;
-	WindowType GetWindowType() const;
+		dx::XMUINT2 GetPhysicalSize() const;
+		UINT GetPhysicalWidth() const;
+		UINT GetPhysicalHeight() const;
 
-	const D3D11_VIEWPORT *GetViewport() const;
+		SDL_Surface *GetSurface() const;
+		SDL_Window *GetWindow() const;
+		WindowType GetWindowType() const;
 
-	bool IsFullscreen() const;
-	bool IsDirty() const;
-	void MarkDirty(bool state);
+		const D3D11_VIEWPORT *GetViewport() const;
 
-	TESTABLE
-};
+		bool IsFullscreen() const;
+		bool IsDirty() const;
+		void MarkDirty(bool state);
+
+		TESTABLE
+	};
+}
+

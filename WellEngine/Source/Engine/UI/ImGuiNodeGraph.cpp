@@ -17,11 +17,11 @@ static void DrawCurve(const ImVec2 &p1, const ImVec2 &p2, ImColor color)
 	float xDiff = (p2.x - p1.x);
 	float yDiff = (p2.y - p1.y);
 	float dist = std::sqrtf(xDiff * xDiff + yDiff * yDiff);
-	float t = min(dist / (Internal::MinLinkCPDist), 1.0f);
+	float t = MIN(dist / (Internal::MinLinkCPDist), 1.0f);
 
 	float xMid = (p1.x + p2.x) * 0.5f;
-	ImVec2 cp1 = ImVec2(max(xMid, p1.x + Internal::MinLinkCPDist * t), p1.y);
-	ImVec2 cp2 = ImVec2(min(xMid, p2.x - Internal::MinLinkCPDist * t), p2.y);
+	ImVec2 cp1 = ImVec2(MAX(xMid, p1.x + Internal::MinLinkCPDist * t), p1.y);
+	ImVec2 cp2 = ImVec2(MIN(xMid, p2.x - Internal::MinLinkCPDist * t), p2.y);
 	ImGui::GetWindowDrawList()->AddBezierCubic(p1, cp1, cp2, p2, color, Internal::LinkThickness);
 }
 
@@ -46,8 +46,8 @@ void ImGui::NodeGraph::NodePreset::CalcSize()
 	ImVec2 bodyArea = ImVec2(0, 0);			// hasBody * (Body padding * 2)
 
 	ImVec2 totalArea = ImVec2(0, 0);
-	// Width: max(header, input pins + output pins, body)
-	// Height: header + max(input pins, output pins) + body
+	// Width: MAX(header, input pins + output pins, body)
+	// Height: header + MAX(input pins, output pins) + body
 
 	ImFont *font = ImGui::GetFont();
 	bool hasBody = drawBodyFunc != nullptr;
@@ -65,8 +65,8 @@ void ImGui::NodeGraph::NodePreset::CalcSize()
 		for (const PinPreset &pin : inputs)
 		{
 			ImVec2 pinTextSize = font->CalcTextSizeA(Internal::PinTextSize, FLT_MAX, 0.0f, pin.name.c_str());
-			inputPinsArea.x = max(inputPinsArea.x, Internal::PinSize * 0.5f + Internal::PinPadding.x * 2 + pinTextSize.x);
-			inputPinsArea.y += max(Internal::PinSize, pinTextSize.y) + Internal::PinPadding.y;
+			inputPinsArea.x = MAX(inputPinsArea.x, Internal::PinSize * 0.5f + Internal::PinPadding.x * 2 + pinTextSize.x);
+			inputPinsArea.y += MAX(Internal::PinSize, pinTextSize.y) + Internal::PinPadding.y;
 		}
 	}
 
@@ -78,8 +78,8 @@ void ImGui::NodeGraph::NodePreset::CalcSize()
 		for (const PinPreset &pin : outputs)
 		{
 			ImVec2 pinTextSize = font->CalcTextSizeA(Internal::PinTextSize, FLT_MAX, 0.0f, pin.name.c_str());
-			outputPinsArea.x = max(outputPinsArea.x, Internal::PinSize * 0.5f + Internal::PinPadding.x * 2 + pinTextSize.x);
-			outputPinsArea.y += max(Internal::PinSize, pinTextSize.y) + Internal::PinPadding.y;
+			outputPinsArea.x = MAX(outputPinsArea.x, Internal::PinSize * 0.5f + Internal::PinPadding.x * 2 + pinTextSize.x);
+			outputPinsArea.y += MAX(Internal::PinSize, pinTextSize.y) + Internal::PinPadding.y;
 		}
 	}
 
@@ -89,20 +89,20 @@ void ImGui::NodeGraph::NodePreset::CalcSize()
 
 	float extraPinPadding = (inputs.empty() || outputs.empty()) ? 0 : Internal::PinPadding.x;
 
-	totalArea.x = max(headerArea.x, max(inputPinsArea.x + outputPinsArea.x + extraPinPadding, bodyArea.x));
-	totalArea.y = headerArea.y + max(inputPinsArea.y, outputPinsArea.y) + bodyArea.y;
+	totalArea.x = MAX(headerArea.x, MAX(inputPinsArea.x + outputPinsArea.x + extraPinPadding, bodyArea.x));
+	totalArea.y = headerArea.y + MAX(inputPinsArea.y, outputPinsArea.y) + bodyArea.y;
 
 	if (size.x < totalArea.x)
 		size.x = totalArea.x;
 	if (size.y < totalArea.y)
 		size.y = totalArea.y;
 
-	headerSize = ImVec2(max(headerArea.x, size.x), headerArea.y);
+	headerSize = ImVec2(MAX(headerArea.x, size.x), headerArea.y);
 	inPinsRect = ImVec4(0, headerArea.y, inputPinsArea.x, headerArea.y + inputPinsArea.y);
 	outPinsRect = ImVec4(size.x - outputPinsArea.x, headerArea.y, size.x, headerArea.y + outputPinsArea.y);
 	bodyRect = ImVec4(
 		Internal::NodeBodyPadding.x,
-		max(inPinsRect.w, outPinsRect.w) + Internal::NodeBodyPadding.y,
+		MAX(inPinsRect.w, outPinsRect.w) + Internal::NodeBodyPadding.y,
 		size.x - Internal::NodeBodyPadding.x,
 		size.y - Internal::NodeBodyPadding.y
 	);

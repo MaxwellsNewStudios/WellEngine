@@ -1,6 +1,7 @@
 #pragma once
 #include <string>
 #include <initializer_list>
+#include <intsafe.h>
 
 namespace StringUtils
 {

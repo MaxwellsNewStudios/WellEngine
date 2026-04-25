@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "Graphics.h"
 #include "Game/Entity.h"
-#include "Game/Behaviours/Rendering/Camera/CameraBehaviour.h"
+#include "Game/Behaviours/Rendering/Camera/B_Camera.h"
 
 #ifdef LEAK_DETECTION
 #define new			DEBUG_NEW
@@ -91,13 +91,13 @@ UINT Graphics::GetSkyboxShaderID() const
 }
 UINT Graphics::GetEnvironmentCubemapID() const
 {
-	return _environmentCubemapID;
+	return _envCubemapID;
 }
 #pragma endregion
 
 
 #pragma region Setters
-bool Graphics::SetCamera(CameraBehaviour *viewCamera)
+bool Graphics::SetCamera(B_Camera *viewCamera)
 {
 	if (viewCamera == nullptr)
 	{
@@ -108,7 +108,7 @@ bool Graphics::SetCamera(CameraBehaviour *viewCamera)
 	_currViewCamera = viewCamera;
 	return true;
 }
-bool Graphics::SetSpotlightCollection(SpotLightCollection *spotlights)
+bool Graphics::SetSpotlightCollection(LightSpotCollection *spotlights)
 {
 	if (spotlights == nullptr)
 	{
@@ -119,7 +119,7 @@ bool Graphics::SetSpotlightCollection(SpotLightCollection *spotlights)
 	_currSpotLightCollection = spotlights;
 	return true;
 }
-bool Graphics::SetPointlightCollection(PointLightCollection *pointlights)
+bool Graphics::SetLightPointCollection(LightPointCollection *pointlights)
 {
 	if (pointlights == nullptr)
 	{
@@ -127,17 +127,8 @@ bool Graphics::SetPointlightCollection(PointLightCollection *pointlights)
 		return false;
 	}
 
-	_currPointLightCollection = pointlights;
+	_currLightPointCollection = pointlights;
 	return true;
-}
-
-void Graphics::SetDistortionOrigin(const dx::XMFLOAT3A &origin)
-{
-	_distortionSettings.distortionOrigin = origin;
-}
-void Graphics::SetDistortionStrength(float strength)
-{
-	_distortionSettings.distortionStrength = strength;
 }
 
 void Graphics::SetFogBlurIterations(UINT iterations)
@@ -165,6 +156,58 @@ void Graphics::SetGaussianWeightsBuffer(StructuredBufferD3D11 *buffer, float *co
 		return;
 	}
 }
+
+ID3D11RasterizerState *Graphics::GetRasterizerDefault() const
+{
+	return _frontFaceRasterizer.Get();
+}
+ID3D11RasterizerState *Graphics::GetRasterizerByCullMode(FaceCullingType cullMode) const
+{
+	switch (cullMode)
+	{
+	default:
+	case FaceCullingType::BACK:
+		return _frontFaceRasterizer.Get();
+
+	case FaceCullingType::FRONT:
+		return _backFaceRasterizer.Get();
+
+	case FaceCullingType::NONE:
+		return _doubleSidedRasterizer.Get();
+	}
+}
+ID3D11RasterizerState *Graphics::GetWireframeRasterizerDefault() const
+{
+	return _wireframeFrontFaceRasterizer.Get();
+}
+ID3D11RasterizerState *Graphics::GetWireframeRasterizerByCullMode(FaceCullingType cullMode) const
+{
+	switch (cullMode)
+	{
+	default:
+	case FaceCullingType::BACK:
+		return _wireframeFrontFaceRasterizer.Get();
+
+	case FaceCullingType::FRONT:
+		return _wireframeBackFaceRasterizer.Get();
+
+	case FaceCullingType::NONE:
+		return _wireframeDoubleSidedRasterizer.Get();
+	}
+}
+
+void Graphics::SetRasterizerState(ID3D11RasterizerState *rs)
+{
+	if (rs == nullptr)
+		return;
+
+	if (_currRasterizer == rs)
+		return;
+
+	_currRasterizer = rs;
+	_context->RSSetState(rs);
+}
+
 void Graphics::SetFogGaussianWeightsBuffer(float *const weights, UINT count)
 {
 	SetGaussianWeightsBuffer(&_fogGaussianWeightsBuffer, weights, count);
@@ -269,14 +312,14 @@ void Graphics::SetEnvironmentCubemapID(UINT cubemapID)
 {
 	if (cubemapID == CONTENT_NULL)
 	{
-		_environmentCubemapID = CONTENT_NULL;
+		_envCubemapID = CONTENT_NULL;
 		return;
 	}
 
 	std::string cubemapName = _content->GetCubemapName(cubemapID);
 	if (cubemapName == "Uninitialized")
 	{
-		_environmentCubemapID = CONTENT_NULL;
+		_envCubemapID = CONTENT_NULL;
 		return;
 	}
 
@@ -284,7 +327,7 @@ void Graphics::SetEnvironmentCubemapID(UINT cubemapID)
 	if (!cubemapSRT->IsCubemap())
 		return;
 
-	_environmentCubemapID = cubemapID;
+	_envCubemapID = cubemapID;
 }
 
 #ifdef USE_IMGUI

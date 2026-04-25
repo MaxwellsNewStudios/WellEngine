@@ -1,0 +1,645 @@
+{
+    "Scene": {
+        "Transitional": false,
+        "Bounds": {
+            "Center": [
+                0.0,
+                0.0,
+                0.0
+            ],
+            "Extents": [
+                500.0,
+                500.0,
+                500.0
+            ],
+            "Max Depth": 5,
+            "Max Items In Node": 16
+        },
+        "Graphics": {
+            "Spotlight Resolution": 512,
+            "Pointlight Resolution": 512,
+            "Cubemap": "RundownIndustrial",
+            "Skybox": "PS_SkyboxEnvironment",
+            "SkyCol": [
+                0.0,
+                0.0,
+                0.0,
+                0.0
+            ],
+            "Ambient": [
+                0.0,
+                0.0,
+                0.0
+            ],
+            "Fog": {
+                "Thickness": 0.5,
+                "Sample Bias": 1.5,
+                "Max Steps": 96,
+                "Depth Fade Begin": 0.0,
+                "Depth Fade End": 1.0,
+                "Depth Fade Exp": 0.0,
+                "BlurIterations": 2,
+                "Weights": [
+                    0.7788081169128418,
+                    0.2165377140045166,
+                    0.0046541751362383366
+                ]
+            },
+            "Emission": {
+                "Strength": 1.0,
+                "Exponent": 0.30000001192092896,
+                "Threshold": 1.0199999809265137,
+                "WhiteBias": 0.5,
+                "BlurIterations": 2,
+                "Weights": [
+                    0.227027028799057,
+                    0.1945945918560028,
+                    0.12162162363529205,
+                    0.054054055362939835,
+                    0.01621621660888195
+                ]
+            }
+        }
+    },
+    "Hierarchy": [
+        {
+            "Name": "Light",
+            "ID": 3,
+            "Enabled": false,
+            "Pos": [
+                4.0,
+                7.942010879516602,
+                -4.0
+            ],
+            "Rot": [
+                -0.0,
+                0.0,
+                -0.0
+            ],
+            "Scale": [
+                0.9999994039535522,
+                1.0002233982086182,
+                0.9999994039535522
+            ],
+            "Static": false,
+            "Select": true,
+            "InTree": true,
+            "Hidden": false,
+            "Beh": [
+                {
+                    "Name": "LightPoint",
+                    "Attributes": {
+                        "Update Frequency": 3,
+                        "Falloff": 0.25,
+                        "Fog Strength": 0.05000000074505806,
+                        "Shadow Strength": 1.0,
+                        "Near": -0.10000000149011612,
+                        "Far": -17.43541717529297,
+                        "Color": [
+                            1.0,
+                            0.9384397864341736,
+                            0.7009804248809814
+                        ]
+                    }
+                }
+            ]
+        },
+        {
+            "Name": "Arcade",
+            "ID": 5,
+            "Enabled": true,
+            "Pos": [
+                0.0,
+                0.0,
+                0.0
+            ],
+            "Rot": [
+                -0.0,
+                2.3561947345733643,
+                0.0
+            ],
+            "Scale": [
+                1.0000028610229492,
+                1.0,
+                1.0000028610229492
+            ],
+            "Prefab": "Arcade"
+        },
+        {
+            "Name": "Room",
+            "ID": 12,
+            "Enabled": true,
+            "Pos": [
+                0.0,
+                0.0,
+                0.0
+            ],
+            "Rot": [
+                -0.0,
+                0.0,
+                0.0
+            ],
+            "Scale": [
+                8.0,
+                10.0,
+                8.0
+            ],
+            "Static": false,
+            "Select": true,
+            "InTree": true,
+            "Hidden": false,
+            "Beh": [],
+            "Child": [
+                {
+                    "Name": "Floor",
+                    "ID": 13,
+                    "Enabled": true,
+                    "Pos": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "Rot": [
+                        -0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "Scale": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "Static": false,
+                    "Select": true,
+                    "InTree": true,
+                    "Hidden": false,
+                    "Beh": [
+                        {
+                            "Name": "Mesh",
+                            "Attributes": {
+                                "Mesh": "Plane",
+                                "Transparent": false,
+                                "Shadow Caster": true,
+                                "Shadows Only": false,
+                                "Culling Mode": 2,
+                                "Base Color": [
+                                    1.0,
+                                    1.0,
+                                    1.0,
+                                    1.0
+                                ],
+                                "Alpha Cutoff": 0.0,
+                                "Normal Factor": 1.0,
+                                "Specular Factor": 1.0,
+                                "Glossiness Factor": 0.4000000059604645,
+                                "Ambient Factor": 1.0,
+                                "Occlusion Factor": 0.5,
+                                "Reflectivity": 0.0,
+                                "Metallic": 0.0,
+                                "PS Settings": {
+                                    "Size": 16,
+                                    "Data": [
+                                        0,
+                                        0,
+                                        4294967168,
+                                        64,
+                                        0,
+                                        0,
+                                        4294967168,
+                                        64,
+                                        0,
+                                        0,
+                                        4294967168,
+                                        63,
+                                        1,
+                                        0,
+                                        0,
+                                        0
+                                    ]
+                                },
+                                "Tex": "sponza_floor_a_diff",
+                                "Normal": "sponza_floor_a_ddn",
+                                "Specular": "sponza_floor_a_spec",
+                                "AO": "sponza_floor_a_spec",
+                                "Sampler": "Wrap",
+                                "PS": "PS_TriPlanar"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "Name": "Roof",
+                    "ID": 14,
+                    "Enabled": true,
+                    "Pos": [
+                        0.0,
+                        1.0,
+                        0.0
+                    ],
+                    "Rot": [
+                        2.3841860752327193e-7,
+                        3.141592025756836,
+                        3.141592025756836
+                    ],
+                    "Scale": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "Static": false,
+                    "Select": true,
+                    "InTree": true,
+                    "Hidden": false,
+                    "Beh": [
+                        {
+                            "Name": "Mesh",
+                            "Attributes": {
+                                "Mesh": "Plane",
+                                "Transparent": false,
+                                "Shadow Caster": true,
+                                "Shadows Only": false,
+                                "Culling Mode": 2,
+                                "Base Color": [
+                                    1.0,
+                                    1.0,
+                                    1.0,
+                                    1.0
+                                ],
+                                "Alpha Cutoff": 0.0,
+                                "Normal Factor": 1.0,
+                                "Specular Factor": 1.0,
+                                "Glossiness Factor": 0.4000000059604645,
+                                "Ambient Factor": 1.0,
+                                "Occlusion Factor": 0.20000000298023224,
+                                "Reflectivity": 0.0,
+                                "Metallic": 0.0,
+                                "PS Settings": {
+                                    "Size": 16,
+                                    "Data": [
+                                        0,
+                                        0,
+                                        4294967168,
+                                        64,
+                                        0,
+                                        0,
+                                        4294967168,
+                                        64,
+                                        0,
+                                        0,
+                                        4294967168,
+                                        63,
+                                        1,
+                                        0,
+                                        0,
+                                        0
+                                    ]
+                                },
+                                "Tex": "sponza_ceiling_a_diff",
+                                "Normal": "sponza_ceiling_a_ddn",
+                                "Specular": "sponza_ceiling_a_spec",
+                                "AO": "sponza_ceiling_a_spec",
+                                "Sampler": "Wrap",
+                                "PS": "PS_TriPlanar"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "Name": "Walls",
+                    "ID": 15,
+                    "Enabled": true,
+                    "Pos": [
+                        0.0,
+                        0.5,
+                        0.0
+                    ],
+                    "Rot": [
+                        -0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "Scale": [
+                        1.0,
+                        0.5,
+                        1.0
+                    ],
+                    "Static": false,
+                    "Select": true,
+                    "InTree": true,
+                    "Hidden": false,
+                    "Beh": [],
+                    "Child": [
+                        {
+                            "Name": "Wall",
+                            "ID": 16,
+                            "Enabled": true,
+                            "Pos": [
+                                0.0,
+                                0.0,
+                                1.0
+                            ],
+                            "Rot": [
+                                -1.5707961320877075,
+                                0.0,
+                                0.0
+                            ],
+                            "Scale": [
+                                1.0000147819519043,
+                                0.9999720454216003,
+                                0.9999720454216003
+                            ],
+                            "Static": false,
+                            "Select": true,
+                            "InTree": true,
+                            "Hidden": false,
+                            "Beh": [
+                                {
+                                    "Name": "Mesh",
+                                    "Attributes": {
+                                        "Mesh": "Plane",
+                                        "Transparent": false,
+                                        "Shadow Caster": true,
+                                        "Shadows Only": false,
+                                        "Culling Mode": 2,
+                                        "Base Color": [
+                                            1.0,
+                                            1.0,
+                                            1.0,
+                                            1.0
+                                        ],
+                                        "Alpha Cutoff": 0.0,
+                                        "Normal Factor": 1.0,
+                                        "Specular Factor": 0.20000000298023224,
+                                        "Glossiness Factor": 0.699999988079071,
+                                        "Ambient Factor": 1.0,
+                                        "Occlusion Factor": 0.0,
+                                        "Reflectivity": 0.0,
+                                        "Metallic": 0.0,
+                                        "PS Settings": {
+                                            "Size": 16,
+                                            "Data": [
+                                                0,
+                                                0,
+                                                72,
+                                                65,
+                                                0,
+                                                0,
+                                                32,
+                                                65,
+                                                0,
+                                                0,
+                                                4294967168,
+                                                63,
+                                                1,
+                                                0,
+                                                0,
+                                                0
+                                            ]
+                                        },
+                                        "Tex": "sponza_fabric_diff",
+                                        "Normal": "sponza_fabric_ddn",
+                                        "Specular": "sponza_fabric_spec",
+                                        "Gloss": "sponza_fabric_spec",
+                                        "Sampler": "Wrap",
+                                        "PS": "PS_TriPlanar"
+                                    }
+                                }
+                            ]
+                        },
+                        {
+                            "Name": "Wall",
+                            "ID": 17,
+                            "Enabled": true,
+                            "Pos": [
+                                1.0,
+                                0.0,
+                                0.0
+                            ],
+                            "Rot": [
+                                1.5707954168319702,
+                                0.0,
+                                1.5707963705062866
+                            ],
+                            "Scale": [
+                                1.0000147819519043,
+                                0.9999720454216003,
+                                0.9999720454216003
+                            ],
+                            "Static": false,
+                            "Select": true,
+                            "InTree": true,
+                            "Hidden": false,
+                            "Beh": [
+                                {
+                                    "Name": "Mesh",
+                                    "Attributes": {
+                                        "Mesh": "Plane",
+                                        "Transparent": false,
+                                        "Shadow Caster": true,
+                                        "Shadows Only": false,
+                                        "Culling Mode": 2,
+                                        "Base Color": [
+                                            1.0,
+                                            1.0,
+                                            1.0,
+                                            1.0
+                                        ],
+                                        "Alpha Cutoff": 0.0,
+                                        "Normal Factor": 1.0,
+                                        "Specular Factor": 0.20000000298023224,
+                                        "Glossiness Factor": 0.699999988079071,
+                                        "Ambient Factor": 1.0,
+                                        "Occlusion Factor": 0.0,
+                                        "Reflectivity": 0.0,
+                                        "Metallic": 0.0,
+                                        "PS Settings": {
+                                            "Size": 16,
+                                            "Data": [
+                                                0,
+                                                0,
+                                                72,
+                                                65,
+                                                0,
+                                                0,
+                                                32,
+                                                65,
+                                                0,
+                                                0,
+                                                4294967168,
+                                                63,
+                                                1,
+                                                0,
+                                                0,
+                                                0
+                                            ]
+                                        },
+                                        "Tex": "sponza_fabric_diff",
+                                        "Normal": "sponza_fabric_ddn",
+                                        "Specular": "sponza_fabric_spec",
+                                        "Gloss": "sponza_fabric_spec",
+                                        "Sampler": "Wrap",
+                                        "PS": "PS_TriPlanar"
+                                    }
+                                }
+                            ]
+                        },
+                        {
+                            "Name": "Wall",
+                            "ID": 18,
+                            "Enabled": true,
+                            "Pos": [
+                                0.0,
+                                0.0,
+                                -1.0
+                            ],
+                            "Rot": [
+                                1.5707961320877075,
+                                0.0,
+                                -0.0
+                            ],
+                            "Scale": [
+                                1.0000147819519043,
+                                0.9999720454216003,
+                                0.9999720454216003
+                            ],
+                            "Static": false,
+                            "Select": true,
+                            "InTree": true,
+                            "Hidden": false,
+                            "Beh": [
+                                {
+                                    "Name": "Mesh",
+                                    "Attributes": {
+                                        "Mesh": "Plane",
+                                        "Transparent": false,
+                                        "Shadow Caster": true,
+                                        "Shadows Only": false,
+                                        "Culling Mode": 2,
+                                        "Base Color": [
+                                            1.0,
+                                            1.0,
+                                            1.0,
+                                            1.0
+                                        ],
+                                        "Alpha Cutoff": 0.0,
+                                        "Normal Factor": 1.0,
+                                        "Specular Factor": 0.20000000298023224,
+                                        "Glossiness Factor": 0.699999988079071,
+                                        "Ambient Factor": 1.0,
+                                        "Occlusion Factor": 0.0,
+                                        "Reflectivity": 0.0,
+                                        "Metallic": 0.0,
+                                        "PS Settings": {
+                                            "Size": 16,
+                                            "Data": [
+                                                0,
+                                                0,
+                                                72,
+                                                65,
+                                                0,
+                                                0,
+                                                32,
+                                                4294967233,
+                                                0,
+                                                0,
+                                                4294967168,
+                                                63,
+                                                1,
+                                                0,
+                                                0,
+                                                0
+                                            ]
+                                        },
+                                        "Tex": "sponza_fabric_diff",
+                                        "Normal": "sponza_fabric_ddn",
+                                        "Specular": "sponza_fabric_spec",
+                                        "Gloss": "sponza_fabric_spec",
+                                        "Sampler": "Wrap",
+                                        "PS": "PS_TriPlanar"
+                                    }
+                                }
+                            ]
+                        },
+                        {
+                            "Name": "Wall",
+                            "ID": 19,
+                            "Enabled": true,
+                            "Pos": [
+                                -1.0,
+                                0.0,
+                                0.0
+                            ],
+                            "Rot": [
+                                1.5707961320877075,
+                                0.0,
+                                -1.5707964897155762
+                            ],
+                            "Scale": [
+                                1.0000147819519043,
+                                0.9999720454216003,
+                                0.9999720454216003
+                            ],
+                            "Static": false,
+                            "Select": true,
+                            "InTree": true,
+                            "Hidden": false,
+                            "Beh": [
+                                {
+                                    "Name": "Mesh",
+                                    "Attributes": {
+                                        "Mesh": "Plane",
+                                        "Transparent": false,
+                                        "Shadow Caster": true,
+                                        "Shadows Only": false,
+                                        "Culling Mode": 2,
+                                        "Base Color": [
+                                            1.0,
+                                            1.0,
+                                            1.0,
+                                            1.0
+                                        ],
+                                        "Alpha Cutoff": 0.0,
+                                        "Normal Factor": 1.0,
+                                        "Specular Factor": 0.20000000298023224,
+                                        "Glossiness Factor": 0.699999988079071,
+                                        "Ambient Factor": 1.0,
+                                        "Occlusion Factor": 0.0,
+                                        "Reflectivity": 0.0,
+                                        "Metallic": 0.0,
+                                        "PS Settings": {
+                                            "Size": 16,
+                                            "Data": [
+                                                0,
+                                                0,
+                                                72,
+                                                65,
+                                                0,
+                                                0,
+                                                32,
+                                                65,
+                                                0,
+                                                0,
+                                                4294967168,
+                                                63,
+                                                1,
+                                                0,
+                                                0,
+                                                0
+                                            ]
+                                        },
+                                        "Tex": "sponza_fabric_diff",
+                                        "Normal": "sponza_fabric_ddn",
+                                        "Specular": "sponza_fabric_spec",
+                                        "Gloss": "sponza_fabric_spec",
+                                        "Sampler": "Wrap",
+                                        "PS": "PS_TriPlanar"
+                                    }
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

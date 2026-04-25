@@ -7,7 +7,7 @@
 #define new			DEBUG_NEW
 #endif
 
-namespace Curves
+namespace WellEngine::Curves
 {
 	using namespace DirectX;
 

@@ -1,7 +1,8 @@
 #pragma once
+
 #include <string>
 
-namespace ContentData
+namespace WellEngine::ContentData
 {
 	struct RawPosition { float	x, y, z; };
 	struct RawNormal { float	x, y, z; };

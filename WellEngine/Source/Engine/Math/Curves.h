@@ -1,9 +1,12 @@
 #pragma once
-#include "DirectXMath.h"
-#include <vector>
 
-namespace Curves
+#include <vector>
+#include <DirectXMath.h>
+
+namespace WellEngine::Curves
 {
+	namespace dx = DirectX;
+
 	enum class CurveType
 	{
 		Linear,
@@ -11,16 +14,16 @@ namespace Curves
 		BezierCubic
 	};
 
-	bool IsXMonotonic(const DirectX::XMFLOAT2& p0, const DirectX::XMFLOAT2& p1, const DirectX::XMFLOAT2& p2, const DirectX::XMFLOAT2& p3);
+	bool IsXMonotonic(const dx::XMFLOAT2& p0, const dx::XMFLOAT2& p1, const dx::XMFLOAT2& p2, const dx::XMFLOAT2& p3);
 
 	struct Point
 	{
-		DirectX::XMFLOAT2 position = { };
-		DirectX::XMFLOAT2 controlPoint1 = { };
-		DirectX::XMFLOAT2 controlPoint2 = { };
+		dx::XMFLOAT2 position = { };
+		dx::XMFLOAT2 controlPoint1 = { };
+		dx::XMFLOAT2 controlPoint2 = { };
 	};
 
-	DirectX::XMFLOAT2 Sample(const Point &lP, const Point &rP, CurveType type, float t);
+	dx::XMFLOAT2 Sample(const Point &lP, const Point &rP, CurveType type, float t);
 
 	struct Curve
 	{
@@ -30,7 +33,7 @@ namespace Curves
 		bool IsInjectiveAtPoint(int i) const;
 		bool IsInjective() const;
 
-		DirectX::XMFLOAT2 SamplePoint(float t) const;
+		dx::XMFLOAT2 SamplePoint(float t) const;
 		float SampleInjective(float x) const;
 	};
 };
