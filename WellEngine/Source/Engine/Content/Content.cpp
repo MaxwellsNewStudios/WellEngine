@@ -81,7 +81,7 @@ bool Content::CompileContent(const std::vector<AssetRegistryEntry> &meshEntries)
 	ZoneScopedC(RandomUniqueColor());
 
 	std::ofstream writer;
-	writer.open(ASSET_COMPILED_FILE_MESHES, std::ios::binary | std::ios::ate);
+	writer.open(INTERNAL_COMPILED_FILE_MESHES, std::ios::binary | std::ios::ate);
 	if (!writer.is_open())
 	{
 		ErrMsg("Failed to open compiled content file!");
@@ -124,7 +124,7 @@ bool Content::DecompileContent(ID3D11Device *device)
 {
 	ZoneScopedC(RandomUniqueColor());
 
-	std::ifstream reader(ASSET_COMPILED_FILE_MESHES, std::ios::binary | std::ios::in | std::ios::ate);
+	std::ifstream reader(INTERNAL_COMPILED_FILE_MESHES, std::ios::binary | std::ios::in | std::ios::ate);
 	if (!reader.is_open())
 	{
 		ErrMsg("Failed to open compiled content file! Try running once with FORCE_COMPILE_CONTENT enabled.");
@@ -880,14 +880,22 @@ bool Content::RenderUI(ID3D11Device *device)
 					// Check if the shader source file has been modified after the cso was last compiled
 					// If so, trigger a recompile
 
-					std::string csoPath = PATH_FILE_EXT(ASSET_COMPILED_PATH_CSO, shaderNames[i], "cso");
+					std::string csoPath = PATH_FILE_EXT(INTERNAL_COMPILED_PATH_CSO, shaderNames[i], "cso");
 					std::string sourcePath = PATH_FILE_EXT(ENGINE_PATH_SHADERS, shaderContainer->path, "hlsl");
 
-					std::filesystem::file_time_type csoTime = std::filesystem::last_write_time(csoPath);
-					std::filesystem::file_time_type sourceTime = std::filesystem::last_write_time(sourcePath);
-
-					if (sourceTime > csoTime)
+					// Ensure both files exist before comparing timestamps
+					if (!std::filesystem::exists(csoPath) || !std::filesystem::exists(sourcePath))
+					{
 						recompile = true;
+					}
+					else
+					{
+						std::filesystem::file_time_type csoTime = std::filesystem::last_write_time(csoPath);
+						std::filesystem::file_time_type sourceTime = std::filesystem::last_write_time(sourcePath);
+
+						if (sourceTime > csoTime)
+							recompile = true;
+					}
 				}
 
 				if (recompile || ImGui::Button("Recompile"))
@@ -896,7 +904,7 @@ bool Content::RenderUI(ID3D11Device *device)
 					{
 						// Recompilation failed, likely due to a syntax error in the shader.
 						// Touch the cso file to prevent continuous recompilation attempts until the source file is modified again.
-						std::string csoPath = PATH_FILE_EXT(ASSET_COMPILED_PATH_CSO, shaderNames[i], "cso");
+						std::string csoPath = PATH_FILE_EXT(INTERNAL_COMPILED_PATH_CSO, shaderNames[i], "cso");
 						std::filesystem::last_write_time(csoPath, std::filesystem::file_time_type::clock::now());
 					}
 				}
@@ -1595,7 +1603,7 @@ ID3DBlob *Content::CompileShader(ID3D11Device *device, const std::string &path, 
 	// Save compiled shader to cso path for future loading
 	{
 		std::string shaderName = std::filesystem::path(path).stem().string();
-		std::string csoPath = PATH_FILE_EXT(ASSET_COMPILED_PATH_CSO, shaderName, "cso");
+		std::string csoPath = PATH_FILE_EXT(INTERNAL_COMPILED_PATH_CSO, shaderName, "cso");
 		std::ofstream writer(csoPath, std::ios::binary);
 
 		if (writer.is_open())

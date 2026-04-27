@@ -86,12 +86,6 @@ namespace WellEngine
 			return instance;
 		}
 
-		[[nodiscard]] static const std::string &GetRegistryPath()
-		{
-			static const std::string path = ASSET_REGISTRY_PATH "\\ContentRegistry.json";
-			return path;
-		}
-
 		// General
 		bool OpenRegistry();
 		bool SaveRegistry();

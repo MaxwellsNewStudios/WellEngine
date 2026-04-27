@@ -76,7 +76,7 @@ int EngineCore::Init()
 
 	DbgMsg("Bindings Setup..."); LogIndentIncr();
 	BindingCollection *inputBindings = BindingCollection::GetInstance();
-	inputBindings->LoadBindings(ASSET_FILE_BINDINGS);
+	inputBindings->LoadBindings(INTERNAL_FILE_BINDINGS);
 	LogIndentDecr();
 
 	DbgMsg("Window Setup..."); LogIndentIncr();

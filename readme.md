@@ -59,3 +59,5 @@ Shouldn't require any prerequisites. Only supported platform is Windows.
 - [Tracy](https://github.com/wolfpld/tracy) for frame capture
 - [DirectXTex](https://github.com/microsoft/DirectXTex) for texture loading, manipulation & block compression
 - [stb](https://github.com/nothings/stb) for texture loading
+- [assimp](https://github.com/assimp/assimp) for mesh loading
+- [bvh](https://github.com/madmann91/bvh) for mesh bvh generation & mesh-ray intersection

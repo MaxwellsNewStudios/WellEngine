@@ -10,31 +10,7 @@ using namespace InputBindings;
 
 void BindingCollection::SaveBindings(const std::string &path)
 {
-	/*
-	// Create JSON document
-	json::Document doc;
-	json::Document::AllocatorType &docAlloc = doc.GetAllocator();
-
-	json::Value bindingsObj(json::kObjectType);
-	{
-		settingsObj.AddMember("Transform Snap", data.transformSnap, docAlloc);
-		settingsObj.AddMember("UI Layout", SerializerUtils::SerializeString(data.layoutName, docAlloc), docAlloc);
-		// Save all settings here...
-	}
-	doc.SetObject().AddMember("Settings", settingsObj, docAlloc);
-
-	// Write doc to file
-	std::ofstream file(path, std::ios::out);
-	if (!file)
-		ErrMsg("Could not save bindings file!");
-
-	json::StringBuffer buffer;
-	json::PrettyWriter<json::StringBuffer> writer(buffer);
-	doc.Accept(writer);
-
-	file << buffer.GetString();
-	file.close();
-	*/
+	// TODO
 }
 
 
@@ -120,7 +96,7 @@ void BindingCollection::LoadBindings(const std::string &path)
 		std::ifstream dataFile(path);
 
 		if (!dataFile.is_open())
-			return; // No data file exists, nothing to load.
+			return; // No bindings file exists, nothing to load.
 
 		std::string fileContents;
 		dataFile.seekg(0, std::ios::beg);

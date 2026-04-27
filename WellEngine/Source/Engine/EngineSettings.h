@@ -134,35 +134,40 @@
 
 
 #pragma region Path Configuration Defines
-#define ENGINE_PATH_SHADERS				"..\\WellEngine\\Source\\Shaders"
+#define ENGINE_PATH_SHADERS				SOLUTION_DIR "WellEngine\\Source\\Shaders"
 
-#define ASSET_PATH						"..\\Assets"
-#define ASSET_PATH_SCENES				ASSET_PATH "\\Scenes"
-#define ASSET_PATH_SAVES				ASSET_PATH "\\Saves"
-#define ASSET_PATH_PREFABS				ASSET_PATH "\\Prefabs"
-#define ASSET_PATH_MESHES				ASSET_PATH "\\Meshes"
-#define ASSET_PATH_TEXTURES				ASSET_PATH "\\Textures"
-#define ASSET_PATH_SOUNDS				ASSET_PATH "\\Sounds"
+#define INTERNAL_PATH					SOLUTION_DIR "Internal"
+#define INTERNAL_REGISTRY_PATH			INTERNAL_PATH "\\Registry"
+#define INTERNAL_REGISTRY_FILE			INTERNAL_REGISTRY_PATH "\\ContentRegistry.json"
+
+#define INTERNAL_COMPILED_PATH			INTERNAL_PATH "\\Compiled"
+#define INTERNAL_COMPILED_PATH_CSO		INTERNAL_COMPILED_PATH "\\Shaders"
+#define INTERNAL_COMPILED_PATH_TEXTURES	INTERNAL_COMPILED_PATH "\\Textures"
+#define INTERNAL_COMPILED_FILE_MESHES	INTERNAL_COMPILED_PATH "\\CompiledContent"
+
+#define ASSET_PATH						SOLUTION_DIR "Assets"
 #define ASSET_PATH_FONTS				ASSET_PATH "\\Fonts"
-#define ASSET_FILE_BINDINGS				ASSET_PATH "\\Bindings.json"
-#define ASSET_EXT_SCENE					"scene"
-#define ASSET_EXT_SAVE					"save"
-#define ASSET_EXT_PREFAB				"prefab"
+#define ASSET_PATH_MESHES				ASSET_PATH "\\Meshes"
+#define ASSET_PATH_SOUNDS				ASSET_PATH "\\Sounds"
+#define ASSET_PATH_TEXTURES				ASSET_PATH "\\Textures"
 #define ASSET_EXT_FONT					"ttf"
-#define ASSET_EXT_FONT_ATLAS			"atlas"
 
-#define ASSET_REGISTRY_PATH				ASSET_PATH "\\_Registry"
-
-#define ASSET_COMPILED_PATH				ASSET_PATH "\\_Compiled"
-#define ASSET_COMPILED_PATH_CSO			ASSET_COMPILED_PATH "\\Shaders"
-#define ASSET_COMPILED_PATH_TEXTURES	ASSET_COMPILED_PATH "\\Textures"
-#define ASSET_COMPILED_FILE_MESHES		ASSET_COMPILED_PATH "\\CompiledContent"
+#define DATA_PATH						SOLUTION_DIR "Data"
+#define DATA_PATH_SAVES					DATA_PATH "\\Saves"
+#define DATA_PATH_ATLAS					DATA_PATH "\\Atlas"
+#define DATA_PATH_PREFABS				DATA_PATH "\\Prefabs"
+#define DATA_PATH_SCENES				DATA_PATH "\\Scenes"
+#define DATA_FILE_BINDINGS				DATA_PATH "\\Bindings.json"
+#define DATA_EXT_SAVE					"save"
+#define DATA_EXT_SCENE					"scene"
+#define DATA_EXT_PREFAB					"prefab"
+#define DATA_EXT_FONT_ATLAS				"atlas"
 
 #ifdef USE_IMGUI
-#define ASSETS_EDITOR_PATH				ASSET_PATH "\\Editor"
-#define ASSETS_EDITOR_PATH_LAYOUTS		ASSETS_EDITOR_PATH "\\Layouts"
+#define DATA_EDITOR_PATH				DATA_PATH "\\Editor"
+#define DATA_EDITOR_PATH_LAYOUTS		DATA_EDITOR_PATH "\\Layouts"
 
-#define BEHAVIOURS_PATH					"../WellEngine/Source/Game/Behaviours"
+#define BEHAVIOURS_PATH					SOLUTION_DIR "WellEngine/Source/Game/Behaviours"
 #endif
 
 #define PATH_FILE(path, file)			std::format("{}\\{}", path, file)

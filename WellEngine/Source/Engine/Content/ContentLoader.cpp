@@ -708,7 +708,7 @@ std::string WellEngine::GetTextureBakePath(const std::string &file)
 	size_t lastDot = assetPath.find_last_of('.');
 	assetPath = assetPath.substr(0, lastDot);
 
-	return PATH_FILE_EXT(ASSET_COMPILED_PATH_TEXTURES, assetPath, "dds");
+	return PATH_FILE_EXT(INTERNAL_COMPILED_PATH_TEXTURES, assetPath, "dds");
 }
 
 bool WellEngine::LoadDDSTextureFromFile(

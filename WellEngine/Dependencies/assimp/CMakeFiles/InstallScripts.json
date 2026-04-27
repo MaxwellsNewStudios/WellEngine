@@ -1,0 +1,11 @@
+{
+	"InstallScripts" : 
+	[
+		"C:/Users/edvin/Desktop/Projects/WellEngine/WellEngine/Dependencies/assimp/cmake_install.cmake",
+		"C:/Users/edvin/Desktop/Projects/WellEngine/WellEngine/Dependencies/assimp/contrib/zlib/cmake_install.cmake",
+		"C:/Users/edvin/Desktop/Projects/WellEngine/WellEngine/Dependencies/assimp/code/cmake_install.cmake",
+		"C:/Users/edvin/Desktop/Projects/WellEngine/WellEngine/Dependencies/assimp/test/cmake_install.cmake",
+		"C:/Users/edvin/Desktop/Projects/WellEngine/WellEngine/Dependencies/assimp/test/headercheck/cmake_install.cmake"
+	],
+	"Parallel" : false
+}

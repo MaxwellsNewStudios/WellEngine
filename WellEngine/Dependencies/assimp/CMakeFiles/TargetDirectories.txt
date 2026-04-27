@@ -1,0 +1,13 @@
+C:/Users/edvin/Desktop/Projects/WellEngine/WellEngine/Dependencies/assimp/CMakeFiles/uninstall.dir
+C:/Users/edvin/Desktop/Projects/WellEngine/WellEngine/Dependencies/assimp/CMakeFiles/UpdateAssimpLibsDebugSymbolsAndDLLs.dir
+C:/Users/edvin/Desktop/Projects/WellEngine/WellEngine/Dependencies/assimp/CMakeFiles/INSTALL.dir
+C:/Users/edvin/Desktop/Projects/WellEngine/WellEngine/Dependencies/assimp/CMakeFiles/ALL_BUILD.dir
+C:/Users/edvin/Desktop/Projects/WellEngine/WellEngine/Dependencies/assimp/CMakeFiles/ZERO_CHECK.dir
+C:/Users/edvin/Desktop/Projects/WellEngine/WellEngine/Dependencies/assimp/contrib/zlib/CMakeFiles/zlibstatic.dir
+C:/Users/edvin/Desktop/Projects/WellEngine/WellEngine/Dependencies/assimp/contrib/zlib/CMakeFiles/INSTALL.dir
+C:/Users/edvin/Desktop/Projects/WellEngine/WellEngine/Dependencies/assimp/contrib/zlib/CMakeFiles/ALL_BUILD.dir
+C:/Users/edvin/Desktop/Projects/WellEngine/WellEngine/Dependencies/assimp/code/CMakeFiles/assimp.dir
+C:/Users/edvin/Desktop/Projects/WellEngine/WellEngine/Dependencies/assimp/code/CMakeFiles/INSTALL.dir
+C:/Users/edvin/Desktop/Projects/WellEngine/WellEngine/Dependencies/assimp/test/CMakeFiles/unit.dir
+C:/Users/edvin/Desktop/Projects/WellEngine/WellEngine/Dependencies/assimp/test/CMakeFiles/INSTALL.dir
+C:/Users/edvin/Desktop/Projects/WellEngine/WellEngine/Dependencies/assimp/test/headercheck/CMakeFiles/INSTALL.dir

@@ -33,6 +33,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SystemRegistration", "Build
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ContentRegistration", "BuildTools\ContentRegistration\ContentRegistration.vcxproj", "{A8AC9545-BA4C-4055-A412-5EFE5A33F44C}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "assimp", "WellEngine\Dependencies\assimp\code\assimp.vcxproj", "{3CFAED80-C331-3D80-B9FB-BEDF6C9D7345}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -88,6 +90,12 @@ Global
 		{A8AC9545-BA4C-4055-A412-5EFE5A33F44C}.Deploy|x64.Build.0 = Deploy|x64
 		{A8AC9545-BA4C-4055-A412-5EFE5A33F44C}.Release|x64.ActiveCfg = Release|x64
 		{A8AC9545-BA4C-4055-A412-5EFE5A33F44C}.Release|x64.Build.0 = Release|x64
+		{3CFAED80-C331-3D80-B9FB-BEDF6C9D7345}.Debug|x64.ActiveCfg = Debug|x64
+		{3CFAED80-C331-3D80-B9FB-BEDF6C9D7345}.Debug|x64.Build.0 = Debug|x64
+		{3CFAED80-C331-3D80-B9FB-BEDF6C9D7345}.Deploy|x64.ActiveCfg = MinSizeRel|x64
+		{3CFAED80-C331-3D80-B9FB-BEDF6C9D7345}.Deploy|x64.Build.0 = MinSizeRel|x64
+		{3CFAED80-C331-3D80-B9FB-BEDF6C9D7345}.Release|x64.ActiveCfg = Release|x64
+		{3CFAED80-C331-3D80-B9FB-BEDF6C9D7345}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -98,6 +106,7 @@ Global
 		{EE03BB25-FFFC-4238-A41F-849E4179D81C} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
 		{3F8F0C1E-B25C-454E-A477-705C6814537C} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
 		{A8AC9545-BA4C-4055-A412-5EFE5A33F44C} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+		{3CFAED80-C331-3D80-B9FB-BEDF6C9D7345} = {BBB3A8AD-E57C-4420-B0F2-32F08493298B}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {7FE63A67-8E9B-48FD-A12F-93D54B499E91}

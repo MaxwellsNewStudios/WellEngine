@@ -16,8 +16,8 @@ bool Scene::Serialize(bool asSaveFile)
 {
 	ZoneScopedC(RandomUniqueColor());
 
-	const std::string ext = asSaveFile ? ASSET_EXT_SAVE : ASSET_EXT_SCENE;
-	const std::string path = asSaveFile ? ASSET_PATH_SAVES : ASSET_PATH_SCENES;
+	const std::string ext = asSaveFile ? INTERNAL_EXT_SAVE : ASSET_EXT_SCENE;
+	const std::string path = asSaveFile ? INTERNAL_PATH_SAVES : ASSET_PATH_SCENES;
 	const std::string fullPath = PATH_FILE_EXT(path, _sceneName, ext);
 
 #ifdef EDIT_MODE
@@ -206,12 +206,12 @@ bool Scene::Deserialize(bool sceneReload)
 	else
 	{
 		// Check if a save file exists. If so, use it.
-		std::ifstream saveFile(PATH_FILE_EXT(ASSET_PATH_SAVES, _sceneName, ASSET_EXT_SAVE));
+		std::ifstream saveFile(PATH_FILE_EXT(INTERNAL_PATH_SAVES, _sceneName, INTERNAL_EXT_SAVE));
 
 		if (saveFile.is_open())
 		{
-			dir = ASSET_PATH_SAVES;
-			ext = ASSET_EXT_SAVE;
+			dir = INTERNAL_PATH_SAVES;
+			ext = INTERNAL_EXT_SAVE;
 		}
 		else
 		{

@@ -177,7 +177,7 @@ bool ContentRegistry::OpenRegistry()
 	if (IsOpen())
 		return true;
 
-	std::ifstream registryFile(GetRegistryPath(), std::ios::in);
+	std::ifstream registryFile(INTERNAL_REGISTRY_FILE, std::ios::in);
 
 	if (registryFile.is_open())
 	{
@@ -235,7 +235,7 @@ bool ContentRegistry::SaveRegistry()
 	json::PrettyWriter<json::StringBuffer> writer(buffer);
 	_registryDoc->Accept(writer);
 
-	std::ofstream registryFile(GetRegistryPath(), std::ios::out);
+	std::ofstream registryFile(INTERNAL_REGISTRY_FILE, std::ios::out);
 	if (!registryFile)
 	{
 		ErrMsg("Could not save registry!");

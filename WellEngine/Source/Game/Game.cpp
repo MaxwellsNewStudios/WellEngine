@@ -72,7 +72,7 @@ bool Game::LoadContent()
 		DbgMsg("Forcing recompilation of content files...");
 #else // FORCE_COMPILE_CONTENT
 		FILE *compileFile = nullptr;
-		errno_t compileErr = fopen_s(&compileFile, ASSET_COMPILED_FILE_MESHES, "r");
+		errno_t compileErr = fopen_s(&compileFile, INTERNAL_COMPILED_FILE_MESHES, "r");
 
 		if (compileErr != 0 || compileFile == nullptr)
 		{
@@ -89,12 +89,14 @@ bool Game::LoadContent()
 			// If the compiled file is older then recompile anyways.
 			if (!compileContent)
 			{
-				std::filesystem::path compiledPath(ASSET_COMPILED_FILE_MESHES);
+				std::filesystem::path compiledPath(INTERNAL_COMPILED_FILE_MESHES);
+				std::filesystem::path registryPath(INTERNAL_REGISTRY_FILE);
 
-				std::filesystem::file_time_type compiledTime = std::filesystem::last_write_time(compiledPath);
-				std::filesystem::file_time_type registryFile = std::filesystem::last_write_time(ContentRegistry::GetRegistryPath());
+				std::error_code ec; // To prevent exceptions from being thrown in case files don't exist or other filesystem errors occur.
+				std::filesystem::file_time_type compiledTime = std::filesystem::last_write_time(compiledPath, ec);
+				std::filesystem::file_time_type registryTime = std::filesystem::last_write_time(registryPath, ec);
 
-				if (registryFile > compiledTime)
+				if (registryTime > compiledTime)
 				{
 					compileContent = true;
 					DbgMsg("Compiled content file is older than registry file. Recompiling...");
@@ -256,7 +258,7 @@ bool Game::LoadContent()
 		if (lastSlash != std::string::npos)
 			fileName = fileName.substr(lastSlash + 1);
 
-		if (_content.AddShader(_device.Get(), shader.name, shader.path, shader.type, PATH_FILE_EXT(ASSET_COMPILED_PATH_CSO, fileName, "cso")) == CONTENT_NULL)
+		if (_content.AddShader(_device.Get(), shader.name, shader.path, shader.type, PATH_FILE_EXT(INTERNAL_COMPILED_PATH_CSO, fileName, "cso")) == CONTENT_NULL)
 		{
 			ErrMsgF("Failed to add shader {}!", shader.name);
 			return false;
@@ -516,13 +518,13 @@ bool Game::Setup(TimeUtils &time, Window window)
 		Scene *tempScene = nullptr;
 
 		// Search for all .scene files in ASSET_PATH_SCENES
-		for (const auto &entry : std::filesystem::directory_iterator(ASSET_PATH_SCENES))
+		for (const auto &entry : std::filesystem::directory_iterator(DATA_PATH_SCENES))
 		{
 			const auto &path = entry.path();
 			std::string filename = path.filename().string();
 			std::string ext = filename.c_str() + filename.find_last_of('.') + 1;
 
-			if (ext != ASSET_EXT_SCENE)
+			if (ext != DATA_EXT_SCENE)
 				continue; // Skip non-scene files
 
 			filename = filename.substr(0, filename.find_last_of('.'));
@@ -1164,7 +1166,7 @@ bool Game::RenderUI(TimeUtils &time)
 
 								if (ImGui::Button("Delete Scene"))
 								{
-									std::string sceneFilePath = PATH_FILE_EXT(ASSET_PATH_SCENES, sceneName, ASSET_EXT_SCENE);
+									std::string sceneFilePath = PATH_FILE_EXT(DATA_PATH_SCENES, sceneName, DATA_EXT_SCENE);
 									std::filesystem::remove(sceneFilePath);
 									_pendingSceneRemovals.push_back(sceneName);
 									ImGui::CloseCurrentPopup();
@@ -1784,7 +1786,7 @@ bool Game::RenderUI(TimeUtils &time)
 			if (ImGui::Button("Launch Tracy Profiler"))
 			{
 				::ShellExecuteA(NULL, "open",
-					"..\\WellEngine\\Dependencies\\tracy-0.11.1\\Tracy\\tracy-profiler.exe",
+					SOLUTION_DIR "\\WellEngine\\Dependencies\\tracy-0.11.1\\Tracy\\tracy-profiler.exe",
 					NULL, NULL, SW_SHOWDEFAULT
 				);
 			}
