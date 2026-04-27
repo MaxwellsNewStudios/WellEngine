@@ -8,6 +8,7 @@ namespace WellEngine
 	{
 	public:
 		std::string_view GetName() const override { return "SphereCollider"; }
+		std::string_view GetScriptPath() const override { return __FILE__; }
 
 	private:
 		float _radius = 1.0f;

@@ -2106,79 +2106,8 @@ bool Entity::InitialRenderUI()
 					ImGuiUtils::BeginButtonStyle(ImGuiUtils::StyleType::Yellow);
 					if (ImGuiUtils::ButtonWithFont(ICON_FA_FILE_CODE "##OpenScript", FONT_ICON_FILE_NAME_FAS, 15.0f, buttonSize))
 					{
-						// Get path from Behaviour Registry
-						const std::string &behCategory = BehaviourRegistry::GetCategories().at(behName);
-						std::string scriptPath = std::format(BEHAVIOURS_PATH "/{}B_{}.cpp", behCategory, behName);
-
-						// Replace all / with \ for Windows
-						std::replace(scriptPath.begin(), scriptPath.end(), '/', '\\');
-
-						DbgMsgF("Opening '{}'", scriptPath);
-
-						// Open script with default program
-						SHELLEXECUTEINFOA sei = { 0 };
-						sei.cbSize = sizeof(SHELLEXECUTEINFOA);
-						sei.fMask = SEE_MASK_NOCLOSEPROCESS | SEE_MASK_NOASYNC | SEE_MASK_WAITFORINPUTIDLE;
-						sei.hwnd = nullptr;
-						sei.lpVerb = "open";
-						sei.lpFile = scriptPath.c_str();
-						sei.lpParameters = nullptr;
-						sei.lpDirectory = nullptr;
-						sei.nShow = SW_SHOWNORMAL;
-
-						if (!ShellExecuteExA(&sei))
-						{
-							WarnF("Failed to open script '{}' with error code {}", scriptPath, GetLastError());
-						}
-						else
-						{
-							if (!sei.hProcess)
-							{
-								std::this_thread::sleep_for(std::chrono::milliseconds(200));
-								ShellExecuteExA(&sei);
-							}
-
-							struct WINDOWPROCESSINFO {
-								DWORD pid;
-								HWND hwnd;
-							};
-
-							// Get the window handle of the opened process and set it to foreground
-							WINDOWPROCESSINFO info{};
-							info.pid = GetProcessId(sei.hProcess);
-							info.hwnd = 0;
-
-							AllowSetForegroundWindow(info.pid);
-
-							// Sleep for a short time to allow the process to open the file and create a window
-							std::this_thread::sleep_for(std::chrono::milliseconds(500));
-
-							EnumWindows(
-								[](HWND hwnd, LPARAM lParam) -> BOOL {
-									WINDOWPROCESSINFO *infoPtr = (WINDOWPROCESSINFO *)lParam;
-									DWORD check = 0;
-									BOOL br = TRUE;
-									GetWindowThreadProcessId(hwnd, &check);
-
-									if (check == infoPtr->pid)
-									{
-										infoPtr->hwnd = hwnd;
-										br = FALSE;
-									}
-
-									return br;
-								},
-								(LPARAM)&info
-							);
-
-							if (info.hwnd != 0)
-							{
-								SetForegroundWindow(info.hwnd);
-								SetActiveWindow(info.hwnd);
-							}
-
-							CloseHandle(sei.hProcess);
-						}
+						std::string_view scriptPath = behaviour.Get()->GetScriptPath();
+						WellEngine::OpenFile(scriptPath.data());
 					}
 					ImGuiUtils::EndButtonStyle();
 

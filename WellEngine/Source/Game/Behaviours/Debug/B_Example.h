@@ -9,6 +9,7 @@ namespace WellEngine
 	{
 	public:
 		std::string_view GetName() const override { return "Example"; }
+		std::string_view GetScriptPath() const override { return __FILE__; }
 
 	private:
 		bool _hasCreatedChild = false;

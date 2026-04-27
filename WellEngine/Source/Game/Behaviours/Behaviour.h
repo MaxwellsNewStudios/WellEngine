@@ -36,6 +36,7 @@ namespace WellEngine
 	{
 	public:
 		virtual std::string_view GetName() const = 0;
+		virtual std::string_view GetScriptPath() const = 0;
 
 	private:
 		bool _isInitialized = false;

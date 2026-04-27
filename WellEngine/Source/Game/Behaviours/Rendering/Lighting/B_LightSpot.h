@@ -28,6 +28,7 @@ namespace WellEngine
 	{
 	public:
 		std::string_view GetName() const override { return "LightSpot"; }
+		std::string_view GetScriptPath() const override { return __FILE__; }
 
 	private:
 		ProjectionInfo _initialProjInfo = { };

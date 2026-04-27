@@ -11,6 +11,7 @@ namespace WellEngine
 	{
 	public:
 		std::string_view GetName() const override { return "PhysicsForce"; }
+		std::string_view GetScriptPath() const override { return __FILE__; }
 
 	private:
 		dx::XMFLOAT3 _force = { 0, 0, 0 };

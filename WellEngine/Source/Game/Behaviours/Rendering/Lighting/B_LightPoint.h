@@ -27,6 +27,7 @@ namespace WellEngine
 	{
 	public:
 		std::string_view GetName() const override { return "LightPoint"; }
+		std::string_view GetScriptPath() const override { return __FILE__; }
 
 	private:
 		CameraPlanes _initialCameraPlanes = { 0.1f, 1.0f };

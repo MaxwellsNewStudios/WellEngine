@@ -282,6 +282,7 @@ $(SolutionDir)BuildTools\SystemRegistration\x64\$(Configuration)\SystemRegistrat
   <ItemGroup>
     <ClInclude Include="..\Tests\TestUtils.h" />
     <ClInclude Include="AppMain.h" />
+    <ClInclude Include="Source\Engine\Utils\FileOpener.h" />
     <ClInclude Include="Source\Game\Behaviours\Physics\B_PhysicsForce.h" />
     <ClInclude Include="Source\Game\Behaviours\Physics\Colliders\B_BoxCollider.h" />
     <ClInclude Include="Source\Game\Behaviours\Physics\Colliders\B_Collider.h" />
@@ -749,6 +750,7 @@ $(SolutionDir)BuildTools\SystemRegistration\x64\$(Configuration)\SystemRegistrat
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AppMain.cpp" />
+    <ClCompile Include="Source\Engine\Utils\FileOpener.cpp" />
     <ClCompile Include="Source\Game\Behaviours\Physics\B_PhysicsForce.cpp" />
     <ClCompile Include="Source\Game\Behaviours\Physics\Colliders\B_BoxCollider.cpp" />
     <ClCompile Include="Source\Game\Behaviours\Physics\Colliders\B_Collider.cpp" />

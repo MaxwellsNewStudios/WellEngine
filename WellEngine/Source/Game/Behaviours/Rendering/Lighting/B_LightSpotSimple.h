@@ -24,6 +24,7 @@ namespace WellEngine
 	{
 	public:
 		std::string_view GetName() const override { return "LightSpotSimple"; }
+		std::string_view GetScriptPath() const override { return __FILE__; }
 
 	private:
 		dx::XMFLOAT3 _color = { 1.0f, 1.0f, 1.0f };

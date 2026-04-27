@@ -10,6 +10,7 @@ namespace WellEngine
 	{
 	public:
 		std::string_view GetName() const override { return "MeshText"; }
+		std::string_view GetScriptPath() const override { return __FILE__; }
 
 	private:
 		Ref<B_Mesh> _meshBehaviour = nullptr;

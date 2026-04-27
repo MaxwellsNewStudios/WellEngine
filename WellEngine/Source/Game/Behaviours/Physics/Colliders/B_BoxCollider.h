@@ -8,6 +8,7 @@ namespace WellEngine
 	{
 	public:
 		std::string_view GetName() const override { return "BoxCollider"; }
+		std::string_view GetScriptPath() const override { return __FILE__; }
 
 	private:
 		dx::XMFLOAT3A 
