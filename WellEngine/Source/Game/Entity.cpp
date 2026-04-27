@@ -2108,7 +2108,7 @@ bool Entity::InitialRenderUI()
 					{
 						// Get path from Behaviour Registry
 						const std::string &behCategory = BehaviourRegistry::GetCategories().at(behName);
-						std::string scriptPath = std::format(BEHAVIOURS_PATH "/{}{}.cpp", behCategory, behName);
+						std::string scriptPath = std::format(BEHAVIOURS_PATH "/{}B_{}.cpp", behCategory, behName);
 
 						// Replace all / with \ for Windows
 						std::replace(scriptPath.begin(), scriptPath.end(), '/', '\\');
