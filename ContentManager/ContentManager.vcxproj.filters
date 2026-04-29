@@ -15,18 +15,18 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Registry\RegistryAssetFileManager.cpp">
+    <ClCompile Include="include\Registry\RegistryAssetFileManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Registry\RegistryAssetFileManager.h">
+    <ClInclude Include="include\Registry\RegistryAssetFileManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Internal\Internal.h">
+    <ClInclude Include="include\Internal\Internal.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Common.h">
+    <ClInclude Include="include\Internal\Common.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

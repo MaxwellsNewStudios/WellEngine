@@ -108,7 +108,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <WholeProgramOptimization>false</WholeProgramOptimization>
-      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(SolutionDir);$(ProjectDir);$(ProjectDir)Source\;$(ProjectDir)Dependencies\SDL3\include\;$(ProjectDir)Dependencies\rapidjson\include\;$(ProjectDir)Dependencies\JoltPhysics\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(SolutionDir);$(SolutionDir)ContentManager\include\;$(ProjectDir);$(ProjectDir)Source\;$(ProjectDir)Dependencies\SDL3\include\;$(ProjectDir)Dependencies\rapidjson\include\;$(ProjectDir)Dependencies\JoltPhysics\</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>4244;6993;4018;4267;4006;26813;5030;5222;%(DisableSpecificWarnings)</DisableSpecificWarnings>
       <MinimalRebuild>false</MinimalRebuild>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
@@ -170,7 +170,7 @@ $(SolutionDir)BuildTools\ContentRegistration\x64\$(Configuration)\ContentRegistr
       <Optimization>MaxSpeed</Optimization>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
-      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(SolutionDir);$(ProjectDir);$(ProjectDir)Source\;$(ProjectDir)Dependencies\SDL3\include\;$(ProjectDir)Dependencies\rapidjson\include\;$(ProjectDir)Dependencies\JoltPhysics\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(SolutionDir);$(SolutionDir)ContentManager\include\;$(ProjectDir);$(ProjectDir)Source\;$(ProjectDir)Dependencies\SDL3\include\;$(ProjectDir)Dependencies\rapidjson\include\;$(ProjectDir)Dependencies\JoltPhysics\</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>4244;6993;4018;4267;4006;26813;5030;5222;%(DisableSpecificWarnings)</DisableSpecificWarnings>
       <MinimalRebuild>false</MinimalRebuild>
       <StringPooling>true</StringPooling>
@@ -238,7 +238,7 @@ $(SolutionDir)BuildTools\ContentRegistration\x64\$(Configuration)\ContentRegistr
       <Optimization>MaxSpeed</Optimization>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
-      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(SolutionDir);$(ProjectDir);$(ProjectDir)Source\;$(ProjectDir)Dependencies\SDL3\include\;$(ProjectDir)Dependencies\rapidjson\include\;$(ProjectDir)Dependencies\JoltPhysics\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(SolutionDir);$(SolutionDir)ContentManager\include\;$(ProjectDir);$(ProjectDir)Source\;$(ProjectDir)Dependencies\SDL3\include\;$(ProjectDir)Dependencies\rapidjson\include\;$(ProjectDir)Dependencies\JoltPhysics\</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>4244;6993;4018;4267;4006;26813;5030;5222;%(DisableSpecificWarnings)</DisableSpecificWarnings>
       <StringPooling>true</StringPooling>
       <FloatingPointExceptions>false</FloatingPointExceptions>
@@ -278,6 +278,12 @@ $(SolutionDir)BuildTools\ContentRegistration\x64\$(Configuration)\ContentRegistr
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ProjectReference Include="..\ContentManager\ContentManager.vcxproj">
+      <Project>{7169feb5-f812-4987-b77d-234f75090756}</Project>
+    </ProjectReference>
+    <ProjectReference Include="Dependencies\rapidjson\rapidjson.vcxproj">
+      <Project>{5e296aeb-0b0f-4c5f-b77a-54354af1c7b0}</Project>
+    </ProjectReference>
     <ProjectReference Include="Dependencies\SDL3\VisualC\SDL\SDL.vcxproj">
       <Project>{81ce8daf-ebb2-4761-8e45-b71abcca8c68}</Project>
     </ProjectReference>
