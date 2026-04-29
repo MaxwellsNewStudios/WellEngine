@@ -125,7 +125,6 @@ namespace json = rapidjson;
 #include "Engine/Utils/FileOpener.h"
 #include "Engine/Content/Material.h"
 #include "Engine/Content/DirectoryManager.h"
-#include "Engine/Content/ContentRegistry.h"
 #include "Engine/Rendering/RendererInfo.h"
 #include "Engine/Rendering/RenderQueuer.h"
 #include "Engine/Window/Window.h"

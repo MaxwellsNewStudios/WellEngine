@@ -6,7 +6,6 @@
 
 #include "Material.h"
 #include "FontAtlas.h"
-#include "ContentRegistry.h"
 #include "Engine/D3D/MeshD3D11.h"
 #include "Engine/D3D/ShaderD3D11.h"
 #include "Engine/D3D/SamplerD3D11.h"
@@ -236,10 +235,6 @@ namespace WellEngine
 		const Material *GetOrAddMaterial(Material mat);
 		[[nodiscard]] const Material *GetDefaultMaterial();
 		[[nodiscard]] const Material *GetErrorMaterial();
-
-
-		[[nodiscard]] bool CompileContent(const std::vector<AssetRegistryEntry> &meshNames) const;
-		[[nodiscard]] bool DecompileContent(ID3D11Device *device);
 
 
 	#ifdef USE_IMGUI

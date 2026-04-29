@@ -26,6 +26,12 @@ namespace ContentManager::Registry
 		std::vector<char> properties = {};
 	};
 
+	struct AssetRegistryPair
+	{
+		std::string assetPath = "";
+		RegistryData reg = {};
+	};
+
 	void RegisterAsset(const std::string &assetPath, const RegistryData &registry);
 
 	[[nodiscard]] RegistryData GetAssetRegistry(const std::string &assetPath);

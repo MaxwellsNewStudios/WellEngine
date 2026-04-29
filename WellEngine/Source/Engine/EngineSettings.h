@@ -152,7 +152,6 @@
 #define WE_D_COMPILED					WE_D_INTERNAL "\\Compiled"
 #define WE_D_COMPILED_CSO				WE_D_COMPILED "\\Shaders"
 #define WE_D_COMPILED_TEXTURE			WE_D_COMPILED "\\Textures"
-#define WE_F_COMPILED_MESH				WE_D_COMPILED "\\CompiledContent"
 
 #define WE_D_ASSET						TO_SOLUTION_PATH "Content"
 #define WE_D_ASSET_FONT					WE_D_ASSET "\\Fonts"

@@ -2,6 +2,7 @@
 #include "Game.h"
 #include "Engine/Debug/DebugData.h"
 #include "Engine/UI/UILayout.h"
+#include "Registry/RegistryAssetFileManager.h"
 
 #ifdef LEAK_DETECTION
 #define new			DEBUG_NEW
@@ -46,96 +47,64 @@ bool Game::LoadContent()
 {
 	ZoneScopedC(RandomUniqueColor());
 
-	using namespace SerializerUtils;
-	using namespace WellEngine::ContentRegistryTags;
+	std::vector<std::string> assetRegistryFiles = ContentManager::Registry::GetRegisteredAssetsInDirectory(WE_D_ASSET, true);
+	std::vector<std::string> shaderRegistryFiles = ContentManager::Registry::GetRegisteredAssetsInDirectory(WE_D_ENGINE_SHADER, true);
 
-	ContentRegistry &cReg = ContentRegistry::Instance();
-	if (!cReg.OpenRegistry())
+	std::vector<ContentManager::Registry::AssetRegistryPair> meshList;
+	std::vector<ContentManager::Registry::AssetRegistryPair> tex2dList;
+	std::vector<ContentManager::Registry::AssetRegistryPair> texCubeList;
+	std::vector<ContentManager::Registry::AssetRegistryPair> shaderList;
+
+	for (const std::string &registryFile : assetRegistryFiles)
 	{
-		ErrMsg("Failed to open content registry!");
-		return false;
+		ContentManager::Registry::AssetRegistryPair entry{ 
+			registryFile, 
+			ContentManager::Registry::GetAssetRegistry(registryFile)
+		};
+
+		entry.assetPath = TO_SOLUTION_PATH + entry.assetPath;
+
+		if (entry.reg.header.assetType == "mesh")
+			meshList.emplace_back(entry);
+		else if (entry.reg.header.assetType == "tex2d")
+			tex2dList.emplace_back(entry);
+		else if (entry.reg.header.assetType == "texcube")
+			texCubeList.emplace_back(entry);
 	}
 
-	auto assetTypeMap = cReg.GetAssetTypeMap();
-	auto &meshList = assetTypeMap["mesh"]; // Unused for now
-	auto &tex2dList = assetTypeMap["tex2d"];
-	auto &texCubeList = assetTypeMap["texcube"];
-	auto &shaderList = assetTypeMap["shader"];
-
-	// Determine if a compiled content file exists or if it needs to be created
+	for (const std::string &registryFile : shaderRegistryFiles)
 	{
-		bool compileContent = false;
+		ContentManager::Registry::AssetRegistryPair entry{ 
+			registryFile, 
+			ContentManager::Registry::GetAssetRegistry(registryFile)
+		};
 
-#ifdef FORCE_COMPILE_CONTENT
-		compileContent = true;
-		DbgMsg("Forcing recompilation of content files...");
-#else // FORCE_COMPILE_CONTENT
-		FILE *compileFile = nullptr;
-		errno_t compileErr = fopen_s(&compileFile, WE_F_COMPILED_MESH, "r");
+		entry.assetPath = TO_SOLUTION_PATH + entry.assetPath;
 
-		if (compileErr != 0 || compileFile == nullptr)
-		{
-			compileContent = true;
-			DbgMsg("No compiled content file found. Recompiling...");
-		}
-
-		if (compileFile != nullptr)
-		{
-			fclose(compileFile);
-
-#ifdef AUTO_RECOMPILE_CONTENT_ON_CHANGE
-			// Compare the age of the compiled file to the registry file & newest mesh file.
-			// If the compiled file is older then recompile anyways.
-			if (!compileContent)
-			{
-				std::filesystem::path compiledPath(WE_F_COMPILED_MESH);
-				std::filesystem::path registryPath(WE_F_REGISTRY);
-
-				std::error_code ec; // To prevent exceptions from being thrown in case files don't exist or other filesystem errors occur.
-				std::filesystem::file_time_type compiledTime = std::filesystem::last_write_time(compiledPath, ec);
-				std::filesystem::file_time_type registryTime = std::filesystem::last_write_time(registryPath, ec);
-
-				if (registryTime > compiledTime)
-				{
-					compileContent = true;
-					DbgMsg("Compiled content file is older than registry file. Recompiling...");
-				}
-				else
-				{
-					std::filesystem::file_time_type newestMeshTime = DirectoryManager::GetMostRecentFileDate(WE_D_ASSET_MESH);
-
-					if (newestMeshTime > compiledTime)
-					{
-						compileContent = true;
-						DbgMsg("Compiled content file is older than source mesh files. Recompiling...");
-					}
-				}
-			}
-#endif // AUTO_RECOMPILE_CONTENT_ON_CHANGE
-		}
-#endif // FORCE_COMPILE_CONTENT
-
-		std::string line;
-		if (compileContent)
-		{
-			TimeUtils::GetInstance().TakeSnapshot("CompileContent");
-			if (!_content.CompileContent(meshList))
-			{
-				ErrMsg("Failed to compile content!");
-				return false;
-			}
-			TimeUtils::GetInstance().TakeSnapshot("CompileContent");
-
-			// Print content compile times.
-			DbgMsgF("Content Compile: {} s", TimeUtils::GetInstance().CompareSnapshots("CompileContent"));
-		}
+		if (entry.reg.header.assetType == "shader")
+			shaderList.emplace_back(entry);
 	}
 
 	DbgMsg("Decompiling Content (Meshes)...");
-	if (!_content.DecompileContent(_device.Get()))
+	for (auto &entry : meshList)
 	{
-		ErrMsg("Failed to decompile content!");
-		return false;
+		std::string name = entry.reg.header.alias;
+		if (name.empty())
+			name = entry.assetPath;
+
+		size_t lastSlash = name.find_last_of("/\\");
+		if (lastSlash != std::string::npos)
+			name = name.substr(lastSlash + 1);
+
+		size_t lastDot = name.find_last_of('.');
+		if (lastDot != std::string::npos)
+			name = name.substr(0, lastDot);
+
+		if (_content.AddMesh(_device.Get(), name, entry.assetPath.c_str(), false) == CONTENT_NULL)
+		{
+			ErrMsgF("Failed to add mesh {}!", name);
+			return false;
+		}
 	}
 
 	int meshCount = (int)_content.GetMeshCount();
@@ -171,23 +140,26 @@ bool Game::LoadContent()
 			auto &entry = texCubeList[i];
 
 			TextureData cubemap = {};
-			cubemap.name = entry.path;
-			cubemap.path = (*entry.asset)[PATH_TAG].GetString();
+			cubemap.path = entry.assetPath;
 
-			if (entry.asset->HasMember("Format"))
-				cubemap.type = D3D11FormatData::TypeFromName((*entry.asset)["Format"].GetString());
-			else
-				cubemap.type = DXGI_FORMAT_UNKNOWN;
+			cubemap.name = entry.reg.header.alias;
+			if (cubemap.name.empty())
+				cubemap.name = entry.assetPath;
 
-			if (entry.asset->HasMember("Mipmapped"))
-				cubemap.mipmapped = (*entry.asset)["Mipmapped"].GetBool();
-			else
-				cubemap.mipmapped = false;
+			size_t lastSlash = cubemap.name.find_last_of("/\\");
+			if (lastSlash != std::string::npos)
+				cubemap.name = cubemap.name.substr(lastSlash + 1);
 
-			if (entry.asset->HasMember("Downsample"))
-				cubemap.downsample = (*entry.asset)["Downsample"].GetInt();
-			else
-				cubemap.downsample = 0;
+			size_t lastDot = cubemap.name.find_last_of('.');
+			if (lastDot != std::string::npos)
+				cubemap.name = cubemap.name.substr(0, lastDot);
+
+			size_t offset = 0;
+			cubemap.type = *((DXGI_FORMAT *)(&(entry.reg.properties[0])));
+			offset += sizeof(DXGI_FORMAT);
+			cubemap.mipmapped = *((bool *)(&(entry.reg.properties[offset])));
+			offset += sizeof(bool);
+			cubemap.downsample = *((int *)(&(entry.reg.properties[offset])));
 
 			if (_content.AddCubemap(
 				_device.Get(), _immediateContext.Get(),
@@ -210,23 +182,26 @@ bool Game::LoadContent()
 		auto &entry = tex2dList[i];
 
 		TextureData texture = {};
-		texture.name = entry.path;
-		texture.path = (*entry.asset)[PATH_TAG].GetString();
+		texture.path = entry.assetPath;
 
-		if (entry.asset->HasMember("Format"))
-			texture.type = D3D11FormatData::TypeFromName((*entry.asset)["Format"].GetString());
-		else
-			texture.type = DXGI_FORMAT_UNKNOWN;
+		texture.name = entry.reg.header.alias;
+		if (texture.name.empty())
+			texture.name = entry.assetPath;
 
-		if (entry.asset->HasMember("Mipmapped"))
-			texture.mipmapped = (*entry.asset)["Mipmapped"].GetBool();
-		else
-			texture.mipmapped = false;
+		size_t lastSlash = texture.name.find_last_of("/\\");
+		if (lastSlash != std::string::npos)
+			texture.name = texture.name.substr(lastSlash + 1);
 
-		if (entry.asset->HasMember("Downsample"))
-			texture.downsample = (*entry.asset)["Downsample"].GetInt();
-		else
-			texture.downsample = 0;
+		size_t lastDot = texture.name.find_last_of('.');
+		if (lastDot != std::string::npos)
+			texture.name = texture.name.substr(0, lastDot);
+
+		size_t offset = 0;
+		texture.type = *((DXGI_FORMAT *)(&(entry.reg.properties[0])));
+		offset += sizeof(DXGI_FORMAT);
+		texture.mipmapped = *((bool *)(&(entry.reg.properties[offset])));
+		offset += sizeof(bool);
+		texture.downsample = *((int *)(&(entry.reg.properties[offset])));
 
 		if (_content.AddTexture(
 			_device.Get(), _immediateContext.Get(),
@@ -247,15 +222,31 @@ bool Game::LoadContent()
 		auto &entry = shaderList[i];
 
 		ShaderData shader = {};
-		shader.name = entry.path;
-		shader.path = (*entry.asset)[PATH_TAG].GetString();
-		shader.type = ShaderTypeUtils::ShaderTypeFromString((*entry.asset)["Format"].GetString());
+		shader.path = entry.assetPath;
+
+		shader.name = entry.reg.header.alias;
+		if (shader.name.empty())
+			shader.name = entry.assetPath;
+
+		size_t lastSlash = shader.name.find_last_of("/\\");
+		if (lastSlash != std::string::npos)
+			shader.name = shader.name.substr(lastSlash + 1);
+
+		size_t lastDot = shader.name.find_last_of('.');
+		if (lastDot != std::string::npos)
+			shader.name = shader.name.substr(0, lastDot);
+
+		shader.type = *((ShaderType *)(&(entry.reg.properties[0])));
 
 		std::string fileName = shader.path;
 		
-		size_t lastSlash = fileName.find_last_of("/\\");
+		lastSlash = fileName.find_last_of("/\\");
 		if (lastSlash != std::string::npos)
 			fileName = fileName.substr(lastSlash + 1);
+
+		lastDot = fileName.find_last_of('.');
+		if (lastDot != std::string::npos)
+			fileName = fileName.substr(0, lastDot);
 
 		if (_content.AddShader(_device.Get(), shader.name, shader.path, shader.type, WE_DFE(WE_D_COMPILED_CSO, fileName, "cso")) == CONTENT_NULL)
 		{
@@ -472,9 +463,6 @@ bool Game::LoadContent()
 		}
 #endif
 	}
-
-
-	cReg.CloseRegistry();
 
 	return true;
 }

@@ -12,7 +12,7 @@ void Registry::RegisterAsset(const std::string &assetPath, const RegistryData &r
 		return;
 
 	// Create registry file by appending registry extension to asset path, not replacing the extension.
-	fs::path registryFilePath = assetFilePath;
+	fs::path registryFilePath(assetFilePath);
 	registryFilePath += REGISTRY_EXT;
 
 	// Write registry data to file
@@ -41,11 +41,15 @@ void Registry::RegisterAsset(const std::string &assetPath, const RegistryData &r
 
 Registry::RegistryData Registry::GetAssetRegistry(const std::string &assetPath)
 {
-	fs::path registryFilePath(assetPath);
-	registryFilePath += REGISTRY_EXT;
+	fs::path registryFilePath(TO_SOLUTION_PATH + assetPath);
+	if (registryFilePath.extension() != REGISTRY_EXT)
+		registryFilePath += REGISTRY_EXT;
 
-	if (!fs::exists(registryFilePath) || !fs::is_regular_file(registryFilePath))
-		return {}; // Return empty if the registry file doesn't exist
+	if (!fs::exists(registryFilePath))
+		return {};
+
+	if (!fs::is_regular_file(registryFilePath))
+		return {};
 
 	std::ifstream registryFile;
 	registryFile.open(registryFilePath);
@@ -98,6 +102,10 @@ std::vector<std::string> Registry::GetRegisteredAssetsInDirectory(const std::str
 			return;
 
 		fs::path relativePath = fs::relative(entry.path(), rootPath);
+
+		// Remove registry extension to get original asset path
+		relativePath.replace_extension("");
+
 		registeredAssets.emplace_back(relativePath.string());
 	};
 

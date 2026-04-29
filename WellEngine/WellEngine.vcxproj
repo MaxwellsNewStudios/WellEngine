@@ -297,7 +297,6 @@ $(SolutionDir)BuildTools\ContentRegistration\x64\$(Configuration)\ContentRegistr
     <ClInclude Include="Source\Game\Behaviours\Physics\Colliders\B_Collider.h" />
     <ClInclude Include="Source\Game\Behaviours\Physics\Colliders\B_SphereCollider.h" />
     <ClInclude Include="Source\Game\Behaviours\Sound\B_SoundListener.h" />
-    <ClInclude Include="Source\Engine\Content\ContentRegistry.h" />
     <ClInclude Include="Dependencies\ImGui\GraphEditor.h" />
     <ClInclude Include="Dependencies\ImGui\imconfig.h" />
     <ClInclude Include="Dependencies\ImGui\ImCurveEdit.h" />
@@ -728,7 +727,6 @@ $(SolutionDir)BuildTools\ContentRegistration\x64\$(Configuration)\ContentRegistr
     <ClCompile Include="Source\Game\Behaviours\Physics\Colliders\B_Collider.cpp" />
     <ClCompile Include="Source\Game\Behaviours\Physics\Colliders\B_SphereCollider.cpp" />
     <ClCompile Include="Source\Game\Behaviours\Sound\B_SoundListener.cpp" />
-    <ClCompile Include="Source\Engine\Content\ContentRegistry.cpp" />
     <ClCompile Include="Dependencies\ImGui\GraphEditor.cpp" />
     <ClCompile Include="Dependencies\ImGui\ImCurveEdit.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">NotUsing</PrecompiledHeader>
