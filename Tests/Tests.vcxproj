@@ -81,7 +81,7 @@
       <IntrinsicFunctions>false</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>$(VCInstallDir)UnitTest\include;%(AdditionalIncludeDirectories);$(ProjectDir);$(SolutionDir);$(SolutionDir)WellEngine;$(SolutionDir)WellEngine/Dependencies/SDL3/include;$(SolutionDir)WellEngine/Dependencies/rapidjson/include;$(SolutionDir)WellEngine/Dependencies\JoltPhysics\;$(SolutionDir)WellEngine/Source</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>SOLUTION_DIR=R"(..\)";_TESTING;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>PROJ_DIR=R"($(ProjectDir))";SOLUTION_DIR=R"($(SolutionDir))";TO_SOLUTION_PATH=R"(..\)";_TESTING;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <UseFullPaths>true</UseFullPaths>
       <PrecompiledHeaderFile>Tests/stdafx.h</PrecompiledHeaderFile>
       <LanguageStandard>stdcpp20</LanguageStandard>
@@ -116,7 +116,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>false</SDLCheck>
       <AdditionalIncludeDirectories>$(VCInstallDir)UnitTest\include;%(AdditionalIncludeDirectories);$(ProjectDir);$(SolutionDir);$(SolutionDir)WellEngine;$(SolutionDir)WellEngine/Dependencies/SDL3/include;$(SolutionDir)WellEngine/Dependencies/rapidjson/include;$(SolutionDir)WellEngine/Dependencies\JoltPhysics\;$(SolutionDir)WellEngine/Source</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>SOLUTION_DIR=R"(..\)";_TESTING;_DEPLOY;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>PROJ_DIR=R"($(ProjectDir))";SOLUTION_DIR=R"($(SolutionDir))";TO_SOLUTION_PATH=R"(..\)";_TESTING;_DEPLOY;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <UseFullPaths>true</UseFullPaths>
       <PrecompiledHeaderFile>Tests/stdafx.h</PrecompiledHeaderFile>
       <LanguageStandard>stdcpp20</LanguageStandard>
@@ -145,7 +145,7 @@
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>$(VCInstallDir)UnitTest\include;%(AdditionalIncludeDirectories);$(ProjectDir);$(SolutionDir);$(SolutionDir)WellEngine;$(SolutionDir)WellEngine/Dependencies/SDL3/include;$(SolutionDir)WellEngine/Dependencies/rapidjson/include;$(SolutionDir)WellEngine/Dependencies\JoltPhysics\;$(SolutionDir)WellEngine/Source</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>SOLUTION_DIR=R"(..\)";_TESTING;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>PROJ_DIR=R"($(ProjectDir))";SOLUTION_DIR=R"($(SolutionDir))";TO_SOLUTION_PATH=R"(..\)";_TESTING;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <UseFullPaths>true</UseFullPaths>
       <PrecompiledHeaderFile>Tests/stdafx.h</PrecompiledHeaderFile>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>

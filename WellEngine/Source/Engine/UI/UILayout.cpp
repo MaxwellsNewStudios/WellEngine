@@ -11,8 +11,8 @@ void UILayout::GetLayoutNames(std::vector<std::string> &layouts)
 {
 	layouts.clear();
 
-	// Search for all .json files in IMGUI_LAYOUTS_PATH
-	for (const auto &entry : std::filesystem::directory_iterator(ASSETS_EDITOR_PATH_LAYOUTS))
+	// Search for all .json files in layout directory
+	for (const auto &entry : std::filesystem::directory_iterator(WE_D_EDITOR_LAYOUT))
 	{
 		const auto &path = entry.path();
 		std::string filename = path.filename().string();
@@ -116,7 +116,7 @@ void UILayout::SaveLayout(const std::string &name)
 	doc.SetObject().AddMember("Layout", layoutObj, docAlloc);
 
 	// Write doc to file
-	std::ofstream file(PATH_FILE_EXT(ASSETS_EDITOR_PATH_LAYOUTS, name, "json"), std::ios::out);
+	std::ofstream file(WE_DFE(WE_D_EDITOR_LAYOUT, name, "json"), std::ios::out);
 	if (!file)
 		ErrMsg("Could not save layout!");
 
@@ -131,7 +131,7 @@ void UILayout::SaveLayout(const std::string &name)
 
 	// Save current .ini settings
 	{
-		ImGui::SaveIniSettingsToDisk(PATH_FILE_EXT(ASSETS_EDITOR_PATH_LAYOUTS, name, "ini").c_str());
+		ImGui::SaveIniSettingsToDisk(WE_DFE(WE_D_EDITOR_LAYOUT, name, "ini").c_str());
 	}
 }
 bool UILayout::LoadLayout(const std::string &name)
@@ -139,7 +139,7 @@ bool UILayout::LoadLayout(const std::string &name)
 	json::Document doc;
 	{
 		// Check if the layout file exists. If so, use it.
-		std::ifstream layoutFile(PATH_FILE_EXT(ASSETS_EDITOR_PATH_LAYOUTS, name, "json"));
+		std::ifstream layoutFile(WE_DFE(WE_D_EDITOR_LAYOUT, name, "json"));
 
 		if (!layoutFile.is_open())
 			return false; // No layout file exists, nothing to load.
@@ -444,7 +444,7 @@ bool UILayout::LoadLayout(const std::string &name)
 
 	// Copy over .ini file (for docking, window placement, etc.)
 	{
-		std::string iniFilePath = PATH_FILE_EXT(ASSETS_EDITOR_PATH_LAYOUTS, name, "ini");
+		std::string iniFilePath = WE_DFE(WE_D_EDITOR_LAYOUT, name, "ini");
 		// Check if the ini file exists.
 		std::ifstream iniFile(iniFilePath);
 		if (!iniFile.is_open())

@@ -1295,13 +1295,13 @@ bool Scene::RenderEntityCreatorUI()
 					UINT id = _content->GetMeshID(name);
 					if (id == _content->GetMeshID("Error"))
 					{
-						std::ofstream file(PATH_FILE(MESHES_PATH, MESHES_FILE), std::ios::app);
+						std::ofstream file(WE_DF(MESHES_PATH, MESHES_FILE), std::ios::app);
 						std::string destPath = meshFolder + '\\' + fileName;
 						std::filesystem::copy_file(sourcePath, destPath, std::filesystem::copy_options::overwrite_existing);
 
 						file << '\n' + name;
 						meshName = name;
-						if (!_content->AddMesh(_device, std::format("{}", name), PATH_FILE_EXT(MESHES_PATH, name, "obj").c_str()))
+						if (!_content->AddMesh(_device, std::format("{}", name), WE_DFE(MESHES_PATH, name, "obj").c_str()))
 						{
 							ErrMsgF("Failed to add Mesh {}", name);
 							return false;
@@ -1353,14 +1353,14 @@ bool Scene::RenderEntityCreatorUI()
 					{
 						if (_content->AddTexture(
 							_device, _context, name,
-							PATH_FILE_EXT(TEXTURES_PATH, name, ext).c_str(),
+							WE_DFE(TEXTURES_PATH, name, ext).c_str(),
 							DXGI_FORMAT_R8G8B8A8_UNORM, false, true) == CONTENT_NULL)
 						{
 							ErrMsgF("Failed to add Tex {}!", name);
 							return false;
 						}
 
-						std::ofstream file(PATH_FILE(TEXTURES_PATH, TEXTURES_FILE), std::ios::app);
+						std::ofstream file(WE_DF(TEXTURES_PATH, TEXTURES_FILE), std::ios::app);
 						file << "\n" + name;
 					}
 
@@ -1405,7 +1405,7 @@ bool Scene::RenderEntityCreatorUI()
 				SameLine();
 				if (InputText("##SoundName", &soundName))
 				{
-					std::string fileName = PATH_FILE_EXT(SOUNDS_PATH, soundName, "wav");
+					std::string fileName = WE_DFE(SOUNDS_PATH, soundName, "wav");
 					struct stat buffer;
 					foundFile = stat(fileName.c_str(), &buffer) == 0;
 				}
@@ -1416,7 +1416,7 @@ bool Scene::RenderEntityCreatorUI()
 					const char *filterPatterns[] = { "*.wav" };
 					const char *selectedFiles = tinyfd_openFileDialog(
 						"Open File",
-						PATH_FILE(SOUNDS_PATH, "").c_str(),
+						WE_DF(SOUNDS_PATH, "").c_str(),
 						1,
 						filterPatterns,
 						"Supported Files",
@@ -1440,7 +1440,7 @@ bool Scene::RenderEntityCreatorUI()
 							soundName = filePaths[0].substr(filePaths[0].find_last_of('\\') + 1);
 							soundName = soundName.substr(0, soundName.find_last_of('.'));
 
-							std::string fileName = PATH_FILE_EXT(SOUNDS_PATH, soundName, "wav");
+							std::string fileName = WE_DFE(SOUNDS_PATH, soundName, "wav");
 							struct stat buffer;
 							foundFile = stat(fileName.c_str(), &buffer) == 0;
 						}

@@ -134,44 +134,50 @@
 
 
 #pragma region Path Configuration Defines
-#define ENGINE_PATH_SHADERS				SOLUTION_DIR "WellEngine\\Source\\Shaders"
+/// WE: Well Engine
+/// D: Directory
+/// F: File
+/// E: Extension
 
-#define INTERNAL_PATH					SOLUTION_DIR "Internal"
-#define INTERNAL_REGISTRY_PATH			INTERNAL_PATH "\\Registry"
-#define INTERNAL_REGISTRY_FILE			INTERNAL_REGISTRY_PATH "\\ContentRegistry.json"
+#define WE_D_ENGINE						TO_SOLUTION_PATH "WellEngine\\Source"
+#define WE_D_ENGINE_SHADER				WE_D_ENGINE "\\Shaders"
+#define WE_D_ENGINE_BEHAVIOUR			WE_D_ENGINE "\\Game\\Behaviours"
 
-#define INTERNAL_COMPILED_PATH			INTERNAL_PATH "\\Compiled"
-#define INTERNAL_COMPILED_PATH_CSO		INTERNAL_COMPILED_PATH "\\Shaders"
-#define INTERNAL_COMPILED_PATH_TEXTURES	INTERNAL_COMPILED_PATH "\\Textures"
-#define INTERNAL_COMPILED_FILE_MESHES	INTERNAL_COMPILED_PATH "\\CompiledContent"
+#define WE_D_INTERNAL					TO_SOLUTION_PATH "Internal"
+#define WE_F_INTERNAL_BINDINGS			WE_D_INTERNAL "\\Bindings.json"
 
-#define ASSET_PATH						SOLUTION_DIR "Assets"
-#define ASSET_PATH_FONTS				ASSET_PATH "\\Fonts"
-#define ASSET_PATH_MESHES				ASSET_PATH "\\Meshes"
-#define ASSET_PATH_SOUNDS				ASSET_PATH "\\Sounds"
-#define ASSET_PATH_TEXTURES				ASSET_PATH "\\Textures"
-#define ASSET_EXT_FONT					"ttf"
+#define WE_D_REGISTRY					WE_D_INTERNAL "\\Registry"
+#define WE_F_REGISTRY					WE_D_REGISTRY "\\ContentRegistry.json"
 
-#define DATA_PATH						SOLUTION_DIR "Data"
-#define DATA_PATH_SAVES					DATA_PATH "\\Saves"
-#define DATA_PATH_ATLAS					DATA_PATH "\\Atlas"
-#define DATA_PATH_PREFABS				DATA_PATH "\\Prefabs"
-#define DATA_PATH_SCENES				DATA_PATH "\\Scenes"
-#define DATA_FILE_BINDINGS				DATA_PATH "\\Bindings.json"
-#define DATA_EXT_SAVE					"save"
-#define DATA_EXT_SCENE					"scene"
-#define DATA_EXT_PREFAB					"prefab"
-#define DATA_EXT_FONT_ATLAS				"atlas"
+#define WE_D_COMPILED					WE_D_INTERNAL "\\Compiled"
+#define WE_D_COMPILED_CSO				WE_D_COMPILED "\\Shaders"
+#define WE_D_COMPILED_TEXTURE			WE_D_COMPILED "\\Textures"
+#define WE_F_COMPILED_MESH				WE_D_COMPILED "\\CompiledContent"
+
+#define WE_D_ASSET						TO_SOLUTION_PATH "Content"
+#define WE_D_ASSET_FONT					WE_D_ASSET "\\Fonts"
+#define WE_D_ASSET_MESH					WE_D_ASSET "\\Meshes"
+#define WE_D_ASSET_SOUND				WE_D_ASSET "\\Sounds"
+#define WE_D_ASSET_TEXTURE				WE_D_ASSET "\\Textures"
+#define WE_E_ASSET_FONT					"ttf"
+
+#define WE_D_DATA						WE_D_ASSET "\\Data"
+#define WE_D_DATA_SAVE					WE_D_DATA "\\Saves"
+#define WE_D_DATA_ATLAS					WE_D_DATA "\\Atlas"
+#define WE_D_DATA_PREFAB				WE_D_DATA "\\Prefabs"
+#define WE_D_DATA_SCENE					WE_D_DATA "\\Scenes"
+#define WE_E_DATA_SAVE					"save"
+#define WE_E_DATA_SCENE					"scene"
+#define WE_E_DATA_PREFAB				"prefab"
+#define WE_E_DATA_ATLAS					"atlas"
 
 #ifdef USE_IMGUI
-#define DATA_EDITOR_PATH				DATA_PATH "\\Editor"
-#define DATA_EDITOR_PATH_LAYOUTS		DATA_EDITOR_PATH "\\Layouts"
-
-#define BEHAVIOURS_PATH					SOLUTION_DIR "WellEngine/Source/Game/Behaviours"
+#define WE_D_EDITOR						WE_D_INTERNAL "\\Editor"
+#define WE_D_EDITOR_LAYOUT				WE_D_EDITOR "\\Layouts"
 #endif
 
-#define PATH_FILE(path, file)			std::format("{}\\{}", path, file)
-#define PATH_FILE_EXT(path, file, ext)	std::format("{}\\{}.{}", path, file, ext)
+#define WE_DF(path, file)				std::format("{}\\{}", path, file)
+#define WE_DFE(path, file, ext)			std::format("{}\\{}.{}", path, file, ext)
 #pragma endregion
 
 

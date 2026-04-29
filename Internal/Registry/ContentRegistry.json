@@ -1296,19 +1296,6 @@
                 }
             },
             "a": {}
-        },
-        "Fonts": {
-            "f": {},
-            "a": {
-                "DefaultFont": {
-                    "p": "..\\Assets\\Fonts\\DefaultFont.atlas",
-                    "t": "atlas"
-                },
-                "SimpleFont": {
-                    "p": "..\\Assets\\Fonts\\SimpleFont.atlas",
-                    "t": "atlas"
-                }
-            }
         }
     },
     "a": {}

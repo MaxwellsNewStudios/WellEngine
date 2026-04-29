@@ -16,9 +16,9 @@ bool Scene::Serialize(bool asSaveFile)
 {
 	ZoneScopedC(RandomUniqueColor());
 
-	const std::string ext = asSaveFile ? INTERNAL_EXT_SAVE : ASSET_EXT_SCENE;
-	const std::string path = asSaveFile ? INTERNAL_PATH_SAVES : ASSET_PATH_SCENES;
-	const std::string fullPath = PATH_FILE_EXT(path, _sceneName, ext);
+	const std::string ext = asSaveFile ? WE_E_DATA_SAVE : WE_E_DATA_SCENE;
+	const std::string path = asSaveFile ? WE_D_DATA_SAVE : WE_D_DATA_SCENE;
+	const std::string fullPath = WE_DFE(path, _sceneName, ext);
 
 #ifdef EDIT_MODE
 	if (!asSaveFile)
@@ -36,7 +36,7 @@ bool Scene::Serialize(bool asSaveFile)
 			oss << std::put_time(&tm, "%d-%m-%Y %H-%M-%S");
 			std::string timestamp = oss.str();
 			
-			std::ofstream backupFile(std::format("{}\\Backups\\{} ({}).{}", ASSET_PATH_SCENES, _sceneName, timestamp, ASSET_EXT_SCENE));
+			std::ofstream backupFile(std::format("{}\\Backups\\{} ({}).{}", WE_D_DATA_SCENE, _sceneName, timestamp, WE_E_DATA_SCENE));
 			backupFile << prevFile.rdbuf();
 			prevFile.close();
 			backupFile.close();
@@ -195,35 +195,35 @@ bool Scene::Deserialize(bool sceneReload)
 	std::string dir, ext;
 
 #ifdef EDIT_MODE
-	dir = ASSET_PATH_SCENES;
-	ext = ASSET_EXT_SCENE;
+	dir = WE_D_DATA_SCENE;
+	ext = WE_E_DATA_SCENE;
 #else
 	if (sceneReload)
 	{
-		dir = ASSET_PATH_SCENES;
-		ext = ASSET_EXT_SCENE;
+		dir = WE_D_DATA_SCENE;
+		ext = WE_E_DATA_SCENE;
 	}
 	else
 	{
 		// Check if a save file exists. If so, use it.
-		std::ifstream saveFile(PATH_FILE_EXT(INTERNAL_PATH_SAVES, _sceneName, INTERNAL_EXT_SAVE));
+		std::ifstream saveFile(WE_DFE(WE_D_DATA_SAVE, _sceneName, WE_E_DATA_SAVE));
 
 		if (saveFile.is_open())
 		{
-			dir = INTERNAL_PATH_SAVES;
-			ext = INTERNAL_EXT_SAVE;
+			dir = WE_D_DATA_SAVE;
+			ext = WE_E_DATA_SAVE;
 		}
 		else
 		{
-			dir = ASSET_PATH_SCENES;
-			ext = ASSET_EXT_SCENE;
+			dir = WE_D_DATA_SCENE;
+			ext = WE_E_DATA_SCENE;
 		}
 
 		saveFile.close();
 	}
 #endif
 
-	const std::string fullPath = PATH_FILE_EXT(dir, _sceneName, ext);
+	const std::string fullPath = WE_DFE(dir, _sceneName, ext);
 
 	// Parse the JSON file to doc
 	{
@@ -593,14 +593,14 @@ void Scene::GetPrefabNames(std::vector<std::string> &prefabs) const
 {
 	prefabs.clear();
 	
-	// Search for all .prefab files in ASSET_PATH_PREFABS
-	for (const auto &entry : std::filesystem::directory_iterator(ASSET_PATH_PREFABS))
+	// Search for all .prefab files
+	for (const auto &entry : std::filesystem::directory_iterator(WE_D_DATA_PREFAB))
 	{
 		const auto &path = entry.path();
 		std::string filename = path.filename().string();
 		std::string ext = filename.c_str() + filename.find_last_of('.') + 1;
 
-		if (ext != ASSET_EXT_PREFAB)
+		if (ext != WE_E_DATA_PREFAB)
 			continue; // Skip non-prefab files
 
 		filename = filename.substr(0, filename.find_last_of('.'));
@@ -642,7 +642,7 @@ bool Scene::SaveAsPrefab(const std::string &name, Entity *entity)
 	doc.SetObject().AddMember("Prefab", prefabObj, docAlloc);
 
 	// Write doc to file
-	std::ofstream file(PATH_FILE_EXT(ASSET_PATH_PREFABS, name, ASSET_EXT_PREFAB), std::ios::out);
+	std::ofstream file(WE_DFE(WE_D_DATA_PREFAB, name, WE_E_DATA_PREFAB), std::ios::out);
 	if (!file)
 	{
 		WarnF("Failed to save prefab '{}'!", name);
@@ -662,7 +662,7 @@ bool Scene::SaveAsPrefab(const std::string &name, Entity *entity)
 }
 bool Scene::DeletePrefab(const std::string &name)
 {
-	const std::string fullPath = PATH_FILE_EXT(ASSET_PATH_PREFABS, name, ASSET_EXT_PREFAB);
+	const std::string fullPath = WE_DFE(WE_D_DATA_PREFAB, name, WE_E_DATA_PREFAB);
 
 	if (std::filesystem::exists(fullPath))
 	{
@@ -694,7 +694,7 @@ Entity *Scene::SpawnPrefab(const std::string &name)
 
 	// Parse the prefab file to doc if the file exists
 	{
-		const std::string fullPath = PATH_FILE_EXT(ASSET_PATH_PREFABS, name, ASSET_EXT_PREFAB);
+		const std::string fullPath = WE_DFE(WE_D_DATA_PREFAB, name, WE_E_DATA_PREFAB);
 
 		std::ifstream file(fullPath);
 		if (!file.is_open())

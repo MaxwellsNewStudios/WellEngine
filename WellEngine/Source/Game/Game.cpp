@@ -61,7 +61,6 @@ bool Game::LoadContent()
 	auto &tex2dList = assetTypeMap["tex2d"];
 	auto &texCubeList = assetTypeMap["texcube"];
 	auto &shaderList = assetTypeMap["shader"];
-	auto &atlasList = assetTypeMap["atlas"];
 
 	// Determine if a compiled content file exists or if it needs to be created
 	{
@@ -72,7 +71,7 @@ bool Game::LoadContent()
 		DbgMsg("Forcing recompilation of content files...");
 #else // FORCE_COMPILE_CONTENT
 		FILE *compileFile = nullptr;
-		errno_t compileErr = fopen_s(&compileFile, INTERNAL_COMPILED_FILE_MESHES, "r");
+		errno_t compileErr = fopen_s(&compileFile, WE_F_COMPILED_MESH, "r");
 
 		if (compileErr != 0 || compileFile == nullptr)
 		{
@@ -89,8 +88,8 @@ bool Game::LoadContent()
 			// If the compiled file is older then recompile anyways.
 			if (!compileContent)
 			{
-				std::filesystem::path compiledPath(INTERNAL_COMPILED_FILE_MESHES);
-				std::filesystem::path registryPath(INTERNAL_REGISTRY_FILE);
+				std::filesystem::path compiledPath(WE_F_COMPILED_MESH);
+				std::filesystem::path registryPath(WE_F_REGISTRY);
 
 				std::error_code ec; // To prevent exceptions from being thrown in case files don't exist or other filesystem errors occur.
 				std::filesystem::file_time_type compiledTime = std::filesystem::last_write_time(compiledPath, ec);
@@ -103,7 +102,7 @@ bool Game::LoadContent()
 				}
 				else
 				{
-					std::filesystem::file_time_type newestMeshTime = DirectoryManager::GetMostRecentFileDate(ASSET_PATH_MESHES);
+					std::filesystem::file_time_type newestMeshTime = DirectoryManager::GetMostRecentFileDate(WE_D_ASSET_MESH);
 
 					if (newestMeshTime > compiledTime)
 					{
@@ -258,7 +257,7 @@ bool Game::LoadContent()
 		if (lastSlash != std::string::npos)
 			fileName = fileName.substr(lastSlash + 1);
 
-		if (_content.AddShader(_device.Get(), shader.name, shader.path, shader.type, PATH_FILE_EXT(INTERNAL_COMPILED_PATH_CSO, fileName, "cso")) == CONTENT_NULL)
+		if (_content.AddShader(_device.Get(), shader.name, shader.path, shader.type, WE_DFE(WE_D_COMPILED_CSO, fileName, "cso")) == CONTENT_NULL)
 		{
 			ErrMsgF("Failed to add shader {}!", shader.name);
 			return false;
@@ -268,19 +267,24 @@ bool Game::LoadContent()
 	DbgMsg("Loading Fonts...");
 
 	// Font Atlases
-	for (int i = 0; i < atlasList.size(); i++)
+	for (const auto &entry : std::filesystem::directory_iterator(WE_D_DATA_ATLAS))
 	{
-		auto &entry = atlasList[i];
+		const auto &path = entry.path();
+		std::string filename = path.filename().string();
+		std::string ext = filename.c_str() + filename.find_last_of('.') + 1;
 
-		std::string atlas = entry.path;
+		if (ext != WE_E_DATA_ATLAS)
+			continue; // Skip non-font atlas files
 
-		size_t lastSlash = atlas.find_last_of("/\\");
+		filename = filename.substr(0, filename.find_last_of('.'));
+
+		size_t lastSlash = filename.find_last_of("/\\");
 		if (lastSlash != std::string::npos)
-			atlas = atlas.substr(lastSlash + 1);
+			filename = filename.substr(lastSlash + 1);
 
-		if (_content.AddFontAtlas(atlas) == CONTENT_NULL)
+		if (_content.AddFontAtlas(filename) == CONTENT_NULL)
 		{
-			ErrMsgF("Failed to add font atlas {}!", atlas);
+			ErrMsgF("Failed to add font atlas {}!", filename);
 			return false;
 		}
 	}
@@ -518,13 +522,13 @@ bool Game::Setup(TimeUtils &time, Window window)
 		Scene *tempScene = nullptr;
 
 		// Search for all .scene files in ASSET_PATH_SCENES
-		for (const auto &entry : std::filesystem::directory_iterator(DATA_PATH_SCENES))
+		for (const auto &entry : std::filesystem::directory_iterator(WE_D_DATA_SCENE))
 		{
 			const auto &path = entry.path();
 			std::string filename = path.filename().string();
 			std::string ext = filename.c_str() + filename.find_last_of('.') + 1;
 
-			if (ext != DATA_EXT_SCENE)
+			if (ext != WE_E_DATA_SCENE)
 				continue; // Skip non-scene files
 
 			filename = filename.substr(0, filename.find_last_of('.'));
@@ -1166,7 +1170,7 @@ bool Game::RenderUI(TimeUtils &time)
 
 								if (ImGui::Button("Delete Scene"))
 								{
-									std::string sceneFilePath = PATH_FILE_EXT(DATA_PATH_SCENES, sceneName, DATA_EXT_SCENE);
+									std::string sceneFilePath = WE_DFE(WE_D_DATA_SCENE, sceneName, WE_E_DATA_SCENE);
 									std::filesystem::remove(sceneFilePath);
 									_pendingSceneRemovals.push_back(sceneName);
 									ImGui::CloseCurrentPopup();
@@ -1786,7 +1790,7 @@ bool Game::RenderUI(TimeUtils &time)
 			if (ImGui::Button("Launch Tracy Profiler"))
 			{
 				::ShellExecuteA(NULL, "open",
-					SOLUTION_DIR "\\WellEngine\\Dependencies\\tracy-0.11.1\\Tracy\\tracy-profiler.exe",
+					TO_SOLUTION_PATH "WellEngine\\Dependencies\\tracy-0.11.1\\Tracy\\tracy-profiler.exe",
 					NULL, NULL, SW_SHOWDEFAULT
 				);
 			}

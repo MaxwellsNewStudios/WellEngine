@@ -12,7 +12,7 @@
 #endif
 
 
-const std::string SolutionDir = SOLUTION_DIR;
+const std::string SolutionDir = TO_SOLUTION_PATH;
 const std::string RegistryDir = SolutionDir + "WellEngine\\Source\\Game\\Systems\\";
 const std::string SystemsDir = RegistryDir + "";
 const std::string RegistryFile = RegistryDir + "SystemRegistry.cpp";

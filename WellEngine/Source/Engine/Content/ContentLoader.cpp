@@ -693,7 +693,7 @@ std::string WellEngine::GetTextureBakePath(const std::string &file)
 {
 	std::string assetPath = file;
 
-	size_t assetPathStart = assetPath.find(ASSET_PATH_TEXTURES);
+	size_t assetPathStart = assetPath.find(WE_D_ASSET_TEXTURE);
 	if (assetPathStart == std::string::npos)
 	{
 		size_t lastSlash = assetPath.find_last_of("\\/");
@@ -701,14 +701,14 @@ std::string WellEngine::GetTextureBakePath(const std::string &file)
 	}
 	else
 	{
-		size_t toCut = strlen(ASSET_PATH_TEXTURES) + 1; // +1 to also remove slash
+		size_t toCut = strlen(WE_D_ASSET_TEXTURE) + 1; // +1 to also remove slash
 		assetPath = assetPath.substr(assetPathStart + toCut);
 	}
 
 	size_t lastDot = assetPath.find_last_of('.');
 	assetPath = assetPath.substr(0, lastDot);
 
-	return PATH_FILE_EXT(INTERNAL_COMPILED_PATH_TEXTURES, assetPath, "dds");
+	return WE_DFE(WE_D_COMPILED_TEXTURE, assetPath, "dds");
 }
 
 bool WellEngine::LoadDDSTextureFromFile(

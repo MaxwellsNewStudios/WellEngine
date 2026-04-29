@@ -88,12 +88,12 @@ bool B_SoundSource::RenderUI()
 		ImGui::SetNextItemWidth(inputWidth);
 		if (ImGui::InputText("##SoundName", &soundName))
 		{
-			std::string fileName = PATH_FILE_EXT(ASSET_PATH_SOUNDS, soundName, "wav");
+			std::string fileName = WE_DFE(WE_D_ASSET_SOUND, soundName, "wav");
 			struct stat buffer;
 			reinitialize = foundFile = stat(fileName.c_str(), &buffer) == 0;
 		}
 
-		ImGui::SetItemTooltip(std::format("Name of the sound file you want to use, located in {}.", ASSET_PATH_SOUNDS).c_str());
+		ImGui::SetItemTooltip(std::format("Name of the sound file you want to use, located in {}.", WE_D_ASSET_SOUND).c_str());
 
 		ImGui::SameLine();
 		if (ImGuiUtils::ButtonWithFont(ICON_LC_FOLDER_SEARCH "##Browse", FONT_ICON_FILE_NAME_LC, 14.0f))
@@ -101,7 +101,7 @@ bool B_SoundSource::RenderUI()
 			const char *filterPatterns[] = { "*.wav" };
 			const char *selectedFiles = tinyfd_openFileDialog(
 				"Open Sound File",
-				PATH_FILE(ASSET_PATH_SOUNDS, "").c_str(),
+				WE_DF(WE_D_ASSET_SOUND, "").c_str(),
 				1,
 				filterPatterns,
 				"Supported Files",
@@ -125,7 +125,7 @@ bool B_SoundSource::RenderUI()
 					soundName = filePaths[0].substr(filePaths[0].find_last_of('\\') + 1);
 					soundName = soundName.substr(0, soundName.find_last_of('.'));
 
-					std::string fileName = PATH_FILE_EXT(ASSET_PATH_SOUNDS, soundName, "wav");
+					std::string fileName = WE_DFE(WE_D_ASSET_SOUND, soundName, "wav");
 					struct stat buffer;
 					reinitialize = foundFile = stat(fileName.c_str(), &buffer) == 0;
 				}

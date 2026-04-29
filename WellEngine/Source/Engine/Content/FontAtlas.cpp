@@ -260,7 +260,7 @@ bool FontAtlas::Serialize(std::string_view fileName, const Content *content) con
 	doc.SetObject().AddMember("Atlas", atlasObj, docAlloc);
 
 	// Write doc to file
-	std::ofstream file(PATH_FILE_EXT(ASSET_PATH_FONTS, fileName, "atlas"), std::ios::out);
+	std::ofstream file(WE_DFE(WE_D_DATA_ATLAS, fileName, WE_E_DATA_ATLAS), std::ios::out);
 	if (!file)
 	{
 		ErrMsg("Could not save atlas!");
@@ -281,7 +281,7 @@ bool FontAtlas::Deserialize(std::string_view fileName, const Content *content)
 	json::Document doc;
 	{
 		// Check that the atlas file exists
-		std::ifstream atlasFile(PATH_FILE_EXT(ASSET_PATH_FONTS, fileName, "atlas"));
+		std::ifstream atlasFile(WE_DFE(WE_D_DATA_ATLAS, fileName, WE_E_DATA_ATLAS));
 
 		if (!atlasFile.is_open())
 			return false; // Atlas doesn't exist

@@ -81,7 +81,7 @@ bool Content::CompileContent(const std::vector<AssetRegistryEntry> &meshEntries)
 	ZoneScopedC(RandomUniqueColor());
 
 	std::ofstream writer;
-	writer.open(INTERNAL_COMPILED_FILE_MESHES, std::ios::binary | std::ios::ate);
+	writer.open(WE_F_COMPILED_MESH, std::ios::binary | std::ios::ate);
 	if (!writer.is_open())
 	{
 		ErrMsg("Failed to open compiled content file!");
@@ -124,7 +124,7 @@ bool Content::DecompileContent(ID3D11Device *device)
 {
 	ZoneScopedC(RandomUniqueColor());
 
-	std::ifstream reader(INTERNAL_COMPILED_FILE_MESHES, std::ios::binary | std::ios::in | std::ios::ate);
+	std::ifstream reader(WE_F_COMPILED_MESH, std::ios::binary | std::ios::in | std::ios::ate);
 	if (!reader.is_open())
 	{
 		ErrMsg("Failed to open compiled content file! Try running once with FORCE_COMPILE_CONTENT enabled.");
@@ -880,8 +880,8 @@ bool Content::RenderUI(ID3D11Device *device)
 					// Check if the shader source file has been modified after the cso was last compiled
 					// If so, trigger a recompile
 
-					std::string csoPath = PATH_FILE_EXT(INTERNAL_COMPILED_PATH_CSO, shaderNames[i], "cso");
-					std::string sourcePath = PATH_FILE_EXT(ENGINE_PATH_SHADERS, shaderContainer->path, "hlsl");
+					std::string csoPath = WE_DFE(WE_D_COMPILED_CSO, shaderNames[i], "cso");
+					std::string sourcePath = WE_DFE(WE_D_ENGINE_SHADER, shaderContainer->path, "hlsl");
 
 					// Ensure both files exist before comparing timestamps
 					if (!std::filesystem::exists(csoPath) || !std::filesystem::exists(sourcePath))
@@ -904,7 +904,7 @@ bool Content::RenderUI(ID3D11Device *device)
 					{
 						// Recompilation failed, likely due to a syntax error in the shader.
 						// Touch the cso file to prevent continuous recompilation attempts until the source file is modified again.
-						std::string csoPath = PATH_FILE_EXT(INTERNAL_COMPILED_PATH_CSO, shaderNames[i], "cso");
+						std::string csoPath = WE_DFE(WE_D_COMPILED_CSO, shaderNames[i], "cso");
 						std::filesystem::last_write_time(csoPath, std::filesystem::file_time_type::clock::now());
 					}
 				}
@@ -1603,7 +1603,7 @@ ID3DBlob *Content::CompileShader(ID3D11Device *device, const std::string &path, 
 	// Save compiled shader to cso path for future loading
 	{
 		std::string shaderName = std::filesystem::path(path).stem().string();
-		std::string csoPath = PATH_FILE_EXT(INTERNAL_COMPILED_PATH_CSO, shaderName, "cso");
+		std::string csoPath = WE_DFE(WE_D_COMPILED_CSO, shaderName, "cso");
 		std::ofstream writer(csoPath, std::ios::binary);
 
 		if (writer.is_open())
@@ -1631,7 +1631,7 @@ bool Content::RecompileShader(ID3D11Device *device, const std::string &name) con
 	}
 
 	ShaderType shaderType = shaderContainer->data.GetShaderType();
-	std::string path = PATH_FILE_EXT(ENGINE_PATH_SHADERS, shaderContainer->path, "hlsl");
+	std::string path = WE_DFE(WE_D_ENGINE_SHADER, shaderContainer->path, "hlsl");
 
 	auto shaderBlob = CompileShader(device, path, shaderType);
 

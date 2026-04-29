@@ -278,13 +278,13 @@ bool Graphics::Setup(
 		std::vector<std::pair<std::string, std::string>> fontPaths;
 
 		// Search for all .ttf files in ASSET_PATH_FONTS
-		for (const auto &entry : std::filesystem::directory_iterator(ASSET_PATH_FONTS))
+		for (const auto &entry : std::filesystem::directory_iterator(WE_D_ASSET_FONT))
 		{
 			const auto &path = entry.path();
 			std::string filename = path.filename().string();
 			std::string ext = filename.c_str() + filename.find_last_of('.') + 1;
 
-			if (ext != ASSET_EXT_FONT)
+			if (ext != WE_E_ASSET_FONT)
 				continue; // Skip non-font files
 
 			filename = filename.substr(0, filename.find_last_of('.'));

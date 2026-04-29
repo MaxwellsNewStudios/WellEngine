@@ -15,24 +15,18 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="ContentRegistration.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="MeshLoader.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="TextureLoader.cpp">
+    <ClCompile Include="Registry\RegistryAssetFileManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="TextureLoader.h">
+    <ClInclude Include="Registry\RegistryAssetFileManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="MeshLoader.h">
+    <ClInclude Include="Internal\Internal.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Shared.h">
+    <ClInclude Include="Common.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

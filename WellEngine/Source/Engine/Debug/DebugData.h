@@ -8,7 +8,7 @@ namespace WellEngine
 	{
 	#ifdef DEBUG_BUILD
 	private:
-		static constexpr const char *dataFileName = ASSETS_EDITOR_PATH "\\DebugData.json";
+		static constexpr const char *dataFileName = WE_D_EDITOR "\\DebugData.json";
 		float _saveInterval = 1.0f; // Continuously save with this interval
 		float _timeUntilNextSave = 0.0f;
 		bool _isDirty = false;

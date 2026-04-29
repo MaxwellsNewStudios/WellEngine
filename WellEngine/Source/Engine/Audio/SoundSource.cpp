@@ -9,7 +9,7 @@ bool SoundSource::Initialize(dx::AudioEngine *audEngine,
 	dx::SOUND_EFFECT_INSTANCE_FLAGS flags, std::string fileName, 
 	float distanceScaler, float reverbScaler)
 {
-	fileName = PATH_FILE_EXT(ASSET_PATH_SOUNDS, fileName, "wav");
+	fileName = WE_DFE(WE_D_ASSET_SOUND, fileName, "wav");
 	struct stat buffer;   
 	if (stat(fileName.c_str(), &buffer) != 0)
 	{

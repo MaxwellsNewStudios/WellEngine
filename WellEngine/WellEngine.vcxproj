@@ -92,7 +92,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>false</SDLCheck>
-      <PreprocessorDefinitions>SOLUTION_DIR=R"(..\)";JPH_ENABLE_ASSERTS;_DEBUG;TRACY_ENABLE;TRACY_ON_DEMAND;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>PROJ_DIR=R"($(ProjectDir))";SOLUTION_DIR=R"($(SolutionDir))";TO_SOLUTION_PATH=R"(..\)";JPH_ENABLE_ASSERTS;_DEBUG;TRACY_ENABLE;TRACY_ON_DEMAND;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <BrowseInformation>false</BrowseInformation>
       <LanguageStandard>stdcpp20</LanguageStandard>
@@ -159,7 +159,7 @@ $(SolutionDir)BuildTools\ContentRegistration\x64\$(Configuration)\ContentRegistr
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>SOLUTION_DIR=R"(..\)";JPH_ENABLE_ASSERTS;NDEBUG;TRACY_ENABLE;TRACY_ON_DEMAND;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>PROJ_DIR=R"($(ProjectDir))";SOLUTION_DIR=R"($(SolutionDir))";TO_SOLUTION_PATH=R"(..\)";JPH_ENABLE_ASSERTS;NDEBUG;TRACY_ENABLE;TRACY_ON_DEMAND;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <OpenMPSupport>true</OpenMPSupport>
@@ -227,7 +227,7 @@ $(SolutionDir)BuildTools\ContentRegistration\x64\$(Configuration)\ContentRegistr
       <FunctionLevelLinking>false</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>false</SDLCheck>
-      <PreprocessorDefinitions>SOLUTION_DIR=R"(..\)";JPH_ENABLE_ASSERTS;_DEPLOY;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>PROJ_DIR=R"($(ProjectDir))";SOLUTION_DIR=R"($(SolutionDir))";TO_SOLUTION_PATH=R"(..\)";JPH_ENABLE_ASSERTS;_DEPLOY;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <OpenMPSupport>true</OpenMPSupport>
@@ -601,43 +601,6 @@ $(SolutionDir)BuildTools\ContentRegistration\x64\$(Configuration)\ContentRegistr
     <ClInclude Include="Dependencies\JoltPhysics\Jolt\TriangleSplitter\TriangleSplitter.h" />
     <ClInclude Include="Dependencies\JoltPhysics\Jolt\TriangleSplitter\TriangleSplitterBinning.h" />
     <ClInclude Include="Dependencies\JoltPhysics\Jolt\TriangleSplitter\TriangleSplitterMean.h" />
-    <ClInclude Include="Dependencies\rapidjson\include\rapidjson\allocators.h" />
-    <ClInclude Include="Dependencies\rapidjson\include\rapidjson\cursorstreamwrapper.h" />
-    <ClInclude Include="Dependencies\rapidjson\include\rapidjson\document.h" />
-    <ClInclude Include="Dependencies\rapidjson\include\rapidjson\encodedstream.h" />
-    <ClInclude Include="Dependencies\rapidjson\include\rapidjson\encodings.h" />
-    <ClInclude Include="Dependencies\rapidjson\include\rapidjson\error\en.h" />
-    <ClInclude Include="Dependencies\rapidjson\include\rapidjson\error\error.h" />
-    <ClInclude Include="Dependencies\rapidjson\include\rapidjson\filereadstream.h" />
-    <ClInclude Include="Dependencies\rapidjson\include\rapidjson\filewritestream.h" />
-    <ClInclude Include="Dependencies\rapidjson\include\rapidjson\fwd.h" />
-    <ClInclude Include="Dependencies\rapidjson\include\rapidjson\internal\biginteger.h" />
-    <ClInclude Include="Dependencies\rapidjson\include\rapidjson\internal\clzll.h" />
-    <ClInclude Include="Dependencies\rapidjson\include\rapidjson\internal\diyfp.h" />
-    <ClInclude Include="Dependencies\rapidjson\include\rapidjson\internal\dtoa.h" />
-    <ClInclude Include="Dependencies\rapidjson\include\rapidjson\internal\ieee754.h" />
-    <ClInclude Include="Dependencies\rapidjson\include\rapidjson\internal\itoa.h" />
-    <ClInclude Include="Dependencies\rapidjson\include\rapidjson\internal\meta.h" />
-    <ClInclude Include="Dependencies\rapidjson\include\rapidjson\internal\pow10.h" />
-    <ClInclude Include="Dependencies\rapidjson\include\rapidjson\internal\regex.h" />
-    <ClInclude Include="Dependencies\rapidjson\include\rapidjson\internal\stack.h" />
-    <ClInclude Include="Dependencies\rapidjson\include\rapidjson\internal\strfunc.h" />
-    <ClInclude Include="Dependencies\rapidjson\include\rapidjson\internal\strtod.h" />
-    <ClInclude Include="Dependencies\rapidjson\include\rapidjson\internal\swap.h" />
-    <ClInclude Include="Dependencies\rapidjson\include\rapidjson\istreamwrapper.h" />
-    <ClInclude Include="Dependencies\rapidjson\include\rapidjson\memorybuffer.h" />
-    <ClInclude Include="Dependencies\rapidjson\include\rapidjson\memorystream.h" />
-    <ClInclude Include="Dependencies\rapidjson\include\rapidjson\msinttypes\inttypes.h" />
-    <ClInclude Include="Dependencies\rapidjson\include\rapidjson\msinttypes\stdint.h" />
-    <ClInclude Include="Dependencies\rapidjson\include\rapidjson\pointer.h" />
-    <ClInclude Include="Dependencies\rapidjson\include\rapidjson\prettywriter.h" />
-    <ClInclude Include="Dependencies\rapidjson\include\rapidjson\rapidjson.h" />
-    <ClInclude Include="Dependencies\rapidjson\include\rapidjson\reader.h" />
-    <ClInclude Include="Dependencies\rapidjson\include\rapidjson\schema.h" />
-    <ClInclude Include="Dependencies\rapidjson\include\rapidjson\stream.h" />
-    <ClInclude Include="Dependencies\rapidjson\include\rapidjson\stringbuffer.h" />
-    <ClInclude Include="Dependencies\rapidjson\include\rapidjson\uri.h" />
-    <ClInclude Include="Dependencies\rapidjson\include\rapidjson\writer.h" />
     <ClInclude Include="Dependencies\stb\stb_image.h" />
     <ClInclude Include="Dependencies\stb\stb_image_resize2.h" />
     <ClInclude Include="Dependencies\stb\stb_image_write.h" />
