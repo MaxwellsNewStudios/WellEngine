@@ -147,7 +147,7 @@
 #define WE_F_INTERNAL_BINDINGS			WE_D_INTERNAL "\\Bindings.json"
 
 #define WE_D_REGISTRY					WE_D_INTERNAL "\\Registry"
-#define WE_F_REGISTRY					WE_D_REGISTRY "\\ContentRegistry.json"
+#define WE_E_REGISTRY					"wer"
 
 #define WE_D_COMPILED					WE_D_INTERNAL "\\Compiled"
 #define WE_D_COMPILED_CSO				WE_D_COMPILED "\\Shaders"

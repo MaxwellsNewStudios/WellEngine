@@ -4,8 +4,6 @@
 #include <vector>
 #include <filesystem>
 
-#include "Internal/Internal.h"
-
 namespace fs = std::filesystem;
 
 namespace ContentManager::Registry
@@ -15,6 +13,7 @@ namespace ContentManager::Registry
 	struct RegistryHeader
 	{
 		std::string assetType = "";
+		std::string assetPath = "";
 		std::string alias = "";
 		std::string compiledPath = "";
 		fs::file_time_type compileTime = {};
@@ -34,7 +33,8 @@ namespace ContentManager::Registry
 
 	void RegisterAsset(const std::string &assetPath, const RegistryData &registry);
 
-	[[nodiscard]] RegistryData GetAssetRegistry(const std::string &assetPath);
+	// Solution-relative or absolute path to either asset or registry
+	[[nodiscard]] RegistryData GetAssetRegistry(const std::string &path);
 
 	[[nodiscard]] std::vector<std::string> GetRegisteredAssetsInDirectory(const std::string &directoryPath, bool recursive = false);
 }

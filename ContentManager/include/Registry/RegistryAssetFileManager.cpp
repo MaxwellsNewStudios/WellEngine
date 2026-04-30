@@ -1,4 +1,5 @@
 #include "RegistryAssetFileManager.h"
+#include "Internal/Internal.h"
 #include <fstream>
 #include <chrono>
 
@@ -11,9 +12,19 @@ void Registry::RegisterAsset(const std::string &assetPath, const RegistryData &r
 	if (!fs::exists(assetFilePath) || !fs::is_regular_file(assetFilePath))
 		return;
 
-	// Create registry file by appending registry extension to asset path, not replacing the extension.
-	fs::path registryFilePath(assetFilePath);
-	registryFilePath += REGISTRY_EXT;
+	// Ensure compiled path is relative to the solution directory
+	fs::path rootPath(TO_SOLUTION_PATH);
+	fs::path compiledPath(registry.header.compiledPath);
+	fs::path relCompiledPath = fs::relative(compiledPath, rootPath);
+
+	// Create registry file with same name and registry extension
+	// in identical folder structure from solution directory in the registry directory
+	fs::path relAssetPath = fs::relative(assetFilePath, rootPath);
+	fs::path registryFilePath = fs::path(WE_D_REGISTRY) / relAssetPath;
+	registryFilePath += "." WE_E_REGISTRY;
+
+	// Create parent directories if they don't exist
+	fs::create_directories(registryFilePath.parent_path());
 
 	// Write registry data to file
 	std::ofstream registryFile;
@@ -21,13 +32,9 @@ void Registry::RegisterAsset(const std::string &assetPath, const RegistryData &r
 	if (!registryFile.is_open())
 		return;
 
-	// Ensure compiled path is relative to the solution directory
-	fs::path rootPath(TO_SOLUTION_PATH);
-	fs::path compiledPath(registry.header.compiledPath);
-	fs::path relCompiledPath = fs::relative(compiledPath, rootPath);
-
 	// Write header
 	registryFile << registry.header.assetType << "\n";
+	registryFile << relAssetPath.string() << "\n";
 	registryFile << registry.header.alias << "\n";
 	registryFile << relCompiledPath.string() << "\n";
 	registryFile << registry.header.compileTime.time_since_epoch().count() << "\n";
@@ -39,11 +46,22 @@ void Registry::RegisterAsset(const std::string &assetPath, const RegistryData &r
 	registryFile.close();
 }
 
-Registry::RegistryData Registry::GetAssetRegistry(const std::string &assetPath)
+Registry::RegistryData Registry::GetAssetRegistry(const std::string &path)
 {
-	fs::path registryFilePath(TO_SOLUTION_PATH + assetPath);
-	if (registryFilePath.extension() != REGISTRY_EXT)
-		registryFilePath += REGISTRY_EXT;
+	fs::path registryFilePath(path);
+
+	if (registryFilePath.is_absolute()) // Handle absolute
+		registryFilePath = fs::relative(registryFilePath, TO_SOLUTION_PATH);
+
+	if (registryFilePath.extension() == "." WE_E_REGISTRY) // Registry path
+	{
+		registryFilePath = fs::path(TO_SOLUTION_PATH) / registryFilePath;
+	}
+	else // Asset path
+	{
+		registryFilePath = fs::path(WE_D_REGISTRY) / registryFilePath;
+		registryFilePath += "." WE_E_REGISTRY;
+	}
 
 	if (!fs::exists(registryFilePath))
 		return {};
@@ -55,17 +73,18 @@ Registry::RegistryData Registry::GetAssetRegistry(const std::string &assetPath)
 	registryFile.open(registryFilePath);
 	if (!registryFile.is_open())
 		return {}; // Return empty if the registry file couldn't be opened
-
+	
 	RegistryData registry;
 
 	// Read header
 	std::getline(registryFile, registry.header.assetType);
+	std::getline(registryFile, registry.header.assetPath);
 	std::getline(registryFile, registry.header.alias);
 	std::getline(registryFile, registry.header.compiledPath);
 
-	// Convert compiled path from relative to absolute
-	fs::path absCompiledPath = fs::absolute(registry.header.compiledPath);
-	registry.header.compiledPath = absCompiledPath.string();
+	// Convert paths from relative to absolute
+	registry.header.assetPath = fs::absolute(registry.header.assetPath).string();
+	registry.header.compiledPath = fs::absolute(registry.header.compiledPath).string();
 
 	std::string compileTimeStr;
 	std::getline(registryFile, compileTimeStr);
@@ -98,7 +117,7 @@ std::vector<std::string> Registry::GetRegisteredAssetsInDirectory(const std::str
 		if (!entry.is_regular_file())
 			return;
 
-		if (entry.path().extension() != REGISTRY_EXT)
+		if (entry.path().extension() != WE_E_REGISTRY)
 			return;
 
 		fs::path relativePath = fs::relative(entry.path(), rootPath);
