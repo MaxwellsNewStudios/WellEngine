@@ -13,9 +13,10 @@ namespace ContentManager::Registry
 	struct RegistryHeader
 	{
 		std::string assetType = "";
-		std::string assetPath = "";
 		std::string alias = "";
-		std::string compiledPath = "";
+		std::string assetPath = ""; // Relative to solution directory
+		std::string registryPath = ""; // Relative to registry directory
+		std::string compiledPath = ""; // Relative to compiled directory
 		fs::file_time_type compileTime = {};
 	};
 
@@ -33,8 +34,8 @@ namespace ContentManager::Registry
 
 	void RegisterAsset(const std::string &assetPath, const RegistryData &registry);
 
-	// Solution-relative or absolute path to either asset or registry
+	// path = Solution-relative or absolute path to either asset or registry
 	[[nodiscard]] RegistryData GetAssetRegistry(const std::string &path);
 
-	[[nodiscard]] std::vector<std::string> GetRegisteredAssetsInDirectory(const std::string &directoryPath, bool recursive = false);
+	[[nodiscard]] std::vector<RegistryData> GetAssetRegistriesInDirectory(const std::string &directoryPath, bool recursive = false);
 }

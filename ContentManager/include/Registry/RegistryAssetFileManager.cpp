@@ -12,16 +12,21 @@ void Registry::RegisterAsset(const std::string &assetPath, const RegistryData &r
 	if (!fs::exists(assetFilePath) || !fs::is_regular_file(assetFilePath))
 		return;
 
-	// Ensure compiled path is relative to the solution directory
-	fs::path rootPath(TO_SOLUTION_PATH);
-	fs::path compiledPath(registry.header.compiledPath);
-	fs::path relCompiledPath = fs::relative(compiledPath, rootPath);
+	// Ensure paths are relative
+	fs::path relAssetPath = fs::relative(assetFilePath, TO_SOLUTION_PATH);
+
+	fs::path relRegistryPath(registry.header.registryPath);
+	if (relRegistryPath.empty())
+	{
+		relRegistryPath = relAssetPath;
+		relRegistryPath += "." WE_E_REGISTRY;
+	}
+
+	fs::path relCompiledPath = fs::relative(registry.header.compiledPath, WE_D_COMPILED);
 
 	// Create registry file with same name and registry extension
 	// in identical folder structure from solution directory in the registry directory
-	fs::path relAssetPath = fs::relative(assetFilePath, rootPath);
-	fs::path registryFilePath = fs::path(WE_D_REGISTRY) / relAssetPath;
-	registryFilePath += "." WE_E_REGISTRY;
+	fs::path registryFilePath = fs::path(WE_D_REGISTRY) / relRegistryPath;
 
 	// Create parent directories if they don't exist
 	fs::create_directories(registryFilePath.parent_path());
@@ -34,8 +39,9 @@ void Registry::RegisterAsset(const std::string &assetPath, const RegistryData &r
 
 	// Write header
 	registryFile << registry.header.assetType << "\n";
-	registryFile << relAssetPath.string() << "\n";
 	registryFile << registry.header.alias << "\n";
+	registryFile << relAssetPath.string() << "\n";
+	registryFile << relRegistryPath.string() << "\n";
 	registryFile << relCompiledPath.string() << "\n";
 	registryFile << registry.header.compileTime.time_since_epoch().count() << "\n";
 
@@ -78,13 +84,10 @@ Registry::RegistryData Registry::GetAssetRegistry(const std::string &path)
 
 	// Read header
 	std::getline(registryFile, registry.header.assetType);
-	std::getline(registryFile, registry.header.assetPath);
 	std::getline(registryFile, registry.header.alias);
+	std::getline(registryFile, registry.header.assetPath);
+	std::getline(registryFile, registry.header.registryPath);
 	std::getline(registryFile, registry.header.compiledPath);
-
-	// Convert paths from relative to absolute
-	registry.header.assetPath = fs::absolute(registry.header.assetPath).string();
-	registry.header.compiledPath = fs::absolute(registry.header.compiledPath).string();
 
 	std::string compileTimeStr;
 	std::getline(registryFile, compileTimeStr);
@@ -104,28 +107,25 @@ Registry::RegistryData Registry::GetAssetRegistry(const std::string &path)
 	return registry;
 }
 
-std::vector<std::string> Registry::GetRegisteredAssetsInDirectory(const std::string &directoryPath, bool recursive)
+std::vector<Registry::RegistryData> Registry::GetAssetRegistriesInDirectory(const std::string &directoryPath, bool recursive)
 {
 	fs::path dirPath(directoryPath);
 	if (!fs::exists(dirPath) || !fs::is_directory(dirPath))
 		return {}; // Return empty if the directory doesn't exist
 
-	std::vector<std::string> registeredAssets;
+	std::vector<RegistryData> registeredAssets;
 	fs::path rootPath(TO_SOLUTION_PATH);
 
 	auto checkEntryFunc = [&](const fs::directory_entry &entry) {
 		if (!entry.is_regular_file())
 			return;
 
-		if (entry.path().extension() != WE_E_REGISTRY)
+		if (entry.path().extension() != "." WE_E_REGISTRY)
 			return;
 
-		fs::path relativePath = fs::relative(entry.path(), rootPath);
+		std::string relPath = fs::relative(entry.path(), rootPath).string();
 
-		// Remove registry extension to get original asset path
-		relativePath.replace_extension("");
-
-		registeredAssets.emplace_back(relativePath.string());
+		registeredAssets.push_back(GetAssetRegistry(relPath));
 	};
 
 	if (recursive)
