@@ -2,7 +2,7 @@
 #include "Game.h"
 #include "Engine/Debug/DebugData.h"
 #include "Engine/UI/UILayout.h"
-#include "Registry/RegistryAssetFileManager.h"
+#include "ContentManager/Registry/RegistryAssetFileManager.h"
 
 #ifdef LEAK_DETECTION
 #define new			DEBUG_NEW
@@ -47,45 +47,44 @@ bool Game::LoadContent()
 {
 	ZoneScopedC(RandomUniqueColor());
 
+	using namespace ContentManager;
 	using namespace ContentManager::Registry;
 
 	std::vector<RegistryData> assetRegistryFiles = GetAssetRegistriesInDirectory(WE_D_REGISTRY, true);
-	std::vector<RegistryData*> meshList;
-	std::vector<RegistryData*> tex2dList;
-	std::vector<RegistryData*> texCubeList;
-	std::vector<RegistryData*> shaderList;
+	std::vector<RegistryData*> meshList, tex2dList, texCubeList, shaderList;
 
 	for (RegistryData &entry : assetRegistryFiles)
 	{
-		if		(entry.header.assetType == "mesh")		meshList.emplace_back(&entry);
-		else if (entry.header.assetType == "tex2d")		tex2dList.emplace_back(&entry);
-		else if (entry.header.assetType == "texcube")	texCubeList.emplace_back(&entry);
-		else if (entry.header.assetType == "shader")	shaderList.emplace_back(&entry);
-
-		entry.header.assetPath = TO_SOLUTION_PATH + entry.header.assetPath;
-		entry.header.registryPath = WE_D_REGISTRY "\\" + entry.header.registryPath;
-
-		if (!entry.header.compiledPath.empty())
-			entry.header.compiledPath = WE_D_COMPILED "\\" + entry.header.compiledPath;
+		switch (entry.header.assetType)
+		{
+		case AssetType::Mesh:
+			meshList.push_back(&entry);
+			break;
+		case AssetType::Texture:
+			tex2dList.push_back(&entry);
+			break;
+		case AssetType::Cubemap:
+			texCubeList.push_back(&entry);
+			break;
+		case AssetType::Shader:
+			shaderList.push_back(&entry);
+			break;
+		default:
+			break;
+		}
 	}
 
-	DbgMsg("Decompiling Content (Meshes)...");
+	DbgMsg("Loading Meshes...");
 
 	for (auto &entry : meshList)
 	{
+		AssetPropertiesMesh prop = {};
+		if (!entry->properties.empty())
+			prop = *(AssetPropertiesMesh *)(entry->properties.data());
+
 		std::string name = entry->header.alias;
-		if (name.empty())
-			name = entry->header.assetPath;
 
-		size_t lastSlash = name.find_last_of("/\\");
-		if (lastSlash != std::string::npos)
-			name = name.substr(lastSlash + 1);
-
-		size_t lastDot = name.find_last_of('.');
-		if (lastDot != std::string::npos)
-			name = name.substr(0, lastDot);
-
-		if (_content.AddMesh(_device.Get(), name, entry->header.assetPath.c_str(), false) == CONTENT_NULL)
+		if (_content.AddMesh(_device.Get(), name, (TO_SOLUTION_PATH + entry->header.assetPath).c_str(), false) == CONTENT_NULL)
 		{
 			ErrMsgF("Failed to add mesh {}!", name);
 			return false;
@@ -94,7 +93,6 @@ bool Game::LoadContent()
 
 	int meshCount = (int)_content.GetMeshCount();
 
-#pragma warning(disable: 6993)
 #pragma omp parallel num_threads(4)
 	{
 		int threadID = omp_get_thread_num();
@@ -124,27 +122,16 @@ bool Game::LoadContent()
 		{
 			auto &entry = texCubeList[i];
 
+			AssetPropertiesTexture prop = {};
+			if (!entry->properties.empty())
+				prop = *(AssetPropertiesTexture *)(entry->properties.data());
+
 			TextureData cubemap = {};
-			cubemap.path = entry->header.assetPath;
-
+			cubemap.path = TO_SOLUTION_PATH + entry->header.assetPath;
 			cubemap.name = entry->header.alias;
-			if (cubemap.name.empty())
-				cubemap.name = entry->header.assetPath;
-
-			size_t lastSlash = cubemap.name.find_last_of("/\\");
-			if (lastSlash != std::string::npos)
-				cubemap.name = cubemap.name.substr(lastSlash + 1);
-
-			size_t lastDot = cubemap.name.find_last_of('.');
-			if (lastDot != std::string::npos)
-				cubemap.name = cubemap.name.substr(0, lastDot);
-
-			size_t offset = 0;
-			cubemap.type = *((DXGI_FORMAT *)(&(entry->properties[0])));
-			offset += sizeof(DXGI_FORMAT);
-			cubemap.mipmapped = *((bool *)(&(entry->properties[offset])));
-			offset += sizeof(bool);
-			cubemap.downsample = *((int *)(&(entry->properties[offset])));
+			cubemap.type = prop.format;
+			cubemap.mipmapped = prop.mipmapped;
+			cubemap.downsample = prop.downsample;
 
 			if (_content.AddCubemap(
 				_device.Get(), _immediateContext.Get(),
@@ -158,7 +145,6 @@ bool Game::LoadContent()
 			}
 		}
 	}
-#pragma warning(default: 6993)
 
 	DbgMsg("Loading Textures...");
 
@@ -166,27 +152,16 @@ bool Game::LoadContent()
 	{
 		auto &entry = tex2dList[i];
 
+		AssetPropertiesTexture prop = {};
+		if (!entry->properties.empty())
+			prop = *(AssetPropertiesTexture *)(entry->properties.data());
+
 		TextureData texture = {};
-		texture.path = entry->header.assetPath;
-
+		texture.path = TO_SOLUTION_PATH + entry->header.assetPath;
 		texture.name = entry->header.alias;
-		if (texture.name.empty())
-			texture.name = entry->header.assetPath;
-
-		size_t lastSlash = texture.name.find_last_of("/\\");
-		if (lastSlash != std::string::npos)
-			texture.name = texture.name.substr(lastSlash + 1);
-
-		size_t lastDot = texture.name.find_last_of('.');
-		if (lastDot != std::string::npos)
-			texture.name = texture.name.substr(0, lastDot);
-
-		size_t offset = 0;
-		texture.type = *((DXGI_FORMAT *)(&(entry->properties[0])));
-		offset += sizeof(DXGI_FORMAT);
-		texture.mipmapped = *((bool *)(&(entry->properties[offset])));
-		offset += sizeof(bool);
-		texture.downsample = *((int *)(&(entry->properties[offset])));
+		texture.type = prop.format;
+		texture.mipmapped = prop.mipmapped;
+		texture.downsample = prop.downsample;
 
 		if (_content.AddTexture(
 			_device.Get(), _immediateContext.Get(),
@@ -206,32 +181,16 @@ bool Game::LoadContent()
 	{
 		auto &entry = shaderList[i];
 
+		AssetPropertiesShader prop = {};
+		if (!entry->properties.empty())
+			prop = *(AssetPropertiesShader *)(entry->properties.data());
+
+		std::string fileName = fs::path(entry->header.assetPath).stem().string();
+
 		ShaderData shader = {};
-		shader.path = entry->header.assetPath;
-
+		shader.path = TO_SOLUTION_PATH + entry->header.assetPath;
 		shader.name = entry->header.alias;
-		if (shader.name.empty())
-			shader.name = entry->header.assetPath;
-
-		size_t lastSlash = shader.name.find_last_of("/\\");
-		if (lastSlash != std::string::npos)
-			shader.name = shader.name.substr(lastSlash + 1);
-
-		size_t lastDot = shader.name.find_last_of('.');
-		if (lastDot != std::string::npos)
-			shader.name = shader.name.substr(0, lastDot);
-
-		shader.type = *((ShaderType *)(&(entry->properties[0])));
-
-		std::string fileName = shader.path;
-		
-		lastSlash = fileName.find_last_of("/\\");
-		if (lastSlash != std::string::npos)
-			fileName = fileName.substr(lastSlash + 1);
-
-		lastDot = fileName.find_last_of('.');
-		if (lastDot != std::string::npos)
-			fileName = fileName.substr(0, lastDot);
+		shader.type = prop.type;
 
 		if (_content.AddShader(_device.Get(), shader.name, shader.path, shader.type, WE_DFE(WE_D_COMPILED_CSO, fileName, "cso")) == CONTENT_NULL)
 		{
@@ -243,7 +202,7 @@ bool Game::LoadContent()
 	DbgMsg("Loading Fonts...");
 
 	// Font Atlases
-	for (const auto &entry : std::filesystem::directory_iterator(WE_D_DATA_ATLAS))
+	for (const auto &entry : fs::directory_iterator(WE_D_DATA_ATLAS))
 	{
 		const auto &path = entry.path();
 		std::string filename = path.filename().string();

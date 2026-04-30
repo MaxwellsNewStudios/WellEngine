@@ -1,5 +1,5 @@
 #include "RegistryAssetFileManager.h"
-#include "Internal/Internal.h"
+#include "ContentManager/Internal/Internal.h"
 #include <fstream>
 #include <chrono>
 
@@ -38,7 +38,7 @@ void Registry::RegisterAsset(const std::string &assetPath, const RegistryData &r
 		return;
 
 	// Write header
-	registryFile << registry.header.assetType << "\n";
+	registryFile << static_cast<char>(registry.header.assetType) << "\n";
 	registryFile << registry.header.alias << "\n";
 	registryFile << relAssetPath.string() << "\n";
 	registryFile << relRegistryPath.string() << "\n";
@@ -83,7 +83,11 @@ Registry::RegistryData Registry::GetAssetRegistry(const std::string &path)
 	RegistryData registry;
 
 	// Read header
-	std::getline(registryFile, registry.header.assetType);
+	char assetTypeChar;
+	registryFile >> assetTypeChar;
+	registry.header.assetType = static_cast<AssetType>(assetTypeChar);
+	registryFile.ignore(); // Ignore newline
+
 	std::getline(registryFile, registry.header.alias);
 	std::getline(registryFile, registry.header.assetPath);
 	std::getline(registryFile, registry.header.registryPath);
@@ -97,8 +101,7 @@ Registry::RegistryData Registry::GetAssetRegistry(const std::string &path)
 	// Read properties
 	size_t propertiesSize = 0;
 	registryFile >> propertiesSize;
-
-	registryFile.ignore(); // Ignore the newline after the size
+	registryFile.ignore(); // Ignore newline
 
 	registry.properties.resize(propertiesSize);
 	registryFile.read(registry.properties.data(), propertiesSize);

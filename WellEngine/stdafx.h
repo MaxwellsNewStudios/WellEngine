@@ -1,6 +1,8 @@
 #pragma once
 #undef NDEBUG
 
+#pragma warning(disable: 6993)
+
 #include "Tests/TestUtils.h"
 
 #include "Engine/EngineSettings.h"
@@ -108,7 +110,10 @@ JPH_SUPPRESS_WARNING_POP
 #include "rapidjson/stringbuffer.h"
 #include "rapidjson/filereadstream.h"
 #include "rapidjson/filewritestream.h"
-namespace json = rapidjson; 
+
+namespace json = rapidjson;
+namespace fs = std::filesystem;
+using Microsoft::WRL::ComPtr;
 
 
 // Engine

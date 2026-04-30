@@ -15,19 +15,22 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="include\Registry\RegistryAssetFileManager.cpp">
+    <ClCompile Include="include\ContentManager\Registry\RegistryAssetFileManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="include\Registry\RegistryAssetFileManager.h">
+    <ClInclude Include="include\ContentManager\Registry\RegistryAssetFileManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\Internal\Internal.h">
+    <ClInclude Include="include\ContentManager\Internal\Internal.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\Internal\Common.h">
+    <ClInclude Include="include\ContentManager\Common.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
 </Project>
