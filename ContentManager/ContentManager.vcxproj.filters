@@ -18,6 +18,9 @@
     <ClCompile Include="include\ContentManager\Registry\RegistryAssetFileManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="include\ContentManager\AssetLoading\MeshLoader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\ContentManager\Registry\RegistryAssetFileManager.h">
@@ -27,6 +30,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\ContentManager\Common.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\ContentManager\AssetLoading\MeshLoader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\ContentManager\AssetData\MeshData.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

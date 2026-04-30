@@ -1,5 +1,9 @@
 #pragma once
 
+#include <cstdint>
+
+#include "WellEngine/Source/Engine/EngineDefinitions.h"
+
 namespace ContentManager
 {
 	enum class AssetType : uint8_t

@@ -135,11 +135,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="include\ContentManager\AssetLoading\MeshLoader.cpp" />
     <ClCompile Include="include\ContentManager\Registry\RegistryAssetFileManager.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="include\ContentManager\AssetLoading\MeshLoader.h" />
     <ClInclude Include="include\ContentManager\Common.h" />
     <ClInclude Include="include\ContentManager\Internal\Internal.h" />
+    <ClInclude Include="include\ContentManager\AssetData\MeshData.h" />
     <ClInclude Include="include\ContentManager\Registry\RegistryAssetFileManager.h" />
   </ItemGroup>
   <ItemGroup>

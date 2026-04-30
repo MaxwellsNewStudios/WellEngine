@@ -4,10 +4,10 @@
 
 namespace WellEngine::ContentData
 {
-	struct RawPosition { float	x, y, z; };
-	struct RawNormal { float	x, y, z; };
-	struct RawTexCoord { float	u, v; };
-	struct RawIndex { int	v, t, n; };
+	struct RawPosition	{ float	x, y, z;	};
+	struct RawNormal	{ float	x, y, z;	};
+	struct RawTexCoord	{ float	u, v;		};
+	struct RawIndex		{ int	v, t, n;	};
 
 	struct SubMaterial
 	{
