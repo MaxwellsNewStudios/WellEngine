@@ -667,7 +667,6 @@ bool Scene::Render(TimeUtils &time, const Input &input)
 	const int spotlightCount = static_cast<int>(_spotlights->GetNrOfLights());
 	const int pointlightCount = static_cast<int>(_pointlights->GetNrOfLights());
 
-#pragma warning(disable: 6993)
 #pragma omp parallel num_threads(PARALLEL_THREADS)
 	{
 #pragma omp for schedule(dynamic) nowait
@@ -807,7 +806,6 @@ bool Scene::Render(TimeUtils &time, const Input &input)
 			pointlightCamera->SortGeometryQueue();
 		}
 	}
-#pragma warning(default: 6993)
 
 	// Calculate light tiles
 	{
@@ -903,7 +901,6 @@ bool Scene::Render(TimeUtils &time, const Input &input)
 		const int simpleSpotlightCount = static_cast<int>(_spotlights->GetNrOfSimpleLights());
 		const int simplePointlightCount = static_cast<int>(_pointlights->GetNrOfSimpleLights());
 
-#pragma warning(disable: 6993)
 #pragma omp parallel num_threads(PARALLEL_THREADS)
 		{
 #pragma omp for schedule(dynamic) nowait
@@ -1043,7 +1040,6 @@ bool Scene::Render(TimeUtils &time, const Input &input)
 				}
 			}
 		}
-#pragma warning(default: 6993)
 	}
 
 #ifdef DEBUG_BUILD

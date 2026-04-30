@@ -976,9 +976,7 @@ const CamBounds *B_Camera::GetLightGridBounds()
 			float l = -r;			// Left plane
 			float b = -t;			// Bottom plane
 
-#pragma warning(disable: 6993)
 #pragma omp parallel for schedule(dynamic) num_threads(PARALLEL_THREADS)
-#pragma warning(default: 6993)
 			for (int tileY = 0; tileY < LIGHT_GRID_RES; ++tileY)
 			{
 				for (int tileX = 0; tileX < LIGHT_GRID_RES; ++tileX)
@@ -1031,9 +1029,7 @@ const CamBounds *B_Camera::GetLightGridBounds()
 			float l = -r;			// Left plane
 			float b = -t;			// Bottom plane
 
-#pragma warning(disable: 6993)
 #pragma omp parallel for schedule(dynamic) num_threads(PARALLEL_THREADS)
-#pragma warning(default: 6993)
 			for (int tileY = 0; tileY < LIGHT_GRID_RES; ++tileY)
 			{
 				for (int tileX = 0; tileX < LIGHT_GRID_RES; ++tileX)

@@ -1140,7 +1140,6 @@ UINT Content::AddMesh(ID3D11Device *device, const std::string &name, bool genera
 
 	UINT id = CONTENT_NULL;
 
-#pragma warning(disable: 6993)
 #pragma omp critical
 	{
 		bool duplicateName = false;
@@ -1172,7 +1171,6 @@ UINT Content::AddMesh(ID3D11Device *device, const std::string &name, bool genera
 			}
 		}
 	}
-#pragma warning(default: 6993)
 
 	meshData = nullptr;
 	return id;
@@ -1190,7 +1188,6 @@ UINT Content::AddMesh(ID3D11Device *device, const std::string &name, MeshData **
 
 	UINT id = CONTENT_NULL;
 
-#pragma warning(disable: 6993)
 #pragma omp critical
 	{
 		bool duplicateName = false;
@@ -1221,7 +1218,6 @@ UINT Content::AddMesh(ID3D11Device *device, const std::string &name, MeshData **
 			}
 		}
 	}
-#pragma warning(default: 6993)
 
 	meshData = nullptr;
 	return id;
@@ -1247,7 +1243,6 @@ UINT Content::AddMesh(ID3D11Device *device, const std::string &name, const char 
 
 	UINT id = CONTENT_NULL;
 
-#pragma warning(disable: 6993)
 #pragma omp critical
 	{
 		bool duplicateName = false;
@@ -1279,7 +1274,6 @@ UINT Content::AddMesh(ID3D11Device *device, const std::string &name, const char 
 			}
 		}
 	}
-#pragma warning(default: 6993)
 
 	meshData = nullptr;
 	return id;
@@ -1298,7 +1292,6 @@ UINT Content::AddShader(ID3D11Device *device, const std::string &name, const std
 
 	UINT id = CONTENT_NULL;
 
-#pragma warning(disable: 6993)
 #pragma omp critical
 	{
 		bool duplicateName = false;
@@ -1328,7 +1321,6 @@ UINT Content::AddShader(ID3D11Device *device, const std::string &name, const std
 			}
 		}
 	}
-#pragma warning(default: 6993)
 
 	shaderBlob = nullptr;
 	return id;
@@ -1346,7 +1338,6 @@ UINT Content::AddShader(ID3D11Device *device, const std::string &name, const std
 
 	UINT id = CONTENT_NULL;
 
-#pragma warning(disable: 6993)
 #pragma omp critical
 	{
 		bool duplicateName = false;
@@ -1376,7 +1367,6 @@ UINT Content::AddShader(ID3D11Device *device, const std::string &name, const std
 			}
 		}
 	}
-#pragma warning(default: 6993)
 
 	return id;
 }
@@ -1393,7 +1383,6 @@ UINT Content::AddShader(ID3D11Device *device, const std::string &name, const std
 
 	UINT id = CONTENT_NULL;
 
-#pragma warning(disable: 6993)
 #pragma omp critical
 	{
 		bool duplicateName = false;
@@ -1423,7 +1412,6 @@ UINT Content::AddShader(ID3D11Device *device, const std::string &name, const std
 			}
 		}
 	}
-#pragma warning(default: 6993)
 
 	return id;
 }
@@ -1567,7 +1555,7 @@ UINT Content::AddTexture(ID3D11Device *device, ID3D11DeviceContext *context, con
 	}
 
 	UINT id = CONTENT_NULL;
-#pragma warning(disable: 6993)
+
 #pragma omp critical
 	{
 		if (!IsNameDuplicate(name, _textures, &id))
@@ -1641,7 +1629,6 @@ UINT Content::AddTexture(ID3D11Device *device, ID3D11DeviceContext *context, con
 			}
 		}
 	}
-#pragma warning(default: 6993)
 
 	return id;
 }
@@ -1768,7 +1755,6 @@ UINT Content::AddCubemap(ID3D11Device *device, ID3D11DeviceContext *context, con
 
 	UINT id = CONTENT_NULL;
 
-#pragma warning(disable: 6993)
 #pragma omp critical
 	{
 		bool duplicateName = false;
@@ -1798,7 +1784,6 @@ UINT Content::AddCubemap(ID3D11Device *device, ID3D11DeviceContext *context, con
 			}
 		}
 	}
-#pragma warning(default: 6993)
 
 	return id;
 }

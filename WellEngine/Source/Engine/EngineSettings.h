@@ -132,51 +132,50 @@
 #pragma endregion
 
 
-
 #pragma region Path Configuration Defines
-/// WE: Well Engine
-/// D: Directory
-/// F: File
-/// E: Extension
+	/// WE: Well Engine
+	/// D: Directory
+	/// F: File
+	/// E: Extension
 
-#define WE_D_ENGINE						TO_SOLUTION_PATH "WellEngine\\Source"
-#define WE_D_ENGINE_SHADER				WE_D_ENGINE "\\Shaders"
-#define WE_D_ENGINE_BEHAVIOUR			WE_D_ENGINE "\\Game\\Behaviours"
+	#define WE_D_ENGINE						TO_SOLUTION_PATH "WellEngine\\Source"
+	#define WE_D_ENGINE_SHADER				WE_D_ENGINE "\\Shaders"
+	#define WE_D_ENGINE_BEHAVIOUR			WE_D_ENGINE "\\Game\\Behaviours"
 
-#define WE_D_INTERNAL					TO_SOLUTION_PATH "Internal"
-#define WE_F_INTERNAL_BINDINGS			WE_D_INTERNAL "\\Bindings.json"
+	#define WE_D_INTERNAL					TO_SOLUTION_PATH "Internal"
+	#define WE_F_INTERNAL_BINDINGS			WE_D_INTERNAL "\\Bindings.json"
 
-#define WE_D_REGISTRY					WE_D_INTERNAL "\\Registry"
-#define WE_E_REGISTRY					"wer"
+	#define WE_D_REGISTRY					WE_D_INTERNAL "\\Registry"
+	#define WE_E_REGISTRY					"wer"
 
-#define WE_D_COMPILED					WE_D_INTERNAL "\\Compiled"
-#define WE_D_COMPILED_CSO				WE_D_COMPILED "\\Shaders"
-#define WE_D_COMPILED_TEXTURE			WE_D_COMPILED "\\Textures"
+	#define WE_D_COMPILED					WE_D_INTERNAL "\\Compiled"
+	#define WE_D_COMPILED_CSO				WE_D_COMPILED "\\Shaders"
+	#define WE_D_COMPILED_TEXTURE			WE_D_COMPILED "\\Textures"
 
-#define WE_D_ASSET						TO_SOLUTION_PATH "Content"
-#define WE_D_ASSET_FONT					WE_D_ASSET "\\Fonts"
-#define WE_D_ASSET_MESH					WE_D_ASSET "\\Meshes"
-#define WE_D_ASSET_SOUND				WE_D_ASSET "\\Sounds"
-#define WE_D_ASSET_TEXTURE				WE_D_ASSET "\\Textures"
-#define WE_E_ASSET_FONT					"ttf"
+	#define WE_D_ASSET						TO_SOLUTION_PATH "Content"
+	#define WE_D_ASSET_FONT					WE_D_ASSET "\\Fonts"
+	#define WE_D_ASSET_MESH					WE_D_ASSET "\\Meshes"
+	#define WE_D_ASSET_SOUND				WE_D_ASSET "\\Sounds"
+	#define WE_D_ASSET_TEXTURE				WE_D_ASSET "\\Textures"
+	#define WE_E_ASSET_FONT					"ttf"
 
-#define WE_D_DATA						WE_D_ASSET "\\Data"
-#define WE_D_DATA_SAVE					WE_D_DATA "\\Saves"
-#define WE_D_DATA_ATLAS					WE_D_DATA "\\Atlas"
-#define WE_D_DATA_PREFAB				WE_D_DATA "\\Prefabs"
-#define WE_D_DATA_SCENE					WE_D_DATA "\\Scenes"
-#define WE_E_DATA_SAVE					"save"
-#define WE_E_DATA_SCENE					"scene"
-#define WE_E_DATA_PREFAB				"prefab"
-#define WE_E_DATA_ATLAS					"atlas"
+	#define WE_D_DATA						WE_D_ASSET "\\Data"
+	#define WE_D_DATA_SAVE					WE_D_DATA "\\Saves"
+	#define WE_D_DATA_ATLAS					WE_D_DATA "\\Atlas"
+	#define WE_D_DATA_PREFAB				WE_D_DATA "\\Prefabs"
+	#define WE_D_DATA_SCENE					WE_D_DATA "\\Scenes"
+	#define WE_E_DATA_SAVE					"save"
+	#define WE_E_DATA_SCENE					"scene"
+	#define WE_E_DATA_PREFAB				"prefab"
+	#define WE_E_DATA_ATLAS					"atlas"
 
-#ifdef USE_IMGUI
-#define WE_D_EDITOR						WE_D_INTERNAL "\\Editor"
-#define WE_D_EDITOR_LAYOUT				WE_D_EDITOR "\\Layouts"
-#endif
+	#ifdef USE_IMGUI
+	#define WE_D_EDITOR						WE_D_INTERNAL "\\Editor"
+	#define WE_D_EDITOR_LAYOUT				WE_D_EDITOR "\\Layouts"
+	#endif
 
-#define WE_DF(path, file)				std::format("{}\\{}", path, file)
-#define WE_DFE(path, file, ext)			std::format("{}\\{}.{}", path, file, ext)
+	#define WE_DF(path, file)				std::format("{}\\{}", path, file)
+	#define WE_DFE(path, file, ext)			std::format("{}\\{}.{}", path, file, ext)
 #pragma endregion
 
 
