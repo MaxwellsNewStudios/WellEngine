@@ -239,6 +239,7 @@ namespace WellEngine
 
 	#ifdef USE_IMGUI
 		[[nodiscard]] bool RenderUI(ID3D11Device *device);
+		[[nodiscard]] bool RenderFileBrowserUI(ID3D11Device *device, ID3D11DeviceContext *context);
 	#endif
 	#pragma endregion
 
@@ -290,6 +291,9 @@ namespace WellEngine
 
 		[[nodiscard]] ShaderResourceTextureD3D11 *GetTexture(UINT id) const;
 		[[nodiscard]] ShaderResourceTextureD3D11 *GetTexture(const std::string &name) const;
+
+		[[nodiscard]] bool ReloadTexture(ID3D11Device *device, ID3D11DeviceContext *context,
+			const std::string &name, DXGI_FORMAT format, bool useMipmaps, int downsample = 0);
 	#pragma endregion
 
 	#pragma region Cubemap
@@ -315,6 +319,9 @@ namespace WellEngine
 
 		[[nodiscard]] ShaderResourceTextureD3D11 *GetCubemap(UINT id) const;
 		[[nodiscard]] ShaderResourceTextureD3D11 *GetCubemap(const std::string &name) const;
+
+		[[nodiscard]] bool ReloadCubemap(ID3D11Device *device, ID3D11DeviceContext *context,
+			const std::string &name, DXGI_FORMAT format, bool useMipmaps, int downsample = 0);
 	#pragma endregion
 
 	#pragma region Font Atlas

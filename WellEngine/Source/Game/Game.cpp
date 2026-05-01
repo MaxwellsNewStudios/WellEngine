@@ -2207,6 +2207,16 @@ bool Game::RenderUI(TimeUtils &time)
 	}
 	ImGui::End();
 
+	if (ImGui::Begin("Asset Browser", nullptr, defaultWindowFlags))
+	{
+		if (!_content.RenderFileBrowserUI(_device.Get(), _immediateContext.Get()))
+		{
+			ErrMsg("Failed to render asset browser UI!");
+			return false;
+		}
+	}
+	ImGui::End();
+
 	if (ImGui::Begin("Graphics", nullptr, defaultWindowFlags))
 	{
 		if (!_graphics.RenderUI(time))

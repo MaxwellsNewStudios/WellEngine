@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "Content.h"
 #include "ContentLoader.h"
+#include "ContentManager/Registry/RegistryAssetFileManager.h"
 
 #ifdef LEAK_DETECTION
 #define new			DEBUG_NEW
@@ -1064,6 +1065,423 @@ bool Content::RenderUI(ID3D11Device *device)
 
 	return true;
 }
+
+bool Content::RenderFileBrowserUI(ID3D11Device *device, ID3D11DeviceContext *context)
+{
+	using namespace ContentManager;
+	using namespace ContentManager::Registry;
+
+	static std::vector<RegistryData> entries;
+	static bool needsRefresh = true;
+	static bool showFullFormatList = false;
+	static std::string selectedPath;
+	static bool dirty = false;
+
+	// Per-selection edit state
+	static std::string currAlias;
+	static std::string editAlias;
+	static AssetType editType = AssetType::None;
+	static std::string editAssetPath;
+	static std::string editRegistryPath;
+	static std::string editCompiledPath;
+	static fs::file_time_type editCompileTime;
+	static AssetPropertiesTexture editTexProps;
+	static AssetPropertiesShader editShaderProps;
+
+	// Selects an asset and populates the edit state from its registry data
+	auto selectAsset = [&](const RegistryData &data) {
+		selectedPath = data.header.registryPath;
+		currAlias = editAlias = data.header.alias;
+		editType = data.header.assetType;
+		editAssetPath = data.header.assetPath;
+		editRegistryPath = data.header.registryPath;
+		editCompiledPath = data.header.compiledPath;
+		editCompileTime = data.header.compileTime;
+		dirty = false;
+
+		editTexProps = {};
+		editShaderProps = {};
+
+		if (!data.properties.empty())
+		{
+			switch (data.header.assetType)
+			{
+			case AssetType::Texture:
+			case AssetType::Cubemap:
+				if (data.properties.size() >= sizeof(AssetPropertiesTexture))
+					editTexProps = *reinterpret_cast<const AssetPropertiesTexture *>(data.properties.data());
+				break;
+			case AssetType::Shader:
+				if (data.properties.size() >= sizeof(AssetPropertiesShader))
+					editShaderProps = *reinterpret_cast<const AssetPropertiesShader *>(data.properties.data());
+				break;
+			default:
+				break;
+			}
+		}
+	};
+
+	// Reload registry on first call or after an apply
+	if (needsRefresh)
+	{
+		entries = GetAssetRegistriesInDirectory(WE_D_REGISTRY, true);
+		needsRefresh = false;
+
+		// Re-populate edit state for the currently selected asset if one is selected
+		if (!selectedPath.empty())
+		{
+			for (const auto &e : entries)
+			{
+				if (e.header.registryPath == selectedPath)
+				{
+					selectAsset(e);
+					break;
+				}
+			}
+		}
+	}
+
+	// Toolbar
+	if (ImGui::Button("Refresh##FileBrowser"))
+	{
+		entries = GetAssetRegistriesInDirectory(WE_D_REGISTRY, true);
+		if (!selectedPath.empty())
+		{
+			for (const auto &e : entries)
+			{
+				if (e.header.registryPath == selectedPath)
+				{
+					selectAsset(e);
+					break;
+				}
+			}
+		}
+	}
+	ImGui::SameLine();
+	ImGui::TextDisabled("%d registered assets", (int)entries.size());
+	ImGui::Separator();
+
+	// Build a folder tree from registry paths
+	struct FolderNode
+	{
+		std::map<std::string, FolderNode> children;
+		std::vector<RegistryData *> assets;
+	};
+
+	FolderNode root;
+	for (auto &e : entries)
+	{
+		fs::path p(e.header.registryPath);
+		FolderNode *cur = &root;
+
+		std::vector<std::string> parts;
+		for (const auto &seg : p)
+			parts.push_back(seg.string());
+
+		// All path components except the last are folder nodes; the last is the asset leaf
+		for (size_t i = 0; i + 1 < parts.size(); ++i)
+			cur = &cur->children[parts[i]];
+
+		if (!parts.empty())
+			cur->assets.push_back(&e);
+	}
+
+	// Two-panel layout
+	const float panelHeight = ImGui::GetContentRegionAvail().y;
+
+	ImGui::BeginChild("##FileBrowserLeft", ImVec2(250.0f, panelHeight), ImGuiChildFlags_Borders | ImGuiChildFlags_ResizeX);
+
+	std::function<void(FolderNode &, const std::string &)> renderFolder;
+	renderFolder = [&](FolderNode &node, const std::string &nodePath) {
+		for (auto &[name, child] : node.children)
+		{
+			const std::string childPath = nodePath + "/" + name;
+			ImGui::PushID(childPath.c_str());
+
+			const bool open = ImGui::TreeNodeEx(
+				name.c_str(),
+				ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick |
+				ImGuiTreeNodeFlags_SpanAvailWidth | ImGuiTreeNodeFlags_DefaultOpen
+			);
+			if (open)
+			{
+				renderFolder(child, childPath);
+				ImGui::TreePop();
+			}
+
+			ImGui::PopID();
+		}
+
+		for (auto *e : node.assets)
+		{
+			ImGui::PushID(e->header.registryPath.c_str());
+
+			// Strip the .wer extension to get the original asset filename for display
+			const std::string displayName = fs::path(e->header.registryPath).stem().string();
+
+			const bool isSelected = (selectedPath == e->header.registryPath);
+
+			ImGuiTreeNodeFlags flags =
+				ImGuiTreeNodeFlags_Leaf |
+				ImGuiTreeNodeFlags_NoTreePushOnOpen |
+				ImGuiTreeNodeFlags_SpanAvailWidth;
+			if (isSelected)
+				flags |= ImGuiTreeNodeFlags_Selected;
+
+			ImGui::TreeNodeEx(displayName.c_str(), flags);
+
+			if (ImGui::IsItemClicked() && !ImGui::IsItemToggledOpen())
+				selectAsset(*e);
+
+			ImGui::PopID();
+		}
+	};
+
+	renderFolder(root, "");
+
+	ImGui::EndChild();
+	ImGui::SameLine();
+
+	// Right panel: property inspector
+	ImGui::BeginChild("##FileBrowserRight", ImVec2(0.0f, panelHeight), ImGuiChildFlags_Borders);
+
+	if (selectedPath.empty())
+	{
+		ImGui::TextDisabled("Select an asset to inspect its properties.");
+	}
+	else
+	{
+		ImGui::SeparatorText("Asset Info");
+
+		const char *typeName = "Unknown";
+		switch (editType)
+		{
+		case AssetType::Mesh:    typeName = "Mesh";    break;
+		case AssetType::Texture: typeName = "Texture"; break;
+		case AssetType::Cubemap: typeName = "Cubemap"; break;
+		case AssetType::Shader:  typeName = "Shader";  break;
+		case AssetType::Audio:   typeName = "Audio";   break;
+		case AssetType::Scene:   typeName = "Scene";   break;
+		case AssetType::Prefab:  typeName = "Prefab";  break;
+		case AssetType::Font:    typeName = "Font";    break;
+		default:                 typeName = "Unknown"; break;
+		}
+
+		ImGui::TextDisabled("Type:");     ImGui::SameLine(); ImGui::Text("%s", typeName);
+		ImGui::TextDisabled("Asset:");    ImGui::SameLine(); ImGui::TextWrapped("%s", editAssetPath.c_str());
+
+		ImGui::Spacing();
+		ImGui::SeparatorText("Editable Properties");
+
+		// Alias is always editable
+		if (ImGui::InputText("Alias##BrowserAlias", &editAlias))
+			dirty = true;
+
+		// Type-specific editable properties
+		switch (editType)
+		{
+		case AssetType::Texture:
+		case AssetType::Cubemap:
+		{
+			ImGui::Checkbox("Show All Formats##BrowserFormatList", &showFullFormatList);
+
+			// Format selector
+			int formatCount = 0;
+			const DXGI_FORMAT *formatList = showFullFormatList ? D3D11FormatData::GetLinearList(&formatCount) : D3D11FormatData::GetCommonLinearList(&formatCount);
+			const std::string currentFormatName = D3D11FormatData::GetName(editTexProps.format);
+
+			if (ImGui::BeginCombo("Format##BrowserFormat", currentFormatName.c_str()))
+			{
+				for (int i = 0; i < formatCount; i++)
+				{
+					const DXGI_FORMAT fmt = formatList[i];
+					const std::string fmtName = D3D11FormatData::GetName(fmt);
+
+					const bool selected = (editTexProps.format == fmt);
+					if (ImGui::Selectable(fmtName.c_str(), selected))
+					{
+						editTexProps.format = fmt;
+						dirty = true;
+					}
+
+					if (selected)
+						ImGui::SetItemDefaultFocus();
+				}
+				ImGui::EndCombo();
+			}
+
+			if (ImGui::Checkbox("Mipmapped##BrowserMipped", &editTexProps.mipmapped))
+				dirty = true;
+
+			if (ImGui::DragInt("Downsample##BrowserDownsample", &editTexProps.downsample, 0.05f))
+			{
+				editTexProps.downsample = MAX(editTexProps.downsample, 0);
+				dirty = true;
+			}
+			ImGuiUtils::LockMouseOnActive();
+
+			break;
+		}
+
+		case AssetType::Shader:
+		{
+			static const char *shaderTypeNames[] = { "Vertex", "Hull", "Domain", "Geometry", "Pixel", "Compute" };
+			int shaderTypeIdx = static_cast<int>(editShaderProps.type);
+			if (ImGui::Combo("Shader Type##BrowserShaderType", &shaderTypeIdx, shaderTypeNames, IM_ARRAYSIZE(shaderTypeNames)))
+			{
+				editShaderProps.type = static_cast<ShaderType>(shaderTypeIdx);
+				dirty = true;
+			}
+
+			break;
+		}
+
+		default:
+			ImGui::TextDisabled("No editable properties for this asset type.");
+			break;
+		}
+
+		// Apply / discard
+		ImGui::Spacing();
+		ImGui::Separator();
+		ImGui::Spacing();
+
+		ImGui::BeginDisabled(!dirty);
+		if (ImGui::Button("Apply##BrowserApply"))
+		{
+			// Build the updated registry data
+			RegistryData newReg;
+			newReg.header.assetType = editType;
+			newReg.header.alias = editAlias;
+			newReg.header.assetPath = editAssetPath;
+			newReg.header.registryPath = editRegistryPath;
+			newReg.header.compiledPath = editCompiledPath;
+			newReg.header.compileTime = editCompileTime;
+
+			// Serialize type-specific properties into the properties vector
+			switch (editType)
+			{
+			case AssetType::Texture:
+			case AssetType::Cubemap:
+				newReg.properties.resize(sizeof(AssetPropertiesTexture));
+				*reinterpret_cast<AssetPropertiesTexture *>(newReg.properties.data()) = editTexProps;
+				break;
+			case AssetType::Shader:
+				newReg.properties.resize(sizeof(AssetPropertiesShader));
+				*reinterpret_cast<AssetPropertiesShader *>(newReg.properties.data()) = editShaderProps;
+				break;
+			case AssetType::Mesh:
+				newReg.properties.resize(sizeof(AssetPropertiesMesh));
+				*reinterpret_cast<AssetPropertiesMesh *>(newReg.properties.data()) = AssetPropertiesMesh{};
+				break;
+			default:
+				break;
+			}
+
+			// Persist the updated registry to disk
+			RegisterAsset(std::string(TO_SOLUTION_PATH) + editAssetPath, newReg);
+
+			// Apply immediately editable changes to the in-memory content
+			if (!currAlias.empty())
+			{
+				switch (editType)
+				{
+				case AssetType::Texture:
+					for (Texture *tex : _textures)
+					{
+						if (tex->name == currAlias)
+						{
+							tex->name = editAlias;
+							tex->mipmapped = editTexProps.mipmapped;
+							break;
+						}
+					}
+					break;
+				case AssetType::Cubemap:
+					for (Cubemap *cub : _cubemaps)
+					{
+						if (cub->name == currAlias)
+						{
+							cub->name = editAlias;
+							break;
+						}
+					}
+					break;
+				case AssetType::Shader:
+					for (Shader *shd : _shaders)
+					{
+						if (shd->name == currAlias)
+						{
+							shd->name = editAlias;
+							break;
+						}
+					}
+					break;
+				case AssetType::Mesh:
+					for (Mesh *msh : _meshes)
+					{
+						if (msh->name == currAlias)
+						{
+							msh->name = editAlias;
+							break;
+						}
+					}
+					break;
+				default:
+					break;
+				}
+			}
+
+			// Reload the entry list so the panel reflects the saved state
+			needsRefresh = true;
+			dirty = false;
+			currAlias = editAlias;
+
+			// Hot-reload asset data from disk with the updated properties
+			switch (editType)
+			{
+			case AssetType::Texture:
+				if (!ReloadTexture(device, context, editAlias, editTexProps.format, editTexProps.mipmapped, editTexProps.downsample))
+					DbgMsgF("Failed to hot-reload texture '{}'", editAlias);
+				break;
+			case AssetType::Cubemap:
+				if (!ReloadCubemap(device, context, editAlias, editTexProps.format, editTexProps.mipmapped, editTexProps.downsample))
+					DbgMsgF("Failed to hot-reload cubemap '{}'", editAlias);
+				break;
+			case AssetType::Shader:
+				if (!RecompileShader(device, editAlias))
+					DbgMsgF("Failed to recompile shader '{}'", editAlias);
+				break;
+			default:
+				break;
+			}
+		}
+		ImGui::EndDisabled();
+
+		if (dirty)
+		{
+			ImGui::SameLine();
+			if (ImGui::Button("Discard##BrowserDiscard"))
+			{
+				// Reset edit state by re-selecting the current asset from the cached list
+				for (const auto &e : entries)
+				{
+					if (e.header.registryPath == selectedPath)
+					{
+						selectAsset(e);
+						break;
+					}
+				}
+			}
+			ImGui::SameLine();
+			ImGui::TextColored(ImVec4(1.0f, 0.8f, 0.0f, 1.0f), "Unsaved changes");
+		}
+	}
+
+	ImGui::EndChild();
+
+	return true;
+}
 #endif
 
 
@@ -1543,6 +1961,177 @@ bool Content::RecompileShader(ID3D11Device *device, const std::string &name) con
 	return true;
 }
 
+bool Content::ReloadTexture(ID3D11Device *device, ID3D11DeviceContext *context, const std::string &name, DXGI_FORMAT format, bool useMipmaps, int downsample)
+{
+	ZoneScopedC(RandomUniqueColor());
+	ZoneText(name.c_str(), name.size());
+
+	Texture *tex = nullptr;
+	for (Texture *t : _textures)
+	{
+		if (t->name == name)
+		{
+			tex = t;
+			break;
+		}
+	}
+
+	if (!tex)
+	{
+		ErrMsgF("Texture '{}' not found for reload!", name);
+		return false;
+	}
+
+	ComPtr<ID3D11Texture2D> texture;
+	ComPtr<ID3D11ShaderResourceView> srv;
+
+	// Force-load from the original source file, bypassing any bake cache
+	if (!LoadTextureFromFile(device, context, tex->path, *texture.GetAddressOf(), *srv.GetAddressOf(),
+		format, useMipmaps, downsample, true))
+	{
+		ErrMsgF("Failed to reload texture '{}' from file!", name);
+		return false;
+	}
+
+	if (!tex->data.Initialize(std::move(texture), std::move(srv)))
+	{
+		ErrMsg("Failed to reinitialize texture data after reload!");
+		return false;
+	}
+
+	tex->mipmapped = useMipmaps;
+	tex->actualPath = tex->path;
+	return true;
+}
+
+bool Content::ReloadCubemap(ID3D11Device *device, ID3D11DeviceContext *context, const std::string &name, DXGI_FORMAT format, bool useMipmaps, int downsample)
+{
+	ZoneScopedC(RandomUniqueColor());
+	ZoneText(name.c_str(), name.size());
+
+	Cubemap *cub = nullptr;
+	for (Cubemap *c : _cubemaps)
+	{
+		if (c->name == name)
+		{
+			cub = c;
+			break;
+		}
+	}
+
+	if (!cub)
+	{
+		ErrMsgF("Cubemap '{}' not found for reload!", name);
+		return false;
+	}
+
+	UINT width, height, inChannels, inBitsPerChannel;
+	std::vector<unsigned char> texData;
+
+	if (!LoadTextureFromFile(cub->path, texData, width, height, inChannels, inBitsPerChannel))
+	{
+		ErrMsgF("Failed to reload cubemap '{}' from file!", name);
+		return false;
+	}
+
+	const UINT inBytesPerChannel = inBitsPerChannel / 8;
+	const UINT inBytesPerPixel = inChannels * inBytesPerChannel;
+
+	// Clamp downsample to max possible value, given the image dimensions
+	const int maxDownsample = MAX(0, static_cast<int>(std::floor(std::log2(std::min(width, height)))) - 2);
+	const int effectiveDownsample = MIN(downsample + MIPS_DISCARDED, maxDownsample);
+
+	if (effectiveDownsample > 0)
+	{
+		const UINT newWidth = width >> effectiveDownsample;
+		const UINT newHeight = height >> effectiveDownsample;
+
+		if (newWidth > 0 && newHeight > 0)
+		{
+			if (DownsampleTexture(texData, width, height, newWidth, newHeight))
+			{
+				width = newWidth;
+				height = newHeight;
+			}
+			else
+			{
+				Warn("Failed to downsample cubemap during reload!");
+			}
+		}
+	}
+
+	const dx::XMINT4 outBitLayout = D3D11FormatData::GetBitsPerChannel(format);
+	if (outBitLayout.x == 0)
+	{
+		ErrMsgF("Unsupported format for cubemap '{}' reload!", name);
+		return false;
+	}
+
+	const UINT outChannels = D3D11FormatData::GetChannelCount(format);
+	const UINT outBitsPerPixel = D3D11FormatData::GetBitsPerPixel(format);
+	const UINT outBitsPerChannel = outBitsPerPixel / outChannels;
+	const UINT outBytesPerPixel = outBitsPerPixel / 8;
+	const UINT outBytesPerChannel = outBitsPerChannel / 8;
+
+	if (outBitsPerChannel < 8)
+	{
+		ErrMsgF("Sub-byte channel formats not supported for cubemap '{}' reload!", name);
+		return false;
+	}
+
+	const int bitDiff = (int)outBitsPerChannel - (int)inBitsPerChannel;
+	const double precisionChange = std::pow(2.0, bitDiff);
+
+	std::vector<uint8_t> formattedTexData;
+	formattedTexData.resize((size_t)width * height * outBytesPerPixel);
+
+	const uint8_t *inRawData = texData.data();
+	uint8_t *outRawData = formattedTexData.data();
+
+	for (size_t pixel = 0; pixel < (size_t)width * height; pixel++)
+	{
+		const uint8_t *inPixelPtr = inRawData + (pixel * inBytesPerPixel);
+		uint8_t *outPixelPtr = outRawData + (pixel * outBytesPerPixel);
+
+		for (size_t channel = 0; channel < outChannels; channel++)
+		{
+			const uint8_t *inChannelPtr = inPixelPtr + (channel * inBytesPerChannel);
+			uint8_t *outChannelPtr = outPixelPtr + (channel * outBytesPerChannel);
+
+			if (channel < inChannels)
+			{
+				if (outBytesPerChannel == 1 && inBytesPerChannel == 1)
+					(*outChannelPtr) = (uint8_t)((*inChannelPtr) * precisionChange);
+				else if (outBytesPerChannel == 2 && inBytesPerChannel == 1)
+					(*(uint16_t *)outChannelPtr) = (uint16_t)((*inChannelPtr) * precisionChange);
+				else if (outBytesPerChannel == 1 && inBytesPerChannel == 2)
+					(*outChannelPtr) = (uint8_t)((*(uint16_t *)inChannelPtr) * precisionChange);
+				else if (outBytesPerChannel == 2 && inBytesPerChannel == 2)
+					(*(uint16_t *)outChannelPtr) = (uint16_t)((*(uint16_t *)inChannelPtr) * precisionChange);
+			}
+			else if (channel == 3)
+			{
+				if (outBytesPerChannel == 1 && inBytesPerChannel == 1)
+					*outChannelPtr = (uint8_t)NumericLimit(*outChannelPtr);
+				else if (outBytesPerChannel == 2 && inBytesPerChannel == 1)
+					*(uint16_t *)outChannelPtr = (uint16_t)NumericLimit(*(uint16_t *)outChannelPtr);
+				else if (outBytesPerChannel == 1 && inBytesPerChannel == 2)
+					*outChannelPtr = (uint8_t)NumericLimit(*outChannelPtr);
+				else if (outBytesPerChannel == 2 && inBytesPerChannel == 2)
+					*(uint16_t *)outChannelPtr = (uint16_t)NumericLimit(*(uint16_t *)outChannelPtr);
+			}
+		}
+	}
+
+	if (!cub->data.Initialize(device, context, width, height, formattedTexData.data(), format, useMipmaps, true))
+	{
+		ErrMsgF("Failed to reinitialize cubemap '{}' after reload!", name);
+		return false;
+	}
+
+	return true;
+}
+
 UINT Content::AddTexture(ID3D11Device *device, ID3D11DeviceContext *context, const std::string &name, const std::string &path, DXGI_FORMAT format, bool useMipmaps, int downsample)
 {
 	ZoneScopedC(RandomUniqueColor());
@@ -1656,11 +2245,14 @@ UINT Content::AddCubemap(ID3D11Device *device, ID3D11DeviceContext *context, con
 	UINT inBytesPerChannel = inBitsPerChannel / 8;
 	UINT inBytesPerPixel = inChannels * inBytesPerChannel;
 
-	downsample += MIPS_DISCARDED;
-	if (downsample > 0)
+	// Clamp downsample to max possible value, given the image dimensions
+	const int maxDownsample = MAX(0, static_cast<int>(std::floor(std::log2(std::min(width, height)))) - 2);
+	const int effectiveDownsample = MIN(downsample + MIPS_DISCARDED, maxDownsample);
+
+	if (effectiveDownsample > 0)
 	{
-		UINT newWidth = width >> downsample;
-		UINT newHeight = height >> downsample;
+		UINT newWidth = width >> effectiveDownsample;
+		UINT newHeight = height >> effectiveDownsample;
 
 		if (newWidth > 0 && newHeight > 0)
 		{

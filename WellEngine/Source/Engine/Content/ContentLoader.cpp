@@ -822,6 +822,9 @@ bool WellEngine::LoadTextureFromFile(
 
 	if (!isBCFormat && downsample > 0)
 	{
+		// Clamp downsample to max possible value, given the image dimensions
+		downsample = MIN(downsample, static_cast<UINT>(MAX(0, static_cast<int>(std::log2(MIN(metadata.width, metadata.height))) - 2)));
+
 		int scaleDiv = 1 << downsample;
 		dx::ScratchImage downsampled;
 

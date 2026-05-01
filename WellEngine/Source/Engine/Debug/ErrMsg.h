@@ -9,6 +9,9 @@
 #endif // DEBUG_MESSAGES
 #include <string>
 
+// May be temporarily redefined as true to disable breaking/aborting on warnings/errors
+#define CATCH_ERRORS false
+
 #ifdef BREAK_ON_WARN
 #define __do_break_on_warn true
 #else
@@ -17,6 +20,8 @@
 
 #define CUSTOM_WARNING(msg, file, line)								\
 	do {															\
+		if (CATCH_ERRORS)											\
+			break;													\
 		if (!__do_break_on_warn)									\
 			break;													\
 		char c_msg[1024];											\
@@ -39,6 +44,8 @@
 #define CUSTOM_ASSERT(expr, msg, file, line)							\
 	do {																\
 		if (expr)														\
+			break;														\
+		if (CATCH_ERRORS)												\
 			break;														\
 		if (!__do_break_on_warn)										\
 			break;														\
@@ -69,12 +76,14 @@
 #define ErrMsg(msg)										\
 { 														\
 	MsgLogger::ErrorMessage(msg, __FILE__, __LINE__); 	\
-	std::abort(); 										\
+	if (!CATCH_ERRORS)									\
+		std::abort(); 									\
 }
 #define ErrMsgF(msg, ...)														\
 { 																				\
 	MsgLogger::ErrorMessage(std::format(msg, __VA_ARGS__), __FILE__, __LINE__); \
-	std::abort(); 																\
+	if (!CATCH_ERRORS)															\
+		std::abort(); 															\
 }
 
 // Used for important information that does not require immediate action.
@@ -87,12 +96,14 @@
 #define Warn(msg)                                       \
 {                                                       \
 	MsgLogger::WarningMessage(msg, __FILE__, __LINE__); \
-	CUSTOM_WARNING(msg, __FILE__, __LINE__);           \
+	if (!CATCH_ERRORS)									\
+		CUSTOM_WARNING(msg, __FILE__, __LINE__);		\
 }
 #define WarnF(msg, ...)                                                             \
 {                                                                                   \
 	MsgLogger::WarningMessage(std::format(msg, __VA_ARGS__), __FILE__, __LINE__);   \
-	CUSTOM_WARNING(std::format(msg, __VA_ARGS__).c_str(), __FILE__, __LINE__);		\
+	if (!CATCH_ERRORS)																\
+		CUSTOM_WARNING(std::format(msg, __VA_ARGS__).c_str(), __FILE__, __LINE__);	\
 }
 
 // Used to warn if a condition is not met, lets the user choose how to respond.
