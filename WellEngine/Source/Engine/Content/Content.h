@@ -13,9 +13,11 @@
 #include "Engine/D3D/ShaderResourceTextureD3D11.h"
 #include "Engine/Audio/SoundSource.h"
 #include "Tests/TestUtils.h"
+#include "ContentManager/Registry/RegistryAssetFileManager.h"
 
 namespace WellEngine
 {
+	#pragma region Asset Definitions
 	struct MaterialProperties
 	{
 		dx::XMFLOAT4 baseColor		 = {1,1,1,1};	// Base color of the material.
@@ -207,7 +209,7 @@ namespace WellEngine
 	};
 
 	static constexpr auto matPtrCmp = [](Material *a, Material *b) { return (*a) < (*b); };
-
+	#pragma endregion
 
 	/// Handles loading, storing and unloading of meshes, shaders, textures, texture maps, samplers and input layouts.
 	class Content
@@ -218,6 +220,64 @@ namespace WellEngine
 		std::set<Material *, decltype(matPtrCmp)> _materialSet;
 
 		bool _hasShutDown = false;
+
+#ifdef USE_IMGUI
+		struct AssetDirFolder;
+
+		struct AssetDirEntry
+		{
+			std::string name;
+
+			AssetDirEntry(std::string name) 
+				: name(std::move(name)) {}
+
+			bool operator<(const AssetDirEntry &other) const;
+			bool operator==(const AssetDirEntry &other) const;
+
+			// NOTE: Expensive, prioritize tracking path externally.
+			std::string GetRelativePath(const AssetDirFolder &root) const;
+		};
+		struct AssetDirFolder : public AssetDirEntry
+		{
+			struct EntryContainer
+			{
+				std::unique_ptr<AssetDirEntry> entry;
+
+				EntryContainer(std::unique_ptr<AssetDirEntry> entry) : entry(std::move(entry)) {}
+
+				bool operator<(const EntryContainer &other) const
+				{
+					return *entry < *other.entry;
+				}
+				bool operator==(const EntryContainer &other) const
+				{
+					return *entry == *other.entry;
+				}
+			};
+
+			std::set<EntryContainer> children;
+
+			AssetDirFolder(std::string name) 
+				: AssetDirEntry(std::move(name)) {}
+		};
+		struct AssetDirFile : public AssetDirEntry
+		{
+			ContentManager::Registry::RegistryData registryData;
+
+			AssetDirFile(std::string name, ContentManager::Registry::RegistryData registryData)
+				: AssetDirEntry(std::move(name)), registryData(std::move(registryData)) {}
+		};
+
+		AssetDirFolder _assetDirRoot = AssetDirFolder("root");
+
+		bool _assetsDirty = false;
+		bool _reloadDir = false;
+
+		// Includes folders. 
+		// Only editable if all are the same asset type.
+		// If dirty, must confirm before changing selection.
+		std::vector<std::string> _selectedPaths;
+#endif
 
 		template <typename C>
 		[[nodiscard]] inline bool IsNameDuplicate(const std::string &name, const std::vector<C *> &contentVec, UINT *id);
@@ -239,6 +299,7 @@ namespace WellEngine
 
 	#ifdef USE_IMGUI
 		[[nodiscard]] bool RenderUI(ID3D11Device *device);
+		[[nodiscard]] bool RenderAssetInspectorUI(ID3D11Device *device, ID3D11DeviceContext *context);
 		[[nodiscard]] bool RenderFileBrowserUI(ID3D11Device *device, ID3D11DeviceContext *context);
 	#endif
 	#pragma endregion

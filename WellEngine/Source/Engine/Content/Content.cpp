@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "Content.h"
 #include "ContentLoader.h"
-#include "ContentManager/Registry/RegistryAssetFileManager.h"
+#include "Engine/Debug/DebugData.h"
 
 #ifdef LEAK_DETECTION
 #define new			DEBUG_NEW
@@ -78,6 +78,56 @@ const Material *Content::GetErrorMaterial()
 
 
 #ifdef USE_IMGUI
+bool Content::AssetDirEntry::operator<(const AssetDirEntry &other) const
+{
+	bool thisFolder = reinterpret_cast<const AssetDirFolder *>(this) != nullptr;
+	bool otherFolder = reinterpret_cast<const AssetDirFolder *>(&other) != nullptr;
+
+	if (thisFolder != otherFolder)
+		return thisFolder; // Directories come before files
+
+	return name < other.name; // Alphabetical order within directories and files
+}
+bool Content::AssetDirEntry::operator==(const AssetDirEntry &other) const
+{
+	bool thisFolder = reinterpret_cast<const AssetDirFolder *>(this) != nullptr;
+	bool otherFolder = reinterpret_cast<const AssetDirFolder *>(&other) != nullptr;
+
+	if (thisFolder != otherFolder)
+		return false; // One is a directory and the other is a file, so they are not equal
+
+	return name == other.name; // Names must be the same for them to be considered equal
+}
+
+std::string Content::AssetDirEntry::GetRelativePath(const AssetDirFolder &root) const
+{
+	std::string path = name;
+
+	std::function<bool(const AssetDirEntry *)> searchPathAppendRec = [&](const AssetDirEntry *entry) -> bool {
+		if (entry == this)
+			return true;
+
+		const AssetDirFolder *folder = reinterpret_cast<const AssetDirFolder *>(entry);
+
+		if (folder == nullptr) // Is file, but not destination
+			return false;
+
+		// Reversed to prioritize files to reduce unnecessary recursions
+		for (auto childIter = folder->children.rbegin(); childIter != folder->children.rend(); childIter++)
+		{
+			if (!searchPathAppendRec(childIter->entry.get()))
+				continue;
+
+			path = folder->name + "/" + path;
+			return true;
+		}
+		};
+
+	searchPathAppendRec(&root);
+	return path;
+}
+
+
 bool Content::RenderUI(ID3D11Device *device)
 {
 	ZoneScopedXC(RandomUniqueColor());
@@ -1066,18 +1116,15 @@ bool Content::RenderUI(ID3D11Device *device)
 	return true;
 }
 
-bool Content::RenderFileBrowserUI(ID3D11Device *device, ID3D11DeviceContext *context)
+bool Content::RenderAssetInspectorUI(ID3D11Device *device, ID3D11DeviceContext *context)
 {
 	using namespace ContentManager;
 	using namespace ContentManager::Registry;
 
-	static std::vector<RegistryData> entries;
-	static bool needsRefresh = true;
+	/*
 	static bool showFullFormatList = false;
-	static std::string selectedPath;
 	static bool dirty = false;
 
-	// Per-selection edit state
 	static std::string currAlias;
 	static std::string editAlias;
 	static AssetType editType = AssetType::None;
@@ -1087,163 +1134,6 @@ bool Content::RenderFileBrowserUI(ID3D11Device *device, ID3D11DeviceContext *con
 	static fs::file_time_type editCompileTime;
 	static AssetPropertiesTexture editTexProps;
 	static AssetPropertiesShader editShaderProps;
-
-	// Selects an asset and populates the edit state from its registry data
-	auto selectAsset = [&](const RegistryData &data) {
-		selectedPath = data.header.registryPath;
-		currAlias = editAlias = data.header.alias;
-		editType = data.header.assetType;
-		editAssetPath = data.header.assetPath;
-		editRegistryPath = data.header.registryPath;
-		editCompiledPath = data.header.compiledPath;
-		editCompileTime = data.header.compileTime;
-		dirty = false;
-
-		editTexProps = {};
-		editShaderProps = {};
-
-		if (!data.properties.empty())
-		{
-			switch (data.header.assetType)
-			{
-			case AssetType::Texture:
-			case AssetType::Cubemap:
-				if (data.properties.size() >= sizeof(AssetPropertiesTexture))
-					editTexProps = *reinterpret_cast<const AssetPropertiesTexture *>(data.properties.data());
-				break;
-			case AssetType::Shader:
-				if (data.properties.size() >= sizeof(AssetPropertiesShader))
-					editShaderProps = *reinterpret_cast<const AssetPropertiesShader *>(data.properties.data());
-				break;
-			default:
-				break;
-			}
-		}
-	};
-
-	// Reload registry on first call or after an apply
-	if (needsRefresh)
-	{
-		entries = GetAssetRegistriesInDirectory(WE_D_REGISTRY, true);
-		needsRefresh = false;
-
-		// Re-populate edit state for the currently selected asset if one is selected
-		if (!selectedPath.empty())
-		{
-			for (const auto &e : entries)
-			{
-				if (e.header.registryPath == selectedPath)
-				{
-					selectAsset(e);
-					break;
-				}
-			}
-		}
-	}
-
-	// Toolbar
-	if (ImGui::Button("Refresh##FileBrowser"))
-	{
-		entries = GetAssetRegistriesInDirectory(WE_D_REGISTRY, true);
-		if (!selectedPath.empty())
-		{
-			for (const auto &e : entries)
-			{
-				if (e.header.registryPath == selectedPath)
-				{
-					selectAsset(e);
-					break;
-				}
-			}
-		}
-	}
-	ImGui::SameLine();
-	ImGui::TextDisabled("%d registered assets", (int)entries.size());
-	ImGui::Separator();
-
-	// Build a folder tree from registry paths
-	struct FolderNode
-	{
-		std::map<std::string, FolderNode> children;
-		std::vector<RegistryData *> assets;
-	};
-
-	FolderNode root;
-	for (auto &e : entries)
-	{
-		fs::path p(e.header.registryPath);
-		FolderNode *cur = &root;
-
-		std::vector<std::string> parts;
-		for (const auto &seg : p)
-			parts.push_back(seg.string());
-
-		// All path components except the last are folder nodes; the last is the asset leaf
-		for (size_t i = 0; i + 1 < parts.size(); ++i)
-			cur = &cur->children[parts[i]];
-
-		if (!parts.empty())
-			cur->assets.push_back(&e);
-	}
-
-	// Two-panel layout
-	const float panelHeight = ImGui::GetContentRegionAvail().y;
-
-	ImGui::BeginChild("##FileBrowserLeft", ImVec2(250.0f, panelHeight), ImGuiChildFlags_Borders | ImGuiChildFlags_ResizeX);
-
-	std::function<void(FolderNode &, const std::string &)> renderFolder;
-	renderFolder = [&](FolderNode &node, const std::string &nodePath) {
-		for (auto &[name, child] : node.children)
-		{
-			const std::string childPath = nodePath + "/" + name;
-			ImGui::PushID(childPath.c_str());
-
-			const bool open = ImGui::TreeNodeEx(
-				name.c_str(),
-				ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick |
-				ImGuiTreeNodeFlags_SpanAvailWidth | ImGuiTreeNodeFlags_DefaultOpen
-			);
-			if (open)
-			{
-				renderFolder(child, childPath);
-				ImGui::TreePop();
-			}
-
-			ImGui::PopID();
-		}
-
-		for (auto *e : node.assets)
-		{
-			ImGui::PushID(e->header.registryPath.c_str());
-
-			// Strip the .wer extension to get the original asset filename for display
-			const std::string displayName = fs::path(e->header.registryPath).stem().string();
-
-			const bool isSelected = (selectedPath == e->header.registryPath);
-
-			ImGuiTreeNodeFlags flags =
-				ImGuiTreeNodeFlags_Leaf |
-				ImGuiTreeNodeFlags_NoTreePushOnOpen |
-				ImGuiTreeNodeFlags_SpanAvailWidth;
-			if (isSelected)
-				flags |= ImGuiTreeNodeFlags_Selected;
-
-			ImGui::TreeNodeEx(displayName.c_str(), flags);
-
-			if (ImGui::IsItemClicked() && !ImGui::IsItemToggledOpen())
-				selectAsset(*e);
-
-			ImGui::PopID();
-		}
-	};
-
-	renderFolder(root, "");
-
-	ImGui::EndChild();
-	ImGui::SameLine();
-
-	// Right panel: property inspector
-	ImGui::BeginChild("##FileBrowserRight", ImVec2(0.0f, panelHeight), ImGuiChildFlags_Borders);
 
 	if (selectedPath.empty())
 	{
@@ -1477,8 +1367,222 @@ bool Content::RenderFileBrowserUI(ID3D11Device *device, ID3D11DeviceContext *con
 			ImGui::TextColored(ImVec4(1.0f, 0.8f, 0.0f, 1.0f), "Unsaved changes");
 		}
 	}
+	*/
+
+	return true;
+}
+
+bool Content::RenderFileBrowserUI(ID3D11Device *device, ID3D11DeviceContext *context)
+{
+	using namespace ContentManager;
+	using namespace ContentManager::Registry;
+
+	// Reload registry on first call or after an apply
+	if (_reloadDir)
+	{
+		_assetDirRoot = AssetDirFolder("root");
+
+		 std::vector<RegistryData> entries = GetAssetRegistriesInDirectory(WE_D_REGISTRY, true);
+
+		for (int i = 0; i < entries.size(); i++)
+		{
+			// Insert into _assetDirRoot, creating folders as needed
+			RegistryData &e = entries[i];
+
+			fs::path p = fs::relative(e.header.registryPath, WE_D_REGISTRY);
+
+			std::vector<std::string> parts;
+			for (const auto &seg : p)
+				parts.push_back(seg.string());
+
+			std::string endPart = parts.empty() ? "" : parts.back();
+			parts.pop_back();
+
+			AssetDirFolder *currFolder = &_assetDirRoot;
+			for (const std::string &part : parts)
+			{
+				AssetDirFolder *nextFolder = nullptr;
+
+				for (auto childIter = currFolder->children.begin(); childIter != currFolder->children.end(); ++childIter)
+				{
+					AssetDirFolder *child = reinterpret_cast<AssetDirFolder *>(childIter->entry.get());
+
+					if (child == nullptr)
+						break; // Reached files without finding the folder, stop searching
+
+					if (child->name != part)
+						continue;
+
+					nextFolder = child;
+					break;
+				}
+
+				if (nextFolder == nullptr)
+				{
+					auto result = currFolder->children.emplace(
+						std::make_unique<AssetDirFolder>(part)
+					);
+					nextFolder = reinterpret_cast<AssetDirFolder *>(result.first->entry.get());
+				}
+
+				currFolder = nextFolder;
+			}
+
+			// Add the asset as a leaf in the final folder
+			currFolder->children.emplace(
+				std::make_unique<AssetDirFile>(endPart, e)
+			);
+		}
+
+		_reloadDir = false;
+	}
+
+	DebugData &dbgData = DebugData::Get();
+	int displayMode = dbgData.contentBrowserDisplayMode;
+	float iconScale = dbgData.contentBrowserIconScale;
+
+
+	/*
+	// Selects an asset and populates the edit state from its registry data
+	auto selectAsset = [&](const RegistryData &data) {
+		selectedPath = data.header.registryPath;
+		currAlias = editAlias = data.header.alias;
+		editType = data.header.assetType;
+		editAssetPath = data.header.assetPath;
+		editRegistryPath = data.header.registryPath;
+		editCompiledPath = data.header.compiledPath;
+		editCompileTime = data.header.compileTime;
+		dirty = false;
+
+		editTexProps = {};
+		editShaderProps = {};
+
+		if (!data.properties.empty())
+		{
+			switch (data.header.assetType)
+			{
+			case AssetType::Texture:
+			case AssetType::Cubemap:
+				if (data.properties.size() >= sizeof(AssetPropertiesTexture))
+					editTexProps = *reinterpret_cast<const AssetPropertiesTexture *>(data.properties.data());
+				break;
+			case AssetType::Shader:
+				if (data.properties.size() >= sizeof(AssetPropertiesShader))
+					editShaderProps = *reinterpret_cast<const AssetPropertiesShader *>(data.properties.data());
+				break;
+			default:
+				break;
+			}
+		}
+	};
+
+
+	// Toolbar
+	if (ImGui::Button("Refresh##FileBrowser"))
+	{
+		entries = GetAssetRegistriesInDirectory(WE_D_REGISTRY, true);
+		if (!selectedPath.empty())
+		{
+			for (const auto &e : entries)
+			{
+				if (e.header.registryPath == selectedPath)
+				{
+					selectAsset(e);
+					break;
+				}
+			}
+		}
+	}
+	ImGui::SameLine();
+	ImGui::TextDisabled("%d registered assets", (int)entries.size());
+	ImGui::Separator();
+
+	// Build a folder tree from registry paths
+	struct FolderNode
+	{
+		std::map<std::string, FolderNode> children;
+		std::vector<RegistryData *> assets;
+	};
+
+	FolderNode root;
+	for (auto &e : entries)
+	{
+		fs::path p(e.header.registryPath);
+		FolderNode *cur = &root;
+
+		std::vector<std::string> parts;
+		for (const auto &seg : p)
+			parts.push_back(seg.string());
+
+		// All path components except the last are folder nodes; the last is the asset leaf
+		for (size_t i = 0; i + 1 < parts.size(); ++i)
+			cur = &cur->children[parts[i]];
+
+		if (!parts.empty())
+			cur->assets.push_back(&e);
+	}
+
+	// Two-panel layout
+	const float panelHeight = ImGui::GetContentRegionAvail().y;
+
+	ImGui::BeginChild("##FileBrowserLeft", ImVec2(250.0f, panelHeight), ImGuiChildFlags_Borders | ImGuiChildFlags_ResizeX);
+
+	std::function<void(FolderNode &, const std::string &)> renderFolder;
+	renderFolder = [&](FolderNode &node, const std::string &nodePath) {
+		for (auto &[name, child] : node.children)
+		{
+			const std::string childPath = nodePath + "/" + name;
+			ImGui::PushID(childPath.c_str());
+
+			const bool open = ImGui::TreeNodeEx(
+				name.c_str(),
+				ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick |
+				ImGuiTreeNodeFlags_SpanAvailWidth | ImGuiTreeNodeFlags_DefaultOpen
+			);
+			if (open)
+			{
+				renderFolder(child, childPath);
+				ImGui::TreePop();
+			}
+
+			ImGui::PopID();
+		}
+
+		for (auto *e : node.assets)
+		{
+			ImGui::PushID(e->header.registryPath.c_str());
+
+			// Strip the .wer extension to get the original asset filename for display
+			const std::string displayName = fs::path(e->header.registryPath).stem().string();
+
+			const bool isSelected = (selectedPath == e->header.registryPath);
+
+			ImGuiTreeNodeFlags flags =
+				ImGuiTreeNodeFlags_Leaf |
+				ImGuiTreeNodeFlags_NoTreePushOnOpen |
+				ImGuiTreeNodeFlags_SpanAvailWidth;
+			if (isSelected)
+				flags |= ImGuiTreeNodeFlags_Selected;
+
+			ImGui::TreeNodeEx(displayName.c_str(), flags);
+
+			if (ImGui::IsItemClicked() && !ImGui::IsItemToggledOpen())
+				selectAsset(*e);
+
+			ImGui::PopID();
+		}
+	};
+
+	renderFolder(root, "");
 
 	ImGui::EndChild();
+	ImGui::SameLine();
+
+	// Right panel: property inspector
+	ImGui::BeginChild("##FileBrowserRight", ImVec2(0.0f, panelHeight), ImGuiChildFlags_Borders);
+
+	ImGui::EndChild();
+	*/
 
 	return true;
 }

@@ -9,12 +9,13 @@ namespace WellEngine
 	#ifdef DEBUG_BUILD
 	private:
 		static constexpr const char *dataFileName = WE_D_EDITOR "\\DebugData.json";
-		float _saveInterval = 1.0f; // Continuously save with this interval
+		std::map<std::string, std::string> _customSettings;
 		float _timeUntilNextSave = 0.0f;
 		bool _isDirty = false;
 
 	public:
 		// Debug settings
+		float		saveInterval					= 1.0f; // Continuously save DebugData with this interval
 		float		transformSnap					= 1.0f;
 		float		transformScale					= 0.1f;
 		int			transformType					= 1; // TransformationType enum
@@ -51,6 +52,31 @@ namespace WellEngine
 		float		graphicsFogScale				= 0.25f;
 		float		graphicsDofScale				= 0.5f;
 		float		graphicsOutlineScale			= 0.5f;
+		int			contentBrowserDisplayMode		= 0;
+		float		contentBrowserIconScale			= 1.0f;
+
+
+		bool HasSetting(const std::string &name);
+
+		void SetSetting(const std::string &name, bool value);
+		void SetSetting(const std::string &name, int value);
+		void SetSetting(const std::string &name, size_t value);
+		void SetSetting(const std::string &name, float value);
+		void SetSetting(const std::string &name, double value);
+		void SetSetting(const std::string &name, const std::string &value);
+
+		template<typename T>
+		void SetSetting(const std::string &name, const T &value) { SetSetting(name, value); }
+
+		bool				GetSettingBool(const std::string &name,		bool defaultValue = false) const;
+		int					GetSettingInt(const std::string &name,		int defaultValue = 0) const;
+		size_t				GetSettingULong(const std::string &name,	size_t defaultValue = 0) const;
+		float				GetSettingFloat(const std::string &name,	float defaultValue = 0.0f) const;
+		double				GetSettingDouble(const std::string &name,	double defaultValue = 0.0) const;
+		std::string_view	GetSettingString(const std::string &name,	std::string_view defaultValue = "") const;
+		const void *		GetSettingPtr(const std::string &name,		const void *defaultValue = nullptr) const;
+
+		void RemoveSetting(const std::string &name);
 
 
 		[[nodiscard]] static inline DebugData &Get()

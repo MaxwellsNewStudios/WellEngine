@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "DebugData.h"
 
+using namespace SerializerUtils;
+
 #ifdef DEBUG_BUILD
 void DebugData::Update(float deltaTime)
 {
@@ -23,7 +25,7 @@ void DebugData::Update(float deltaTime)
 		}
 
 		data.SaveState();
-		data._timeUntilNextSave = data._saveInterval;
+		data._timeUntilNextSave = data.saveInterval;
 	}
 }
 
@@ -36,6 +38,19 @@ void DebugData::SaveState()
 	json::Value settingsObj(json::kObjectType);
 	{
 		DebugData &data = Get();
+
+		json::Value customSettingsObj(json::kObjectType);
+		for (const auto &[name, value] : data._customSettings)
+		{
+			customSettingsObj.AddMember(
+				SerializeString(name, docAlloc),
+				SerializeString(value, docAlloc), 
+				docAlloc
+			);
+		}
+		settingsObj.AddMember("Custom", customSettingsObj, docAlloc);
+
+		settingsObj.AddMember("Save Interval", data.saveInterval, docAlloc);
 		settingsObj.AddMember("Transform Snap", data.transformSnap, docAlloc);
 		settingsObj.AddMember("Transform Scale", data.transformScale, docAlloc);
 		settingsObj.AddMember("Transform Type", data.transformType, docAlloc);
@@ -52,8 +67,8 @@ void DebugData::SaveState()
 		settingsObj.AddMember("Scene View Size X", data.sceneViewSizeX, docAlloc);
 		settingsObj.AddMember("Scene View Size Y", data.sceneViewSizeY, docAlloc);
 		settingsObj.AddMember("Hierarchy Show Hidden", data.hierarchyShowHidden, docAlloc);
-		settingsObj.AddMember("UI Layout", SerializerUtils::SerializeString(data.layoutName, docAlloc), docAlloc);
-		settingsObj.AddMember("Active Scene", SerializerUtils::SerializeString(data.activeScene, docAlloc), docAlloc);
+		settingsObj.AddMember("UI Layout", SerializeString(data.layoutName, docAlloc), docAlloc);
+		settingsObj.AddMember("Active Scene", SerializeString(data.activeScene, docAlloc), docAlloc);
 		settingsObj.AddMember("Billboard Gizmos Draw", data.billboardGizmosDraw, docAlloc);
 		settingsObj.AddMember("Billboard Gizmos Overlay", data.billboardGizmosOverlay, docAlloc);
 		settingsObj.AddMember("Billboard Gizmos Size", data.billboardGizmosSize, docAlloc);
@@ -71,6 +86,8 @@ void DebugData::SaveState()
 		settingsObj.AddMember("Fog Resolution Scale", data.graphicsFogScale, docAlloc);
 		settingsObj.AddMember("DoF Resolution Scale", data.graphicsDofScale, docAlloc);
 		settingsObj.AddMember("Outline Resolution Scale", data.graphicsOutlineScale, docAlloc);
+		settingsObj.AddMember("Content Browser Display Mode", data.contentBrowserDisplayMode, docAlloc);
+		settingsObj.AddMember("Content Browser Icon Scale", data.contentBrowserIconScale, docAlloc);
 	}
 	doc.SetObject().AddMember("Settings", settingsObj, docAlloc);
 
@@ -112,6 +129,22 @@ void DebugData::LoadState()
 	{
 		DebugData &data = Get();
 		std::string memberName;
+
+		memberName = "Custom";
+		if (settings.HasMember(memberName.c_str()))
+		{
+			const json::Value &customSettings = settings[memberName.c_str()];
+			for (json::Value::ConstMemberIterator it = customSettings.MemberBegin(); it != customSettings.MemberEnd(); ++it)
+			{
+				const std::string &settingName = it->name.GetString();
+				const std::string &settingValue = it->value.GetString();
+				data._customSettings[settingName] = settingValue;
+			}
+		}
+
+		memberName = "Save Interval";
+		if (settings.HasMember(memberName.c_str()))
+			data.saveInterval = settings[memberName.c_str()].GetFloat();
 
 		memberName = "Transform Snap";
 		if (settings.HasMember(memberName.c_str()))
@@ -252,6 +285,128 @@ void DebugData::LoadState()
 		memberName = "Outline Resolution Scale";
 		if (settings.HasMember(memberName.c_str()))
 			data.graphicsOutlineScale = settings[memberName.c_str()].GetFloat();
+
+		memberName = "Content Browser Display Mode";
+		if (settings.HasMember(memberName.c_str()))
+			data.contentBrowserDisplayMode = settings[memberName.c_str()].GetInt();
+
+		memberName = "Content Browser Icon Scale";
+		if (settings.HasMember(memberName.c_str()))
+			data.contentBrowserIconScale = settings[memberName.c_str()].GetFloat();
 	}
+}
+
+
+bool DebugData::HasSetting(const std::string &name)
+{
+	return _customSettings.find(name) != _customSettings.end();
+}
+
+void DebugData::SetSetting(const std::string &name, bool value)
+{
+	_customSettings[name] = value ? "true" : "false";
+	SetDirty();
+}
+void DebugData::SetSetting(const std::string &name, int value)
+{
+	_customSettings[name] = std::to_string(value);
+	SetDirty();
+}
+void DebugData::SetSetting(const std::string &name, size_t value)
+{
+	_customSettings[name] = std::to_string(value);
+	SetDirty();
+}
+void DebugData::SetSetting(const std::string &name, float value)
+{
+	_customSettings[name] = std::to_string(value);
+	SetDirty();
+}
+void DebugData::SetSetting(const std::string &name, double value)
+{
+	_customSettings[name] = std::to_string(value);
+	SetDirty();
+}
+void DebugData::SetSetting(const std::string &name, const std::string &value)
+{
+	_customSettings[name] = value;
+	SetDirty();
+}
+
+bool DebugData::GetSettingBool(const std::string &name, bool defaultValue) const
+{
+	auto it = _customSettings.find(name);
+	if (it == _customSettings.end())
+		return defaultValue;
+	
+	const std::string &valueStr = it->second;
+	if (valueStr == "true")
+		return true;
+	else if (valueStr == "false")
+		return false;
+}
+int DebugData::GetSettingInt(const std::string &name, int defaultValue) const
+{
+	auto it = _customSettings.find(name);
+	if (it == _customSettings.end())
+		return defaultValue;
+
+	const std::string &valueStr = it->second;
+	return std::stoi(valueStr);
+}
+size_t DebugData::GetSettingULong(const std::string &name, size_t defaultValue) const
+{
+	auto it = _customSettings.find(name);
+	if (it == _customSettings.end())
+		return defaultValue;
+
+	const std::string &valueStr = it->second;
+	return std::stoul(valueStr);
+}
+float DebugData::GetSettingFloat(const std::string &name, float defaultValue) const
+{
+	auto it = _customSettings.find(name);
+	if (it == _customSettings.end())
+		return defaultValue;
+
+	const std::string &valueStr = it->second;
+	return std::stof(valueStr);
+}
+double DebugData::GetSettingDouble(const std::string &name, double defaultValue) const
+{
+	auto it = _customSettings.find(name);
+	if (it == _customSettings.end())
+		return defaultValue;
+
+	const std::string &valueStr = it->second;
+	return std::stod(valueStr);
+}
+std::string_view DebugData::GetSettingString(const std::string &name, std::string_view defaultValue) const
+{
+	auto it = _customSettings.find(name);
+	if (it == _customSettings.end())
+		return defaultValue;
+
+	const std::string &valueStr = it->second;
+	return valueStr;
+}
+const void *DebugData::GetSettingPtr(const std::string &name, const void *defaultValue) const
+{
+	auto it = _customSettings.find(name);
+	if (it == _customSettings.end())
+		return defaultValue;
+
+	const std::string &valueStr = it->second;
+	return valueStr.data();
+}
+
+void DebugData::RemoveSetting(const std::string &name)
+{
+	auto it = _customSettings.find(name);
+	if (it == _customSettings.end())
+		return;
+	
+	_customSettings.erase(it);
+	SetDirty();
 }
 #endif
