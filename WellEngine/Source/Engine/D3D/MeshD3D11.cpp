@@ -50,11 +50,7 @@ bool MeshD3D11::Initialize(ID3D11Device *device, MeshData **meshData, bool gener
 		SubMeshD3D11 subMesh;
 		if (!subMesh.Initialize(device,
 			subMeshInfo.startIndexValue, 
-			subMeshInfo.nrOfIndicesInSubMesh,
-			subMeshInfo.ambientTexturePath,
-			subMeshInfo.diffuseTexturePath,
-			subMeshInfo.specularTexturePath,
-			subMeshInfo.specularExponent))
+			subMeshInfo.nrOfIndicesInSubMesh))
 		{
 			ErrMsg("Failed to initialize sub mesh!");
 			return false;
@@ -160,26 +156,6 @@ UINT MeshD3D11::GetNrOfSubMeshes() const
 size_t MeshD3D11::GetSubMeshIndexCount(UINT subMeshIndex) const
 {
 	return _subMeshes[subMeshIndex].GetIndexCount();
-}
-
-const std::string &MeshD3D11::GetAmbientPath(const UINT subMeshIndex) const
-{
-	return _subMeshes[subMeshIndex].GetAmbientPath();
-}
-
-const std::string &MeshD3D11::GetDiffusePath(const UINT subMeshIndex) const
-{
-	return _subMeshes[subMeshIndex].GetDiffusePath();
-}
-
-const std::string &MeshD3D11::GetSpecularPath(const UINT subMeshIndex) const
-{
-	return _subMeshes[subMeshIndex].GetSpecularPath();
-}
-
-ID3D11Buffer *MeshD3D11::GetSpecularBuffer(const UINT subMeshIndex) const
-{
-	return _subMeshes[subMeshIndex].GetSpecularBuffer();
 }
 
 const MeshData *MeshD3D11::GetMeshData() const
@@ -304,14 +280,6 @@ void MeshData::MergeWithMesh(const MeshData *other, const dx::XMFLOAT4X4A *other
 
 		newSubMesh.startIndexValue = 0;
 		newSubMesh.nrOfIndicesInSubMesh = newIndexCount;
-
-		if (thisIsUninitialized)
-		{
-			newSubMesh.ambientTexturePath = otherSubMesh.ambientTexturePath,
-			newSubMesh.diffuseTexturePath = otherSubMesh.diffuseTexturePath;
-			newSubMesh.specularTexturePath = otherSubMesh.specularTexturePath;
-			newSubMesh.specularExponent = otherSubMesh.specularExponent;
-		}
 	}
 
 	// Bounds

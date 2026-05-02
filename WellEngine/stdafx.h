@@ -116,6 +116,13 @@ namespace fs = std::filesystem;
 using Microsoft::WRL::ComPtr;
 
 
+// Content Manager
+#ifdef EDIT_MODE
+#include "ContentManager/Registry/RegistryAssetFileManager.h"
+#include "ContentManager/AssetLoading/MeshLoader.h"
+#endif
+
+
 // Engine
 #include "Engine/EngineDefinitions.h"
 #include "Engine/Math/GameMath.h"

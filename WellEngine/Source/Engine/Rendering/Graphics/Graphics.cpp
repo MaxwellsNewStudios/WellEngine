@@ -1519,9 +1519,12 @@ bool Graphics::RenderGeometry(bool overlayStage, bool skipPixelShader)
 
 	ID3D11ShaderResourceView *srv;
 
-	srv = _content->GetTexture(defaultAmbientID)->GetSRV();
-	_context->PSSetShaderResources(4, 1, &srv);
-	_currAmbientID = defaultAmbientID;
+	if (_currAmbientID != defaultAmbientID)
+	{
+		srv = _content->GetTexture(defaultAmbientID)->GetSRV();
+		_context->PSSetShaderResources(4, 1, &srv);
+		_currAmbientID = defaultAmbientID;
+	}
 
 	auto camPos = Load(_currViewCamera->GetTransform()->GetPosition(World));
 
@@ -1616,6 +1619,7 @@ bool Graphics::RenderGeometry(bool overlayStage, bool skipPixelShader)
 			}
 
 		if (resources.material->ambientID != CONTENT_NULL)
+		{
 			if (_currAmbientID != resources.material->ambientID)
 			{
 				ZoneNamedXNC(bindResourceZone, "Bind Ambient Map", RandomUniqueColor(), true);
@@ -1625,6 +1629,13 @@ bool Graphics::RenderGeometry(bool overlayStage, bool skipPixelShader)
 				_context->PSSetShaderResources(4, 1, &srv);
 				_currAmbientID = resources.material->ambientID;
 			}
+		}
+		else if (_currAmbientID != defaultAmbientID)
+		{
+			srv = _content->GetTexture(defaultAmbientID)->GetSRV();
+			_context->PSSetShaderResources(4, 1, &srv);
+			_currAmbientID = defaultAmbientID;
+		}
 		
 		if (resources.material->reflectiveID != CONTENT_NULL)
 			if (_currReflectiveID != resources.material->reflectiveID)
@@ -1802,9 +1813,6 @@ bool Graphics::RenderGeometry(bool overlayStage, bool skipPixelShader)
 		{
 			ZoneNamedXNC(renderSubmeshZone, "Draw Submesh", RandomUniqueColor(), true);
 			TracyD3D11NamedZoneXC(_tracyD3D11Context, renderSubmeshD3D11Zone, "Draw Submesh", RandomUniqueColor(), true);
-
-			ID3D11Buffer *const specularBuffer = loadedMesh->GetSpecularBuffer(lodIndex);
-			_context->PSSetConstantBuffers(1, 1, &specularBuffer);
 
 			if (!loadedMesh->PerformSubMeshDrawCall(_context, lodIndex))
 			{
@@ -2409,9 +2417,6 @@ bool Graphics::RenderTransparency(
 		{
 			ZoneNamedXNC(drawSubmeshZone, "Draw Submesh", RandomUniqueColor(), true);
 			TracyD3D11NamedZoneXC(_tracyD3D11Context, drawSubmeshD3D11Zone, "Draw Submesh", RandomUniqueColor(), true);
-
-			ID3D11Buffer *const specularBuffer = loadedMesh->GetSpecularBuffer(lodIndex);
-			_context->PSSetConstantBuffers(1, 1, &specularBuffer);
 
 			if (!loadedMesh->PerformSubMeshDrawCall(_context, lodIndex))
 			{

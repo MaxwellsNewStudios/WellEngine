@@ -20,22 +20,23 @@ namespace WellEngine
 	#pragma region Asset Definitions
 	struct MaterialProperties
 	{
-		dx::XMFLOAT4 baseColor		 = {1,1,1,1};	// Base color of the material.
-		float		 alphaCutoff	 = 0.0f;		// Alpha cutoff value for discarding pixels.
-		float		 specularFactor  = 1.0f;
-		float		 normalFactor	 = 1.0f;
-		float		 glossFactor	 = 1.0f;
-		float		 ambientFactor	 = 1.0f;
-		float		 occlusionFactor = 0.85f;
-		float		 reflectivity	 = 0.1f;
-		float		 metallic		 = 0.0f;
+		dx::XMFLOAT4 baseColor			= {1,1,1,1};	// Base color of the material.
+		float		 alphaCutoff		= 0.0f;			// Alpha cutoff value for discarding pixels.
+		float		 specularFactor		= 1.0f;
+		float		 specularExponent	= 25.0f;
+		float		 normalFactor		= 1.0f;
+		float		 glossFactor		= 1.0f;
+		float		 ambientFactor		= 1.0f;
+		float		 occlusionFactor	= 0.85f;
+		float		 reflectivity		= 0.1f;
+		float		 metallic			= 0.0f;
 
 		// Bitwise flags for if certain maps should be sampled or skipped.
 		// 0: Normal		1: Specular			2: glossiness
 		// 3: reflective	4: ambient light	5: ambient occlusion
-		UINT		 sampleFlags	 = 0u;
+		UINT		 sampleFlags		= 0u;
 
-		float _padding[3];		
+		float _padding[2];		
 
 		UINT SetSampleFlags(
 			bool normal,	 bool specular,	bool glossiness,

@@ -121,7 +121,9 @@ std::string Content::AssetDirEntry::GetRelativePath(const AssetDirFolder &root) 
 			path = folder->name + "/" + path;
 			return true;
 		}
-		};
+
+		return false;
+	};
 
 	searchPathAppendRec(&root);
 	return path;
@@ -1588,21 +1590,20 @@ bool Content::RenderFileBrowserUI(ID3D11Device *device, ID3D11DeviceContext *con
 }
 #endif
 
-
 CompiledData Content::GetMeshData(const char *path) const
 {
 	CompiledData data{};
 
-	MeshData *meshData = new MeshData();
+	MeshData meshData = MeshData();
 
-	if (!LoadMeshFromFile(path, meshData))
+	if (!LoadMeshFromFile(path, &meshData))
 	{
 		ErrMsg("Failed to load mesh from file!");
 		return data;
 	}
 
 	std::vector<char> dataChars;
-	meshData->Compile(dataChars);
+	meshData.Compile(dataChars);
 
 	data.size = dataChars.size();
 	data.data = new char[data.size];

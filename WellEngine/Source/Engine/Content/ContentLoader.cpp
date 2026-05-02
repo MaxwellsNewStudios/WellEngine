@@ -2,6 +2,7 @@
 #include "ContentLoader.h"
 #include "Engine/Utils/StringUtils.h"
 #include "Engine/Content/DefaultVertex.h"
+#include "ContentManager/AssetLoading/MeshLoader.h"
 
 #ifdef LEAK_DETECTION
 #define new			DEBUG_NEW
@@ -28,468 +29,19 @@ using namespace WellEngine;
 
 
 #pragma region Mesh
-static bool ReadWavefront(const char *path, 
-	std::vector<RawPosition> &vertexPositions, 
-	std::vector<RawTexCoord> &vertexTexCoords,
-	std::vector<RawNormal> &vertexNormals,
-	std::vector<std::vector<RawIndex>> &indexGroups,
-	std::vector<std::string> &mtlGroups,
-	std::string &mtlFile)
+static void CalcMeshBounds(MeshData &meshData)
 {
-	std::ifstream fileStream(path);
-	std::string line;
-
-	bool begunReadingSubMesh = false;
-
-	while (std::getline(fileStream, line))
-	{
-		size_t commentStart = line.find_first_of('#');
-		if (commentStart != std::string::npos)
-			line = line.substr(0, commentStart); // Exclude comments
-
-		if (line.empty())
-			continue; // Skip filler line
-
-		if (line.length() > 1)
-			if (line[0] == 'f' && line[1] == ' ')
-			{
-				char sep = '/';
-				if (line.find('\\', 0) != std::string::npos)
-					sep = '\\';
-
-				// Replace all instances of separator with whitespace.
-				std::string::size_type n = 0;
-				while ((n = line.find(sep, n)) != std::string::npos)
-				{
-					line.replace(n, 1, " ");
-					n++;
-				}
-			}
-
-		std::istringstream segments(line);
-
-		std::string dataType;
-		if (!(segments >> dataType))
-		{
-			ErrMsgF("Failed to get data type from line \"{}\", file \"{}\"!", line, path);
-			return false;
-		}
-
-		if (dataType == "mtllib")
-		{ // Define where to find materials
-			if (!(segments >> mtlFile))
-			{
-				ErrMsgF("Failed to get mtl name from line \"{}\", file \"{}\"!", line, path);
-				return false;
-			}
-		}
-		else if (dataType == "g")
-		{ // Mesh Group
-			begunReadingSubMesh = true;
-			indexGroups.emplace_back();
-			mtlGroups.emplace_back("");
-		}
-		else if (dataType == "o")
-		{ // Mesh Object
-			begunReadingSubMesh = true;
-			indexGroups.emplace_back();
-			mtlGroups.emplace_back("");
-		}
-		else if (dataType == "v")
-		{ // Vertex Position
-			float x, y, z;
-			if (!(segments >> x >> y >> z))
-			{
-				ErrMsgF(R"(Failed to get vertex position from line "{}", file "{}"!)", line, path);
-				return false;
-			}
-
-			vertexPositions.emplace_back(x, y, z);
-		}
-		else if (dataType == "vt")
-		{ // Vertex Texture Coordinate
-			float u, v;
-			if (!(segments >> u >> v))
-			{
-				ErrMsgF(R"(Failed to get texture coordinate from line "{}", file "{}"!)", line, path);
-				return false;
-			}
-
-			vertexTexCoords.emplace_back(u, v);
-		}
-		else if (dataType == "vn")
-		{ // Vertex Normal
-			float x, y, z;
-			if (!(segments >> x >> y >> z))
-			{
-				ErrMsgF(R"(Failed to get normal from line "{}", file "{}"!)", line, path);
-				return false;
-			}
-
-			vertexNormals.emplace_back(x, y, z);
-		}
-		else if (dataType == "f")
-		{ // Index Group
-			if (!begunReadingSubMesh)
-			{
-				ErrMsgF(R"(Reached index group before creating submesh, file "{}"!)", path);
-				return false;
-			}
-
-			std::vector<RawIndex> indicesInGroup;
-			int vi, ti, ni;
-
-			while (segments >> vi >> ti >> ni)
-				indicesInGroup.emplace_back(--vi, --ti, --ni);
-
-			size_t groupSize = indicesInGroup.size();
-			if (groupSize < 3 || groupSize > 4)
-			{
-				ErrMsgF(R"(Unparseable group size '{}' at line "{}", file "{}"!)", groupSize, line, path);
-				return false;
-			}
-			
-			auto &indexBack = indexGroups.back();
-			indexBack.emplace_back(indicesInGroup[0]);
-			indexBack.emplace_back(indicesInGroup[1]);
-			indexBack.emplace_back(indicesInGroup[2]);
-
-			if (groupSize == 4)
-			{ // Group is a quad
-				auto &indexBack2 = indexGroups.back();
-				indexBack2.emplace_back(indicesInGroup[0]);
-				indexBack2.emplace_back(indicesInGroup[2]);
-				indexBack2.emplace_back(indicesInGroup[3]);
-			}
-		}
-		else if (dataType == "usemtl")
-		{ // Start of submesh with material
-			if (!begunReadingSubMesh)
-			{ // First submesh
-				begunReadingSubMesh = true;
-				indexGroups.emplace_back();
-				mtlGroups.emplace_back("");
-			}
-
-			if (!(segments >> mtlGroups.back()))
-			{
-				ErrMsgF("Failed to get sub-material name from line \"{}\", file \"{}\"!", line, path);
-				return false;
-			}
-		}
-#ifdef REPORT_UNRECOGNIZED
-		else
-		{
-			ErrMsgF(R"(Unimplemented object flag '{}' on line "{}", file "{}"!)", dataType, line, path);
-
-		}
-#endif
-	}
-
-	if (vertexPositions.empty())
-		vertexPositions.emplace_back(0.0f, 0.0f, 0.0f);
-
-	if (vertexTexCoords.empty())
-		vertexTexCoords.emplace_back(0.0f, 0.0f);
-
-	if (vertexNormals.empty())
-		vertexNormals.emplace_back(0.0f, 1.0f, 0.0f);
-
-	size_t groupCount = indexGroups.size();
-	for (size_t i = 0; i < groupCount; i++)
-	{
-		if (mtlGroups.size() <= i)
-			mtlGroups.emplace_back("default");
-		else if (mtlGroups[i].empty())
-			mtlGroups[i] = "default";
-	}
-
-	return true;
-}
-
-static bool ReadMaterial(const char *path, MaterialGroup &material)
-{
-	material.mtlName = static_cast<std::string>(path).substr(
-		static_cast<std::string>(path).find_last_of('\\') + 1, 
-		static_cast<std::string>(path).find_last_of('.')
-	);
-
-	const std::string folderPath = static_cast<std::string>(path).substr(
-		0,
-		static_cast<std::string>(path).find_last_of('\\') + 1
-	);
-
-	std::ifstream fileStream(path);
-	std::string line;
-
-	while (std::getline(fileStream, line))
-	{
-		size_t commentStart = line.find_first_of('#');
-		if (commentStart != std::string::npos)
-			line = line.substr(0, commentStart); // Exclude comments
-
-		if (line.empty())
-			continue; // Skip filler line
-
-		std::istringstream segments(line);
-
-		std::string dataType;
-		if (!(segments >> dataType))
-		{
-			ErrMsgF("Failed to get data type from line \"{}\", file \"{}\"!", line, path);
-			return false;
-		}
-
-		if (dataType == "newmtl")
-		{ // New Sub-material
-			std::string mtlName;
-			if (!(segments >> mtlName))
-			{
-				ErrMsgF("Failed to get sub-material name from line \"{}\", file \"{}\"!", line, path);
-				return false;
-			}
-
-			material.subMaterials.emplace_back(mtlName, "", "", "", 0.0f);
-		}
-		else if (dataType == "map_Ka")
-		{ 
-			std::string mapPath;
-			if (!(segments >> mapPath))
-			{
-				ErrMsgF("Failed to get map_Ka path from line \"{}\", file \"{}\"!", line, path);
-				return false;
-			}
-
-			if (material.subMaterials.empty())
-				material.subMaterials.emplace_back("", "", "", "", 0.0f);
-			material.subMaterials.back().ambientPath = folderPath + mapPath;
-		}
-		else if (dataType == "map_Kd")
-		{ 
-			std::string mapPath;
-			if (!(segments >> mapPath))
-			{
-				ErrMsgF("Failed to get map_Kd path from line \"{}\", file \"{}\"!", line, path);
-				return false;
-			}
-
-			if (material.subMaterials.empty())
-				material.subMaterials.emplace_back("", "", "", "", 0.0f);
-			material.subMaterials.back().diffusePath = folderPath + mapPath;
-		}
-		else if (dataType == "map_Ks")
-		{ 
-			std::string mapPath;
-			if (!(segments >> mapPath))
-			{
-				ErrMsgF("Failed to get map_Ks path from line \"{}\", file \"{}\"!", line, path);
-				return false;
-			}
-
-			if (material.subMaterials.empty())
-				material.subMaterials.emplace_back("", "", "", "", 0.0f);
-			material.subMaterials.back().specularPath = folderPath + mapPath;
-		}
-		else if (dataType == "Ns")
-		{ 
-			float exponent;
-			if (!(segments >> exponent))
-			{
-				ErrMsgF("Failed to get Ns value from line \"{}\", file \"{}\"!", line, path);
-				return false;
-			}
-
-			if (material.subMaterials.empty())
-				material.subMaterials.emplace_back("", "", "", "", 0.0f);
-
-			material.subMaterials.back().specularExponent = exponent;
-		}
-#ifdef REPORT_UNRECOGNIZED
-		else
-		{
-			ErrMsgF(R"(Unimplemented material flag '{}' on line "{}", file "{}"!)", dataType, line, path);
-		}
-#endif
-	}
-
-	if (material.subMaterials.empty())
-	{
-		material.subMaterials.emplace_back("default", "", "", "", 50.0f);
-	}
-
-	return true;
-}
-
-
-struct FormattedIndexGroup {
-	std::vector<uint32_t> indices;
-	std::string mtlName;
-};
-
-static void FormatRawMesh(
-	std::vector<FormattedVertex> &formattedVertices,
-	std::vector<FormattedIndexGroup> &formattedIndexGroups,
-	const std::vector<RawPosition> &vertexPositions,
-	const std::vector<RawTexCoord> &vertexTexCoords,
-	const std::vector<RawNormal> &vertexNormals,
-	const std::vector<std::vector<RawIndex>> &indexGroups,
-	const std::vector<std::string> &mtlGroups)
-{
-	// Format vertices & index groups
-	const size_t groupCount = indexGroups.size();
-	for (size_t groupIndex = 0; groupIndex < groupCount; groupIndex++)
-	{
-		formattedIndexGroups.emplace_back();
-		FormattedIndexGroup *formattedGroup = &formattedIndexGroups.back();
-		const std::vector<RawIndex> *rawGroup = &indexGroups[groupIndex];
-
-		if (mtlGroups.size() > groupIndex)
-			formattedGroup->mtlName = mtlGroups[groupIndex];
-
-		const size_t startingVertex = formattedVertices.size();
-
-		const size_t groupSize = rawGroup->size();
-		for (size_t vertIndex = 0; vertIndex < groupSize; vertIndex++)
-		{
-			const RawIndex rI = (*rawGroup)[vertIndex];
-			const RawPosition rP = vertexPositions[rI.v];
-			const RawTexCoord rT = vertexTexCoords[rI.t];
-			const RawNormal rN = vertexNormals[rI.n];
-
-			formattedGroup->indices.emplace_back(static_cast<uint32_t>(formattedVertices.size()));
-			formattedVertices.emplace_back(
-				rP.x, rP.y, rP.z,
-				rN.x, rN.y, rN.z,
-				0,	  0,    0,
-				rT.u, rT.v
-			);
-		}
-
-		// Generate tangents
-		for (size_t triIndex = 0; triIndex < groupSize; triIndex += 3)
-		{
-			FormattedVertex *verts[3] = {
-				&formattedVertices[startingVertex + triIndex + 0],
-				&formattedVertices[startingVertex + triIndex + 1],
-				&formattedVertices[startingVertex + triIndex + 2]
-			};
-
-			const dx::XMFLOAT3A
-				v0 = { verts[0]->px, verts[0]->py, verts[0]->pz },
-				v1 = { verts[1]->px, verts[1]->py, verts[1]->pz },
-				v2 = { verts[2]->px, verts[2]->py, verts[2]->pz };
-
-			const dx::XMFLOAT3A
-				edge1 = { v1.x - v0.x, v1.y - v0.y, v1.z - v0.z },
-				edge2 = { v2.x - v0.x, v2.y - v0.y, v2.z - v0.z };
-
-			const dx::XMFLOAT2A
-				uv0 = { verts[0]->u, verts[0]->v },
-				uv1 = { verts[1]->u, verts[1]->v },
-				uv2 = { verts[2]->u, verts[2]->v };
-
-			const dx::XMFLOAT2A
-				deltaUV1 = { uv1.x - uv0.x,	uv1.y - uv0.y },
-				deltaUV2 = { uv2.x - uv0.x,	uv2.y - uv0.y };
-
-			const float f = 1.0f / (deltaUV1.x * deltaUV2.y - deltaUV2.x * deltaUV1.y);
-			dx::XMFLOAT4A tangent = {
-				f * (edge1.x * deltaUV2.y - edge2.x * deltaUV1.y),
-				f * (edge1.y * deltaUV2.y - edge2.y * deltaUV1.y),
-				f * (edge1.z * deltaUV2.y - edge2.z * deltaUV1.y),
-				0.0f
-			};
-
-			for (size_t i = 0; i < 3; i++)
-			{
-				// Gram-Schmidt orthogonalization
-				const dx::XMFLOAT4A normal = { verts[i]->nx, verts[i]->ny, verts[i]->nz, 0.0f };
-
-				const dx::XMVECTOR
-					n = *reinterpret_cast<const dx::XMVECTOR *>(&normal),
-					t = *reinterpret_cast<const dx::XMVECTOR *>(&tangent);
-
-				const dx::XMVECTOR newTangentVec = dx::XMVector3Normalize(
-					dx::XMVectorSubtract(t,
-						dx::XMVectorScale(n,
-							dx::XMVectorGetX(
-								dx::XMVector3Dot(n, t)))));
-
-				const dx::XMFLOAT4A newTangent = *reinterpret_cast<const dx::XMFLOAT4A *>(&newTangentVec);
-
-				verts[i]->tx = newTangent.x;
-				verts[i]->ty = newTangent.y;
-				verts[i]->tz = newTangent.z;
-			}
-		}
-	}
-
-	for (UINT i = 0; i < formattedIndexGroups.size(); i++)
-		if (formattedIndexGroups[i].indices.empty())
-			formattedIndexGroups.erase(formattedIndexGroups.begin() + i--);
-}
-
-static void SendFormattedMeshToMeshData(MeshData *meshData,
-	const std::vector<FormattedVertex> &formattedVertices,
-	const std::vector<FormattedIndexGroup> &formattedIndexGroups,
-	const MaterialGroup &material)
-{
-	// Send vertex data to meshData
-	meshData->vertexInfo.nrOfVerticesInBuffer = static_cast<UINT>(formattedVertices.size());
-	meshData->vertexInfo.sizeOfVertex = sizeof(FormattedVertex);
-	meshData->vertexInfo.vertexData = reinterpret_cast<float *>(new FormattedVertex[meshData->vertexInfo.nrOfVerticesInBuffer]);
-
-	std::memcpy(
-		meshData->vertexInfo.vertexData,
-		formattedVertices.data(),
-		static_cast<size_t>(meshData->vertexInfo.sizeOfVertex) * meshData->vertexInfo.nrOfVerticesInBuffer
-	);
-
-	// Send index data to meshData
-	std::vector<uint32_t> inlineIndices;
-
-	const size_t groupCount = formattedIndexGroups.size();
-	for (size_t group_i = 0; group_i < groupCount; group_i++)
-	{
-		MeshData::SubMeshInfo subMeshInfo = { };
-		const FormattedIndexGroup *currGroup = &formattedIndexGroups[group_i];
-
-		subMeshInfo.startIndexValue = static_cast<UINT>(inlineIndices.size());
-		subMeshInfo.nrOfIndicesInSubMesh = static_cast<UINT>(currGroup->indices.size());
-
-		SubMaterial const *currMat = nullptr;
-		for (const SubMaterial &subMat : material.subMaterials)
-			if (subMat.mtlName == currGroup->mtlName)
-			{
-				currMat = &subMat;
-				break;
-			}
-
-		subMeshInfo.ambientTexturePath	= (currMat != nullptr) ? currMat->ambientPath		: "";
-		subMeshInfo.diffuseTexturePath	= (currMat != nullptr) ? currMat->diffusePath		: "";
-		subMeshInfo.specularTexturePath = (currMat != nullptr) ? currMat->specularPath		: "";
-		subMeshInfo.specularExponent	= (currMat != nullptr) ? currMat->specularExponent	: 0.0f;
-
-		inlineIndices.insert(inlineIndices.end(), currGroup->indices.begin(), currGroup->indices.end());
-		meshData->subMeshInfo.emplace_back(subMeshInfo);
-	}
-
-	meshData->indexInfo.nrOfIndicesInBuffer = static_cast<UINT>(inlineIndices.size());
-	meshData->indexInfo.indexData = new uint32_t[meshData->indexInfo.nrOfIndicesInBuffer];
-
-	std::memcpy(
-		meshData->indexInfo.indexData,
-		inlineIndices.data(),
-		sizeof(uint32_t) * meshData->indexInfo.nrOfIndicesInBuffer
-	);
-
 	// Calculate bounds
 	dx::XMFLOAT4A
-		min = {  FLT_MAX,  FLT_MAX,  FLT_MAX, 0 },
+		min = { FLT_MAX,  FLT_MAX,  FLT_MAX, 0 },
 		max = { -FLT_MAX, -FLT_MAX, -FLT_MAX, 0 };
 
-	for (const FormattedVertex &vData : formattedVertices)
+	UINT vertexCount = meshData.vertexInfo.nrOfVerticesInBuffer;
+
+	for (UINT i = 0; i < vertexCount; i++)
 	{
+		const FormattedVertex &vData = reinterpret_cast<FormattedVertex *>(meshData.vertexInfo.vertexData)[i];
+
 		if (vData.px < min.x)		min.x = vData.px;
 		else if (vData.px > max.x)	max.x = vData.px;
 
@@ -532,8 +84,8 @@ static void SendFormattedMeshToMeshData(MeshData *meshData,
 
 	/*dx::BoundingOrientedBox().CreateFromPoints( // HACK
 		minMaxBox,
-		meshData->vertexInfo.nrOfVerticesInBuffer,
-		reinterpret_cast<const dx::XMFLOAT3 *>(meshData->vertexInfo.vertexData),
+		meshData.vertexInfo.nrOfVerticesInBuffer,
+		reinterpret_cast<const dx::XMFLOAT3 *>(meshData.vertexInfo.vertexData),
 		sizeof(FormattedVertex)
 	);
 
@@ -542,147 +94,67 @@ static void SendFormattedMeshToMeshData(MeshData *meshData,
 	// We want each local axis to at least point more in its world axis than any other axes.
 	*/
 
-	meshData->boundingBox = minMaxBox;
+	meshData.boundingBox = minMaxBox;
 }
-
 
 bool WellEngine::LoadMeshFromFile(const char *path, MeshData *meshData)
 {
-	if (meshData->vertexInfo.vertexData != nullptr || 
-		meshData->indexInfo.indexData != nullptr)
+	using namespace ContentManager;
+	using namespace ContentManager::AssetLoader;
+
+	AssetData::Mesh mesh = LoadMesh(path);
+
+	const size_t vertCount = mesh.vertices.size();
+	const size_t indexCount = mesh.indices.size();
+
+	// Insert mesh data into meshData
+	meshData->vertexInfo.nrOfVerticesInBuffer = static_cast<UINT>(vertCount);
+	meshData->vertexInfo.sizeOfVertex = sizeof(FormattedVertex);
+	meshData->vertexInfo.vertexData = reinterpret_cast<float *>(new FormattedVertex[vertCount]);
+
+	for (size_t i = 0; i < vertCount; i++)
 	{
-		ErrMsg("meshData is not nullified!");
-		return false;
+		const AssetData::Vertex &vIn = mesh.vertices[i];
+		FormattedVertex *vOut = reinterpret_cast<FormattedVertex *>(meshData->vertexInfo.vertexData) + i;
+
+		vOut->px = vIn.px;
+		vOut->py = vIn.py;
+		vOut->pz = vIn.pz;
+
+		vOut->nx = vIn.nx;
+		vOut->ny = vIn.ny;
+		vOut->nz = vIn.nz;
+
+		vOut->tx = vIn.tx;
+		vOut->ty = vIn.ty;
+		vOut->tz = vIn.tz;
+
+		vOut->u = vIn.u0;
+		vOut->v = vIn.v0;
 	}
 
-	std::string ext = path;
-	ext.erase(0, ext.find_last_of('.') + 1);
+	meshData->indexInfo.nrOfIndicesInBuffer = static_cast<UINT>(indexCount);
+	meshData->indexInfo.indexData = new UINT[indexCount];
 
-	std::vector<RawPosition> vertexPositions;
-	std::vector<RawTexCoord> vertexTexCoords;
-	std::vector<RawNormal> vertexNormals;
-	std::vector<std::vector<RawIndex>> indexGroups;
-	std::vector<std::string> mtlGroups;
+	std::memcpy(
+		meshData->indexInfo.indexData,
+		mesh.indices.data(),
+		sizeof(UINT) * indexCount
+	);
 
-	if (ext == "obj")
+	// Generate submesh info
+	meshData->subMeshInfo.resize(mesh.subMeshes.size());
+	for (size_t i = 0; i < mesh.subMeshes.size(); i++)
 	{
-		if (!ReadWavefront(path, vertexPositions, vertexTexCoords, vertexNormals, indexGroups, mtlGroups, meshData->mtlFile))
-		{
-			ErrMsg("Failed to read wavefront file!");
-			return false;
-		}
+		const AssetData::SubMesh &subMesh = mesh.subMeshes[i];
+		MeshData::SubMeshInfo &subMeshInfo = meshData->subMeshInfo[i];
 
-		const std::string materialPath = path;
-		meshData->mtlFile = materialPath.substr(0, materialPath.find_last_of('\\') + 1) + meshData->mtlFile;
-	}
-	else
-	{
-		ErrMsgF("Unimplemented mesh file extension '{}'!", ext);
-		return false;
+		subMeshInfo.startIndexValue =subMesh.startIndex;
+		subMeshInfo.nrOfIndicesInSubMesh = subMesh.indexCount;
 	}
 
-	MaterialGroup material;
-	if (!ReadMaterial(meshData->mtlFile.c_str(), material))
-	{
-		ErrMsg("Failed to read material file!");
-		return false;
-	}
+	CalcMeshBounds(*meshData);
 
-	std::vector<FormattedVertex> formattedVertices;
-	std::vector<FormattedIndexGroup> formattedIndexGroups;
-
-	FormatRawMesh(formattedVertices, formattedIndexGroups, vertexPositions, vertexTexCoords, vertexNormals, indexGroups, mtlGroups);
-
-	SendFormattedMeshToMeshData(meshData, formattedVertices, formattedIndexGroups, material);
-
-	return true;	
-}
-
-// Debug Function
-bool WellEngine::WriteMeshToFile(const char *path, const MeshData *meshData)
-{
-	if (meshData->vertexInfo.vertexData == nullptr || 
-		meshData->indexInfo.indexData == nullptr)
-	{
-		ErrMsg("meshData is nullified!");
-		return false;
-	}
-
-	std::ofstream fileStream(path);
-
-	fileStream << "Loaded Mesh:\n";
-	fileStream << "material = " << meshData->mtlFile << "\n\n";
-
-	fileStream << "---------------- Vertex Data ----------------" << '\n';
-	fileStream << "count = " << meshData->vertexInfo.nrOfVerticesInBuffer << '\n';
-	fileStream << "size = " << meshData->vertexInfo.sizeOfVertex << "\n\n";
-
-	for (size_t i = 0; i < meshData->vertexInfo.nrOfVerticesInBuffer; i++)
-	{
-		const FormattedVertex *vData = &reinterpret_cast<FormattedVertex*>(meshData->vertexInfo.vertexData)[i];
-
-		fileStream << "Vertex " << i << '\n';
-
-		fileStream << "\tPosition(" << vData->px << ", " << vData->py << ", " << vData->pz << ")\n";
-		fileStream << "\tNormal(" << vData->nx << ", " << vData->ny << ", " << vData->nz << ")\n";
-		fileStream << "\tTangent(" << vData->tx << ", " << vData->ty << ", " << vData->tz << ")\n";
-		fileStream << "\tTexCoord(" << vData->u << ", " << vData->v << ")\n";
-
-		fileStream << '\n';
-	}
-	fileStream << "---------------------------------------------\n\n";
-
-	fileStream << "---------------- Index Data ----------------\n";
-	fileStream << "count = " << meshData->indexInfo.nrOfIndicesInBuffer << '\n';
-
-	for (size_t i = 0; i < meshData->indexInfo.nrOfIndicesInBuffer / 3; i++)
-	{
-		const uint32_t *iData = &meshData->indexInfo.indexData[i*3];
-
-		fileStream << "indices " << i*3 << "-" << i*3+2 << "\t (" << iData[0] << "/" << iData[1] << "/" << iData[2] << ")\n";
-	}
-	fileStream << "--------------------------------------------\n\n";
-
-	fileStream << "---------------- Triangle Data ----------------\n";
-	fileStream << "count = " << meshData->indexInfo.nrOfIndicesInBuffer / 3 << '\n';
-
-	for (size_t i = 0; i < meshData->indexInfo.nrOfIndicesInBuffer / 3; i++)
-	{
-		const uint32_t *iData = &meshData->indexInfo.indexData[i*3];
-
-		fileStream << "Triangle " << i+1 << " {";
-
-		for (size_t j = 0; j < 3; j++)
-		{
-			const FormattedVertex *vData = &reinterpret_cast<FormattedVertex *>(meshData->vertexInfo.vertexData)[iData[j]];
-			fileStream << "\n\tv" << j << '\n';
-
-			fileStream << "\t\tP Vector3(" << vData->px << ", " << vData->py << ", " << vData->pz << ")\n";
-			fileStream << "\t\tN Vector3(" << vData->nx << ", " << vData->ny << ", " << vData->nz << ")\n";
-			fileStream << "\t\tT Vector3(" << vData->tx << ", " << vData->ty << ", " << vData->tz << ")\n";
-			fileStream << "\t\tu Vector3(" << vData->u << ", " << vData->v << ", 0)\n";
-		}
-
-		fileStream << "}\n\n";
-	}
-	fileStream << "--------------------------------------------\n\n\n";
-
-	fileStream << "---------------- Submesh Data ----------------\n";
-	for (size_t i = 0; i < meshData->subMeshInfo.size(); i++)
-	{
-		auto &submeshInfo = meshData->subMeshInfo[i];
-		fileStream << "Submesh " << i << '\n';
-		fileStream << "\tstart index = " << submeshInfo.startIndexValue << '\n';
-		fileStream << "\tlength = " << submeshInfo.nrOfIndicesInSubMesh << '\n';
-		fileStream << "\tambient = " << submeshInfo.ambientTexturePath << '\n';
-		fileStream << "\tdiffuse = " << submeshInfo.diffuseTexturePath << '\n';
-		fileStream << "\tspecular = " << submeshInfo.specularTexturePath << '\n';
-		fileStream << "\texponent = " << submeshInfo.specularExponent << '\n';
-		fileStream << '\n';
-	}
-	fileStream << "----------------------------------------------\n\n";
-	
-	fileStream.close();
 	return true;
 }
 #pragma endregion

@@ -7,17 +7,12 @@ Texture2D<float4> AmbientMap	: register(t4);
 Texture2D<float1> OcclusionMap	: register(t8);
 Texture2D<float1> GlossinessMap : register(t9);
 
-cbuffer SpecularBuffer : register(b1)
-{
-	float SpecBuf_specularExponent;
-	float _SpecBuf_padding[3];
-};
-
 cbuffer MaterialProperties : register(b2)
 {
 	float4 MatProp_baseColor;
 	float MatProp_alphaCutoff;
     float MatProp_specularFactor;
+    float MatProp_specularExponent;
 	float MatProp_normalFactor;
 	float MatProp_glossFactor;
 	float MatProp_ambientFactor;
@@ -26,7 +21,7 @@ cbuffer MaterialProperties : register(b2)
     float MatProp_metallic;
 	uint MatProp_sampleFlags;
 	
-	float _MatProp_padding[3];
+	float _MatProp_padding[2];
 };
 
 void GetSampleFlags(

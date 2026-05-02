@@ -7,7 +7,6 @@
 namespace WellEngine
 {
 	[[nodiscard]] bool LoadMeshFromFile(const char *path, MeshData *meshData);
-	[[nodiscard]] bool WriteMeshToFile(const char *path, const MeshData *meshData);
 
 
 	[[nodiscard]] std::string GetTextureBakePath(const std::string &file);

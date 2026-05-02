@@ -87,7 +87,7 @@ float4 main(PixelShaderInput input) : SV_TARGET
 	
 	const float glossiness = MatProp_glossFactor * (sampleGlossiness
 		? GlossinessMap.Sample(Sampler, uv)
-		: 1.0 - (1.0 / pow(max(0.0, SpecBuf_specularExponent), 1.75)));
+		: 1.0 - (1.0 / pow(max(0.0, MatProp_specularExponent), 1.75)));
 
 	const float reflective = MatProp_reflectFactor * (sampleReflective
 		? ReflectiveMap.Sample(Sampler, uv)

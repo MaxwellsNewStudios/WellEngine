@@ -94,7 +94,7 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>d3d11.lib;dxguid.lib;D3DCompiler.lib;user32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)WellEngine\Dependencies\assimp\bin\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <UseDynamicDebugging>false</UseDynamicDebugging>
     </Link>
     <Bscmake>
@@ -134,7 +134,7 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>d3d11.lib;dxguid.lib;D3DCompiler.lib;user32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)WellEngine\Dependencies\assimp\bin\Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <UseDynamicDebugging>false</UseDynamicDebugging>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
     </Link>
@@ -168,7 +168,7 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <AdditionalDependencies>d3d11.lib;dxguid.lib;D3DCompiler.lib;user32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)WellEngine\Dependencies\assimp\bin\MinSizeRel;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
     </Link>
     <PostBuildEvent>
@@ -185,6 +185,9 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\WellEngine\Dependencies\assimp\code\assimp.vcxproj">
+      <Project>{3cfaed80-c331-3d80-b9fb-bedf6c9d7345}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\WellEngine\WellEngine.vcxproj">
       <Project>{7f156b4b-4453-4b20-8765-7898d274bf6e}</Project>
     </ProjectReference>

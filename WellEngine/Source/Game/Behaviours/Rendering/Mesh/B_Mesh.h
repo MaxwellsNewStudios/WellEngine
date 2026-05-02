@@ -48,6 +48,7 @@ namespace WellEngine
 		float _alphaCutoff = 0.0f;
 		float _normalFactor = 1.0f;
 		float _specularFactor = 1.0f;
+		float _specularExponent = 25.0f;
 		float _glossFactor = 1.0f;
 		float _ambientFactor = 1.0f;
 		float _occlusionFactor = 0.85f;

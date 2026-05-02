@@ -80,26 +80,10 @@ namespace WellEngine
 			UINT startIndexValue = 0;
 			UINT nrOfIndicesInSubMesh = 0;
 
-			std::string ambientTexturePath = "";
-			std::string diffuseTexturePath = "";
-			std::string specularTexturePath = "";
-			float specularExponent = 0.0f;
-
 			void Compile(std::vector<char> &data) const
 			{
 				data.insert(data.end(), (char *)&startIndexValue, (char *)&startIndexValue + sizeof(UINT));
 				data.insert(data.end(), (char *)&nrOfIndicesInSubMesh, (char *)&nrOfIndicesInSubMesh + sizeof(UINT));
-
-				data.insert(data.end(), ambientTexturePath.begin(), ambientTexturePath.end());
-				data.emplace_back('\0');
-
-				data.insert(data.end(), diffuseTexturePath.begin(), diffuseTexturePath.end());
-				data.emplace_back('\0');
-
-				data.insert(data.end(), specularTexturePath.begin(), specularTexturePath.end());
-				data.emplace_back('\0');
-
-				data.insert(data.end(), (char *)&specularExponent, (char *)&specularExponent + sizeof(float));
 			}
 			void Decompile(const std::vector<char> &data, size_t &offset)
 			{
@@ -108,18 +92,6 @@ namespace WellEngine
 
 				nrOfIndicesInSubMesh = *(UINT *)&data[offset];
 				offset += sizeof(UINT);
-
-				ambientTexturePath = &data[offset];
-				offset += ambientTexturePath.size() + 1;
-
-				diffuseTexturePath = &data[offset];
-				offset += diffuseTexturePath.size() + 1;
-
-				specularTexturePath = &data[offset];
-				offset += specularTexturePath.size() + 1;
-
-				specularExponent = *(float *)&data[offset];
-				offset += sizeof(float);
 			}
 		};
 
@@ -201,10 +173,6 @@ namespace WellEngine
 
 		[[nodiscard]] UINT GetNrOfSubMeshes() const;
 		[[nodiscard]] size_t GetSubMeshIndexCount(UINT subMeshIndex) const;
-		[[nodiscard]] const std::string &GetAmbientPath(UINT subMeshIndex) const;
-		[[nodiscard]] const std::string &GetDiffusePath(UINT subMeshIndex) const;
-		[[nodiscard]] const std::string &GetSpecularPath(UINT subMeshIndex) const;
-		[[nodiscard]] ID3D11Buffer *GetSpecularBuffer(UINT subMeshIndex) const;
 
 		[[nodiscard]] const MeshData *GetMeshData() const;
 		[[nodiscard]] const MeshCollider &GetMeshCollider() const;

@@ -50,6 +50,7 @@ bool B_Mesh::Start()
 	materialProperties.alphaCutoff		= _alphaCutoff;
 	materialProperties.normalFactor		= _normalFactor;
 	materialProperties.specularFactor	= _specularFactor;
+	materialProperties.specularExponent = _specularExponent;
 	materialProperties.glossFactor		= _glossFactor;
 	materialProperties.ambientFactor	= _ambientFactor;
 	materialProperties.occlusionFactor	= _occlusionFactor;
@@ -106,6 +107,7 @@ bool B_Mesh::Update(TimeUtils &time, const Input &input)
 		materialProperties.alphaCutoff		= _alphaCutoff;
 		materialProperties.normalFactor		= _normalFactor;
 		materialProperties.specularFactor	= _specularFactor;
+		materialProperties.specularExponent = _specularExponent;
 		materialProperties.glossFactor		= _glossFactor;
 		materialProperties.ambientFactor	= _ambientFactor;
 		materialProperties.occlusionFactor	= _occlusionFactor;
@@ -1682,6 +1684,10 @@ bool B_Mesh::RenderUI()
 			_updateMatBuffer = true;
 		ImGuiUtils::LockMouseOnActive();
 
+		if (ImGui::DragFloat("Specular Exponent", &_specularExponent, 0.1f))
+			_updateMatBuffer = true;
+		ImGuiUtils::LockMouseOnActive();
+
 		if (ImGui::DragFloat("Glossiness Factor", &_glossFactor, 0.001f))
 			_updateMatBuffer = true;
 		ImGuiUtils::LockMouseOnActive();
@@ -1892,6 +1898,7 @@ bool B_Mesh::Serialize(json::Document::AllocatorType &docAlloc, json::Value &obj
 	obj.AddMember("Alpha Cutoff", _alphaCutoff, docAlloc);
 	obj.AddMember("Normal Factor", _normalFactor, docAlloc);
 	obj.AddMember("Specular Factor", _specularFactor, docAlloc);
+	obj.AddMember("Specular Exponent", _specularExponent, docAlloc);
 	obj.AddMember("Glossiness Factor", _glossFactor, docAlloc);
 	obj.AddMember("Ambient Factor", _ambientFactor, docAlloc);
 	obj.AddMember("Occlusion Factor", _occlusionFactor, docAlloc);
@@ -2030,6 +2037,9 @@ bool B_Mesh::Deserialize(const json::Value &obj, Scene *scene)
 
 	if (obj.HasMember("Specular Factor"))
 		_specularFactor = obj["Specular Factor"].GetFloat();
+
+	if (obj.HasMember("Specular Exponent"))
+		_specularExponent = obj["Specular Exponent"].GetFloat();
 
 	if (obj.HasMember("Glossiness Factor"))
 		_glossFactor = obj["Glossiness Factor"].GetFloat();

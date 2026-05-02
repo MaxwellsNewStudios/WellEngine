@@ -11,12 +11,7 @@ namespace WellEngine::ContentData
 
 	struct SubMaterial
 	{
-		std::string
-			mtlName,
-			ambientPath,
-			diffusePath,
-			specularPath;
-		float specularExponent;
+		std::string mtlName;
 	};
 
 	struct MaterialGroup

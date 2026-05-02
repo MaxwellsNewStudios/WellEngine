@@ -154,7 +154,7 @@ PixelShaderOutput main(PixelShaderInput input)
 	}
 	else
 	{
-		glossiness = 1.0 - (1.0 / pow(max(0.0, SpecBuf_specularExponent), 1.75));
+		glossiness = 1.0 - (1.0 / pow(max(0.0, MatProp_specularExponent), 1.75));
 	}
 	glossiness = MatProp_glossFactor * glossiness;
 		
