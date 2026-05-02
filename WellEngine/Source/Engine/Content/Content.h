@@ -193,6 +193,16 @@ namespace WellEngine
 	};
 
 
+	struct TexLoadInfo
+	{
+		DXGI_FORMAT format = DXGI_FORMAT_UNKNOWN;
+		dx::DDS_ALPHA_MODE alphaMode = dx::DDS_ALPHA_MODE_UNKNOWN;
+		UINT downsample = 0;
+		bool mipmapped = false;
+		bool flipX = false;
+		bool flipY = true;
+	};
+
 	struct CompiledData
 	{
 		char *data = nullptr;
@@ -355,7 +365,7 @@ namespace WellEngine
 		[[nodiscard]] ShaderResourceTextureD3D11 *GetTexture(const std::string &name) const;
 
 		[[nodiscard]] bool ReloadTexture(ID3D11Device *device, ID3D11DeviceContext *context,
-			const std::string &name, DXGI_FORMAT format, bool useMipmaps, int downsample = 0);
+			const std::string &name, TexLoadInfo *info = nullptr);
 	#pragma endregion
 
 	#pragma region Cubemap
@@ -383,7 +393,7 @@ namespace WellEngine
 		[[nodiscard]] ShaderResourceTextureD3D11 *GetCubemap(const std::string &name) const;
 
 		[[nodiscard]] bool ReloadCubemap(ID3D11Device *device, ID3D11DeviceContext *context,
-			const std::string &name, DXGI_FORMAT format, bool useMipmaps, int downsample = 0);
+			const std::string &name, TexLoadInfo *info = nullptr);
 	#pragma endregion
 
 	#pragma region Font Atlas

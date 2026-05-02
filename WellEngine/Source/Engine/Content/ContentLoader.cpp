@@ -186,17 +186,21 @@ std::string WellEngine::GetTextureBakePath(const std::string &file)
 bool WellEngine::LoadDDSTextureFromFile(
 	ID3D11Device *device, ID3D11DeviceContext *context, 
 	const std::string &path, ID3D11Texture2D *&texture, ID3D11ShaderResourceView *&srv, 
-	dx::DDS_ALPHA_MODE *alphaMode, bool mipmapped)
+	TexLoadInfo *info)
 {
+	TexLoadInfo defaultInfo;
+	if (info == nullptr)
+		info = &defaultInfo;
+
 	std::wstring wPath = StringUtils::NarrowToWide(path);
 
-	if (FAILED(dx::CreateDDSTextureFromFile(device, context, wPath.c_str(), (ID3D11Resource **)&texture, &srv, 0, alphaMode)))
+	if (FAILED(dx::CreateDDSTextureFromFile(device, context, wPath.c_str(), (ID3D11Resource **)&texture, &srv, 0, &info->alphaMode)))
 	{
 		WarnF("Failed to load DDS texture from file at path \"{}\"!", path);
 		return false;
 	}
 
-	if (mipmapped && texture != nullptr)
+	if (info->mipmapped && texture != nullptr)
 	{
 		D3D11_TEXTURE2D_DESC desc;
 		texture->GetDesc(&desc);
@@ -210,11 +214,14 @@ bool WellEngine::LoadDDSTextureFromFile(
 	return true;
 }
 
-bool WellEngine::LoadTextureFromFile(
-	ID3D11Device *device, ID3D11DeviceContext *context, 
+bool WellEngine::LoadTextureFromFile(ID3D11Device *device, ID3D11DeviceContext *context, 
 	const std::string &path, ID3D11Texture2D *&texture, ID3D11ShaderResourceView *&srv, 
-	DXGI_FORMAT format, bool mipmapped, UINT downsample, bool flip, bool bake)
+	TexLoadInfo *info, bool bake)
 {
+	TexLoadInfo defaultInfo;
+	if (info == nullptr)
+		info = &defaultInfo;
+
 	std::wstring wPath = StringUtils::NarrowToWide(path);
 
 	std::string ext = path;
@@ -235,7 +242,8 @@ bool WellEngine::LoadTextureFromFile(
 			return false;
 		}
 
-		flip = false; // Assume DDS files are pre-flipped
+		info->flipX = false; // Assume DDS files are pre-flipped
+		info->flipY = false;
 	}
 	else if (ext == "tga")
 	{
@@ -265,15 +273,15 @@ bool WellEngine::LoadTextureFromFile(
 		}
 	}
 
-	if (format == DXGI_FORMAT_UNKNOWN)
-		format = metadata.format;
+	if (info->format == DXGI_FORMAT_UNKNOWN)
+		info->format = metadata.format;
 
-	bool generateMips = mipmapped && (metadata.mipLevels <= 1);
+	bool generateMips = info->mipmapped && (metadata.mipLevels <= 1);
 
 	bool isBCFormat = D3D11FormatData::IsBCFormat(metadata.format);
-	bool toBCFormat = D3D11FormatData::IsBCFormat(format);
+	bool toBCFormat = D3D11FormatData::IsBCFormat(info->format);
 
-	if (isBCFormat && (flip || generateMips || downsample > 0))
+	if (isBCFormat && (info->flipX || info->flipY || generateMips || info->downsample > 0))
 	{
 		dx::ScratchImage decompressed;
 
@@ -292,12 +300,12 @@ bool WellEngine::LoadTextureFromFile(
 		isBCFormat = false;
 	}
 
-	if (!isBCFormat && downsample > 0)
+	if (!isBCFormat && info->downsample > 0)
 	{
 		// Clamp downsample to max possible value, given the image dimensions
-		downsample = MIN(downsample, static_cast<UINT>(MAX(0, static_cast<int>(std::log2(MIN(metadata.width, metadata.height))) - 2)));
+		info->downsample = MIN(info->downsample, static_cast<UINT>(MAX(0, static_cast<int>(std::log2(MIN(metadata.width, metadata.height))) - 2)));
 
-		int scaleDiv = 1 << downsample;
+		int scaleDiv = 1 << info->downsample;
 		dx::ScratchImage downsampled;
 
 		hr = dx::Resize(image.GetImages(), image.GetImageCount(), image.GetMetadata(), metadata.width / scaleDiv, metadata.height / scaleDiv, dx::TEX_FILTER_DEFAULT, downsampled);
@@ -312,22 +320,30 @@ bool WellEngine::LoadTextureFromFile(
 		metadata = image.GetMetadata();
 
 		// Resizing removes mips
-		generateMips = mipmapped && (metadata.mipLevels <= 1);
+		generateMips = info->mipmapped && (metadata.mipLevels <= 1);
 	}
 	
-	if (flip)
+	if (info->flipX || info->flipY)
 	{
 		if (isBCFormat)
 		{
 			// Cannot flip BC formatted image. Make sure to flip pre-compressed images externally.
-			flip = false;
+			info->flipX = false;
+			info->flipY = false;
 		}
 		else
 		{
 			dx::ScratchImage flipped;
 
+			dx::TEX_FR_FLAGS flipFlags = dx::TEX_FR_ROTATE0;
+
+			if (info->flipX)
+				flipFlags |= dx::TEX_FR_FLIP_HORIZONTAL;
+			if (info->flipY)
+				flipFlags |= dx::TEX_FR_FLIP_VERTICAL;
+
 			// Flip
-			hr = dx::FlipRotate(image.GetImages(), image.GetImageCount(), image.GetMetadata(), dx::TEX_FR_FLIP_VERTICAL, flipped);
+			hr = dx::FlipRotate(image.GetImages(), image.GetImageCount(), image.GetMetadata(), flipFlags, flipped);
 			if (FAILED(hr))
 			{
 				WarnF("Failed to flip image from file at path \"{}\"! hr: {}, {}", path, hr, StringUtils::HResultToString(hr));
@@ -379,23 +395,23 @@ bool WellEngine::LoadTextureFromFile(
 			else
 			{
 				generateMips = false;
-				mipmapped = false;
+				info->mipmapped = false;
 			}
 		}
 		else
 		{
-			mipmapped = false;
+			info->mipmapped = false;
 		}
 	}
 
-	if (metadata.format != format)
+	if (metadata.format != info->format)
 	{
 		if (toBCFormat)
 		{
 			// Convert to BC format
 
 			bool bc6hbc7 = false;
-			switch (format)
+			switch (info->format)
 			{
 			case DXGI_FORMAT_BC6H_TYPELESS:
 			case DXGI_FORMAT_BC6H_UF16:
@@ -414,21 +430,21 @@ bool WellEngine::LoadTextureFromFile(
 
 			if (dx::IsSRGB(metadata.format))
 				cflags |= dx::TEX_COMPRESS_SRGB_IN;
-			if (dx::IsSRGB(format))
+			if (dx::IsSRGB(info->format))
 				cflags |= dx::TEX_COMPRESS_SRGB_OUT;
 
 			dx::ScratchImage compressed;
 			if (bc6hbc7)
 			{
 				cflags |= dx::TEX_COMPRESS_BC7_USE_3SUBSETS;
-				hr = dx::Compress(device, image.GetImages(), image.GetImageCount(), metadata, format, cflags, 0.1f, compressed);
+				hr = dx::Compress(device, image.GetImages(), image.GetImageCount(), metadata, info->format, cflags, 0.1f, compressed);
 			}
 			else
 			{
 #ifdef _OPENMP
 				cflags |= dx::TEX_COMPRESS_PARALLEL;
 #endif
-				hr = dx::Compress(image.GetImages(), image.GetImageCount(), metadata, format, cflags, 0.5f, compressed);
+				hr = dx::Compress(image.GetImages(), image.GetImageCount(), metadata, info->format, cflags, 0.5f, compressed);
 			}
 
 			if (FAILED(hr))
@@ -536,7 +552,7 @@ bool WellEngine::LoadTextureFromFile(
 		return false;
 	}
 
-	if (mipmapped)
+	if (info->mipmapped)
 	{
 		D3D11_TEXTURE2D_DESC desc;
 		texture->GetDesc(&desc);

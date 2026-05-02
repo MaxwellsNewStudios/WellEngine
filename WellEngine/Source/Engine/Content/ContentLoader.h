@@ -3,6 +3,7 @@
 #include <DirectXTex.h>
 
 #include "Engine/D3D/MeshD3D11.h"
+#include "Content.h"
 
 namespace WellEngine
 {
@@ -11,15 +12,13 @@ namespace WellEngine
 
 	[[nodiscard]] std::string GetTextureBakePath(const std::string &file);
 
-	[[nodiscard]] bool LoadDDSTextureFromFile(
-		ID3D11Device *device, ID3D11DeviceContext *context, 
+	[[nodiscard]] bool LoadDDSTextureFromFile(ID3D11Device *device, ID3D11DeviceContext *context, 
 		const std::string &path, ID3D11Texture2D *&texture, ID3D11ShaderResourceView *&srv, 
-		dx::DDS_ALPHA_MODE *alphaMode = nullptr, bool mipmapped = false);
+		TexLoadInfo *info = nullptr);
 
-	[[nodiscard]] bool LoadTextureFromFile(
-		ID3D11Device *device, ID3D11DeviceContext *context, 
+	[[nodiscard]] bool LoadTextureFromFile(ID3D11Device *device, ID3D11DeviceContext *context, 
 		const std::string &path, ID3D11Texture2D *&texture, ID3D11ShaderResourceView *&srv, 
-		DXGI_FORMAT format = DXGI_FORMAT_UNKNOWN, bool mipmapped = false, UINT downsample = 0, bool flip = true, bool bake = true);
+		TexLoadInfo *info = nullptr, bool bake = true);
 
 	[[nodiscard]] bool LoadTextureFromFile(const std::string &path, UINT &width, UINT &height, std::vector<unsigned char> &data);
 	[[nodiscard]] bool LoadTextureFromFile(const std::string &path, UINT &width, UINT &height, std::vector<unsigned short> &data);

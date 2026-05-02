@@ -2066,10 +2066,14 @@ bool Content::RecompileShader(ID3D11Device *device, const std::string &name) con
 	return true;
 }
 
-bool Content::ReloadTexture(ID3D11Device *device, ID3D11DeviceContext *context, const std::string &name, DXGI_FORMAT format, bool useMipmaps, int downsample)
+bool Content::ReloadTexture(ID3D11Device *device, ID3D11DeviceContext *context, const std::string &name, TexLoadInfo *info)
 {
 	ZoneScopedC(RandomUniqueColor());
 	ZoneText(name.c_str(), name.size());
+
+	TexLoadInfo defaultInfo;
+	if (info == nullptr)
+		info = &defaultInfo;
 
 	Texture *tex = nullptr;
 	for (Texture *t : _textures)
@@ -2091,8 +2095,7 @@ bool Content::ReloadTexture(ID3D11Device *device, ID3D11DeviceContext *context, 
 	ComPtr<ID3D11ShaderResourceView> srv;
 
 	// Force-load from the original source file, bypassing any bake cache
-	if (!LoadTextureFromFile(device, context, tex->path, *texture.GetAddressOf(), *srv.GetAddressOf(),
-		format, useMipmaps, downsample, true))
+	if (!LoadTextureFromFile(device, context, tex->path, *texture.GetAddressOf(), *srv.GetAddressOf(), info))
 	{
 		ErrMsgF("Failed to reload texture '{}' from file!", name);
 		return false;
@@ -2104,15 +2107,19 @@ bool Content::ReloadTexture(ID3D11Device *device, ID3D11DeviceContext *context, 
 		return false;
 	}
 
-	tex->mipmapped = useMipmaps;
+	tex->mipmapped = info->mipmapped;
 	tex->actualPath = tex->path;
 	return true;
 }
 
-bool Content::ReloadCubemap(ID3D11Device *device, ID3D11DeviceContext *context, const std::string &name, DXGI_FORMAT format, bool useMipmaps, int downsample)
+bool Content::ReloadCubemap(ID3D11Device *device, ID3D11DeviceContext *context, const std::string &name, TexLoadInfo *info)
 {
 	ZoneScopedC(RandomUniqueColor());
 	ZoneText(name.c_str(), name.size());
+
+	TexLoadInfo defaultInfo;
+	if (info == nullptr)
+		info = &defaultInfo;
 
 	Cubemap *cub = nullptr;
 	for (Cubemap *c : _cubemaps)
@@ -2144,7 +2151,7 @@ bool Content::ReloadCubemap(ID3D11Device *device, ID3D11DeviceContext *context, 
 
 	// Clamp downsample to max possible value, given the image dimensions
 	const int maxDownsample = MAX(0, static_cast<int>(std::floor(std::log2(std::min(width, height)))) - 2);
-	const int effectiveDownsample = MIN(downsample + MIPS_DISCARDED, maxDownsample);
+	const int effectiveDownsample = MIN(info->downsample + MIPS_DISCARDED, maxDownsample);
 
 	if (effectiveDownsample > 0)
 	{
@@ -2165,15 +2172,15 @@ bool Content::ReloadCubemap(ID3D11Device *device, ID3D11DeviceContext *context, 
 		}
 	}
 
-	const dx::XMINT4 outBitLayout = D3D11FormatData::GetBitsPerChannel(format);
+	const dx::XMINT4 outBitLayout = D3D11FormatData::GetBitsPerChannel(info->format);
 	if (outBitLayout.x == 0)
 	{
 		ErrMsgF("Unsupported format for cubemap '{}' reload!", name);
 		return false;
 	}
 
-	const UINT outChannels = D3D11FormatData::GetChannelCount(format);
-	const UINT outBitsPerPixel = D3D11FormatData::GetBitsPerPixel(format);
+	const UINT outChannels = D3D11FormatData::GetChannelCount(info->format);
+	const UINT outBitsPerPixel = D3D11FormatData::GetBitsPerPixel(info->format);
 	const UINT outBitsPerChannel = outBitsPerPixel / outChannels;
 	const UINT outBytesPerPixel = outBitsPerPixel / 8;
 	const UINT outBytesPerChannel = outBitsPerChannel / 8;
@@ -2228,7 +2235,7 @@ bool Content::ReloadCubemap(ID3D11Device *device, ID3D11DeviceContext *context, 
 		}
 	}
 
-	if (!cub->data.Initialize(device, context, width, height, formattedTexData.data(), format, useMipmaps, true))
+	if (!cub->data.Initialize(device, context, width, height, formattedTexData.data(), info->format, info->mipmapped, true))
 	{
 		ErrMsgF("Failed to reinitialize cubemap '{}' after reload!", name);
 		return false;
@@ -2297,8 +2304,14 @@ UINT Content::AddTexture(ID3D11Device *device, ID3D11DeviceContext *context, con
 			}
 #endif
 
+			TexLoadInfo loadInfo{};
+			loadInfo.format = format;
+			loadInfo.mipmapped = useMipmaps;
+			loadInfo.downsample = downsample;
+			loadInfo.flipY = flip;
+
 			bool failed = false;
-			if (!LoadTextureFromFile(device, context, *pathToUse, *texture.GetAddressOf(), *srv.GetAddressOf(), format, useMipmaps, downsample, flip, doBake))
+			if (!LoadTextureFromFile(device, context, *pathToUse, *texture.GetAddressOf(), *srv.GetAddressOf(), &loadInfo, doBake))
 			{
 				Warn("Failed to load texture from file!");
 				failed = true;
