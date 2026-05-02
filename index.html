@@ -1,11 +1,161 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta name="google-site-verification" content="FDcAd6qEuyvaFZ6rZmQz3CEVTFN60DhN2yCJhlZW2bQ" />
-  <meta name="keywords" content="WellEngine, well engine, engine, Lurks Below, D3D11, games, game engine, Direct3D 11, DirectX 11, DX11, 3D, C++, Windows game engine, real-time rendering, graphics programming, editor, HLSL, shaders, tiled forward rendering, shadow mapping, post-processing, bloom, volumetric fog, game engine editor, Dear ImGui, Jolt Physics, SDL3, Tracy profiler, open source, open source game engine, indie game engine development">
-  <meta http-equiv="refresh" content="0; url=https://github.com/MaxwellsNewStudios/WellEngine">
-  <title>WellEngine</title>
+    <meta name="google-site-verification" content="FDcAd6qEuyvaFZ6rZmQz3CEVTFN60DhN2yCJhlZW2bQ" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Well Engine – C++ D3D11 Game Engine</title>
+
+    <!-- SEO Meta -->
+    <meta name="description" content="Well Engine is a general-purpose D3D11-based game engine written in C++.">
+    <meta name="keywords" content="WellEngine, well engine, engine, Lurks Below, D3D11, games, game engine, Direct3D 11, DirectX 11, DX11, 3D, C++, Windows game engine, game development, real-time rendering, graphics programming, editor, HLSL, shaders, tiled forward rendering, shadow mapping, post-processing, bloom, volumetric fog, game engine editor, Dear ImGui, Jolt Physics, SDL3, Tracy profiler, open source, open source game engine, indie game engine development">
+  
+    <meta name="author" content="Well Engine Team">
+
+    <!-- Open Graph -->
+    <meta property="og:title" content="Well Engine – C++ Game Engine">
+    <meta property="og:description" content="A general-purpose D3D11-based game engine written in C++.">
+    <meta property="og:type" content="website">
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            background: #0f172a;
+            color: #e2e8f0;
+            line-height: 1.6;
+        }
+        header {
+            background: #020617;
+            padding: 40px 20px;
+            text-align: center;
+        }
+        h1 {
+            margin: 0;
+            font-size: 2.5em;
+        }
+        h2 {
+            border-bottom: 1px solid #334155;
+            padding-bottom: 5px;
+        }
+        .container {
+            max-width: 900px;
+            margin: auto;
+            padding: 20px;
+        }
+        img {
+            width: 100%;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        a {
+            color: #38bdf8;
+        }
+        ul {
+            margin-left: 20px;
+        }
+        .cta {
+            text-align: center;
+            margin: 40px 0;
+        }
+        .cta a {
+            background: #38bdf8;
+            color: #020617;
+            padding: 12px 20px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: bold;
+        }
+    </style>
 </head>
 <body>
+
+<header>
+    <h1>Well Engine</h1>
+    <p>A general-purpose D3D11-based game engine written in C++</p>
+</header>
+
+<div class="container">
+
+    <p>
+        Well Engine is a Direct3D 11-based game engine developed in C++.
+        It was originally created as a group project by six students for the game <strong>Lurks Below</strong>.
+    </p>
+
+    <div class="cta">
+        <a href="https://github.com/MaxwellsNewStudios/WellEngine" target="_blank">
+            View on GitHub
+        </a>
+    </div>
+
+    <h2>Preview</h2>
+    <img src="Docs/Images/EditorPreview2.png" alt="Editor Preview">
+    <img src="Docs/Images/PhysicsTest.gif" alt="Physics Test">
+    <img src="Docs/Images/Sponza.png" alt="Sponza Scene">
+
+    <h2>Usage</h2>
+    <p>No special prerequisites required. Windows only.</p>
+    <ul>
+        <li>Download the repository</li>
+        <li>Open <strong>WellEngine.sln</strong> in Visual Studio (tested with 2022)</li>
+        <li>Select <strong>Application</strong> as the startup project</li>
+        <li>Use <strong>Release</strong> for normal builds</li>
+        <li>Use <strong>Debug</strong> for breakpoints</li>
+        <li>Use <strong>Deploy</strong> to build without editor features</li>
+    </ul>
+
+    <h2>Core Features</h2>
+
+    <h3>Entities, Behaviours & Systems</h3>
+    <ul>
+        <li>Unity-style entities and components</li>
+        <li>Scene-independent systems</li>
+    </ul>
+
+    <h3>Scenes</h3>
+    <ul>
+        <li>Quad-tree frustum culling</li>
+        <li>Serialization</li>
+        <li>Prefab support</li>
+    </ul>
+
+    <h3>Developer Tools</h3>
+    <ul>
+        <li>Transformation controls</li>
+        <li>Entity and behaviour editing</li>
+        <li>Debug shape rendering</li>
+        <li>Tracy profiling support</li>
+    </ul>
+
+    <h3>Rendering</h3>
+    <ul>
+        <li>Shadow mapping</li>
+        <li>Metallic reflections</li>
+        <li>Environment mapping</li>
+        <li>Tiled forward rendering</li>
+        <li>Transparency pass</li>
+        <li>Post-processing:
+            <ul>
+                <li>Volumetric fog</li>
+                <li>Bloom</li>
+                <li>Depth of field</li>
+            </ul>
+        </li>
+    </ul>
+
+    <h2>Libraries Used</h2>
+    <ul>
+        <li>Dear ImGui – UI</li>
+        <li>ImPlot – plotting UI</li>
+        <li>ImGuizmo – transformation tools</li>
+        <li>Jolt Physics – physics engine</li>
+        <li>SDL3 – window handling</li>
+        <li>Tracy – profiling</li>
+        <li>DirectXTex – texture tools</li>
+        <li>stb – image loading</li>
+    </ul>
+
+</div>
+
 </body>
 </html>
