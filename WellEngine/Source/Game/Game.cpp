@@ -2207,7 +2207,7 @@ bool Game::RenderUI(TimeUtils &time)
 	}
 	ImGui::End();
 
-	if (ImGui::Begin("Asset Browser", nullptr, defaultWindowFlags))
+	if (ImGui::Begin("Asset Browser", nullptr, defaultWindowFlags | ImGuiWindowFlags_MenuBar))
 	{
 		if (!_content.RenderFileBrowserUI(_device.Get(), _immediateContext.Get()))
 		{

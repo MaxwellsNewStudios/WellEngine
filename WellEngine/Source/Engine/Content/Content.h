@@ -3,6 +3,7 @@
 #include <vector>
 #include <string>
 #include <set>
+#include <map>
 
 #include "Material.h"
 #include "FontAtlas.h"
@@ -222,6 +223,7 @@ namespace WellEngine
 	static constexpr auto matPtrCmp = [](Material *a, Material *b) { return (*a) < (*b); };
 	#pragma endregion
 
+
 	/// Handles loading, storing and unloading of meshes, shaders, textures, texture maps, samplers and input layouts.
 	class Content
 	{
@@ -291,7 +293,7 @@ namespace WellEngine
 #endif
 
 		template <typename C>
-		[[nodiscard]] inline bool IsNameDuplicate(const std::string &name, const std::vector<C *> &contentVec, UINT *id);
+		[[nodiscard]] inline bool IsNameDuplicate(const std::string &name, const std::map<UINT, C *> &contentMap, UINT *id);
 
 	public:
 		Content();
@@ -318,7 +320,8 @@ namespace WellEngine
 
 	#pragma region Mesh
 	private:
-		std::vector<Mesh *> _meshes;
+		std::map<UINT, Mesh *> _meshes;
+		UINT _nextMeshID = 0;
 
 	public:
 		[[nodiscard]] CompiledData GetMeshData(const char *path) const;
@@ -339,7 +342,8 @@ namespace WellEngine
 
 	#pragma region Texture
 	private:
-		std::vector<Texture *> _textures;
+		std::map<UINT, Texture *> _textures;
+		UINT _nextTextureID = 0;
 
 	public:
 		UINT AddTexture(ID3D11Device *device, ID3D11DeviceContext *context,
@@ -370,7 +374,8 @@ namespace WellEngine
 
 	#pragma region Cubemap
 	private:
-		std::vector<Cubemap *> _cubemaps;
+		std::map<UINT, Cubemap *> _cubemaps;
+		UINT _nextCubemapID = 0;
 
 	public:
 		UINT AddCubemap(ID3D11Device *device, ID3D11DeviceContext *context, 
@@ -398,7 +403,8 @@ namespace WellEngine
 
 	#pragma region Font Atlas
 	private:
-		std::vector<TextureFont *> _textureFonts;
+		std::map<UINT, TextureFont *> _textureFonts;
+		UINT _nextFontAtlasID = 0;
 
 	public:
 		UINT AddFontAtlas(const std::string &name);
@@ -415,7 +421,8 @@ namespace WellEngine
 
 	#pragma region Shader
 	private:
-		std::vector<Shader *> _shaders;
+		std::map<UINT, Shader *> _shaders;
+		UINT _nextShaderID = 0;
 
 	public:
 		[[nodiscard]] CompiledData GetShaderData(const std::string &name, const char *path, ShaderType shaderType) const;
@@ -442,7 +449,8 @@ namespace WellEngine
 
 	#pragma region Input Layout
 	private:
-		std::vector<InputLayout *> _inputLayouts;
+		std::map<UINT, InputLayout *> _inputLayouts;
+		UINT _nextInputLayoutID = 0;
 
 	public:
 		UINT AddInputLayout(ID3D11Device *device, const std::string &name, const std::vector<Semantic> &semantics, const void *vsByteData, size_t vsByteSize);
@@ -455,7 +463,8 @@ namespace WellEngine
 
 	#pragma region Sampler
 	private:
-		std::vector<Sampler *> _samplers;
+		std::map<UINT, Sampler *> _samplers;
+		UINT _nextSamplerID = 0;
 
 	public:
 		UINT AddSampler(ID3D11Device *device, const std::string &name, 
@@ -475,7 +484,8 @@ namespace WellEngine
 
 	#pragma region Blend State
 	private:
-		std::vector<BlendState *> _blendStates;
+		std::map<UINT, BlendState *> _blendStates;
+		UINT _nextBlendStateID = 0;
 
 	public:
 		UINT AddBlendState(ID3D11Device *device, const std::string &name, const D3D11_BLEND_DESC &blendDesc);
@@ -496,25 +506,20 @@ namespace WellEngine
 	};
 
 	template<typename C>
-	inline bool Content::IsNameDuplicate(const std::string &name, const std::vector<C *> &contentVec, UINT *id)
+	inline bool Content::IsNameDuplicate(const std::string &name, const std::map<UINT, C *> &contentMap, UINT *id)
 	{
 		static_assert(std::is_base_of<ContentBase, C>::value, "C must be derived from ContentBase");
 
-		UINT size = (UINT)contentVec.size();
-
-		for (UINT i = 0; i < size; i++)
+		for (const auto &[key, value] : contentMap)
 		{
-			if (contentVec[i]->name != name)
+			if (value->name != name)
 				continue;
 
-			if (id) 
-				*id = i;
+			if (id)
+				*id = key;
 
 			return true;
 		}
-
-		if (id) 
-			*id = size;
 
 		return false;
 	}
