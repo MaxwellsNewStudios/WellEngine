@@ -1859,7 +1859,7 @@ bool B_Mesh::RenderUI()
 }
 #endif
 
-bool B_Mesh::BindBuffers(ID3D11DeviceContext *context)
+bool B_Mesh::BindBuffers(ID3D11DeviceContext *context, UINT submeshIndex)
 {
 	ID3D11Buffer *const wmBuffer = GetTransform()->GetConstantBuffer();
 	context->VSSetConstantBuffers(0, 1, &wmBuffer);

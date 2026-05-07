@@ -633,13 +633,13 @@ bool Graphics::RefreshEmissionBuffers()
 	_viewportBlur.Width = std::ceil(_viewportBlur.Width * _emissionResolutionScale);
 	_viewportBlur.Height = std::ceil(_viewportBlur.Height * _emissionResolutionScale);
 
-	if (!_blurRT.Initialize(_device, (UINT)_viewportBlur.Width, (UINT)_viewportBlur.Height, 0, 4, DXGI_FORMAT_R11G11B10_FLOAT, true))
+	if (!_blurRT.Initialize(_device, (UINT)_viewportBlur.Width, (UINT)_viewportBlur.Height, 0, 3, DXGI_FORMAT_R11G11B10_FLOAT, true))
 	{
 		ErrMsg("Failed to initialize blur stage two render target!");
 		return false;
 	}
 
-	if (!_intermediateBlurRT.Initialize(_device, (UINT)_viewportBlur.Width, (UINT)_viewportBlur.Height, 0, 4, DXGI_FORMAT_R11G11B10_FLOAT, true))
+	if (!_intermediateBlurRT.Initialize(_device, (UINT)_viewportBlur.Width, (UINT)_viewportBlur.Height, 0, 3, DXGI_FORMAT_R11G11B10_FLOAT, true))
 	{
 		ErrMsg("Failed to initialize blur stage one render target!");
 		return false;

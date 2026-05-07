@@ -99,7 +99,7 @@ namespace WellEngine
 	#endif
 
 		// BindBuffers runs before drawcalls pertaining to the Entity are performed.
-		[[nodiscard]] virtual bool BindBuffers(ID3D11DeviceContext *context);
+		[[nodiscard]] virtual bool BindBuffers(ID3D11DeviceContext *context, UINT submeshIndex);
 
 		// OnEnable runs immediately after the behaviour is enabled.
 		virtual void OnEnable();
@@ -162,7 +162,7 @@ namespace WellEngine
 
 		[[nodiscard]] bool InitialBeforeRender();
 		[[nodiscard]] bool InitialRender(RenderQueuer &queuer, const RendererInfo &rendererInfo);
-		[[nodiscard]] bool InitialBindBuffers(ID3D11DeviceContext *context);
+		[[nodiscard]] bool InitialBindBuffers(ID3D11DeviceContext *context, UINT submeshIndex);
 
 		[[nodiscard]] bool InitialSerialize(json::Document::AllocatorType &docAlloc, json::Value &obj);
 		[[nodiscard]] bool InitialDeserialize(const json::Value &obj, Scene *scene);

@@ -763,6 +763,12 @@ bool Graphics::RenderSpotlights()
 				}
 				_currMeshID = resources.meshID;
 			}
+
+			if (loadedMesh == nullptr)
+			{
+				ErrMsgF("Failed to perform draw call for instance #{}, loadedMesh is nullptr!", entity_i);
+				return false;
+			}
 			
 			const UINT vsID = vsDepthID;
 			if (_currVsID != vsID)
@@ -782,20 +788,7 @@ bool Graphics::RenderSpotlights()
 				_currVsID = vsID;
 			}
 
-			// Bind private entity data
-			if (!meshBehaviour->InitialBindBuffers(_context))
-			{
-				ErrMsgF("Failed to bind private buffers for instance #{}!", entity_i);
-				return false;
-			}
-
-			// Perform draw calls
-			if (loadedMesh == nullptr)
-			{
-				ErrMsgF("Failed to perform draw call for instance #{}, loadedMesh is nullptr!", entity_i);
-				return false;
-			}
-
+			// Calculate LOD index
 			const UINT subMeshCount = loadedMesh->GetNrOfSubMeshes();
 
 			UINT lodIndex = 0;
@@ -834,6 +827,14 @@ bool Graphics::RenderSpotlights()
 					lodIndex = MIN(lodIndex + 1, subMeshCount - 1);
 			}
 
+			// Bind private entity data
+			if (!meshBehaviour->InitialBindBuffers(_context, lodIndex))
+			{
+				ErrMsgF("Failed to bind private buffers for instance #{}, submesh #{}!", entity_i, lodIndex);
+				return false;
+			}
+
+			// Perform draw calls
 			{
 				TracyD3D11NamedZoneXC(_tracyD3D11Context, renderShadowCasterSubmeshD3D11Zone, "Shadowcaster Submesh", RandomUniqueColor(), true);
 
@@ -977,6 +978,12 @@ bool Graphics::RenderPointlights()
 				_currMeshID = resources.meshID;
 			}
 
+			if (loadedMesh == nullptr)
+			{
+				ErrMsgF("Failed to perform draw call for instance #{}, loadedMesh is nullptr!", entity_i);
+				return false;
+			}
+
 			const UINT vsID = vsDepthID;
 			if (_currVsID != vsID)
 			{
@@ -995,21 +1002,10 @@ bool Graphics::RenderPointlights()
 				_currVsID = vsID;
 			}
 
-			// Bind private entity data
-			if (!meshBehaviour->InitialBindBuffers(_context))
-			{
-				ErrMsgF("Failed to bind private buffers for instance #{}!", entity_i);
-				return false;
-			}
+			// Calculate LOD index
+			const UINT subMeshCount = loadedMesh->GetNrOfSubMeshes(); 
 
-			// Perform draw calls
-			if (loadedMesh == nullptr)
-			{
-				ErrMsgF("Failed to perform draw call for instance #{}, loadedMesh is nullptr!", entity_i);
-				return false;
-			}
-
-			const UINT subMeshCount = loadedMesh->GetNrOfSubMeshes(); UINT lodIndex = 0;
+			UINT lodIndex = 0;
 			if (subMeshCount > 1)
 			{
 				// Mesh has LODs, determine which one to use.
@@ -1045,6 +1041,14 @@ bool Graphics::RenderPointlights()
 					lodIndex = MIN(lodIndex + 1, subMeshCount - 1);
 			}
 
+			// Bind private entity data
+			if (!meshBehaviour->InitialBindBuffers(_context, lodIndex))
+			{
+				ErrMsgF("Failed to bind private buffers for instance #{}, submesh #{}!", entity_i, lodIndex);
+				return false;
+			}
+
+			// Perform draw calls
 			{
 				TracyD3D11NamedZoneXC(_tracyD3D11Context, renderShadowCasterSubmeshD3D11Zone, "Shadowcaster Submesh", RandomUniqueColor(), true);
 
@@ -1281,6 +1285,12 @@ bool Graphics::RenderOutlinedGeometry()
 			else if (loadedMesh == nullptr)
 				loadedMesh = _content->GetMesh(resources.meshID);
 
+			if (loadedMesh == nullptr)
+			{
+				ErrMsgF("Failed to perform draw call for instance #{}, loadedMesh is nullptr!", entity_i);
+				return false;
+			}
+
 			if (_currTexID != resources.material->textureID)
 			{
 				ZoneNamedXNC(bindResourceZone, "Bind Texture", RandomUniqueColor(), true);
@@ -1348,20 +1358,7 @@ bool Graphics::RenderOutlinedGeometry()
 				_currVsID = defaultVsID;
 			}
 
-			// Bind private entity resources
-			if (!meshBehaviour->InitialBindBuffers(_context))
-			{
-				ErrMsgF("Failed to bind private buffers for instance #{}!", entity_i);
-				return false;
-			}
-
-			// Perform draw calls
-			if (loadedMesh == nullptr)
-			{
-				ErrMsgF("Failed to perform draw call for instance #{}, loadedMesh is nullptr!", entity_i);
-				return false;
-			}
-
+			// Calculate LOD index
 			const UINT subMeshCount = loadedMesh->GetNrOfSubMeshes();
 
 			UINT lodIndex = 0;
@@ -1399,6 +1396,14 @@ bool Graphics::RenderOutlinedGeometry()
 				meshBehaviour->SetLastUsedLOD(lodIndex, normalizedDist);
 			}
 
+			// Bind private entity data
+			if (!meshBehaviour->InitialBindBuffers(_context, lodIndex))
+			{
+				ErrMsgF("Failed to bind private buffers for instance #{}, submesh #{}!", entity_i, lodIndex);
+				return false;
+			}
+
+			// Perform draw calls
 			{
 				ZoneNamedXNC(renderSubmeshZone, "Draw Submesh", RandomUniqueColor(), true);
 				TracyD3D11NamedZoneXC(_tracyD3D11Context, renderSubmeshD3D11Zone, "Draw Submesh", RandomUniqueColor(), true);
@@ -1574,6 +1579,12 @@ bool Graphics::RenderGeometry(bool overlayStage, bool skipPixelShader)
 		}
 		else if (loadedMesh == nullptr)
 			loadedMesh = _content->GetMesh(resources.meshID);
+
+		if (loadedMesh == nullptr)
+		{
+			ErrMsgF("Failed to perform draw call for instance #{}, loadedMesh is nullptr!", entity_i);
+			return false;
+		}
 
 		if (_currTexID != resources.material->textureID)
 		{
@@ -1754,25 +1765,7 @@ bool Graphics::RenderGeometry(bool overlayStage, bool skipPixelShader)
 			_currVsID = defaultVsID;
 		}
 
-		// Bind private entity resources
-		if (!meshBehaviour->InitialBindBuffers(_context))
-		{
-			ErrMsgF("Failed to bind private buffers for instance #{}!", entity_i);
-			return false;
-		}
-
-		// Perform draw calls
-		if (loadedMesh == nullptr)
-		{
-			ErrMsgF("Failed to perform draw call for instance #{}, loadedMesh is nullptr!", entity_i);
-			return false;
-		}
-
-		const UINT
-			prevTexID = _currTexID,
-			prevAmbientID = _currAmbientID,
-			prevSpecularID = _currSpecularID;
-
+		// Calculate LOD index
 		const UINT subMeshCount = loadedMesh->GetNrOfSubMeshes();
 
 		UINT lodIndex = 0;
@@ -1810,6 +1803,14 @@ bool Graphics::RenderGeometry(bool overlayStage, bool skipPixelShader)
 			meshBehaviour->SetLastUsedLOD(lodIndex, normalizedDist);
 		}
 
+		// Bind private entity data
+		if (!meshBehaviour->InitialBindBuffers(_context, lodIndex))
+		{
+			ErrMsgF("Failed to bind private buffers for instance #{}, submesh #{}!", entity_i, lodIndex);
+			return false;
+		}
+
+		// Perform draw calls
 		{
 			ZoneNamedXNC(renderSubmeshZone, "Draw Submesh", RandomUniqueColor(), true);
 			TracyD3D11NamedZoneXC(_tracyD3D11Context, renderSubmeshD3D11Zone, "Draw Submesh", RandomUniqueColor(), true);
@@ -2277,6 +2278,12 @@ bool Graphics::RenderTransparency(
 		else if (loadedMesh == nullptr)
 			loadedMesh = _content->GetMesh(resources.meshID);
 
+		if (loadedMesh == nullptr)
+		{
+			ErrMsgF("Failed to perform draw call for instance #{}, loadedMesh is nullptr!", entity_i);
+			return false;
+		}
+
 		if (_currTexID != resources.material->textureID)
 		{
 			ZoneNamedXNC(bindResourceZone, "Bind Texture", RandomUniqueColor(), true);
@@ -2363,20 +2370,7 @@ bool Graphics::RenderTransparency(
 			_currBlendStateID = defaultBlendStateID;
 		}
 
-		// Bind private entity resources
-		if (!meshBehaviour->InitialBindBuffers(_context))
-		{
-			ErrMsgF("Failed to bind private buffers for instance #{}!", entity_i);
-			return false;
-		}
-
-		// Perform draw calls
-		if (loadedMesh == nullptr)
-		{
-			ErrMsgF("Failed to perform draw call for instance #{}, loadedMesh is nullptr!", entity_i);
-			return false;
-		}
-
+		// Calculate LOD index
 		const UINT subMeshCount = loadedMesh->GetNrOfSubMeshes();
 
 		UINT lodIndex = 0;
@@ -2414,6 +2408,14 @@ bool Graphics::RenderTransparency(
 			meshBehaviour->SetLastUsedLOD(lodIndex, normalizedDist);
 		}
 
+		// Bind private entity data
+		if (!meshBehaviour->InitialBindBuffers(_context, lodIndex))
+		{
+			ErrMsgF("Failed to bind private buffers for instance #{}, submesh #{}!", entity_i, lodIndex);
+			return false;
+		}
+
+		// Perform draw calls
 		{
 			ZoneNamedXNC(drawSubmeshZone, "Draw Submesh", RandomUniqueColor(), true);
 			TracyD3D11NamedZoneXC(_tracyD3D11Context, drawSubmeshD3D11Zone, "Draw Submesh", RandomUniqueColor(), true);

@@ -424,11 +424,8 @@ bool Behaviour::InitialRenderUI()
 	return RenderUI();
 }
 #endif
-bool Behaviour::InitialBindBuffers(ID3D11DeviceContext *context)
+bool Behaviour::InitialBindBuffers(ID3D11DeviceContext *context, UINT submeshIndex)
 {
-	if (!IsEnabled())
-		return true;
-
 #ifdef DEBUG_BUILD
 	if (!_isInitialized)
 	{
@@ -439,7 +436,7 @@ bool Behaviour::InitialBindBuffers(ID3D11DeviceContext *context)
 
 	ZoneScopedXC(RandomUniqueColor());
 
-	return BindBuffers(context);
+	return BindBuffers(context, submeshIndex);
 }
 
 bool Behaviour::InitialOnDebugSelect()
@@ -509,7 +506,7 @@ bool Behaviour::Render(RenderQueuer &queuer, const RendererInfo &rendererInfo) {
 #ifdef USE_IMGUI
 bool Behaviour::RenderUI() { return true; }
 #endif
-bool Behaviour::BindBuffers(ID3D11DeviceContext *context) { return true; }
+bool Behaviour::BindBuffers(ID3D11DeviceContext *context, UINT submeshIndex) { return true; }
 
 void Behaviour::OnEnable() { }
 void Behaviour::OnDisable() { }

@@ -86,7 +86,7 @@ namespace WellEngine
 	#endif
 
 		// BindBuffers runs before drawcalls pertaining to the Entity are performed.
-		[[nodiscard]] bool BindBuffers(ID3D11DeviceContext *context) override;
+		[[nodiscard]] bool BindBuffers(ID3D11DeviceContext *context, UINT submeshIndex) override;
 
 		// OnDirty runs when the Entity's transform is modified.
 		void OnDirty() override;

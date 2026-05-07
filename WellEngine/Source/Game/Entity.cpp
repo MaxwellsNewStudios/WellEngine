@@ -2257,23 +2257,6 @@ bool Entity::InitialRenderUI()
 }
 #endif
 
-bool Entity::InitialBindBuffers(ID3D11DeviceContext *context)
-{
-	ID3D11Buffer *const wmBuffer = _transform.GetConstantBuffer();
-	GetScene()->GetContext()->VSSetConstantBuffers(0, 1, &wmBuffer);
-
-	for (auto &behaviour : _behaviours)
-	{
-		if (!behaviour.get()->InitialBindBuffers(context))
-		{
-			ErrMsg("Failed to bind behaviour buffers!");
-			return false;
-		}
-	}
-
-	return true;
-}
-
 bool Entity::InitialOnDebugSelect()
 {
 	if (!_isInitialized)
