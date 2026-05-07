@@ -40,7 +40,6 @@ namespace ContentManager::AssetData
 		std::string			name;
 		int					parentIndex = -1;	// -1: root
 		DirectX::XMFLOAT4X4 offsetMat;			// Mesh-space to bone-space at bind pose
-		DirectX::XMFLOAT4X4 boneTrans;			// Computed each frame
 	};
 
 	struct SkinnedVertex

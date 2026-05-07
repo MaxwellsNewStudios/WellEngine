@@ -153,7 +153,7 @@ bool B_Mesh::Render(RenderQueuer &queuer, const RendererInfo &rendererInfo)
 		return true;
 
 	const RenderQueueEntry entry = {
-		ResourceGroup(_meshID, _material, _castShadows, _isOverlay, _shadowsOnly, _blendStateID),
+		GetResourceGroup(),
 		RenderInstance(dynamic_cast<Behaviour *>(this), sizeof(B_Mesh))
 	};
 
@@ -2285,7 +2285,15 @@ float B_Mesh::GetAlphaCutoff() const
 {
 	return _alphaCutoff;
 }
-FaceCullingType WellEngine::B_Mesh::GetCullMode() const
+bool B_Mesh::GetTransparent() const
+{
+	return _isTransparent;
+}
+bool B_Mesh::GetCastShadows() const
+{
+	return _castShadows;
+}
+FaceCullingType B_Mesh::GetCullMode() const
 {
 	return _cullMode;
 }

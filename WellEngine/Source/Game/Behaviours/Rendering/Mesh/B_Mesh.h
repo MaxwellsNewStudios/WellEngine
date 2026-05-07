@@ -7,7 +7,7 @@
 
 namespace WellEngine
 {
-	class [[register_behaviour]] B_Mesh final : public Behaviour, public IRefTarget<B_Mesh>
+	class [[register_behaviour]] B_Mesh : public Behaviour, public IRefTarget<B_Mesh>
 	{
 	public:
 		std::string_view GetName() const override { return "Mesh"; }
@@ -91,6 +91,11 @@ namespace WellEngine
 		// OnDirty runs when the Entity's transform is modified.
 		void OnDirty() override;
 
+		ResourceGroup GetResourceGroup() const
+		{
+			return ResourceGroup(_meshID, _material, _castShadows, _isOverlay, _shadowsOnly, _blendStateID);
+		}
+
 	public:
 		B_Mesh() = default;
 		B_Mesh(const dx::BoundingOrientedBox &bounds, bool isTransparent = false, bool castShadows = true, bool isOverlay = false) : 
@@ -99,7 +104,7 @@ namespace WellEngine
 			_bounds(bounds), _meshID(meshID), _material(material), _isTransparent(isTransparent), _castShadows(castShadows), _isOverlay(isOverlay) {}
 		~B_Mesh() = default;
 
-		void StoreBounds(dx::BoundingOrientedBox &meshBounds);
+		virtual void StoreBounds(dx::BoundingOrientedBox &meshBounds);
 
 		void SetMeshID(UINT meshID, bool updateBounds = false);
 		void SetBlendStateID(UINT blendStateID);
@@ -116,6 +121,8 @@ namespace WellEngine
 		[[nodiscard]] UINT GetMeshID() const;
 		[[nodiscard]] UINT GetBlendStateID() const;
 		[[nodiscard]] const Material *GetMaterial() const;
+		[[nodiscard]] bool GetTransparent() const;
+		[[nodiscard]] bool GetCastShadows() const;
 		[[nodiscard]] const dx::XMFLOAT4 &GetColor() const;
 		[[nodiscard]] float GetAlphaCutoff() const;
 		[[nodiscard]] FaceCullingType GetCullMode() const;
