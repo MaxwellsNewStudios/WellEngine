@@ -1495,10 +1495,14 @@ bool Content::RenderFileBrowserUI(ID3D11Device *device, ID3D11DeviceContext *con
 
 	{
 		// HACK
+		
+		ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 0.8f, 0.0f, 1.0f));
 		ImGui::TextWrapped(
 			"File browser UI is currently under development. "
 			"Until a better system is in place, a simple system for registering assets is exposed."
 		);
+		ImGui::PopStyleColor();
+		ImGui::Spacing();
 
 		static std::string newAssetPath;
 
