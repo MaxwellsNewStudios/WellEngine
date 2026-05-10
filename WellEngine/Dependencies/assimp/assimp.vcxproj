@@ -112,7 +112,7 @@
 
 cmake CMakeLists.txt
 
-cmake --build .</Command>
+cmake --build . --config Debug</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -133,7 +133,7 @@ cmake --build .</Command>
 
 cmake CMakeLists.txt
 
-cmake --build .</Command>
+cmake --build . --config Release</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
