@@ -1,0 +1,10 @@
+# CMake generation dependency list for this directory.
+C:/Program Files/CMake/share/cmake-4.0/Modules/CheckCSourceCompiles.cmake
+C:/Program Files/CMake/share/cmake-4.0/Modules/CheckFunctionExists.cmake
+C:/Program Files/CMake/share/cmake-4.0/Modules/CheckIncludeFile.cmake
+C:/Program Files/CMake/share/cmake-4.0/Modules/CheckIncludeFileCXX.cmake
+C:/Program Files/CMake/share/cmake-4.0/Modules/CheckTypeSize.cmake
+C:/Program Files/CMake/share/cmake-4.0/Modules/Internal/CheckSourceCompiles.cmake
+C:/Users/edvin/Desktop/Projects/WellEngine/WellEngine/Dependencies/assimp/assimp/contrib/zlib/CMakeLists.txt
+C:/Users/edvin/Desktop/Projects/WellEngine/WellEngine/Dependencies/assimp/assimp/contrib/zlib/zconf.h.cmakein
+C:/Users/edvin/Desktop/Projects/WellEngine/WellEngine/Dependencies/assimp/assimp/contrib/zlib/zlib.pc.cmakein
