@@ -102,7 +102,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>PROJ_DIR=R"($(ProjectDir))";SOLUTION_DIR=R"($(SolutionDir))";TO_SOLUTION_PATH=R"(..\)";_DEBUG;_CONSOLE;%(PreprocessorDefinitions);%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir);$(ProjectDir);$(ProjectDir)include\;$(SolutionDir)WellEngine\Dependencies\assimp\include\;$(SolutionDir)WellEngine\Dependencies\rapidjson\include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir);$(ProjectDir);$(ProjectDir)include\;$(SolutionDir)WellEngine\Dependencies\assimp\assimp\include\;$(SolutionDir)WellEngine\Dependencies\rapidjson\include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <UseStandardPreprocessor>true</UseStandardPreprocessor>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <LanguageStandard>stdcpp20</LanguageStandard>
@@ -120,7 +120,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>PROJ_DIR=R"($(ProjectDir))";SOLUTION_DIR=R"($(SolutionDir))";TO_SOLUTION_PATH=R"(..\)";NDEBUG;_CONSOLE;%(PreprocessorDefinitions);%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir);$(ProjectDir);$(ProjectDir)include\;$(SolutionDir)WellEngine\Dependencies\assimp\include\;$(SolutionDir)WellEngine\Dependencies\rapidjson\include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir);$(ProjectDir);$(ProjectDir)include\;$(SolutionDir)WellEngine\Dependencies\assimp\assimp\include\;$(SolutionDir)WellEngine\Dependencies\rapidjson\include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <UseStandardPreprocessor>true</UseStandardPreprocessor>
       <StringPooling>true</StringPooling>
       <EnableParallelCodeGeneration>true</EnableParallelCodeGeneration>
@@ -146,8 +146,8 @@
     <ClInclude Include="include\ContentManager\Registry\RegistryAssetFileManager.h" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\WellEngine\Dependencies\assimp\code\assimp.vcxproj">
-      <Project>{3cfaed80-c331-3d80-b9fb-bedf6c9d7345}</Project>
+    <ProjectReference Include="..\WellEngine\Dependencies\assimp\assimp.vcxproj">
+      <Project>{3582efdb-bfe3-44cd-85e3-7149a63c8996}</Project>
     </ProjectReference>
     <ProjectReference Include="..\WellEngine\Dependencies\rapidjson\rapidjson.vcxproj">
       <Project>{5e296aeb-0b0f-4c5f-b77a-54354af1c7b0}</Project>
