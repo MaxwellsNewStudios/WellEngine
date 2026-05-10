@@ -19,7 +19,7 @@ void Registry::RegisterAsset(const std::string &assetPath, const RegistryData &r
 	if (relRegistryPath.empty())
 	{
 		relRegistryPath = relAssetPath;
-		relRegistryPath += "." WE_E_REGISTRY;
+		relRegistryPath += "." + registry.header.alias + "." WE_E_REGISTRY;
 	}
 
 	fs::path relCompiledPath = fs::relative(registry.header.compiledPath, WE_D_COMPILED);

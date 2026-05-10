@@ -1492,6 +1492,110 @@ bool Content::RenderFileBrowserUI(ID3D11Device *device, ID3D11DeviceContext *con
 
 
 
+
+	{
+		// HACK
+		ImGui::TextWrapped(
+			"File browser UI is currently under development. "
+			"Until a better system is in place, a simple system for registering assets is exposed."
+		);
+
+		static std::string newAssetPath;
+
+		if (ImGui::Button("Register New Asset"))
+		{
+			// Open a file dialog to select an asset to register
+			const char *filterPatterns[] = { "*.obj", "*.png", "*.jpg", "*.dds" };
+			const char *selectedFiles = tinyfd_openFileDialog(
+				"Select Asset",
+				WE_DF(WE_D_ASSET, "").c_str(),
+				4,
+				filterPatterns,
+				"Supported Files",
+				0
+			);
+
+			newAssetPath = selectedFiles ? selectedFiles : "";
+
+			ImGui::OpenPopup("RegisterAssetPopup");
+		}
+
+		if (ImGui::BeginPopup("RegisterAssetPopup"))
+		{
+			ImGui::TextWrapped("Selected File: %s", newAssetPath.c_str());
+
+			static char aliasBuffer[256] = "";
+			ImGui::InputText("Alias", aliasBuffer, sizeof(aliasBuffer));
+
+			static AssetType type = AssetType::None;
+
+			const char *typeNames[] = { "None", "Mesh", "Texture", "Cubemap" };
+			int typeIdx = static_cast<int>(type);
+			if (ImGui::Combo("Asset Type", &typeIdx, typeNames, 4))
+				type = static_cast<AssetType>(typeIdx);
+
+			if (type == AssetType::Texture || type == AssetType::Cubemap)
+			{
+				static bool mipmapped = false;
+				ImGui::Checkbox("Mipmapped", &mipmapped);
+
+				static int downsample = 0;
+				ImGui::DragInt("Downsample Levels", &downsample, 0.05f, 0, 10);
+
+				static DXGI_FORMAT format = DXGI_FORMAT_UNKNOWN;
+
+				if (ImGui::BeginCombo("Format", D3D11FormatData::GetName(format).c_str()))
+				{
+					int formatCount = 0;
+					const DXGI_FORMAT *formatList = D3D11FormatData::GetCommonLinearList(&formatCount);
+
+					for (int i = 1; i < formatCount; i++)
+					{
+						const std::string &formatName = D3D11FormatData::GetName(formatList[i]);
+						if (ImGui::Selectable(formatName.c_str(), format == formatList[i]))
+							format = formatList[i];
+					}
+
+					ImGui::EndCombo();
+				}
+
+				if (ImGui::Button("Register"))
+				{
+					RegistryData newReg;
+					newReg.header.assetType = type;
+					newReg.header.alias = aliasBuffer;
+					newReg.header.assetPath = fs::relative(newAssetPath, WE_D_ASSET).string();
+
+					AssetPropertiesTexture texProps{};
+					texProps.mipmapped = mipmapped;
+					texProps.downsample = downsample;
+					texProps.format = format;
+
+					newReg.properties.resize(sizeof(AssetPropertiesTexture));
+					*reinterpret_cast<AssetPropertiesTexture *>(newReg.properties.data()) = texProps;
+
+					RegisterAsset(newAssetPath, newReg);
+					ImGui::CloseCurrentPopup();
+				}
+			}
+			else if (type == AssetType::Mesh)
+			{
+				if (ImGui::Button("Register"))
+				{
+					RegistryData newReg;
+					newReg.header.assetType = type;
+					newReg.header.alias = aliasBuffer;
+					newReg.header.assetPath = fs::relative(newAssetPath, WE_D_ASSET).string();
+
+					RegisterAsset(newAssetPath, newReg);
+					ImGui::CloseCurrentPopup();
+				}
+			}
+
+			ImGui::EndPopup();
+		}
+	}
+
 	/*
 	// Selects an asset and populates the edit state from its registry data
 	auto selectAsset = [&](const RegistryData &data) {
