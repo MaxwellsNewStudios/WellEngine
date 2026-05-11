@@ -1509,17 +1509,17 @@ bool Content::RenderFileBrowserUI(ID3D11Device *device, ID3D11DeviceContext *con
 		if (ImGui::Button("Register New Asset"))
 		{
 			// Open a file dialog to select an asset to register
-			const char *filterPatterns[] = { "*.obj", "*.png", "*.jpg", "*.dds" };
-			const char *selectedFiles = tinyfd_openFileDialog(
+			const char *filterPatterns[] = { "*.obj", "*.png", "*.jpg", "*.dds", "*.hlsl" };
+			const char *selectedFile = tinyfd_openFileDialog(
 				"Select Asset",
-				WE_DF(WE_D_ASSET, "").c_str(),
-				4,
+				TO_SOLUTION_PATH,
+				sizeof(filterPatterns) / sizeof(filterPatterns[0]),
 				filterPatterns,
-				"Supported Files",
+				"Asset Types",
 				0
 			);
 
-			newAssetPath = selectedFiles ? selectedFiles : "";
+			newAssetPath = selectedFile ? selectedFile : "";
 
 			ImGui::OpenPopup("RegisterAssetPopup");
 		}
@@ -1533,10 +1533,17 @@ bool Content::RenderFileBrowserUI(ID3D11Device *device, ID3D11DeviceContext *con
 
 			static AssetType type = AssetType::None;
 
-			const char *typeNames[] = { "None", "Mesh", "Texture", "Cubemap" };
+			const char *typeNames[] = { "None", "Mesh", "Texture", "Cubemap", "Shader" };
 			int typeIdx = static_cast<int>(type);
-			if (ImGui::Combo("Asset Type", &typeIdx, typeNames, 4))
+			if (ImGui::Combo("Asset Type", &typeIdx, typeNames, sizeof(typeNames) / sizeof(typeNames[0])))
 				type = static_cast<AssetType>(typeIdx);
+
+			bool valid = false;
+
+			RegistryData newReg;
+			newReg.header.assetType = type;
+			newReg.header.alias = aliasBuffer;
+			newReg.header.assetPath = fs::relative(newAssetPath, WE_D_ASSET).string();
 
 			if (type == AssetType::Texture || type == AssetType::Cubemap)
 			{
@@ -1563,38 +1570,55 @@ bool Content::RenderFileBrowserUI(ID3D11Device *device, ID3D11DeviceContext *con
 					ImGui::EndCombo();
 				}
 
-				if (ImGui::Button("Register"))
-				{
-					RegistryData newReg;
-					newReg.header.assetType = type;
-					newReg.header.alias = aliasBuffer;
-					newReg.header.assetPath = fs::relative(newAssetPath, WE_D_ASSET).string();
+				AssetPropertiesTexture texProps{};
+				texProps.mipmapped = mipmapped;
+				texProps.downsample = downsample;
+				texProps.format = format;
 
-					AssetPropertiesTexture texProps{};
-					texProps.mipmapped = mipmapped;
-					texProps.downsample = downsample;
-					texProps.format = format;
+				newReg.properties.resize(sizeof(AssetPropertiesTexture));
+				*reinterpret_cast<AssetPropertiesTexture *>(newReg.properties.data()) = texProps;
 
-					newReg.properties.resize(sizeof(AssetPropertiesTexture));
-					*reinterpret_cast<AssetPropertiesTexture *>(newReg.properties.data()) = texProps;
-
-					RegisterAsset(newAssetPath, newReg);
-					ImGui::CloseCurrentPopup();
-				}
+				valid = true;
 			}
 			else if (type == AssetType::Mesh)
 			{
-				if (ImGui::Button("Register"))
-				{
-					RegistryData newReg;
-					newReg.header.assetType = type;
-					newReg.header.alias = aliasBuffer;
-					newReg.header.assetPath = fs::relative(newAssetPath, WE_D_ASSET).string();
-
-					RegisterAsset(newAssetPath, newReg);
-					ImGui::CloseCurrentPopup();
-				}
+				valid = true;
 			}
+			else if (type == AssetType::Shader)
+			{
+				static ShaderType shaderType = ShaderType::VERTEX_SHADER;
+
+				if (ImGui::BeginCombo("Type", ShaderTypeUtils::ShaderTypeToString(shaderType)))
+				{
+					int typeCount = 6;
+					for (int i = 1; i < typeCount; i++)
+					{
+						const std::string &typeName = ShaderTypeUtils::ShaderTypeToString(static_cast<ShaderType>(i));
+						if (ImGui::Selectable(typeName.c_str(), shaderType == static_cast<ShaderType>(i)))
+							shaderType = static_cast<ShaderType>(i);
+					}
+
+					ImGui::EndCombo();
+				}
+
+				AssetPropertiesShader shaderProps{};
+				shaderProps.type = shaderType;
+
+				newReg.properties.resize(sizeof(AssetPropertiesShader));
+				*reinterpret_cast<AssetPropertiesShader *>(newReg.properties.data()) = shaderProps;
+
+				valid = true;
+			}
+
+			ImGui::BeginDisabled(!valid || aliasBuffer[0] == '\0' || type == AssetType::None);
+
+			if (ImGui::Button("Register"))
+			{
+				RegisterAsset(newAssetPath, newReg);
+				ImGui::CloseCurrentPopup();
+			}
+
+			ImGui::EndDisabled();
 
 			ImGui::EndPopup();
 		}
