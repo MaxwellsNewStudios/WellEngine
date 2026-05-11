@@ -5,12 +5,20 @@
 
 assimp/**/**.vcxproj**
 assimp/**/**.Sln
+assimp/**/**.slnx
 
 assimp/**/CMakeCache.txt
 assimp/**/cmake_*.cmake
 assimp/**/CMakeFiles
 
-**/Debug
-**/Release
+assimp/**/Debug
+assimp/**/Release
+
+assimp/test/unit.dir
+assimp/test/INSTALL.dir
 
 assimp/contrib/zlib/CTestTestfile.cmake
+assimp/contrib/zlib/ALL_BUILD.dir
+assimp/contrib/zlib/zlibstatic.dir
+assimp/contrib/zlib/INSTALL.dir
+assimp/contrib/zlib/Debug

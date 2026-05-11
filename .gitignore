@@ -107,7 +107,7 @@ StyleCopReport.xml
 # Ignore compiled content file
 */Content/CompiledContent
 
-**/Assets/_Compiled/**
+**/Internal/Compiled/**
 !**/Assets/Meshes/**
 !**/Assets/Meshes/**
 !**/Assets/Textures/**
