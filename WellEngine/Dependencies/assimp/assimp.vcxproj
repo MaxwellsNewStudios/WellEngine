@@ -109,7 +109,7 @@
     </Link>
     <PreBuildEvent>
       <Command>cd $(ProjectDir)assimp
-cmake CMakeLists.txt -DBUILD_SHARED_LIBS=ON -DASSIMP_BUILD_ZLIB=ON
+cmake CMakeLists.txt -DBUILD_SHARED_LIBS=ON -DASSIMP_BUILD_ZLIB=ON -DASSIMP_BUILD_TESTS=OFF -DASSIMP_WARNINGS_AS_ERRORS=OFF -DUSE_STATIC_CRT=ON -DCMAKE_MSVC_RUNTIME_LIBRARY=MultiThreaded
 cmake --build . --config Debug</Command>
     </PreBuildEvent>
     <PostBuildEvent>
@@ -134,7 +134,7 @@ xcopy /Y /D "$(ProjectDir)assimp\lib\$(Configuration)\assimp-mtd.exp" "$(TargetD
     </Link>
     <PreBuildEvent>
       <Command>cd $(ProjectDir)assimp
-cmake CMakeLists.txt -DBUILD_SHARED_LIBS=ON -DASSIMP_BUILD_ZLIB=ON
+cmake CMakeLists.txt -DBUILD_SHARED_LIBS=ON -DASSIMP_BUILD_ZLIB=ON -DASSIMP_BUILD_TESTS=OFF -DASSIMP_WARNINGS_AS_ERRORS=OFF -DUSE_STATIC_CRT=ON -DCMAKE_MSVC_RUNTIME_LIBRARY=MultiThreaded
 cmake --build . --config Release</Command>
     </PreBuildEvent>
     <PostBuildEvent>
