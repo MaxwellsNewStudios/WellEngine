@@ -290,7 +290,26 @@ bool Graphics::RenderUI(TimeUtils &time)
 		}
 	}
 
-	ImGui::Checkbox("Wireframe Mode", &_wireframe);
+	std::string wireframeModes[] = { "Geometry", "Geometry + Wireframe", "Wireframe"};
+	if (ImGui::Button((wireframeModes[_wireframeMode] + "##WireframeModeButton").c_str()))
+	{
+		_wireframeMode++;
+		if (_wireframeMode > 2)
+			_wireframeMode = 0;
+	}
+
+	if (_wireframeMode > 0)
+	{
+		ImGui::SameLine();
+		if (ImGui::ColorEdit4("Color##WireframeColor", &_wireframeColor.x, ImGuiColorEditFlags_NoInputs))
+		{
+			if (!_wireframeColorBuffer.UpdateBuffer(_context, &_wireframeColor))
+			{
+				ErrMsg("Failed to update wireframe color buffer!");
+				return false;
+			}
+		}
+	}
 
 	ImGui::Checkbox("Transparency", &_renderTransparency);
 
@@ -1199,6 +1218,120 @@ bool Graphics::RenderUI(TimeUtils &time)
 			{
 				_shadowRasterizer.Reset();
 				_shadowRasterizer = tempRasterizer;
+			}
+		}
+
+		if (invalidPreset)
+		{
+			ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 0.0f, 0.0f, 1.0f));
+			ImGui::Text("Invalid Preset!");
+			ImGui::PopStyleColor();
+		}
+
+		ImGui::TreePop();
+	}
+
+	if (ImGui::TreeNode("Wireframe Rasterization"))
+	{
+		bool hasChanged = false;
+
+		int fillMode = (int)_wireframeRasterizerDesc.FillMode - 2;
+		int cullMode = (int)_wireframeRasterizerDesc.CullMode - 1;
+		bool frontCounterClockwise = _wireframeRasterizerDesc.FrontCounterClockwise;
+		int depthBias = _wireframeRasterizerDesc.DepthBias;
+		float depthBiasClamp = _wireframeRasterizerDesc.DepthBiasClamp;
+		float slopeScaledDepthBias = _wireframeRasterizerDesc.SlopeScaledDepthBias;
+		bool depthClipEnable = _wireframeRasterizerDesc.DepthClipEnable;
+		bool scissorEnable = _wireframeRasterizerDesc.ScissorEnable;
+		bool multisampleEnable = _wireframeRasterizerDesc.MultisampleEnable;
+		bool antialiasedLineEnable = _wireframeRasterizerDesc.AntialiasedLineEnable;
+
+		if (ImGui::Combo("Fill Mode", &fillMode, "Wireframe\0Solid\0"))
+		{
+			_wireframeRasterizerDesc.FillMode = (D3D11_FILL_MODE)(fillMode + 2);
+			hasChanged = true;
+		}
+
+		if (ImGui::Combo("Cull Mode", &cullMode, "None\0Front\0Back\0"))
+		{
+			_wireframeRasterizerDesc.CullMode = (D3D11_CULL_MODE)(cullMode + 1);
+			hasChanged = true;
+		}
+
+		if (ImGui::Checkbox("Front Counter Clockwise", &frontCounterClockwise))
+		{
+			_wireframeRasterizerDesc.FrontCounterClockwise = frontCounterClockwise;
+			hasChanged = true;
+		}
+
+		if (ImGui::DragInt("Depth Bias", &depthBias, 0.01f))
+		{
+			_wireframeRasterizerDesc.DepthBias = depthBias;
+			hasChanged = true;
+		}
+		ImGuiUtils::LockMouseOnActive();
+
+		if (ImGui::DragFloat("Depth Bias Clamp", &depthBiasClamp, 0.001f))
+		{
+			_wireframeRasterizerDesc.DepthBiasClamp = depthBiasClamp;
+			hasChanged = true;
+		}
+		ImGuiUtils::LockMouseOnActive();
+
+		if (ImGui::DragFloat("Slope Scaled Depth Bias", &slopeScaledDepthBias, 0.01f))
+		{
+			_wireframeRasterizerDesc.SlopeScaledDepthBias = slopeScaledDepthBias;
+			hasChanged = true;
+		}
+		ImGuiUtils::LockMouseOnActive();
+
+		if (ImGui::Checkbox("Depth Clip", &depthClipEnable))
+		{
+			_wireframeRasterizerDesc.DepthClipEnable = depthClipEnable;
+			hasChanged = true;
+		}
+
+		if (ImGui::Checkbox("Scissor", &scissorEnable))
+		{
+			_wireframeRasterizerDesc.ScissorEnable = scissorEnable;
+			hasChanged = true;
+		}
+
+		if (ImGui::Checkbox("Multisample", &multisampleEnable))
+		{
+			_wireframeRasterizerDesc.MultisampleEnable = multisampleEnable;
+			hasChanged = true;
+		}
+
+		if (ImGui::Checkbox("Antialiased Line", &antialiasedLineEnable))
+		{
+			_wireframeRasterizerDesc.AntialiasedLineEnable = antialiasedLineEnable;
+			hasChanged = true;
+		}
+
+		ImGui::Dummy({ 0.0f, 6.0f });
+
+		static bool applyContinuously = false;
+		ImGui::Checkbox("Apply Continuously", &applyContinuously);
+
+		bool applyPreset = false;
+		if (!applyContinuously)
+		{
+			if (ImGui::Button("Apply Preset"))
+				applyPreset = true;
+		}
+
+		static bool invalidPreset = false;
+		if ((applyContinuously && hasChanged) || applyPreset)
+		{
+			ID3D11RasterizerState *tempRasterizer;
+
+			invalidPreset = FAILED(_device->CreateRasterizerState(&_wireframeRasterizerDesc, &tempRasterizer));
+
+			if (!invalidPreset)
+			{
+				_wireframeOverlayRasterizer.Reset();
+				_wireframeOverlayRasterizer = tempRasterizer;
 			}
 		}
 

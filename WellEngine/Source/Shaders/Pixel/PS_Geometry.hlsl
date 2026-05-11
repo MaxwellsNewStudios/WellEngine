@@ -52,7 +52,7 @@ PixelShaderOutput main(PixelShaderInput input)
 		}
 	}
 	
-    output.depth = length(input.world_position.xyz - cam_position.xyz);
+	output.depth = length(pos - cam_position.xyz);
     
 	float3 surfaceNormal;
 	if (sampleNormal)

@@ -72,7 +72,7 @@ static bool CreateDepthStencilStates(ID3D11Device *device,
 
 	depthStencilDesc.DepthEnable = true;
 	depthStencilDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;
-	depthStencilDesc.DepthFunc = D3D11_COMPARISON_LESS_EQUAL;
+	depthStencilDesc.DepthFunc = D3D11_COMPARISON_GREATER_EQUAL;
 	depthStencilDesc.StencilEnable = false;
 	depthStencilDesc.StencilReadMask = D3D11_DEFAULT_STENCIL_READ_MASK;
 	depthStencilDesc.StencilWriteMask = D3D11_DEFAULT_STENCIL_WRITE_MASK;
@@ -238,6 +238,12 @@ bool Graphics::Setup(
 			ErrMsg("Failed to initialize outline settings buffer!");
 			return false;
 		}
+
+		if (!_wireframeColorBuffer.Initialize(device, sizeof(dx::XMFLOAT4A), &_wireframeColor))
+		{
+			ErrMsg("Failed to initialize wireframe color buffer!");
+			return false;
+		}
 #endif
 	}
 
@@ -306,11 +312,11 @@ bool Graphics::Setup(
 
 		rasterizerDesc.FillMode = D3D11_FILL_WIREFRAME;
 		rasterizerDesc.CullMode = D3D11_CULL_BACK;
-		rasterizerDesc.DepthBias = -100;
-		rasterizerDesc.DepthBiasClamp = -1.00f;
-		rasterizerDesc.SlopeScaledDepthBias = 0.0f;
+		rasterizerDesc.DepthBias = 0;
+		rasterizerDesc.DepthBiasClamp = 0.0f;
+		rasterizerDesc.SlopeScaledDepthBias = 1.0f;
 		rasterizerDesc.DepthClipEnable = false;
-		rasterizerDesc.AntialiasedLineEnable = false;
+		rasterizerDesc.AntialiasedLineEnable = true;
 
 		if (FAILED(device->CreateRasterizerState(&rasterizerDesc, &_wireframeOverlayRasterizer)))
 		{
@@ -318,6 +324,9 @@ bool Graphics::Setup(
 			return false;
 		}
 
+#ifdef USE_IMGUI
+		std::memcpy(&_wireframeRasterizerDesc, &rasterizerDesc, sizeof(D3D11_RASTERIZER_DESC));
+#endif
 
 		rasterizerDesc.FillMode = D3D11_FILL_SOLID;
 		rasterizerDesc.CullMode = D3D11_CULL_BACK; // D3D11_CULL_NONE
@@ -336,6 +345,7 @@ bool Graphics::Setup(
 #ifdef USE_IMGUI
 		std::memcpy(&_shadowRasterizerDesc, &rasterizerDesc, sizeof(D3D11_RASTERIZER_DESC));
 #endif
+
 	}
 
 #ifdef USE_IMGUI
@@ -494,6 +504,7 @@ void Graphics::Shutdown()
 	_outlineGaussianWeightsBuffer.Reset();
 	_outlineRT.Reset();
 	_intermediateOutlineRT.Reset();
+	_wireframeColorBuffer.Reset();
 #endif
 
 #ifdef USE_IMGUI
@@ -818,7 +829,6 @@ bool Graphics::RefreshOutlineBuffers()
 	_viewportOutline = _viewportSceneView;
 	_viewportOutline.Width = std::ceil(_viewportOutline.Width * _outlineResolutionScale);
 	_viewportOutline.Height = std::ceil(_viewportOutline.Height * _outlineResolutionScale);
-
 
 	if (!_outlineRT.Initialize(_device, (UINT)_viewportOutline.Width, (UINT)_viewportOutline.Height, DXGI_FORMAT_R8_UNORM, true, true))
 	{

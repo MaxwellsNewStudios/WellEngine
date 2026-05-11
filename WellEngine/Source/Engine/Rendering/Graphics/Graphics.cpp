@@ -249,6 +249,15 @@ bool Graphics::RenderToTarget(
 			ErrMsg("Failed to render opaque!");
 			return false;
 		}
+
+		if (_wireframeMode == 1)
+		{
+			if (!RenderWireframe(_sceneRT.GetRTV(), targetDepthRTV, targetDSV, targetViewport))
+			{
+				ErrMsg("Failed to render wireframe!");
+				return false;
+			}
+		}
 		
 		if (_renderTransparency)
 		{
@@ -1264,7 +1273,7 @@ bool Graphics::RenderOutlinedGeometry()
 
 			// Bind shared geometry resources
 			FaceCullingType cullMode = meshBehaviour->GetCullMode();
-			SetRasterizerState(_wireframe ?
+			SetRasterizerState(_wireframeMode == 2 ?
 				GetWireframeRasterizerByCullMode(cullMode) :
 				GetRasterizerByCullMode(cullMode)
 			);
@@ -1480,7 +1489,7 @@ bool Graphics::RenderScreenEffect(UINT psID)
 	return true;
 }
 
-bool Graphics::RenderGeometry(bool overlayStage, bool skipPixelShader)
+bool Graphics::RenderGeometry(bool overlayStage, bool skipPixelShader, bool wireframeMode)
 {
 	ZoneScopedC(RandomUniqueColor());
 	TracyD3D11ZoneC(_tracyD3D11Context, "Geometry", RandomUniqueColor());
@@ -1558,11 +1567,14 @@ bool Graphics::RenderGeometry(bool overlayStage, bool skipPixelShader)
 		TracyD3D11NamedZoneC(_tracyD3D11Context, renderMeshD3D11Zone, "Draw Entity", RandomUniqueColor(), true);
 
 		// Bind shared geometry resources
-		FaceCullingType cullMode = meshBehaviour->GetCullMode();
-		SetRasterizerState(_wireframe ?
-			GetWireframeRasterizerByCullMode(cullMode) :
-			GetRasterizerByCullMode(cullMode)
-		);
+		if (!wireframeMode)
+		{
+			FaceCullingType cullMode = meshBehaviour->GetCullMode();
+			SetRasterizerState(_wireframeMode == 2 ?
+				GetWireframeRasterizerByCullMode(cullMode) :
+				GetRasterizerByCullMode(cullMode)
+			);
+		}
 
 		if (_currMeshID != resources.meshID)
 		{
@@ -1880,7 +1892,7 @@ bool Graphics::RenderOpaque(
 
 	_context->RSSetViewports(1, targetViewport);
 	_context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	SetRasterizerState(_wireframe ? GetWireframeRasterizerDefault() : GetRasterizerDefault());
+	SetRasterizerState(_wireframeMode == 2 ? GetWireframeRasterizerDefault() : GetRasterizerDefault());
 
 	// Bind camera data
 	if (!_currViewCamera->BindViewBuffers())
@@ -1979,6 +1991,80 @@ bool Graphics::RenderOpaque(
 	return true;
 }
 
+bool Graphics::RenderWireframe(
+	ID3D11RenderTargetView *targetSceneRTV, 
+	ID3D11RenderTargetView *targetDepthRTV, 
+	ID3D11DepthStencilView *targetDSV, 
+	const D3D11_VIEWPORT *targetViewport, 
+	bool overlayStage)
+{
+	ZoneScopedC(RandomUniqueColor());
+	TracyD3D11ZoneC(_tracyD3D11Context, "Wireframe", RandomUniqueColor());
+
+	_context->OMSetDepthStencilState(_wdss.Get(), 0);
+
+	ID3D11RenderTargetView *rtvs[3] = {
+		targetSceneRTV,
+		targetDepthRTV,
+		_emissionRT.GetRTV()
+	};
+	_context->OMSetRenderTargets(3, rtvs, targetDSV);
+
+	_context->RSSetViewports(1, targetViewport);
+	_context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	SetRasterizerState(_wireframeOverlayRasterizer.Get());
+
+	// Bind camera data
+	if (!_currViewCamera->BindViewBuffers())
+	{
+		ErrMsg("Failed to bind view camera buffers!");
+		return false;
+	}
+
+	// Bind global light data
+	ID3D11Buffer *const wireframeColorBuffer = _wireframeColorBuffer.GetBuffer();
+	_context->PSSetConstantBuffers(0, 1, &wireframeColorBuffer);
+
+	// Bind camera lighting data
+	if (!_currViewCamera->BindPSLightingBuffers())
+	{
+		ErrMsg("Failed to bind camera buffers!");
+		return false;
+	}
+
+	// Bind geometry stage resources
+	static UINT geometryInputLayoutID = _content->GetInputLayoutID("Fallback");
+	_context->IASetInputLayout(_content->GetInputLayout(geometryInputLayoutID)->GetInputLayout());
+	_currInputLayoutID = geometryInputLayoutID;
+
+	static UINT wireframePsID = _content->GetShaderID("PS_SolidColor");
+
+	if (!_content->GetShader(wireframePsID)->BindShader(_context))
+	{
+		ErrMsg("Failed to bind wireframe pixel shader!");
+		return false;
+	}
+	_currPsID = wireframePsID;
+
+	if (!RenderGeometry(overlayStage, true, true))
+	{
+		ErrMsg("Failed to render geometry!");
+		return false;
+	}
+
+	{
+		TracyD3D11NamedZoneXC(_tracyD3D11Context, unbindBuffersD3D11Zone, "Unbind Buffers", RandomUniqueColor(), true);
+
+		// Unbind render targets
+		static ID3D11RenderTargetView *const nullRTVS[3] = { };
+		_context->OMSetRenderTargets(3, nullRTVS, nullptr);
+	}
+
+	_context->OMSetDepthStencilState(GetCurrentDepthStencilState(), 0);
+
+	return true;
+}
+
 bool Graphics::RenderCustom(
 	ID3D11RenderTargetView *targetSceneRTV,
 	ID3D11RenderTargetView *targetDepthRTV,
@@ -2012,7 +2098,7 @@ bool Graphics::RenderCustom(
 
 	_context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	_context->RSSetViewports(1, &_viewportSceneView);
-	SetRasterizerState(_wireframe ? GetWireframeRasterizerDefault() : GetRasterizerDefault());
+	SetRasterizerState(_wireframeMode == 2 ? GetWireframeRasterizerDefault() : GetRasterizerDefault());
 
 	// Bind camera data
 	if (!_currViewCamera->BindViewBuffers())
@@ -2131,7 +2217,7 @@ bool Graphics::RenderTransparency(
 	_context->OMSetRenderTargets(1, &targetRTV, targetDSV);
 	_context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	_context->RSSetViewports(1, targetViewport);
-	SetRasterizerState(_wireframe ? GetWireframeRasterizerDefault() : GetRasterizerDefault());
+	SetRasterizerState(_wireframeMode == 2 ? GetWireframeRasterizerDefault() : GetRasterizerDefault());
 
 	// Bind camera data
 	if (!_currViewCamera->BindTransparentBuffers())
@@ -2257,7 +2343,7 @@ bool Graphics::RenderTransparency(
 
 		// Bind shared geometry resources
 		FaceCullingType cullMode = meshBehaviour->GetCullMode();
-		SetRasterizerState(_wireframe ?
+		SetRasterizerState(_wireframeMode == 2 ?
 			GetWireframeRasterizerByCullMode(cullMode) :
 			GetRasterizerByCullMode(cullMode)
 		);

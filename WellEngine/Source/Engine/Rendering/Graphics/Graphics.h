@@ -80,7 +80,7 @@ namespace WellEngine
 		bool _renderEmissionFX = true;
 		bool _renderDepthOfFieldFX = false;
 		bool _renderOutlineFX = true;
-		bool _wireframe = false;
+		uint8_t _wireframeMode = 0; // 0: geometry, 1: geometry + wireframe, 2: wireframe
 		uint8_t _vSync = 1;
 
 	#ifdef USE_IMGUI
@@ -166,6 +166,9 @@ namespace WellEngine
 		OutlineSettingsBuffer _outlineSettings = {};
 		ConstantBufferD3D11 _outlineSettingsBuffer;
 
+		dx::XMFLOAT4A _wireframeColor = { 1.0f, 0.0f, 1.0f, 1.0f };
+		ConstantBufferD3D11 _wireframeColorBuffer;
+
 		int _outlineBlurIterations = 2;
 		std::vector<float> _outlineGaussWeights = { 0.05f, 0.165f, 0.221f };
 		StructuredBufferD3D11 _outlineGaussianWeightsBuffer;
@@ -186,6 +189,7 @@ namespace WellEngine
 		ComPtr<ID3D11SamplerState> _sceneSampler = nullptr;
 
 		D3D11_RASTERIZER_DESC _shadowRasterizerDesc = { };
+		D3D11_RASTERIZER_DESC _wireframeRasterizerDesc = { };
 		D3D11_BLEND_DESC _transparentBlendDesc = { };
 	#endif
 
@@ -221,9 +225,12 @@ namespace WellEngine
 
 		bool RenderScreenEffect(UINT psID);
 
-		[[nodiscard]] bool RenderGeometry(bool overlayStage, bool skipPixelShader = false);
+		[[nodiscard]] bool RenderGeometry(bool overlayStage, bool skipPixelShader = false, bool wireframeMode = false);
 
 		[[nodiscard]] bool RenderOpaque(ID3D11RenderTargetView *targetSceneRTV, ID3D11RenderTargetView *targetDepthRTV, 
+			ID3D11DepthStencilView *targetDSV, const D3D11_VIEWPORT *targetViewport, bool overlayStage = false);
+
+		[[nodiscard]] bool RenderWireframe(ID3D11RenderTargetView *targetSceneRTV, ID3D11RenderTargetView *targetDepthRTV, 
 			ID3D11DepthStencilView *targetDSV, const D3D11_VIEWPORT *targetViewport, bool overlayStage = false);
 
 		[[nodiscard]] bool RenderCustom(ID3D11RenderTargetView *targetRTV, ID3D11RenderTargetView *targetDepthRTV, 
