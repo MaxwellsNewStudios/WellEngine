@@ -109,16 +109,14 @@
     </Link>
     <PreBuildEvent>
       <Command>cd $(ProjectDir)assimp
-
-cmake CMakeLists.txt
- -DBUILD_SHARED_LIBS=ON -DASSIMP_BUILD_ZLIB=ON
+cmake CMakeLists.txt -DBUILD_SHARED_LIBS=ON -DASSIMP_BUILD_ZLIB=ON
 cmake --build . --config Debug</Command>
     </PreBuildEvent>
     <PostBuildEvent>
-      <Command>xcopy /Y /D "$(ProjectDir)assimp\bin\$(Configuration)\assimp-vc143-mtd.dll" "$(TargetDir)"
-xcopy /Y /D "$(ProjectDir)assimp\bin\$(Configuration)\assimp-vc143-mtd.pdb" "$(TargetDir)"
-xcopy /Y /D "$(ProjectDir)assimp\lib\$(Configuration)\assimp-vc143-mtd.lib" "$(TargetDir)"
-xcopy /Y /D "$(ProjectDir)assimp\lib\$(Configuration)\assimp-vc143-mtd.exp" "$(TargetDir)"</Command>
+      <Command>xcopy /Y /D "$(ProjectDir)assimp\bin\$(Configuration)\assimp-mtd.dll" "$(TargetDir)"
+xcopy /Y /D "$(ProjectDir)assimp\bin\$(Configuration)\assimp-mtd.pdb" "$(TargetDir)"
+xcopy /Y /D "$(ProjectDir)assimp\lib\$(Configuration)\assimp-mtd.lib" "$(TargetDir)"
+xcopy /Y /D "$(ProjectDir)assimp\lib\$(Configuration)\assimp-mtd.exp" "$(TargetDir)"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -136,16 +134,14 @@ xcopy /Y /D "$(ProjectDir)assimp\lib\$(Configuration)\assimp-vc143-mtd.exp" "$(T
     </Link>
     <PreBuildEvent>
       <Command>cd $(ProjectDir)assimp
-
-cmake CMakeLists.txt
- -DBUILD_SHARED_LIBS=ON -DASSIMP_BUILD_ZLIB=ON
+cmake CMakeLists.txt -DBUILD_SHARED_LIBS=ON -DASSIMP_BUILD_ZLIB=ON
 cmake --build . --config Release</Command>
     </PreBuildEvent>
     <PostBuildEvent>
-      <Command>xcopy /Y /D "$(ProjectDir)assimp\bin\$(Configuration)\assimp-vc143-mt.dll" "$(TargetDir)"
-xcopy /Y /D "$(ProjectDir)assimp\bin\$(Configuration)\assimp-vc143-mt.pdb" "$(TargetDir)"
-xcopy /Y /D "$(ProjectDir)assimp\lib\$(Configuration)\assimp-vc143-mt.lib" "$(TargetDir)"
-xcopy /Y /D "$(ProjectDir)assimp\lib\$(Configuration)\assimp-vc143-mt.exp" "$(TargetDir)"</Command>
+      <Command>xcopy /Y /D "$(ProjectDir)assimp\bin\$(Configuration)\assimp-mt.dll" "$(TargetDir)"
+xcopy /Y /D "$(ProjectDir)assimp\bin\$(Configuration)\assimp-mt.pdb" "$(TargetDir)"
+xcopy /Y /D "$(ProjectDir)assimp\lib\$(Configuration)\assimp-mt.lib" "$(TargetDir)"
+xcopy /Y /D "$(ProjectDir)assimp\lib\$(Configuration)\assimp-mt.exp" "$(TargetDir)"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>

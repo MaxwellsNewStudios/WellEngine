@@ -25,13 +25,13 @@ if(WIN32)
 
 		find_path(ASSIMP_LIBRARY_DIR
 			NAMES
-				assimp-${ASSIMP_MSVC_VERSION}-mt.lib
+				assimp-mt.lib
 			HINTS
 				${ASSIMP_ROOT_DIR}/lib${ASSIMP_ARCHITECTURE}
 		)
 
-		find_library(ASSIMP_LIBRARY_RELEASE				assimp-${ASSIMP_MSVC_VERSION}-mt.lib 			PATHS ${ASSIMP_LIBRARY_DIR})
-		find_library(ASSIMP_LIBRARY_DEBUG				assimp-${ASSIMP_MSVC_VERSION}-mtd.lib			PATHS ${ASSIMP_LIBRARY_DIR})
+		find_library(ASSIMP_LIBRARY_RELEASE				assimp-mt.lib 			PATHS ${ASSIMP_LIBRARY_DIR})
+		find_library(ASSIMP_LIBRARY_DEBUG				assimp-mtd.lib			PATHS ${ASSIMP_LIBRARY_DIR})
 
 		set(ASSIMP_LIBRARY
 			optimized 	${ASSIMP_LIBRARY_RELEASE}
@@ -42,8 +42,8 @@ if(WIN32)
 
 		FUNCTION(ASSIMP_COPY_BINARIES TargetDirectory)
 			ADD_CUSTOM_TARGET(AssimpCopyBinaries
-				COMMAND ${CMAKE_COMMAND} -E copy ${ASSIMP_ROOT_DIR}/bin${ASSIMP_ARCHITECTURE}/assimp-${ASSIMP_MSVC_VERSION}-mtd.dll 	${TargetDirectory}/Debug/assimp-${ASSIMP_MSVC_VERSION}-mtd.dll
-				COMMAND ${CMAKE_COMMAND} -E copy ${ASSIMP_ROOT_DIR}/bin${ASSIMP_ARCHITECTURE}/assimp-${ASSIMP_MSVC_VERSION}-mt.dll 		${TargetDirectory}/Release/assimp-${ASSIMP_MSVC_VERSION}-mt.dll
+				COMMAND ${CMAKE_COMMAND} -E copy ${ASSIMP_ROOT_DIR}/bin${ASSIMP_ARCHITECTURE}/assimp-mtd.dll 	${TargetDirectory}/Debug/assimp-mtd.dll
+				COMMAND ${CMAKE_COMMAND} -E copy ${ASSIMP_ROOT_DIR}/bin${ASSIMP_ARCHITECTURE}/assimp-mt.dll 		${TargetDirectory}/Release/assimp-mt.dll
 			COMMENT "Copying Assimp binaries to '${TargetDirectory}'"
 			VERBATIM)
 		ENDFUNCTION(ASSIMP_COPY_BINARIES)
@@ -52,19 +52,19 @@ if(WIN32)
 			set(INCLUDE_DIRS ${ASSIMP_ROOT_DIR}/include)
 
 			find_library(ASSIMP_LIB_DEBUG
-				NAMES assimp-${ASSIMP_MSVC_VERSION}-mtd.lib
+				NAMES assimp-mtd.lib
 				PATHS ${ASSIMP_LIBRARY_DIR})
 
 			find_file(ASSIMP_DLL_DEBUG
-				NAMES assimp-${ASSIMP_MSVC_VERSION}-mtd.dll
+				NAMES assimp-mtd.dll
 				PATHS ${ASSIMP_ROOT_DIR}/bin${ASSIMP_ARCHITECTURE})
 
 			find_library(ASSIMP_LIB_RELEASE
-				NAMES assimp-${ASSIMP_MSVC_VERSION}-mt.lib
+				NAMES assimp-mt.lib
 				PATHS ${ASSIMP_LIBRARY_DIR})
 
 			find_file(ASSIMP_DLL_RELEASE
-				NAMES assimp-${ASSIMP_MSVC_VERSION}-mt.dll
+				NAMES assimp-mt.dll
 				PATHS ${ASSIMP_ROOT_DIR}/bin${ASSIMP_ARCHITECTURE})
 
 			add_library(ASSIMP SHARED IMPORTED)
