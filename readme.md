@@ -10,7 +10,7 @@ A D3D11-based 3D game engine originally developed as a group project by six stud
 
 ## Usage
 
-Shouldn't require any prerequisites. Only supported platform is Windows.
+Requires CMake. Only supported platform is Windows.
 
 - Download the repository and open "WellEngine.sln" in Visual Studio (tested with 2022). 
 - Ensure "Application" is the selected startup project. 
