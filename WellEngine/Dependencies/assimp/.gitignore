@@ -3,24 +3,14 @@
 !**/Obj/**
 !**/obj/**
 
-#assimp/**/**.vcxproj**
-#assimp/**/**.Sln
-#assimp/**/**.pc
+assimp/**/**.vcxproj**
+assimp/**/**.Sln
 
-assimp/CMakeCache.txt
-#assimp/**/cmake_*.cmake
-#assimp/**/CMakeFiles
-
-#assimp/generated
-#assimp/lib
-
-#assimp/code/assimp.dir
-#assimp/contrib/zlib/zlibstatic.dir
+assimp/**/CMakeCache.txt
+assimp/**/cmake_*.cmake
+assimp/**/CMakeFiles
 
 **/Debug
 **/Release
 
-#assimp/contrib/zlib/zconf.h
-#assimp/contrib/zlib/CTestTestfile.cmake
-#assimp/include/assimp/config.h
-#assimp/include/assimp/revision.h
+assimp/contrib/zlib/CTestTestfile.cmake
