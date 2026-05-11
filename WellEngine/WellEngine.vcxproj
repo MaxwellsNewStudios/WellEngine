@@ -141,9 +141,10 @@
       </Command>
     </CustomBuildStep>
     <PreBuildEvent>
-      <Command>$(SolutionDir)BuildTools\BehaviourRegistration\x64\$(Configuration)\BehaviourRegistration
-$(SolutionDir)BuildTools\SystemRegistration\x64\$(Configuration)\SystemRegistration
-$(SolutionDir)BuildTools\ContentRegistration\x64\$(Configuration)\ContentRegistration</Command>
+      <Command>cd $(SolutionDir)BuildTools\BehaviourRegistration
+x64\$(Configuration)\BehaviourRegistration
+cd $(SolutionDir)BuildTools\SystemRegistration
+x64\$(Configuration)\SystemRegistration</Command>
       <Message>Type Registration</Message>
     </PreBuildEvent>
     <PostBuildEvent>
@@ -203,9 +204,10 @@ $(SolutionDir)BuildTools\ContentRegistration\x64\$(Configuration)\ContentRegistr
       </Command>
     </CustomBuildStep>
     <PreBuildEvent>
-      <Command>$(SolutionDir)BuildTools\BehaviourRegistration\x64\$(Configuration)\BehaviourRegistration
-$(SolutionDir)BuildTools\SystemRegistration\x64\$(Configuration)\SystemRegistration
-$(SolutionDir)BuildTools\ContentRegistration\x64\$(Configuration)\ContentRegistration</Command>
+      <Command>cd $(SolutionDir)BuildTools\BehaviourRegistration
+x64\$(Configuration)\BehaviourRegistration
+cd $(SolutionDir)BuildTools\SystemRegistration
+x64\$(Configuration)\SystemRegistration</Command>
       <Message>Type Registration</Message>
     </PreBuildEvent>
     <PostBuildEvent>
@@ -265,9 +267,10 @@ $(SolutionDir)BuildTools\ContentRegistration\x64\$(Configuration)\ContentRegistr
       </Command>
     </CustomBuildStep>
     <PreBuildEvent>
-      <Command>$(SolutionDir)BuildTools\BehaviourRegistration\x64\$(Configuration)\BehaviourRegistration
-$(SolutionDir)BuildTools\SystemRegistration\x64\$(Configuration)\SystemRegistration
-$(SolutionDir)BuildTools\ContentRegistration\x64\$(Configuration)\ContentRegistration</Command>
+      <Command>cd $(SolutionDir)BuildTools\BehaviourRegistration
+x64\$(Configuration)\BehaviourRegistration
+cd $(SolutionDir)BuildTools\SystemRegistration
+x64\$(Configuration)\SystemRegistration</Command>
       <Message>Type Registration</Message>
     </PreBuildEvent>
     <PostBuildEvent>

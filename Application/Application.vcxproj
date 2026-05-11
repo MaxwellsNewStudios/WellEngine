@@ -101,7 +101,8 @@
       <PreserveSbr>true</PreserveSbr>
     </Bscmake>
     <PostBuildEvent>
-      <Command>$(SolutionDir)BuildTools\BuildMerger\x64\$(Configuration)\BuildMerger</Command>
+      <Command>cd $(SolutionDir)BuildTools\BuildMerger
+x64\$(Configuration)\BuildMerger</Command>
       <Message>Merge Build</Message>
     </PostBuildEvent>
   </ItemDefinitionGroup>
@@ -140,7 +141,8 @@
     </Link>
     <PostBuildEvent>
       <Message>Merge Build</Message>
-      <Command>$(SolutionDir)BuildTools\BuildMerger\x64\$(Configuration)\BuildMerger</Command>
+      <Command>cd $(SolutionDir)BuildTools\BuildMerger
+x64\$(Configuration)\BuildMerger</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">
@@ -173,7 +175,8 @@
     </Link>
     <PostBuildEvent>
       <Message>Merge Build</Message>
-      <Command>$(SolutionDir)BuildTools\BuildMerger\x64\$(Configuration)\BuildMerger</Command>
+      <Command>cd $(SolutionDir)BuildTools\BuildMerger
+x64\$(Configuration)\BuildMerger</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>

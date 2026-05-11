@@ -19,6 +19,7 @@
 #include "Game/Behaviours/Rendering/Lighting/B_LightSpotSimple.h"
 #include "Game/Behaviours/Rendering/Mesh/B_Mesh.h"
 #include "Game/Behaviours/Rendering/Mesh/B_MeshBillboard.h"
+#include "Game/Behaviours/Rendering/Mesh/B_MeshSkinned.h"
 #include "Game/Behaviours/Rendering/Mesh/B_MeshText.h"
 #include "Game/Behaviours/Sound/B_SoundListener.h"
 #include "Game/Behaviours/Sound/B_SoundSource.h"
@@ -45,6 +46,7 @@ const std::map<std::string, std::function<Behaviour *(void)>> &BehaviourRegistry
 		{ "LightSpotSimple",    []() { return new B_LightSpotSimple(); }    },
 		{ "Mesh",               []() { return new B_Mesh(); }               },
 		{ "MeshBillboard",      []() { return new B_MeshBillboard(); }      },
+		{ "MeshSkinned",        []() { return new B_MeshSkinned(); }        },
 		{ "MeshText",           []() { return new B_MeshText(); }           },
 		{ "SoundListener",      []() { return new B_SoundListener(); }      },
 		{ "SoundSource",        []() { return new B_SoundSource(); }        },
@@ -73,6 +75,7 @@ const std::map<std::string, std::string> &BehaviourRegistry::GetCategories()
 		{ "LightSpotSimple",    "Rendering/Lighting/" },
 		{ "Mesh",               "Rendering/Mesh/"     },
 		{ "MeshBillboard",      "Rendering/Mesh/"     },
+		{ "MeshSkinned",        "Rendering/Mesh/"     },
 		{ "MeshText",           "Rendering/Mesh/"     },
 		{ "SoundListener",      "Sound/"              },
 		{ "SoundSource",        "Sound/"              },
