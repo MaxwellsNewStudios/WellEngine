@@ -14,10 +14,6 @@ namespace WellEngine
 		ID3D11Texture2D *&dsTexture, 
 		ID3D11DepthStencilView *&dsView,
 		ID3D11UnorderedAccessView *&uav,
-		ID3D11DepthStencilState *&normalDepthStencilState,
-		ID3D11DepthStencilState *&reverseZDepthStencilState,
-		ID3D11DepthStencilState *&transparentDepthStencilState,
-		ID3D11DepthStencilState *&nullDepthStencilState,
 		D3D11_VIEWPORT &viewport);
 
 	[[nodiscard]] bool ResizeD3D11(

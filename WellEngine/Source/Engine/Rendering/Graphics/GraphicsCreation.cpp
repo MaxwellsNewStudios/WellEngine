@@ -11,6 +11,86 @@
 
 using Microsoft::WRL::ComPtr;
 
+static bool CreateDepthStencilStates(ID3D11Device *device,
+	ID3D11DepthStencilState *&normalDepthStencilState,
+	ID3D11DepthStencilState *&reverseZDepthStencilState,
+	ID3D11DepthStencilState *&transparentDepthStencilState,
+	ID3D11DepthStencilState *&wireframeDepthStencilState,
+	ID3D11DepthStencilState *&nullDepthStencilState)
+{
+	D3D11_DEPTH_STENCIL_DESC depthStencilDesc = { };
+	depthStencilDesc.DepthEnable = true;
+	depthStencilDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
+	depthStencilDesc.DepthFunc = D3D11_COMPARISON_LESS_EQUAL;
+	depthStencilDesc.StencilEnable = false;
+	depthStencilDesc.StencilReadMask = D3D11_DEFAULT_STENCIL_READ_MASK;
+	depthStencilDesc.StencilWriteMask = D3D11_DEFAULT_STENCIL_WRITE_MASK;
+	depthStencilDesc.FrontFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
+	depthStencilDesc.FrontFace.StencilDepthFailOp = D3D11_STENCIL_OP_KEEP;
+	depthStencilDesc.FrontFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
+	depthStencilDesc.FrontFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
+
+	if (FAILED(device->CreateDepthStencilState(&depthStencilDesc, &normalDepthStencilState)))
+	{
+		ErrMsg("Failed to create normal depth stencil state!");
+		return false;
+	}
+
+	depthStencilDesc.DepthFunc = D3D11_COMPARISON_GREATER_EQUAL;
+
+	if (FAILED(device->CreateDepthStencilState(&depthStencilDesc, &reverseZDepthStencilState)))
+	{
+		ErrMsg("Failed to create reverse depth stencil state!");
+		return false;
+	}
+
+	depthStencilDesc.DepthEnable = true;
+	depthStencilDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;
+	depthStencilDesc.DepthFunc = D3D11_COMPARISON_GREATER_EQUAL;
+	depthStencilDesc.StencilEnable = false;
+	depthStencilDesc.StencilReadMask = D3D11_DEFAULT_STENCIL_READ_MASK;
+	depthStencilDesc.StencilWriteMask = D3D11_DEFAULT_STENCIL_WRITE_MASK;
+	depthStencilDesc.FrontFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
+	depthStencilDesc.FrontFace.StencilDepthFailOp = D3D11_STENCIL_OP_KEEP;
+	depthStencilDesc.FrontFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
+	depthStencilDesc.FrontFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
+
+	if (FAILED(device->CreateDepthStencilState(&depthStencilDesc, &transparentDepthStencilState)))
+	{
+		ErrMsg("Failed to create transparent depth stencil state!");
+		return false;
+	}
+
+	depthStencilDesc.DepthEnable = false;
+	depthStencilDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;
+
+	if (FAILED(device->CreateDepthStencilState(&depthStencilDesc, &nullDepthStencilState)))
+	{
+		ErrMsg("Failed to create null depth stencil state!");
+		return false;
+	}
+
+	depthStencilDesc.DepthEnable = true;
+	depthStencilDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;
+	depthStencilDesc.DepthFunc = D3D11_COMPARISON_LESS_EQUAL;
+	depthStencilDesc.StencilEnable = false;
+	depthStencilDesc.StencilReadMask = D3D11_DEFAULT_STENCIL_READ_MASK;
+	depthStencilDesc.StencilWriteMask = D3D11_DEFAULT_STENCIL_WRITE_MASK;
+	depthStencilDesc.FrontFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
+	depthStencilDesc.FrontFace.StencilDepthFailOp = D3D11_STENCIL_OP_KEEP;
+	depthStencilDesc.FrontFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
+	depthStencilDesc.FrontFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
+
+	if (FAILED(device->CreateDepthStencilState(&depthStencilDesc, &wireframeDepthStencilState)))
+	{
+		ErrMsg("Failed to create wireframe depth stencil state!");
+		return false;
+	}
+
+	return true;
+}
+
+
 Graphics::~Graphics()
 {
 	delete[] _lightGrid;
@@ -36,13 +116,20 @@ bool Graphics::Setup(
 		*_dsTexture.ReleaseAndGetAddressOf(),
 		*_dsView.ReleaseAndGetAddressOf(),
 		*_uav.ReleaseAndGetAddressOf(),
-		*_ndss.ReleaseAndGetAddressOf(),
-		*_rdss.ReleaseAndGetAddressOf(),
-		*_tdss.ReleaseAndGetAddressOf(),
-		*_nulldss.ReleaseAndGetAddressOf(),
 		_viewport))
 	{
 		ErrMsg("Failed to setup d3d11!");
+		return false;
+	}
+
+	if (!CreateDepthStencilStates(device,
+		*_ndss.ReleaseAndGetAddressOf(),
+		*_rdss.ReleaseAndGetAddressOf(),
+		*_tdss.ReleaseAndGetAddressOf(),
+		*_wdss.ReleaseAndGetAddressOf(),
+		*_nulldss.ReleaseAndGetAddressOf()))
+	{
+		ErrMsg("Failed to create depth stencil states!");
 		return false;
 	}
 
@@ -217,6 +304,21 @@ bool Graphics::Setup(
 		}
 
 
+		rasterizerDesc.FillMode = D3D11_FILL_WIREFRAME;
+		rasterizerDesc.CullMode = D3D11_CULL_BACK;
+		rasterizerDesc.DepthBias = -100;
+		rasterizerDesc.DepthBiasClamp = -1.00f;
+		rasterizerDesc.SlopeScaledDepthBias = 0.0f;
+		rasterizerDesc.DepthClipEnable = false;
+		rasterizerDesc.AntialiasedLineEnable = false;
+
+		if (FAILED(device->CreateRasterizerState(&rasterizerDesc, &_wireframeOverlayRasterizer)))
+		{
+			ErrMsg("Failed to create wireframe overlay rasterizer state!");
+			return false;
+		}
+
+
 		rasterizerDesc.FillMode = D3D11_FILL_SOLID;
 		rasterizerDesc.CullMode = D3D11_CULL_BACK; // D3D11_CULL_NONE
 		rasterizerDesc.DepthBias = -1;
@@ -355,6 +457,7 @@ void Graphics::Shutdown()
 	_ndss.Reset();
 	_rdss.Reset();
 	_tdss.Reset();
+	_wdss.Reset();
 	_nulldss.Reset();
 	_frontFaceRasterizer.Reset();
 	_backFaceRasterizer.Reset();
@@ -362,6 +465,7 @@ void Graphics::Shutdown()
 	_wireframeFrontFaceRasterizer.Reset();
 	_wireframeBackFaceRasterizer.Reset();
 	_wireframeDoubleSidedRasterizer.Reset();
+	_wireframeOverlayRasterizer.Reset();
 	_shadowRasterizer.Reset();
 	_sceneRT.Reset();
 	_depthRT.Reset();

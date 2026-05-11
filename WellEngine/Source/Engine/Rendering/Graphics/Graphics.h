@@ -46,6 +46,7 @@ namespace WellEngine
 		ComPtr<ID3D11DepthStencilState>		_ndss = nullptr; // Normal depth stencil state
 		ComPtr<ID3D11DepthStencilState>		_rdss = nullptr; // Reverse Z depth stencil state
 		ComPtr<ID3D11DepthStencilState>		_tdss = nullptr; // Transparent depth stencil state
+		ComPtr<ID3D11DepthStencilState>		_wdss = nullptr; // Wireframe depth stencil state
 		ComPtr<ID3D11DepthStencilState>		_nulldss = nullptr;
 
 		ID3D11Texture2D			**_sceneDsTexturePtr = nullptr;
@@ -67,6 +68,7 @@ namespace WellEngine
 		ComPtr<ID3D11RasterizerState> _wireframeFrontFaceRasterizer = nullptr;
 		ComPtr<ID3D11RasterizerState> _wireframeBackFaceRasterizer = nullptr;
 		ComPtr<ID3D11RasterizerState> _wireframeDoubleSidedRasterizer = nullptr;
+		ComPtr<ID3D11RasterizerState> _wireframeOverlayRasterizer = nullptr;
 		ComPtr<ID3D11RasterizerState> _shadowRasterizer = nullptr;
 		ID3D11RasterizerState *_currRasterizer = nullptr;
 
