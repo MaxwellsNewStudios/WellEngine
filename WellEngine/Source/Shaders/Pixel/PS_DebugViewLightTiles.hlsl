@@ -89,8 +89,8 @@ PixelShaderOutput main(PixelShaderInput input)
 		? Remap(OcclusionMap.Sample(Sampler, uv), 0.0, 1.0, 1.0 - MatProp_occlusionFactor, 1.0)
 		: 1.0;
 	
-    float3 totalDiffuseLight = ambient_light.xyz;
-    float3 totalSpecularLight = float3(0.0, 0.0, 0.0);
+    float3 totalDiffuseLight = 0.0.rrr;
+    float3 totalSpecularLight = 0.0.rrr;
     {
 		float3 normal = surfaceNormal;
         float3 specularColor = specularCol;
@@ -319,7 +319,9 @@ PixelShaderOutput main(PixelShaderInput input)
 			tileColor += lightTileColor;
 			lightsCounted++;
 		}
-    }
+		
+		totalDiffuseLight = Remap(totalDiffuseLight, 0.0.rrr, 1.0.rrr, ambient_light.xyz, 1.0.rrr);
+	}
 	
 	//float3 totalLight = ambientCol + occlusion * ((diffuseCol * totalDiffuseLight) + totalSpecularLight);
 	float3 totalLight = (occlusion * diffuseCol * totalDiffuseLight) + ambientCol + totalSpecularLight;

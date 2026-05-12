@@ -42,7 +42,7 @@ void main(uint3 DTid : SV_DispatchThreadID)
 	result = ACESFilm(result + fog.xyz * fog.w);
 	
 	// Fadeout
-	result = lerp(result, float3(0.0, 0.0, 0.0), ambient_light.w);
+	result = lerp(result, 0.0.rrr, ambient_light.w);
 	
 	BackBufferUAV[DTid.xy] = float4(result, 1.0);
 }

@@ -12,8 +12,8 @@ void CalculateLighting(
 	out float3 totalDiffuseLight, out float3 totalSpecularLight,								// Output
 	in bool fallbackReflectionModel = false)
 {
-	totalDiffuseLight = ambient_light.xyz;
-	totalSpecularLight = float3(0.0, 0.0, 0.0);
+	totalDiffuseLight = 0.0.rrr;
+	totalSpecularLight = 0.0.rrr;
 	
 	// Calculate light tile position
 	const float4 screenPosClip = mul(float4(pos, 1.0f), view_proj_matrix);
@@ -241,4 +241,6 @@ void CalculateLighting(
 		totalDiffuseLight += diffuseLightCol * inverseLightDistSqr;
 		totalSpecularLight += specularLightCol * inverseLightDistSqr;
 	}
+	
+	totalDiffuseLight = Remap(totalDiffuseLight, 0.0.rrr, 1.0.rrr, ambient_light.xyz, 1.0.rrr);
 }

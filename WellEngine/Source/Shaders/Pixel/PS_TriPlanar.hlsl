@@ -205,12 +205,17 @@ PixelShaderOutput main(PixelShaderInput input)
 		ambientCol +
 		totalSpecularLight;
 	
+	float3 emissLight =
+		occlusion * diffuseCol * Remap(totalDiffuseLight, ambient_light.xyz, 1.0.rrr, 0.0.rrr, 1.0.rrr) +
+		ambientCol +
+		totalSpecularLight;
+	
 	float emissiveness = max(totalSpecularLight.x, max(totalSpecularLight.y, totalSpecularLight.z));
 	float remappedEmissiveness = emissiveness * 0.15 - 0.97;
 	emissiveness = 1.0 - pow(remappedEmissiveness, 2.0);
 	
 	output.color = float4(totalLight, emissiveness);
-	output.emission = output.color.xyz * emissiveness;
+	output.emission = emissLight * emissiveness;
 	output.emission = pow(max(0.0, output.emission + 1.0), 1.5) - 1.0;
 	
 	// Apply far-plane depth fade out
