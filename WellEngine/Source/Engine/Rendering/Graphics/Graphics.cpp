@@ -244,13 +244,16 @@ bool Graphics::RenderToTarget(
 	switch (_renderOutput)
 	{
 	case RenderType::DEFAULT:
-		if (!RenderOpaque(_sceneRT.GetRTV(), targetDepthRTV, targetDSV, targetViewport))
+		if (_wireframeMode != 2)
 		{
-			ErrMsg("Failed to render opaque!");
-			return false;
+			if (!RenderOpaque(_sceneRT.GetRTV(), targetDepthRTV, targetDSV, targetViewport))
+			{
+				ErrMsg("Failed to render opaque!");
+				return false;
+			}
 		}
 
-		if (_wireframeMode == 1)
+		if (_wireframeMode != 0)
 		{
 			if (!RenderWireframe(_sceneRT.GetRTV(), targetDepthRTV, targetDSV, targetViewport))
 			{
@@ -2000,6 +2003,27 @@ bool Graphics::RenderWireframe(
 {
 	ZoneScopedC(RandomUniqueColor());
 	TracyD3D11ZoneC(_tracyD3D11Context, "Wireframe", RandomUniqueColor());
+
+	if (_wireframeMode == 2)
+	{
+		TracyD3D11NamedZoneXC(_tracyD3D11Context, clearRTVsD3D11Zone, "Clear Targets", RandomUniqueColor(), true);
+
+		ProjectionInfo proj = _currViewCamera->GetCurrProjectionInfo();
+		float farDist = MAX(proj.planes.nearZ, proj.planes.farZ);
+
+		// Clear & bind render targets
+		if (!overlayStage) // Skip clearing scene render target if on the overlay-stage
+		{
+			constexpr float clearColor[4] = { 0.0f, 0.0f, 0.0f, 1.0f };
+			constexpr float clearEmission[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
+			float clearDepth[4] = { farDist, farDist, farDist, farDist };
+			_context->ClearRenderTargetView(targetSceneRTV, clearColor);
+			_context->ClearRenderTargetView(_emissionRT.GetRTV(), clearEmission);
+			_context->ClearRenderTargetView(targetDepthRTV, clearDepth);
+		}
+
+		_context->ClearDepthStencilView(targetDSV, D3D11_CLEAR_DEPTH, _currViewCamera->GetInverted() ? 0.0f : 1.0f, 0);
+	}
 
 	_context->OMSetDepthStencilState(_wdss.Get(), 0);
 

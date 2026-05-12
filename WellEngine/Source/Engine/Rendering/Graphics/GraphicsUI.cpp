@@ -291,6 +291,7 @@ bool Graphics::RenderUI(TimeUtils &time)
 	}
 
 	std::string wireframeModes[] = { "Geometry", "Geometry + Wireframe", "Wireframe"};
+	ImGui::Text("Wireframe Mode:"); ImGui::SameLine();
 	if (ImGui::Button((wireframeModes[_wireframeMode] + "##WireframeModeButton").c_str()))
 	{
 		_wireframeMode++;
@@ -1150,14 +1151,14 @@ bool Graphics::RenderUI(TimeUtils &time)
 			hasChanged = true;
 		}
 
-		if (ImGui::DragInt("Depth Bias", &depthBias, 0.01f))
+		if (ImGui::DragInt("Depth Bias", &depthBias, 0.1f))
 		{
 			_shadowRasterizerDesc.DepthBias = depthBias;
 			hasChanged = true;
 		}
 		ImGuiUtils::LockMouseOnActive();
 
-		if (ImGui::DragFloat("Depth Bias Clamp", &depthBiasClamp, 0.001f))
+		if (ImGui::DragFloat("Depth Bias Clamp", &depthBiasClamp, 0.0001f, 0.0f, 0.0f, "%.6f"))
 		{
 			_shadowRasterizerDesc.DepthBiasClamp = depthBiasClamp;
 			hasChanged = true;
@@ -1264,14 +1265,14 @@ bool Graphics::RenderUI(TimeUtils &time)
 			hasChanged = true;
 		}
 
-		if (ImGui::DragInt("Depth Bias", &depthBias, 0.01f))
+		if (ImGui::DragInt("Depth Bias", &depthBias, 0.1f))
 		{
 			_wireframeRasterizerDesc.DepthBias = depthBias;
 			hasChanged = true;
 		}
 		ImGuiUtils::LockMouseOnActive();
 
-		if (ImGui::DragFloat("Depth Bias Clamp", &depthBiasClamp, 0.001f))
+		if (ImGui::DragFloat("Depth Bias Clamp", &depthBiasClamp, 0.0001f, 0.0f, 0.0f, "%.6f"))
 		{
 			_wireframeRasterizerDesc.DepthBiasClamp = depthBiasClamp;
 			hasChanged = true;

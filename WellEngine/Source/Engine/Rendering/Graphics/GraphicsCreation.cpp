@@ -312,11 +312,12 @@ bool Graphics::Setup(
 
 		rasterizerDesc.FillMode = D3D11_FILL_WIREFRAME;
 		rasterizerDesc.CullMode = D3D11_CULL_BACK;
-		rasterizerDesc.DepthBias = 0;
-		rasterizerDesc.DepthBiasClamp = 0.0f;
-		rasterizerDesc.SlopeScaledDepthBias = 1.0f;
-		rasterizerDesc.DepthClipEnable = false;
-		rasterizerDesc.AntialiasedLineEnable = true;
+		rasterizerDesc.DepthBias = 1;
+		rasterizerDesc.DepthBiasClamp = 0.0001f;
+		rasterizerDesc.SlopeScaledDepthBias = 0.1f;
+		rasterizerDesc.DepthClipEnable = true;
+		rasterizerDesc.AntialiasedLineEnable = false;
+		rasterizerDesc.MultisampleEnable = true;
 
 		if (FAILED(device->CreateRasterizerState(&rasterizerDesc, &_wireframeOverlayRasterizer)))
 		{
@@ -335,6 +336,7 @@ bool Graphics::Setup(
 		rasterizerDesc.SlopeScaledDepthBias = -2.0f;
 		rasterizerDesc.DepthClipEnable = false;
 		rasterizerDesc.AntialiasedLineEnable = false;
+		rasterizerDesc.MultisampleEnable = false;
 
 		if (FAILED(device->CreateRasterizerState(&rasterizerDesc, &_shadowRasterizer)))
 		{
