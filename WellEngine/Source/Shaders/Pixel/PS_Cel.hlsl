@@ -91,25 +91,26 @@ PixelShaderOutput main(PixelShaderInput input)
 		? Remap(OcclusionMap.Sample(Sampler, uv), 0.0, 1.0, 1.0 - MatProp_occlusionFactor, 1.0)
 		: 1.0;
         
-	float3 totalDiffuseLight, totalSpecularLight;
+	float3 totalDiffuseLight, totalSpecularLight, preAmbientLight;
 	CalculateLighting(
 		pos, viewDir, // View
 		geoNormal, surfaceNormal, specularCol, glossiness, // Surface
-		totalDiffuseLight, totalSpecularLight // Output
+		totalDiffuseLight, totalSpecularLight, preAmbientLight // Output
 	);
 	
-	float3 totalLight =
-		occlusion * diffuseCol * totalDiffuseLight +
-		ambientCol +
-		totalSpecularLight;
+	float3 occlDiffuse = occlusion * diffuseCol;
+	float3 ambSpec = ambientCol + totalSpecularLight;
 	
-	float3 emissivenessFactor = 0.1 * pow(max(totalLight, 0.0.rrr), 1.5) + 0.9 * totalSpecularLight;
+	float3 totalLight = ambSpec + occlDiffuse * totalDiffuseLight;
+	float3 emissLight = ambSpec + occlDiffuse * preAmbientLight;
+	
+	float3 emissivenessFactor = 0.1 * pow(max(emissLight, 0.0.rrr), 1.5) + 0.9 * totalSpecularLight;
 	float emissiveness = max(emissivenessFactor.x, max(emissivenessFactor.y, emissivenessFactor.z));
 	float remappedEmissiveness = emissiveness * 0.15 - 0.97;
 	emissiveness = 1.0 - pow(remappedEmissiveness, 2.0);
 	
 	output.color = float4(totalLight, emissiveness);
-	output.emission = output.color.xyz * emissiveness;
+	output.emission = emissLight * emissiveness;
 	output.emission = pow(max(0.0, output.emission + 1.0), 1.5) - 1.0;
 	
 	// Apply far-plane depth fade out

@@ -62,11 +62,11 @@ float4 main(PixelShaderInput input) : SV_Target
 		? GlossinessMap.Sample(Sampler, uv)
 		: 1.0 - (1.0 / pow(max(0.0, MatProp_specularExponent), 1.75)));
 	
-    float3 totalDiffuseLight, totalSpecularLight;
+    float3 totalDiffuseLight, totalSpecularLight, _;
     CalculateLighting(
 		pos, viewDir, // View
 		geoNormal, surfaceNormal, specularCol, glossiness, // Surface
-		totalDiffuseLight, totalSpecularLight // Output
+		totalDiffuseLight, totalSpecularLight, _ // Output
 	);
 	
     float3 totalLight = totalSpecularLight;

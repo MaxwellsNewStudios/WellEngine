@@ -124,11 +124,11 @@ PixelShaderOutput main(PixelShaderInput input)
 		? Remap(OcclusionMap.Sample(Sampler, uv), 0.0, 1.0, 1.0 - MatProp_occlusionFactor, 1.0)
 		: 1.0;
 	
-	float3 totalDiffuseLight, totalSpecularLight;
+	float3 totalDiffuseLight, totalSpecularLight, preAmbientLight;
 	CalculateLighting(
-		pos, viewDir, // View
-		geoNormal, surfaceNormal, specularCol, glossiness, // Surface
-		totalDiffuseLight, totalSpecularLight, // Output
+		pos, viewDir,											// View
+		geoNormal, surfaceNormal, specularCol, glossiness,		// Surface
+		totalDiffuseLight, totalSpecularLight, preAmbientLight, // Output
 		false
 	);
 	
@@ -140,17 +140,11 @@ PixelShaderOutput main(PixelShaderInput input)
 	);
 	reflectStrength = saturate(reflectStrength * reflective);
 	
-	float3 totalLight = 
-		occlusion * diffuseCol * totalDiffuseLight + 
-		ambientCol + 
-		totalSpecularLight +
-		reflective * reflection;
+	float3 occlDiffuse = occlusion * diffuseCol;
+	float3 ambSpecReflect = ambientCol + totalSpecularLight + reflective * reflection;
 	
-	float3 emissLight = 
-		occlusion * diffuseCol * Remap(totalDiffuseLight, ambient_light.xyz, 1.0.rrr, 0.0.rrr, 1.0.rrr) +
-		ambientCol + 
-		totalSpecularLight +
-		reflective * reflection;
+	float3 totalLight = ambSpecReflect + occlDiffuse * totalDiffuseLight;
+	float3 emissLight = ambSpecReflect + occlDiffuse * preAmbientLight;
 	
 	float3 emissivenessFactor = lerp(0.1 * pow(max(emissLight, 0.0.rrr), 1.5) + 0.9 * totalSpecularLight, reflection, reflectStrength.rrr);
 	float emissiveness = max(emissivenessFactor.x, max(emissivenessFactor.y, emissivenessFactor.z));

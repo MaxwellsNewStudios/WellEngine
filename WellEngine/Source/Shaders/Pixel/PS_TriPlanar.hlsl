@@ -193,22 +193,18 @@ PixelShaderOutput main(PixelShaderInput input)
 	
 	
 	// Shading
-	float3 totalDiffuseLight, totalSpecularLight;
+	float3 totalDiffuseLight, totalSpecularLight, preAmbientLight;
 	CalculateLighting(
 		pos, viewDir, // View
 		geoNormal, surfaceNormal, specularCol, glossiness, // Surface
-		totalDiffuseLight, totalSpecularLight // Output
+		totalDiffuseLight, totalSpecularLight, preAmbientLight // Output
 	);
 	
-	float3 totalLight =
-		occlusion * diffuseCol * totalDiffuseLight +
-		ambientCol +
-		totalSpecularLight;
+	float3 occlDiffuse = occlusion * diffuseCol;
+	float3 ambSpec = ambientCol + totalSpecularLight;
 	
-	float3 emissLight =
-		occlusion * diffuseCol * Remap(totalDiffuseLight, ambient_light.xyz, 1.0.rrr, 0.0.rrr, 1.0.rrr) +
-		ambientCol +
-		totalSpecularLight;
+	float3 totalLight = ambSpec + occlDiffuse * totalDiffuseLight;
+	float3 emissLight = ambSpec + occlDiffuse * preAmbientLight;
 	
 	float emissiveness = max(totalSpecularLight.x, max(totalSpecularLight.y, totalSpecularLight.z));
 	float remappedEmissiveness = emissiveness * 0.15 - 0.97;

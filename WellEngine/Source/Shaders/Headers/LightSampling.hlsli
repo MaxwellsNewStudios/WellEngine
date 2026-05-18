@@ -9,11 +9,12 @@
 void CalculateLighting(
 	float3 pos, float3 viewDir,																	// View
 	float3 geometryNormal, float3 surfaceNormal, float3 specularColor, float specularExponent,	// Surface
-	out float3 totalDiffuseLight, out float3 totalSpecularLight,								// Output
+	out float3 totalDiffuseLight, out float3 totalSpecularLight, out float3 preAmbientLight,	// Output
 	in bool fallbackReflectionModel = false)
 {
 	totalDiffuseLight = 0.0.rrr;
 	totalSpecularLight = 0.0.rrr;
+	preAmbientLight = 0.0.rrr;
 	
 	// Calculate light tile position
 	const float4 screenPosClip = mul(float4(pos, 1.0f), view_proj_matrix);
@@ -242,5 +243,7 @@ void CalculateLighting(
 		totalSpecularLight += specularLightCol * inverseLightDistSqr;
 	}
 	
-	totalDiffuseLight = Remap(totalDiffuseLight, 0.0.rrr, 1.0.rrr, ambient_light.xyz, 1.0.rrr);
+	preAmbientLight = totalDiffuseLight;
+	totalDiffuseLight = Remap(totalDiffuseLight, 0.0.rrr, preAmbientLight, ambient_light.xyz, preAmbientLight);
+	totalDiffuseLight = max(totalDiffuseLight, ambient_light.xyz);
 }

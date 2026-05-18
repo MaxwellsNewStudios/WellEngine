@@ -72,11 +72,11 @@ float4 main(PixelShaderInput input) : SV_TARGET
 		? Remap(OcclusionMap.Sample(Sampler, uv), 0.0, 1.0, 1.0 - MatProp_occlusionFactor, 1.0)
 		: 1.0;
 	
-	float3 totalDiffuseLight, totalSpecularLight;
+	float3 totalDiffuseLight, totalSpecularLight, _;
 	CalculateLighting(
 		pos, viewDir, // View
 		geoNormal, surfaceNormal, specularCol, glossiness, // Surface
-		totalDiffuseLight, totalSpecularLight, // Output
+		totalDiffuseLight, totalSpecularLight, _, // Output
 		false
 	);
 		

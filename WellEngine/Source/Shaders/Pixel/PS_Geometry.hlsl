@@ -85,22 +85,18 @@ PixelShaderOutput main(PixelShaderInput input)
 		? Remap(OcclusionMap.Sample(Sampler, uv), 0.0, 1.0, 1.0 - MatProp_occlusionFactor, 1.0)
 		: 1.0;
         
-	float3 totalDiffuseLight, totalSpecularLight;
+	float3 totalDiffuseLight, totalSpecularLight, preAmbientLight;
 	CalculateLighting(
-		pos, viewDir,										// View
-		geoNormal, surfaceNormal, specularCol, glossiness,	// Surface
-		totalDiffuseLight, totalSpecularLight				// Output
+		pos, viewDir, // View
+		geoNormal, surfaceNormal, specularCol, glossiness, // Surface
+		totalDiffuseLight, totalSpecularLight, preAmbientLight // Output
 	);
 	
-	float3 totalLight = 
-		occlusion * diffuseCol * totalDiffuseLight + 
-		ambientCol + 
-		totalSpecularLight;
+	float3 occlDiffuse = occlusion * diffuseCol;
+	float3 ambSpec = ambientCol + totalSpecularLight;
 	
-	float3 emissLight = 
-		occlusion * diffuseCol * Remap(totalDiffuseLight, ambient_light.xyz, 1.0.rrr, 0.0.rrr, 1.0.rrr) +
-		ambientCol + 
-		totalSpecularLight;
+	float3 totalLight = ambSpec + occlDiffuse * totalDiffuseLight;
+	float3 emissLight = ambSpec + occlDiffuse * preAmbientLight;
 	
 	float3 emissivenessFactor = 0.1 * pow(max(emissLight, 0.0.rrr), 1.5) + 0.9 * totalSpecularLight;
 	float emissiveness = max(emissivenessFactor.x, max(emissivenessFactor.y, emissivenessFactor.z));
@@ -113,6 +109,9 @@ PixelShaderOutput main(PixelShaderInput input)
 	
 	// Apply far-plane depth fade out
 	output.color.xyz = ApplyRenderDistanceFog(output.color.xyz, input.position.z);
+	
+	
+	//output.color.xyz = emissLight;
 		
 	return output;
 }
